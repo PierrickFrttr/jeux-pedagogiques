@@ -14,6 +14,14 @@ formateur/                  espace formateur chiffré (voir plus bas)
 
 ## Ajouter une mission à un jeu
 
+**Le plus simple, depuis le site :** connectez-vous à l'Espace formateur, revenez sur la page du jeu (même onglet),
+puis cliquez sur « Ajouter une mission » en bas de page. Le bouton fait les étapes 1 à 4 ci-dessous tout seul.
+Il demande une fois une clé GitHub : sur github.com, *Settings → Developer settings → Fine-grained tokens →
+Generate new token*, dépôt `jeux-pedagogiques` uniquement, permission *Contents : Read and write*.
+Après un ajout depuis le site, faites `git pull` avant de modifier le projet sur l'ordinateur.
+
+**À la main :**
+
 1. **Déposez le fichier** dans le dossier `jeux/` du jeu (ex. `supply-chain/jeux/`).
    Nommez-le en minuscules, sans espaces ni accents : `mission-3-mon-titre.html`.
 

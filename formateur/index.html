@@ -91,6 +91,7 @@ document.getElementById("form").addEventListener("submit", function (e) {
     fichiers = JSON.parse(new TextDecoder().decode(clair));
     afficher();
     document.getElementById("form").hidden = true;
+    try { sessionStorage.setItem("formateur-connecte", "1"); } catch (e) {} // affiche « Ajouter une mission » sur les pages de jeu
   }).catch(function (err) {
     cle = null; msg.className = "msg err"; msg.textContent = err.message; btn.disabled = false;
   });
