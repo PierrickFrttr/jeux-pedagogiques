@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CELLULE NOMAD — Terminal de Mission 3</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#14213D;
+    --ink2:#1E3A5F;
+    --ink3:#1C2B52;
+    --orange:#FB8B24;
+    --orange-dim:#a8621c;
+    --teal:#0F9B8E;
+    --steel:#8D99AE;
+    --steel-light:#E4E7EC;
+    --paper:#FAFAF9;
+    --white:#FFFFFF;
+    --text:#2A2E3A;
+    --danger:#C0453A;
+    --mono: 'Consolas','SFMono-Regular',Menlo,monospace;
+    --sans: Arial, 'Helvetica Neue', sans-serif;
+    --body: Calibri, 'Segoe UI', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--ink);font-family:var(--body);color:var(--text);}
+  ::selection{background:var(--orange);color:white;}
+  button{font-family:inherit;cursor:pointer;}
+  a{color:inherit;}
+
+  /* ============ BOOT SCREEN ============ */
+  #boot{
+    position:fixed;inset:0;background:var(--ink);color:#B9C4E0;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    z-index:100; padding:2rem;
+  }
+  #boot .boot-box{max-width:640px;width:100%;}
+  #boot .boot-logo{font-family:var(--sans);font-weight:800;font-size:2.2rem;color:var(--white);letter-spacing:1px;margin-bottom:.2rem;}
+  #boot .boot-logo span{color:var(--orange);}
+  #boot .boot-sub{font-family:var(--mono);font-size:.8rem;color:var(--steel);margin-bottom:2rem;letter-spacing:1px;}
+  #boot-log{
+    font-family:var(--mono);font-size:.85rem;line-height:1.9;min-height:220px;
+    border-left:2px solid var(--teal); padding-left:1rem;
+  }
+  #boot-log .line{opacity:0;animation:fadeIn .4s forwards;}
+  #boot-log .ok{color:var(--teal);}
+  #boot-log .warn{color:var(--orange);}
+  @keyframes fadeIn{to{opacity:1;}}
+  .cursor{display:inline-block;width:8px;height:1em;background:var(--orange);vertical-align:middle;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  #boot-form{margin-top:2rem;display:none;}
+  #boot-form.show{display:block;animation:fadeIn .5s forwards;}
+  #boot-form label{display:block;font-family:var(--mono);font-size:.78rem;color:var(--steel);margin-bottom:.5rem;letter-spacing:1px;}
+  #boot-form input{
+    width:100%;background:#0f1a30;border:1px solid #33456f;color:var(--white);
+    padding:.7rem .9rem;font-family:var(--body);font-size:1rem;border-radius:4px;outline:none;
+  }
+  #boot-form input:focus{border-color:var(--orange);}
+  #boot-enter{
+    margin-top:1.2rem; background:var(--orange); color:var(--ink); border:none;
+    padding:.8rem 1.8rem; font-weight:bold; font-size:.95rem; border-radius:4px;
+    letter-spacing:.5px; transition:transform .15s, box-shadow .15s;
+  }
+  #boot-enter:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(251,139,36,.35);}
+  #boot-enter:disabled{opacity:.4;cursor:not-allowed;}
+
+  #reprise-form{margin-top:2rem;display:none;max-width:640px;}
+  #reprise-form.show{display:block;animation:fadeIn .5s forwards;}
+  .reprise-title{font-family:var(--mono);font-size:.85rem;color:var(--orange);letter-spacing:1px;margin-bottom:.7rem;font-weight:bold;}
+  .reprise-instr{font-size:.85rem;color:#B9C4E0;line-height:1.55;margin-bottom:1.3rem;}
+  .reprise-grid{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:1.4rem;}
+  .reprise-field{flex:1 1 150px;}
+  .reprise-field label{display:block;font-family:var(--mono);font-size:.68rem;color:var(--steel);margin-bottom:.4rem;letter-spacing:.5px;}
+  .reprise-field input{
+    width:100%;background:#0f1a30;border:1px solid #33456f;color:var(--white);
+    padding:.6rem .7rem;font-family:var(--body);font-size:1rem;border-radius:4px;outline:none;
+  }
+  .reprise-field input:focus{border-color:var(--teal);}
+  #reprise-confirm{
+    background:var(--teal); color:white; border:none;
+    padding:.8rem 1.8rem; font-weight:bold; font-size:.95rem; border-radius:4px;
+    letter-spacing:.5px; transition:transform .15s, box-shadow .15s;
+  }
+  #reprise-confirm:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(15,155,142,.35);}
+
+  /* ============ APP SHELL ============ */
+  #app{display:none;height:100vh;width:100%;}
+  #app.show{display:flex;}
+
+  #sidebar{
+    width:280px;flex:none;background:var(--ink);color:var(--white);
+    display:flex;flex-direction:column;padding:1.4rem 1.1rem;
+    border-right:1px solid #24345c;
+  }
+  .brand{display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;}
+  .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);}
+  .brand-name{font-family:var(--sans);font-weight:800;font-size:1.05rem;letter-spacing:.5px;}
+  .brand-name span{color:var(--orange);}
+  .team-tag{font-family:var(--mono);font-size:.72rem;color:var(--steel);margin-bottom:1.4rem;}
+
+  .progress-wrap{margin-bottom:1.6rem;}
+  .progress-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--steel);font-family:var(--mono);margin-bottom:.4rem;}
+  .progress-bar{height:6px;border-radius:4px;background:#24345c;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--orange));width:0%;transition:width .6s ease;}
+
+  nav.navlist{display:flex;flex-direction:column;gap:.25rem;margin-bottom:1.6rem;}
+  .navitem{
+    display:flex;align-items:center;gap:.65rem;padding:.65rem .7rem;border-radius:8px;
+    color:#B9C4E0;font-size:.88rem;font-weight:600;background:transparent;border:none;text-align:left;
+    transition:background .15s,color .15s;
+  }
+  .navitem .ic{width:18px;height:18px;flex:none;opacity:.85;}
+  .navitem:hover{background:#1c2b52;color:var(--white);}
+  .navitem.active{background:var(--orange);color:var(--ink);}
+  .navitem.active .ic{opacity:1;}
+  .navitem[disabled]{opacity:.35;cursor:not-allowed;}
+  .navitem[disabled]:hover{background:transparent;color:#B9C4E0;}
+  .navbadge{margin-left:auto;font-family:var(--mono);font-size:.65rem;background:#24345c;color:var(--steel);padding:.1rem .4rem;border-radius:4px;}
+  .navitem.active .navbadge{background:rgba(20,33,61,.25);color:var(--ink);}
+
+  .gauges{margin-top:auto;border-top:1px solid #24345c;padding-top:1rem;}
+  .gauges h4{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);margin:0 0 .8rem;text-transform:uppercase;}
+  .gauge-row{margin-bottom:.65rem;}
+  .gauge-top{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.25rem;}
+  .gauge-name{color:#B9C4E0;}
+  .gauge-val{font-family:var(--mono);font-weight:bold;color:var(--white);}
+  .gauge-track{height:5px;background:#24345c;border-radius:3px;overflow:hidden;}
+  .gauge-fill{height:100%;border-radius:3px;transition:width .7s ease;}
+  .delta-pop{
+    position:absolute;font-family:var(--mono);font-weight:bold;font-size:.7rem;
+    animation:popUp 1.4s ease forwards; pointer-events:none;
+  }
+  @keyframes popUp{
+    0%{opacity:0;transform:translateY(0);}
+    15%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0;transform:translateY(-16px);}
+  }
+
+  /* ============ MAIN AREA ============ */
+  #main{flex:1;overflow-y:auto;background:var(--paper);position:relative;}
+  .panel{display:none;padding:3rem 3.5rem;max-width:980px;margin:0 auto;animation:fadeSlide .4s ease forwards;}
+  .panel.active{display:block;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .kicker{font-family:var(--body);font-weight:bold;font-size:.72rem;letter-spacing:1.5px;color:var(--orange);text-transform:uppercase;margin-bottom:.5rem;}
+  h1.ptitle{font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--ink);margin:0 0 .9rem;}
+  .lead{font-size:1.02rem;color:#444;line-height:1.55;margin-bottom:1.8rem;max-width:760px;}
+
+  .card{background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.1rem;}
+  .card h3{margin:0 0 .5rem;color:var(--ink);font-size:1.05rem;}
+  .card p{margin:.3rem 0;line-height:1.55;font-size:.94rem;color:#3a3f4d;}
+  .accent-left{border-left:4px solid var(--teal);}
+  .accent-left.orange{border-left-color:var(--orange);}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-bottom:2rem;}
+  .stat-card{background:var(--ink);border-radius:10px;padding:1rem .9rem;color:white;position:relative;overflow:hidden;}
+  .stat-card .stat-icon{font-size:1.3rem;margin-bottom:.4rem;}
+  .stat-card .stat-val{font-family:var(--sans);font-weight:800;font-size:1.3rem;}
+  .stat-card .stat-label{font-size:.68rem;color:#B9C4E0;margin-top:.1rem;}
+
+  /* Mission step */
+  .step-dots{display:flex;gap:.5rem;margin-bottom:1.6rem;}
+  .step-dot{width:32px;height:6px;border-radius:4px;background:var(--steel-light);}
+  .step-dot.done{background:var(--teal);}
+  .step-dot.current{background:var(--orange);}
+
+  .briefing-box{
+    background:var(--ink);color:#dfe4f2;border-radius:12px;padding:1.6rem 1.8rem;margin-bottom:1.6rem;
+    border-left:5px solid var(--orange); font-style:italic; line-height:1.6; position:relative;
+  }
+  .briefing-box .who{font-family:var(--mono);font-style:normal;font-size:.72rem;color:var(--orange);letter-spacing:1px;margin-bottom:.5rem;display:block;}
+
+  .option{
+    display:block;width:100%;text-align:left;background:var(--white);border:2px solid var(--steel-light);
+    border-radius:10px;padding:1.05rem 1.3rem;margin-bottom:.8rem;transition:border-color .15s, transform .1s, box-shadow .15s;
+  }
+  .option:hover{border-color:var(--teal);transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,155,142,.12);}
+  .option.selected{border-color:var(--orange);background:#FFF7EE;}
+  .option .opt-letter{
+    display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    background:var(--ink);color:white;font-family:var(--sans);font-weight:bold;font-size:.8rem;margin-right:.7rem;
+  }
+  .option .opt-text{font-size:.96rem;color:var(--text);}
+  .option:disabled{cursor:default;}
+  .option.locked{border-color:#EADCD4;background:#FBF8F6;cursor:not-allowed;}
+  .option.locked:hover{transform:none;box-shadow:none;border-color:#EADCD4;}
+  .option.locked .opt-letter{background:var(--steel);}
+  .option.locked .opt-text{color:#A8ADB8;}
+  .opt-locked-msg{margin-top:.5rem;margin-left:2.1rem;font-size:.78rem;color:var(--danger);font-weight:600;}
+
+  #hint-zone{margin-top:1.4rem;}
+  .hint-btn{
+    background:none;border:1.5px dashed var(--steel);color:var(--steel);padding:.55rem 1rem;border-radius:8px;
+    font-size:.85rem;font-weight:600;
+  }
+  .hint-btn:hover{border-color:var(--orange);color:var(--orange-dim);}
+  .hint-card{
+    background:#FBF3E3;border-left:4px solid var(--orange);border-radius:8px;padding:.9rem 1.1rem;margin-top:.7rem;
+    font-size:.88rem;color:#5a4420;font-style:italic;
+  }
+
+  .continue-btn{
+    background:var(--orange);color:var(--ink);border:none;padding:.85rem 1.9rem;font-weight:bold;border-radius:8px;
+    font-size:.95rem;margin-top:.5rem;
+  }
+  .continue-btn:hover{filter:brightness(1.05);}
+  .continue-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  .effect-tag{
+    display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.15rem .5rem;border-radius:5px;margin:.15rem .3rem .15rem 0;
+  }
+  .effect-up{background:#E4F5F2;color:var(--teal);}
+  .effect-down{background:#FBEAE8;color:var(--danger);}
+
+  .narration-box{background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;line-height:1.6;}
+
+  /* Bilan */
+  .bilan-gauge{margin-bottom:1.1rem;}
+  .bilan-gauge .top{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.3rem;color:var(--ink);font-weight:600;}
+  .bilan-track{height:12px;background:var(--steel-light);border-radius:6px;overflow:hidden;}
+  .bilan-fill{height:100%;border-radius:6px;}
+
+  .path-table{width:100%;border-collapse:collapse;margin-top:1rem;}
+  .path-table th{text-align:left;font-family:var(--mono);font-size:.68rem;color:var(--steel);text-transform:uppercase;padding:.5rem;border-bottom:2px solid var(--ink);}
+  .path-table td{padding:.7rem .5rem;border-bottom:1px solid var(--steel-light);font-size:.88rem;vertical-align:top;}
+  .path-table tr:last-child td{border-bottom:none;}
+
+  .export-row{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+  .export-btn{
+    flex:1;min-width:260px;display:flex;align-items:center;gap:.9rem;padding:1.1rem 1.3rem;border-radius:12px;border:none;
+    text-align:left;color:white;transition:transform .15s;
+  }
+  .export-btn:hover{transform:translateY(-2px);}
+  .export-btn.drive{background:var(--teal);}
+  .export-btn.pdf{background:var(--ink);}
+  .export-btn .eb-title{font-weight:bold;font-size:.98rem;}
+  .export-btn .eb-sub{font-size:.76rem;opacity:.85;margin-top:.15rem;}
+  .export-btn .eb-icon{font-size:1.5rem;}
+
+  .lock-msg{color:var(--steel);font-size:.95rem;font-style:italic;padding:2rem;text-align:center;border:2px dashed var(--steel-light);border-radius:12px;}
+
+  .note-hidden{background:#2a1518;border-left:4px solid var(--danger);color:#f3d9d7;border-radius:8px;padding:1rem 1.2rem;margin-top:1.2rem;font-size:.88rem;font-style:italic;}
+
+  .controller-analysis{background:var(--white);border:1px solid var(--steel-light);border-radius:12px;padding:1.5rem 1.7rem;margin-top:1.6rem;}
+  .ca-title{font-family:var(--sans);font-weight:800;font-size:1.05rem;color:var(--ink);margin-bottom:1rem;}
+  .verdict-row{display:flex;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--steel-light);}
+  .verdict-row:last-child{border-bottom:none;}
+  .verdict-icon{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:white;font-weight:bold;}
+  .verdict-icon.positive{background:var(--teal);}
+  .verdict-icon.mixed{background:var(--orange);}
+  .verdict-icon.risky{background:var(--danger);}
+  .verdict-body .vb-step{font-size:.78rem;color:var(--steel);font-family:var(--mono);margin-bottom:.15rem;}
+  .verdict-body .vb-text{font-size:.9rem;color:var(--text);line-height:1.45;}
+  .ca-synthesis{margin-top:1.2rem;padding:1.1rem 1.3rem;border-radius:10px;font-size:.92rem;line-height:1.55;font-style:italic;}
+  .ca-synthesis.tier-good{background:#EAF6F4;color:#0a5a52;border-left:4px solid var(--teal);}
+  .ca-synthesis.tier-mixed{background:#FDF3E6;color:#7a5217;border-left:4px solid var(--orange);}
+  .ca-synthesis.tier-risky{background:#FBEAE8;color:#8a2f26;border-left:4px solid var(--danger);}
+
+  .consigne-banner{background:#FFF7EE;border:1.5px dashed var(--orange);border-radius:10px;padding:.9rem 1.2rem;margin-top:1.6rem;font-size:.88rem;color:#7a4d17;}
+
+  .portfolio-box{background:#EAF6F4;border:1.5px solid var(--teal);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.6rem;}
+  .pb-title{font-family:var(--sans);font-weight:800;font-size:1.02rem;color:#0a5a52;margin-bottom:.5rem;}
+  .pb-instr{font-size:.85rem;color:#0a5a52;line-height:1.5;margin:0 0 1rem;}
+  .pq-item{background:var(--white);border-radius:8px;padding:.8rem 1rem;margin-bottom:.6rem;}
+  .pq-item:last-child{margin-bottom:0;}
+  .pq-step{font-family:var(--mono);font-size:.68rem;color:var(--teal);text-transform:uppercase;margin-bottom:.25rem;font-weight:bold;}
+  .pq-text{font-size:.88rem;color:var(--text);line-height:1.4;font-style:italic;}
+
+  .handoff-box{
+    background:var(--ink); border-radius:14px; padding:1.6rem 1.8rem; margin:1.6rem 0 2rem;
+    border:2px solid var(--orange); position:relative;
+  }
+  .handoff-title{font-family:var(--sans);font-weight:800;color:var(--white);font-size:1.1rem;margin-bottom:.6rem;}
+  .handoff-instr{color:#C9CFDE;font-size:.88rem;line-height:1.5;margin:0 0 1.2rem;max-width:720px;}
+  .handoff-grid{display:flex;flex-wrap:wrap;gap:.8rem;}
+  .handoff-item{background:#1c2b52;border-radius:10px;padding:.9rem .7rem;text-align:center;flex:1 1 140px;}
+  .handoff-item .hi-label{font-family:var(--mono);font-size:.62rem;color:var(--steel);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+  .handoff-item .hi-val{font-family:var(--sans);font-weight:800;font-size:1.35rem;color:var(--white);}
+  .handoff-footer{margin-top:1.1rem;font-family:var(--mono);font-size:.72rem;color:var(--steel);}
+  @media (max-width:880px){ .handoff-item{flex-basis:45%;} }
+
+  @media (max-width:880px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;height:auto;}
+    .panel{padding:1.6rem;}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ============ BROUILLONS ============ */
+  #sidebar{overflow-y:auto;}
+  .navlist{margin-bottom:1rem;}
+  .progress-wrap{margin-bottom:1.1rem;}
+  .draft-box{border-top:1px solid #24345c;padding-top:.9rem;margin-bottom:1rem;}
+  .draft-box h4{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);margin:0 0 .6rem;text-transform:uppercase;}
+  .draft-btn{display:block;width:100%;background:transparent;border:1px dashed #3a4a75;color:#B9C4E0;padding:.5rem .65rem;border-radius:6px;font-size:.78rem;margin-bottom:.4rem;text-align:left;transition:border-color .15s,color .15s;}
+  .draft-btn:hover{border-color:var(--orange);color:var(--white);}
+  #draft-status{font-family:var(--mono);font-size:.62rem;color:var(--steel);line-height:1.4;}
+  #draft-status.dirty{color:var(--orange);}
+  #boot-restore{margin-top:1.1rem;display:block;background:none;border:none;color:var(--steel);font-family:var(--mono);font-size:.75rem;text-decoration:underline;padding:0;}
+  #boot-restore:hover{color:var(--orange);}
+  .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--white);padding:.75rem 1.2rem;border-radius:8px;border-left:4px solid var(--orange);font-size:.85rem;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:90vw;}
+
+  /* ============ IMMERSION : scènes, dialogues, relations ============ */
+  .scene-head{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.74rem;color:var(--steel);letter-spacing:.4px;margin:0 0 1rem;}
+  .scene-head .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex:none;}
+  .dlg{margin-bottom:1.3rem;}
+  .dline{display:flex;gap:.8rem;margin-bottom:.8rem;align-items:flex-start;opacity:0;animation:dlgIn .4s ease forwards;}
+  @keyframes dlgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .avatar{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:.78rem;color:#fff;letter-spacing:.3px;}
+  .dbody{flex:1;min-width:0;}
+  .dwho{font-size:.74rem;font-weight:bold;color:var(--ink);margin-bottom:.18rem;}
+  .dwho span{font-weight:normal;color:var(--steel);margin-left:.45rem;}
+  .dbubble{background:var(--white);border:1px solid var(--steel-light);border-radius:4px 12px 12px 12px;padding:.65rem .9rem;font-size:.93rem;line-height:1.5;color:var(--text);}
+  .dline.narr .dbubble{background:transparent;border:none;padding:0 0 0 .2rem;color:var(--steel);font-style:italic;}
+  .dline.ctrl .dbubble{background:var(--ink);border-color:var(--ink);color:#dfe4f2;font-style:italic;}
+  .step-prompt{font-weight:600;color:var(--ink);margin:0 0 .8rem;}
+  .react-box{background:#FBF8F3;border:1px solid #EFE3D2;border-radius:12px;padding:1.1rem 1.2rem 1.2rem;margin-top:1.3rem;}
+  .react-title{font-family:var(--mono);font-size:.7rem;letter-spacing:1px;color:var(--orange-dim);text-transform:uppercase;margin-bottom:.9rem;}
+  .react-meta{margin:.5rem 0 .2rem;}
+  .meta-label{font-size:.74rem;color:var(--steel);margin-bottom:.25rem;}
+  .trust-delta{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.15rem .5rem;border-radius:5px;margin:.15rem .3rem .15rem 0;}
+  .trust-up{background:#E4F5F2;color:var(--teal);}
+  .trust-down{background:#FBEAE8;color:var(--danger);}
+  .trust-flat{background:#EEF0F3;color:var(--steel);}
+  .rel-strip{display:flex;flex-wrap:wrap;gap:.55rem;margin:0 0 1.2rem;}
+  .rel-chip{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1px solid var(--steel-light);border-radius:999px;padding:.22rem .8rem .22rem .25rem;}
+  .rel-chip .avatar{width:26px;height:26px;font-size:.6rem;}
+  .rel-name{font-size:.7rem;font-weight:bold;color:var(--ink);line-height:1.1;}
+  .pips{display:flex;gap:2px;margin-top:2px;}
+  .pip{width:9px;height:5px;border-radius:2px;background:var(--steel-light);}
+  .pip.on.hi{background:var(--teal);} .pip.on.mid{background:var(--orange);} .pip.on.lo{background:var(--danger);}
+  .epilogue-box{background:var(--white);border:1px solid var(--steel-light);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.6rem;}
+  .ep-title{font-family:var(--sans);font-weight:800;font-size:1.05rem;color:var(--ink);margin-bottom:1rem;}
+  .ep-rel-title{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);text-transform:uppercase;margin:.4rem 0 .6rem;}
+  .cast-title{font-family:var(--sans);font-size:1.05rem;color:var(--ink);margin:1.6rem 0 .8rem;}
+  .cast-grid{display:flex;flex-wrap:wrap;gap:.8rem;}
+  .cast-card{flex:1 1 260px;display:flex;gap:.8rem;background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:.85rem .95rem;}
+  .cast-card .cc-name{font-weight:bold;color:var(--ink);font-size:.92rem;}
+  .cast-card .cc-role{font-size:.72rem;color:var(--orange-dim);margin:.1rem 0 .3rem;font-weight:bold;}
+  .cast-card .cc-bio{font-size:.82rem;color:#4a4f5c;line-height:1.4;}
+
+  /* ============ JUSTIFICATION ÉCRITE ============ */
+  .justif-box{margin-top:1.1rem;padding-top:1rem;border-top:1px dashed #E3D6C2;}
+  .justif-title{font-weight:bold;color:var(--ink);font-size:.92rem;margin-bottom:.25rem;}
+  .justif-q{font-size:.82rem;color:#5a4420;font-style:italic;margin-bottom:.55rem;line-height:1.4;}
+  .justif-box textarea,.pq-answer{display:block;width:100%;min-height:96px;resize:vertical;border:1.5px solid var(--steel-light);border-radius:8px;padding:.65rem .8rem;font-family:var(--body);font-size:.93rem;line-height:1.45;color:var(--text);background:#fff;outline:none;}
+  .justif-box textarea:focus,.pq-answer:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,155,142,.12);}
+  .justif-hint{font-size:.72rem;color:var(--steel);margin:.35rem 0 .9rem;}
+  .pq-answer{margin-top:.55rem;min-height:84px;}
+  .pq-note{background:#fff;border-left:3px solid var(--teal);border-radius:6px;padding:.6rem .8rem;font-size:.8rem;color:#0a5a52;margin-bottom:.8rem;line-height:1.45;}
+</style>
+</head>
+<body>
+
+<!-- ============ BOOT SCREEN ============ -->
+<div id="boot">
+  <div class="boot-box">
+    <div class="boot-logo">CELLULE <span>NOMAD</span></div>
+    <div class="boot-sub">TERMINAL D'INTERVENTION — RÉSILIENCE SUPPLY CHAIN</div>
+    <div id="boot-log"></div>
+    <div id="boot-form">
+      <label>NOM DE VOTRE CELLULE (ÉQUIPE)</label>
+      <input type="text" id="team-name-input" placeholder="Ex : Cellule Aurore" maxlength="40">
+      <br>
+      <button id="boot-enter" disabled>Continuer →</button>
+      <button id="boot-restore" type="button">Reprendre un brouillon enregistré (.json)</button>
+    </div>
+    <div id="reprise-form">
+      <div class="reprise-title">REPRISE DE CAMPAGNE — Mission 2 → Mission 3</div>
+      <p class="reprise-instr">Cellule <strong id="reprise-team-name"></strong>, saisissez les 5 valeurs de votre <strong>carnet de bord de la Mission 2</strong> (notées ou capturées en fin de mission précédente). Si vous démarrez une nouvelle campagne sans historique, laissez les valeurs par défaut.</p>
+      <div class="reprise-grid">
+        <div class="reprise-field">
+          <label>Trésorerie (k€)</label>
+          <input type="number" id="reprise-tresorerie" value="500" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Taux de service (%)</label>
+          <input type="number" id="reprise-service" value="92" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Coût logistique (%)</label>
+          <input type="number" id="reprise-cout" value="11" step="0.1">
+        </div>
+        <div class="reprise-field">
+          <label>Résilience (/100)</label>
+          <input type="number" id="reprise-resilience" value="40" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Image RSE (/100)</label>
+          <input type="number" id="reprise-rse" value="55" step="1">
+        </div>
+      </div>
+      <button id="reprise-confirm">Confirmer et rejoindre le terminal →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app">
+  <div id="sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div class="brand-name">NOMAD<span>.</span></div>
+    </div>
+    <div class="team-tag" id="team-tag">CELLULE —</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>PROGRESSION MISSION</span><span id="progress-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <nav class="navlist">
+      <button class="navitem" data-panel="brief">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Brief de mission
+      </button>
+      <button class="navitem" data-panel="dossier">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-3H5a2 2 0 0 0-2 2Z"/></svg>
+        Dossier Altiva Outdoor
+      </button>
+      <button class="navitem" data-panel="controleur">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        Le Contrôleur
+      </button>
+      <button class="navitem active" data-panel="mission">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
+        Mission : Le bras de fer
+        <span class="navbadge" id="nav-mission-badge">0/4</span>
+      </button>
+      <button class="navitem" data-panel="bilan" disabled id="nav-bilan">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+        Bilan &amp; export
+      </button>
+    </nav>
+
+    <div class="draft-box">
+      <h4>Brouillon</h4>
+      <button class="draft-btn" id="btn-save-draft" type="button">&#8595; Enregistrer un brouillon</button>
+      <button class="draft-btn" id="btn-restore-draft" type="button">&#8593; Restaurer un brouillon</button>
+      <div id="draft-status">Aucun brouillon enregistré</div>
+    </div>
+
+    <div class="gauges">
+      <h4>Jauges de la cellule</h4>
+      <div id="gauge-list"></div>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <!-- BRIEF -->
+    <div class="panel active" id="panel-brief">
+      <div class="kicker">Terminal NOMAD</div>
+      <h1 class="ptitle">Brief de mission</h1>
+      <p class="lead">Bienvenue à nouveau, <span id="brief-team-name">Cellule</span>. Le plan de demande validé lors de la Mission 2 déclenche maintenant un besoin d'achat, et le fournisseur concerné connaît votre urgence.</p>
+      <div class="card accent-left">
+        <h3>Où en est la campagne</h3>
+        <p>Votre cellule a stabilisé le réseau (Mission 1) puis fiabilisé la prévision de demande (Mission 2). Vos jauges de fin de mission vous accompagnent : c'est pourquoi vous les avez ressaisies à l'instant.</p>
+      </div>
+      <div class="card accent-left orange">
+        <h3>Votre mission aujourd'hui</h3>
+        <p><strong>« Le bras de fer »</strong> : Tissages Valmont, le seul fournisseur français de tissu technique certifié GOTS d'Altiva, vient d'envoyer ses nouvelles conditions : +15&nbsp;% sur le prix, volume minimum de commande relevé de 50&nbsp;%, réponse sous 7 jours. Il sait que vous n'avez presque pas le choix. Votre mission : acheter intelligemment ce tissu, sans subir le rapport de force.</p>
+      </div>
+      <div class="card">
+        <h3>Comment ça marche</h3>
+        <p>À chaque étape, vous assistez à une scène, puis votre cellule tranche entre plusieurs options. Chaque choix modifie vos jauges <strong>et la façon dont les personnages réagissent à vous</strong> : leur confiance évolue (pastilles « Relations ») et influence la suite. <strong>Attention : certaines options ne sont accessibles que si vous avez préparé le terrain à une étape précédente.</strong> <strong>Après chaque choix, un encart vous invite à justifier votre décision par écrit</strong> : ces justifications nourrissent votre dossier de restitution. Si vous bloquez, le Contrôleur peut vous donner une piste. Une fois la mission terminée, retrouvez votre bilan dans l'onglet <strong>Bilan &amp; export</strong>.</p>
+      </div>
+    </div>
+
+    <!-- DOSSIER ALTIVA -->
+    <div class="panel" id="panel-dossier">
+      <div class="kicker">Dossier client</div>
+      <h1 class="ptitle">Altiva Outdoor</h1>
+      <p class="lead">Marque française d'équipement outdoor éco-conçu : tentes, sacs à dos, vêtements techniques.</p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-icon">💶</div><div class="stat-val">~80 M€</div><div class="stat-label">Chiffre d'affaires</div></div>
+        <div class="stat-card"><div class="stat-icon">🧵</div><div class="stat-val">GOTS</div><div class="stat-label">Tissu certifié exigé</div></div>
+        <div class="stat-card"><div class="stat-icon">🏭</div><div class="stat-val">1 seul</div><div class="stat-label">Fournisseur qualifié</div></div>
+        <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val">+15 %</div><div class="stat-label">Hausse demandée</div></div>
+        <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">7 jours</div><div class="stat-label">Délai de réponse</div></div>
+      </div>
+      <div class="card accent-left">
+        <h3>Contexte de la négociation</h3>
+        <p>La gamme tentes cartonne et son tissu technique éco-certifié ne peut venir que de très peu de fournisseurs. Tissages Valmont l'a compris : il durcit ses conditions au moment où Altiva a le plus besoin de lui.</p>
+      </div>
+      <div class="card accent-left orange">
+        <h3>Point d'attention</h3>
+        <p>Un achat n'est pas toujours un simple échange de prix : selon sa nature (stratégique, levier, goulot, non-critique, cf. matrice de Kraljic), la bonne stratégie change. Et un rapport de force se prépare bien avant de s'asseoir à la table.</p>
+      </div>
+      <h3 class="cast-title">Les personnages de la mission</h3>
+      <div class="cast-grid"><div class="cast-card"><div class="avatar" style="background:#BD4E24">EM</div><div><div class="cc-name">Élise Marchand</div><div class="cc-role">Directrice générale</div><div class="cc-bio">Dirigeante d'Altiva. Attentive aux résultats autant qu'à l'image de la marque. Elle jauge la cellule à ses décisions.</div></div></div><div class="cast-card"><div class="avatar" style="background:#0F9B8E">NB</div><div><div class="cc-name">Nadia Benhamou</div><div class="cc-role">Directrice production &amp; supply chain</div><div class="cc-bio">Pragmatique. Défend la capacité réelle de l'usine, pas celle des présentations.</div></div></div><div class="cast-card"><div class="avatar" style="background:#5B6B85">MD</div><div><div class="cc-name">Marc Delorme</div><div class="cc-role">Directeur financier</div><div class="cc-bio">Gardien de la trésorerie. Pose les questions qui fâchent, et il a presque toujours une raison.</div></div></div><div class="cast-card"><div class="avatar" style="background:#8A5A2B">AV</div><div><div class="cc-name">Armand Valmont</div><div class="cc-role">Dirigeant, Tissages Valmont</div><div class="cc-bio">Quatrième génération de tisserands vosgiens. Courtois, ferme, patient. Sait exactement ce que vaut son tissu.</div></div></div><div class="cast-card"><div class="avatar" style="background:#2F7D5B">RF</div><div><div class="cc-name">Rita Faria</div><div class="cc-role">Directrice commerciale, Têxtil Norte</div><div class="cc-bio">Fournisseur portugais ambitieux, prêt à gagner la confiance d'Altiva.</div></div></div></div>
+    </div>
+
+    <!-- CONTROLEUR -->
+    <div class="panel" id="panel-controleur">
+      <div class="kicker">Votre mentor</div>
+      <h1 class="ptitle">Le Contrôleur</h1>
+      <p class="lead">Voix de NOMAD, le Contrôleur brief chaque mission et peut vous éclairer si votre cellule bloque — mais ne décidera jamais à votre place.</p>
+      <div class="briefing-box">
+        <span class="who">LE CONTRÔLEUR — TRANSMISSION</span>
+        « Dans une négociation, celui qui a une alternative a un pouvoir que l'autre n'a pas. Et une alternative ne s'improvise pas à la dernière minute. Deux pistes par étape, pas plus : après ça, c'est votre jugement qui compte. »
+      </div>
+      <div class="card">
+        <h3>Le système de pistes</h3>
+        <p>À chaque étape avec décision, un bouton « Demander une piste » est disponible. La première piste ouvre une perspective. La seconde, si vous la demandez, est plus directe. Utilisez-les sans hésiter : l'objectif est d'apprendre à bien arbitrer, pas de deviner une réponse cachée.</p>
+      </div>
+    </div>
+
+    <!-- MISSION -->
+    <div class="panel" id="panel-mission">
+      <div class="kicker">Mission 3 — Le bras de fer</div>
+      <h1 class="ptitle" id="step-title">Chargement...</h1>
+      <div class="step-dots" id="step-dots"></div>
+      <div id="step-content"></div>
+    </div>
+
+    <!-- BILAN -->
+    <div class="panel" id="panel-bilan">
+      <div class="kicker">Fin de mission</div>
+      <h1 class="ptitle">Bilan de la Cellule <span id="bilan-team-name"></span></h1>
+      <div id="bilan-locked" class="lock-msg">Terminez la mission « Le bras de fer » pour débloquer votre bilan.</div>
+      <div id="bilan-content" style="display:none;">
+        <p class="lead">Voici l'état final de vos jauges et le chemin emprunté. Ce bilan est la base idéale pour le débriefing collectif — et la première pièce de votre dossier de restitution pour l'examen final.</p>
+        <div id="bilan-gauges"></div>
+
+        <div class="handoff-box">
+          <div class="handoff-title">📋 Carnet de bord — à conserver pour la Mission 4</div>
+          <p class="handoff-instr">Au début de la prochaine mission, on vous demandera de ressaisir ces 5 valeurs pour reprendre la campagne là où vous l'avez laissée. <strong>Notez-les maintenant</strong> (papier, notes de téléphone, ou capture d'écran de cet encart) :</p>
+          <div class="handoff-grid" id="handoff-grid"></div>
+          <div class="handoff-footer">Cellule <strong id="handoff-team"></strong> — Mission 3 « Le bras de fer » terminée</div>
+        </div>
+
+        <table class="path-table" id="bilan-path"></table>
+        <div id="bilan-hidden-note"></div>
+
+        <div class="epilogue-box">
+          <div class="ep-title">Épilogue</div>
+          <div class="dlg" id="epilogue-lines"></div>
+          <div class="ep-rel-title">Relations en fin de mission</div>
+          <div id="epilogue-rel"></div>
+        </div>
+
+        <div class="portfolio-box">
+          <div class="pb-title" id="pb-title-el">🎓 Questions pour votre dossier de restitution</div>
+          <p class="pb-instr">À la fin de la campagne, votre cellule présentera et justifiera ses choix à l'oral pour l'examen final. Ces questions, propres aux décisions de cette mission, vous aident à préparer cet argumentaire — répondez-y dès maintenant, à chaud, pendant que le contexte est encore frais.</p>
+          <div id="portfolio-questions"></div>
+        </div>
+
+        <div class="controller-analysis">
+          <div class="ca-title">🎖️ Analyse du Contrôleur</div>
+          <div id="controller-verdicts"></div>
+          <div class="ca-synthesis" id="controller-synthesis"></div>
+        </div>
+
+        <div class="consigne-banner">📤 <strong>Consigne :</strong> téléchargez le PDF de cette mission et envoyez-le à votre formateur avant la prochaine séance. <strong>Conservez aussi votre propre copie</strong> — vous en aurez besoin, avec celles des prochaines missions, pour préparer votre présentation orale de fin de campagne.</div>
+        <div class="export-row">
+          <button class="export-btn drive" id="btn-drive">
+            <div class="eb-icon">📘</div>
+            <div>
+              <div class="eb-title">Télécharger le cours (Séance 3)</div>
+              <div class="eb-sub">Ouvre le support de cours complet sur Google Drive</div>
+            </div>
+          </button>
+          <button class="export-btn pdf" id="btn-pdf">
+            <div class="eb-icon">📄</div>
+            <div>
+              <div class="eb-title">Exporter mes décisions en PDF</div>
+              <div class="eb-sub">Idéal pour le débriefing avec votre formateur</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const MISSION = {"id":"M3","n":3,"title":"Le bras de fer","drive":"https://docs.google.com/presentation/d/1KXGAQlNYz4TQVzrOLyQH7enzD6FPOFhu/edit?usp=drive_link&ouid=111400757778053252382&rtpof=true&sd=true","boot":[{"text":"> Initialisation du terminal NOMAD...","cls":""},{"text":"> Vérification des accès sécurisés...","cls":"ok","suffix":"OK"},{"text":"> Connexion au dossier client ALTIVA OUTDOOR...","cls":"ok","suffix":"ÉTABLIE"},{"text":"> Alerte détectée : fournisseur clé (+15% de prix, délai 7 jours)","cls":"warn"},{"text":"> Chargement du dossier de mission « Le bras de fer »...","cls":"ok","suffix":"PRÊT"},{"text":"> En attente d'identification de cellule...","cls":""}],"cast":{"ctrl":{"name":"Le Contrôleur","role":"NOMAD","initials":"CT","color":"#14213D","bio":"Voix de NOMAD. Briefe chaque mission, murmure des pistes, ne décide jamais à votre place."},"elise":{"name":"Élise Marchand","role":"Directrice générale","initials":"EM","color":"#BD4E24","bio":"Dirigeante d'Altiva. Attentive aux résultats autant qu'à l'image de la marque. Elle jauge la cellule à ses décisions."},"nadia":{"name":"Nadia Benhamou","role":"Directrice production & supply chain","initials":"NB","color":"#0F9B8E","bio":"Pragmatique. Défend la capacité réelle de l'usine, pas celle des présentations."},"marc":{"name":"Marc Delorme","role":"Directeur financier","initials":"MD","color":"#5B6B85","bio":"Gardien de la trésorerie. Pose les questions qui fâchent, et il a presque toujours une raison."},"armand":{"name":"Armand Valmont","role":"Dirigeant, Tissages Valmont","initials":"AV","color":"#8A5A2B","bio":"Quatrième génération de tisserands vosgiens. Courtois, ferme, patient. Sait exactement ce que vaut son tissu."},"rita":{"name":"Rita Faria","role":"Directrice commerciale, Têxtil Norte","initials":"RF","color":"#2F7D5B","bio":"Fournisseur portugais ambitieux, prêt à gagner la confiance d'Altiva."}},"relations":["armand","nadia","marc","elise"],"trustInit":{"armand":2,"nadia":2,"marc":2,"elise":2},"decisionSteps":["s1","s5","s6","s7"],"steps":{"s1":{"type":"choice","order":1,"title":"Étape 1 — Qualifier l'achat","place":"Lundi, 9 h — Salle de réunion d'Altiva, en visio avec Tissages Valmont","scene":[{"who":"narr","text":"Le plan de la Mission 2 est validé : la production démarre dans trois semaines. Sur l'écran, le visage tranquille d'Armand Valmont, quatrième génération de tisserands."},{"who":"armand","text":"Je vous ai envoyé mes nouvelles conditions ce matin. Plus quinze pour cent sur le prix, et un minimum de commande relevé de moitié. Vous avez sept jours."},{"who":"armand","text":"Rien de personnel. Le marché est tendu, et vos tentes se vendent bien. Je suppose que vous comprenez."},{"who":"nadia","text":"Il sait que c'est son tissu ou rien. Je ne connais aucun autre atelier français qui fasse du GOTS à cette qualité."},{"who":"marc","text":"Plus quinze pour cent sur le tissu, c'est quatre cent mille euros de plus sur la saison. Je ne signe rien tant que je n'ai pas compris ce qu'on achète."},{"who":"elise","text":"Cellule {team}, je vous laisse la main. Mais je veux un achat intelligent, pas une capitulation."}],"briefing":"Avant de négocier, il faut savoir de quoi on parle. La façon dont vous qualifiez cet achat décidera de tout le reste.","prompt":"Comment qualifiez-vous cet achat ?","options":[{"text":"Le traiter comme un achat courant : lancer un appel d'offres large pour faire jouer la concurrence.","next":"s2","effects":{"tresorerie":-15,"resilience":-5,"service":-3},"setFlags":["aoLarge"],"trust":{"armand":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Erreur de classement : un tissu certifié à très peu de fournisseurs est un achat stratégique, pas un achat « levier ». La mise en concurrence échoue, et Valmont comprend que vous cherchez à le contourner."},"reaction":[{"who":"nadia","text":"Un appel d'offres large sur un tissu certifié ? Vous allez recevoir des offres de gens qui n'ont pas les certifications."},{"who":"marc","text":"La mise en concurrence, c'est toujours une bonne idée sur le papier."},{"who":"elise","text":"On verra ce que ça donne. Moi, je n'ai pas souvenir d'une consultation qui ait amélioré une relation."}]},{"text":"Classer l'achat avec la matrice de Kraljic, puis qualifier en parallèle un fournisseur alternatif pour construire une vraie position de repli.","next":"s4","effects":{"tresorerie":-25,"resilience":10,"rse":5},"setFlags":["batna"],"trust":{"nadia":1,"marc":1,"elise":1},"verdict":{"tone":"positive","text":"La réponse la plus solide : vous classez l'achat avant d'agir et vous construisez un vrai plan B. C'est aussi la seule option qui déverrouille la négociation avec BATNA à l'Étape 3."},"reaction":[{"who":"nadia","text":"Kraljic : stratégique, voire goulot. Donc on ne se contente pas de comparer des prix. Je vous trouve des échantillons portugais dès demain."},{"who":"marc","text":"Vingt-cinq mille euros pour se créer un plan B... c'est une assurance, j'accepte."},{"who":"elise","text":"Voilà quelqu'un qui prépare la table avant de s'y asseoir."}]},{"text":"Le traiter comme un achat stratégique : proposer à Valmont un partenariat de long terme, sans chercher d'alternative.","next":"s3","effects":{"resilience":-5,"rse":5},"setFlags":["partenariat"],"trust":{"armand":1,"marc":-1},"verdict":{"tone":"mixed","text":"Cohérent avec la logique « partenariat » du quadrant Stratégique, mais sans alternative c'est un partenariat subi : vous êtes dépendants, pas partenaires."},"reaction":[{"who":"armand","text":"Un partenariat de long terme ? Voilà une proposition qui me plaît. On en reparle très vite."},{"who":"marc","text":"Un partenariat sans filet, c'est une dépendance avec un joli nom."},{"who":"nadia","text":"Il va comprendre qu'on n'a pas d'autre option."}]}],"hints":["Le Contrôleur : « Combien de fournisseurs peuvent réellement fournir ce tissu certifié ? La réponse change complètement la stratégie à adopter. »","Le Contrôleur : « Rappelez-vous la matrice de Kraljic. Et demandez-vous : qu'aurez-vous en main le jour où vous vous assiérez face à Valmont ? »"],"reflection":"Dans quelle case de la matrice de Kraljic avez-vous classé le tissu technique, et sur quels critères ? Qu'est-ce que ce choix de départ a rendu possible ou impossible ensuite ?"},"s2":{"type":"scene","order":1,"title":"Un appel d'offres qui tourne court","place":"Mardi, 11 h — Après l'appel d'offres","scene":[{"who":"narr","text":"Quarante-huit heures plus tard, les réponses arrivent. Elles sont peu nombreuses."},{"who":"nadia","text":"Deux réponses. Les autres n'ont ni la certification GOTS, ni la capacité. Les deux qui restent n'ont aucune référence."},{"who":"armand","text":"J'ai appris que vous consultiez le marché. C'est votre droit. Mais ne vous étonnez pas si mon prix ne baisse pas : je sais très bien qui peut vous fournir, et qui ne le peut pas."},{"who":"marc","text":"Donc nous n'avons rien gagné. Et nous avons perdu un peu de la confiance de notre fournisseur."}],"next":"s5"},"s3":{"type":"scene","order":1,"title":"Une main tendue, sans filet","place":"Mardi, 11 h — Appel avec Tissages Valmont","scene":[{"who":"armand","text":"J'apprécie votre proposition de partenariat. Vraiment. Mais soyons clairs : vous n'avez personne d'autre. Mes conditions restent la base de la discussion."},{"who":"nadia","text":"Il vient de le dire tout haut. Nous n'avons aucun levier."},{"who":"elise","text":"Alors la suite de la discussion sera difficile. Préparez-vous."}],"next":"s5"},"s4":{"type":"scene","order":1,"title":"Un plan B qualifié","place":"Mercredi, 15 h — Visio avec Têxtil Norte (Portugal)","scene":[{"who":"narr","text":"Dix jours d'échantillons, d'audits documentaires et de visioconférences. Le fournisseur portugais est qualifié."},{"who":"rita","text":"Têxtil Norte est prête à livrer du tissu certifié GOTS, à un prix inférieur à celui de Valmont mais avec un délai plus long. Nous n'avons pas la même histoire avec Altiva, mais nous voulons la construire."},{"who":"nadia","text":"Il n'est pas parfait. Mais maintenant, nous avons un vrai plan B."},{"who":"marc","text":"Un plan B qui a un prix et un délai, ça se compare. Je préfère ça à une promesse."}],"next":"s5"},"s5":{"type":"choice","order":2,"title":"Étape 2 — Ce que coûte vraiment la hausse","place":"Mercredi, 14 h — Bureau de la direction financière","scene":[{"who":"marc","text":"Quinze pour cent sur le prix unitaire, c'est ce qu'on voit. Mais je veux savoir ce que ça coûte vraiment : si on reste, si on change, si on rompt."},{"who":"nadia","text":"Je peux vous donner les coûts de requalification, de transport et de rebuts du fournisseur portugais.","if":{"flag":"batna"}},{"who":"nadia","text":"Les deux offres reçues n'ont aucun historique : leurs rebuts potentiels sont une inconnue totale.","if":{"flag":"aoLarge"}},{"who":"nadia","text":"Si on reste chez Valmont, au moins on connaît la qualité : zéro rebut depuis trois ans.","if":{"flag":"partenariat"}},{"who":"elise","text":"Je veux une décision que je peux justifier devant le conseil. Un chiffre, pas une intuition."}],"briefing":"Le prix affiché n'est que la partie visible de l'iceberg. Qu'y a-t-il dessous ?","prompt":"Comment évaluez-vous l'offre de Valmont ?","options":[{"text":"Demander à la Finance de valider l'enveloppe sans analyse détaillée, pour gagner du temps.","next":"s6","effects":{"tresorerie":-30,"service":2},"trust":{"marc":-1,"elise":-1},"verdict":{"tone":"mixed","text":"Gagner du temps a un prix : on paie sans comprendre ce que l'on paie, et on perd tout levier d'argumentation face au fournisseur."},"reaction":[{"who":"marc","text":"Valider sans comprendre. Vous me demandez de signer un chèque en blanc."},{"who":"elise","text":"Gagner du temps, oui. Mais je ne sais toujours pas ce que ça nous coûte."},{"who":"nadia","text":"Au moins, on avance."}]},{"text":"Se fier au seul prix unitaire, déclarer l'offre inacceptable et rompre la discussion.","next":"s6","effects":{"service":-8,"resilience":-5,"tresorerie":-5},"trust":{"armand":-2,"marc":-1},"verdict":{"tone":"risky","text":"Raisonner au prix unitaire seul est le piège classique : rompre sans filet est un pari risqué qui peut coûter bien plus que la hausse elle-même."},"reaction":[{"who":"marc","text":"Rompre sur un prix unitaire, sans avoir chiffré l'alternative ? Mauvais calcul."},{"who":"armand","text":"Si c'est comme ça... vous savez où me trouver. Mais mes délais ne s'allongeront pas pour vous."},{"who":"nadia","text":"Vous venez de brûler un pont avec notre seul fournisseur certifié."}]},{"text":"Calculer le TCO de l'offre Valmont face au scénario « changer de fournisseur » : requalification, rebuts, retards, transport.","next":"s6","effects":{"tresorerie":-10,"resilience":5,"service":3},"trust":{"marc":2,"elise":1},"verdict":{"tone":"positive","text":"La bonne méthode : intégrer tous les coûts induits pour savoir ce que la hausse coûte vraiment. Parfois +15 % reste moins cher que changer : on décide en connaissance de cause."},"reaction":[{"who":"marc","text":"Voilà ce que j'appelle un dossier. Je peux le défendre devant n'importe qui."},{"who":"nadia","text":"Les rebuts, les retards, la requalification : tout y est. Les chiffres tiennent."},{"who":"elise","text":"Merci. Maintenant, je comprends ce qu'on achète."}]}],"hints":["Le Contrôleur : « Le prix affiché n'est que la partie visible de l'iceberg. »","Le Contrôleur : « Changer de fournisseur a aussi un coût : requalification, rebuts, retards. Les avez-vous chiffrés ? »"],"reflection":"Qu'est-ce que votre analyse (ou son absence) vous a appris sur le coût réel de la hausse ? Auriez-vous décidé différemment avec un calcul de TCO complet, et qu'en ont pensé Marc et Élise ?"},"s6":{"type":"choice","order":3,"title":"Étape 3 — À la table de négociation","place":"Jeudi, 10 h — Tissages Valmont, salle de négociation (Vosges)","scene":[{"who":"narr","text":"La salle sent le bois ciré et le fil neuf. Armand Valmont vous attend, les mains jointes."},{"who":"armand","text":"Je vous avoue que j'aurais préféré vous garder comme client sans bras de fer. Voyons ce qu'on peut faire.","if":{"trustGte":["armand",3]}},{"who":"armand","text":"Bonjour. Alors, vous venez avec quoi ?","if":{"trustEq":["armand",2]}},{"who":"armand","text":"Je vous écoute. Mais mon prix est mon prix.","if":{"trustLte":["armand",1]}},{"who":"nadia","text":"Nous avons une alternative qualifiée. Je vous laisse décider de l'usage.","if":{"flag":"batna"}},{"who":"nadia","text":"Nous n'avons rien dans la manche. Soyez réalistes.","if":{"notFlag":"batna"}},{"who":"marc","text":"Le TCO est sur la table. Chaque point de négociation compte."}],"briefing":"Vous avez sept jours, il le sait. Ce que vous avez en main à cet instant, ou ce que vous n'avez pas, va tout décider.","prompt":"Quelle posture adoptez-vous face à Armand Valmont ?","options":[{"text":"S'appuyer sur votre alternative qualifiée : négocier une hausse limitée contre un engagement de volume sur deux ans.","next":"s7","effects":{"tresorerie":-20,"service":5,"resilience":10,"rse":5},"setFlags":["hausseLimitee"],"requires":{"cond":{"flag":"batna"},"msg":"Option verrouillée : vous n'avez pas qualifié d'alternative à l'Étape 1. Pas de BATNA, pas de levier."},"trust":{"armand":1,"marc":1,"elise":1},"verdict":{"tone":"positive","text":"Le BATNA en action : parce que vous avez construit une alternative crédible, vous négociez en position de force et obtenez une hausse limitée contre un engagement raisonnable."},"reaction":[{"who":"armand","text":"Hum. Vous avez fait vos devoirs. Je ne m'attendais pas à une alternative portugaise. Soit : plus six pour cent, mais sur deux ans."},{"who":"nadia","text":"Six au lieu de quinze. Sur la saison, ça change tout."},{"who":"marc","text":"Voilà ce que j'appelle un accord que je peux signer."}]},{"text":"Accepter la hausse de 15 % pour sécuriser rapidement l'approvisionnement.","next":"s7","effects":{"tresorerie":-60,"service":5,"resilience":-5},"setFlags":["hausseSubie"],"trust":{"armand":1,"marc":-1},"verdictIf":[{"if":{"flag":"batna"},"tone":"risky","text":"Vous aviez construit une alternative et vous ne l'avez pas utilisée : le levier est resté dans votre poche, au prix de soixante mille euros."}],"verdict":{"tone":"mixed","text":"Faute d'alternative, accepter était sans doute la seule issue réaliste. C'est le prix d'un manque de préparation en amont."},"reaction":[{"who":"armand","text":"Merci pour votre confiance. Je vous prépare le contrat dès cet après-midi."},{"who":"marc","text":"Vous aviez un plan B, et vous avez signé quand même. Je ne comprends pas.","if":{"flag":"batna"}},{"who":"marc","text":"Pas le choix, je sais. Mais on n'oubliera pas cette leçon.","if":{"notFlag":"batna"}},{"who":"nadia","text":"Au moins, la production est sécurisée."}]},{"text":"Bluffer : annoncer que vous partez chez un concurrent, sans alternative réellement prête.","next":"s7","effects":{"tresorerie":-35,"resilience":-10,"rse":-5},"setFlags":["bluffDecouvert"],"trust":{"armand":-2,"nadia":-1,"elise":-1},"verdict":{"tone":"risky","text":"Le piège classique : un fournisseur expérimenté vérifie. Un bluff découvert dégrade la relation, votre crédibilité, et finit par vous coûter plus cher."},"reaction":[{"who":"armand","text":"Chez qui, exactement ? Je connais tous les fournisseurs certifiés de France. Vous n'avez personne.","if":{"notFlag":"batna"}},{"who":"armand","text":"Vous avez un vrai plan B et vous bluffez quand même ? Étrange stratégie.","if":{"flag":"batna"}},{"who":"nadia","text":"Il vient de nous démasquer devant toute la salle."},{"who":"elise","text":"On ne bluffe pas un partenaire qu'on veut garder."}]}],"hints":["Le Contrôleur : « Qu'avez-vous en main, concrètement, si Valmont dit non ? »","Le Contrôleur : « Une alternative ne s'improvise pas le jour de la négociation. Qu'avez-vous préparé plus tôt ? »"],"reflection":"Sur quelle position de repli (BATNA) s'est appuyée votre négociation ? Si vous n'en aviez pas, que feriez-vous différemment dès l'Étape 1 ? Comment Armand Valmont a-t-il réagi à votre posture ?"},"s7":{"type":"choice","order":4,"title":"Étape 4 — Sécuriser le contrat","place":"Vendredi, 16 h — Altiva, service juridique","scene":[{"who":"narr","text":"Le principe de l'accord est posé. Reste à l'écrire. La juriste d'Altiva a imprimé trois projets de contrat."},{"who":"armand","text":"J'ai besoin de volumes garantis, vous avez besoin de prix stables. On devrait pouvoir s'entendre.","if":{"flag":"hausseLimitee"}},{"who":"armand","text":"Pour que tout soit propre, je suggère un engagement long et exclusif. Vous serez prioritaires sur mes machines.","if":{"flag":"hausseSubie"}},{"who":"armand","text":"Après votre petit numéro, j'ai besoin de garanties écrites.","if":{"flag":"bluffDecouvert"}},{"who":"nadia","text":"Attention aux clauses de sortie. Si Valmont a un incendie, on fait quoi ?"},{"who":"marc","text":"Indexation des matières, pénalités de retard : je veux tout ça par écrit."},{"who":"elise","text":"Et je veux une clause RSE. Ce qu'on signe nous engage devant nos clients."},{"who":"armand","text":"Dernier point : je voudrais signer vite. Je pars en déplacement lundi."}],"briefing":"Un bon contrat ne protège pas qu'une seule des deux parties. Quels risques mettez-vous par écrit ?","prompt":"Quel contrat signez-vous ?","options":[{"text":"Rester en commandes spot, sans engagement, pour garder la flexibilité.","next":"s8","effects":{"tresorerie":10,"resilience":-5,"service":-3},"trust":{"armand":-1,"nadia":-1,"marc":1},"verdict":{"tone":"mixed","text":"Préserve la flexibilité, mais sans garantie de prix ni de disponibilité : risqué pour un achat stratégique que Valmont peut renchérir à tout moment."},"reaction":[{"who":"armand","text":"Sans engagement, je ne peux rien vous garantir, ni sur le prix, ni sur la capacité."},{"who":"marc","text":"Ça nous laisse libres, c'est vrai."},{"who":"nadia","text":"Libres, mais exposés."}]},{"text":"Signer vite un contrat exclusif de longue durée, sans audit RSE préalable, pour tenir le délai de Valmont.","next":"s8","effects":{},"hidden":true,"trust":{"armand":2,"marc":-1,"elise":-1},"verdict":{"tone":"risky","text":"Aucun effet visible aujourd'hui, mais un engagement long et exclusif signé sans audit contredit à la fois la résilience (dépendance) et le positionnement RSE d'Altiva."},"reaction":[{"who":"armand","text":"Parfait ! Exclusif, cinq ans : je vous donne la priorité sur mes machines. Vous n'allez pas le regretter."},{"who":"nadia","text":"Cinq ans d'exclusivité sans audit... On vient de lui remettre les clés de la maison."},{"who":"elise","text":"Je signe, mais je note que personne n'a vérifié ses conditions de travail."}]},{"text":"Signer un contrat cadre de deux ans avec indexation des matières, pénalités de retard, audit RSE annuel et clause de sortie.","next":"s8","effects":{"tresorerie":-10,"resilience":10,"rse":10},"trust":{"armand":1,"nadia":1,"marc":1,"elise":1},"verdict":{"tone":"positive","text":"Le contrat cadre vu en cours, avec les clauses qui protègent réellement : le risque est équilibré entre les deux parties et la RSE est vérifiable."},"reaction":[{"who":"armand","text":"Les clauses sont dures, mais justes. Je signe."},{"who":"nadia","text":"Clause de sortie, pénalités, indexation : on est protégés des deux côtés."},{"who":"elise","text":"Un contrat que je peux montrer à nos clients. Merci."},{"who":"marc","text":"Rien à redire."}]}],"hints":["Le Contrôleur : « Un bon contrat ne protège pas qu'une seule des deux parties. Quels risques avez-vous mis par écrit ? »","Le Contrôleur : « Signer vite n'est pas signer bien. Qu'auriez-vous aimé vérifier avant d'apposer votre signature ? »"],"reflection":"Quel équilibre de risque entre Altiva et Valmont votre contrat reflète-t-il, et en quoi est-il cohérent avec le positionnement RSE d'Altiva ?"},"s8":{"type":"bilan","order":5,"title":"Bilan de mission"}},"synth":{"good":"« Cellule {team}, votre approche a été solide. Vous avez préparé la table avant de vous y asseoir et protégé à la fois le prix, la relation et la RSE. C'est exactement le type d'arbitrage qu'on attend d'une cellule NOMAD. Continuez ainsi pour la Mission 4. »","mixed":"« Cellule {team}, votre mission a été marquée par des arbitrages contrastés : certains choix judicieux, d'autres plus discutables. Une négociation se gagne surtout avant de commencer : on en reparle à la Mission 4. »","risky":"« Cellule {team}, je dois être honnête : vous avez négocié sans levier et laissé de la valeur sur la table, voire de la confiance. Un fournisseur stratégique n'oublie pas la façon dont on l'a traité. Attendez-vous à ce que la Mission 4 soit plus tendue. »"},"epilogue":[{"who":"narr","text":"Vendredi soir. Le contrat est signé et les bobines de tissu partent lundi."},{"who":"elise","text":"Cellule {team}, un achat intelligent et une relation préservée : c'est exactement ce que j'espérais.","if":{"tier":"good"}},{"who":"elise","text":"Cellule {team}, un achat correct, avec quelques regrets. On fera mieux la prochaine fois.","if":{"tier":"mixed"}},{"who":"elise","text":"Cellule {team}, nous avons signé, mais nous avons laissé de la valeur sur la table, et peut-être de la confiance.","if":{"tier":"risky"}},{"who":"armand","text":"Altiva est un client exigeant, et c'est ce que j'aime. À la prochaine saison.","if":{"trustGte":["armand",3]}},{"who":"armand","text":"J'ai signé, mais je me souviendrai de la façon dont cette négociation s'est déroulée.","if":{"trustLte":["armand",1]}},{"who":"marc","text":"Un dossier propre, des chiffres solides. Merci.","if":{"trustGte":["marc",3]}},{"who":"marc","text":"Je regarderai chaque facture de très près.","if":{"trustLte":["marc",1]}},{"who":"nadia","text":"Mes lignes auront du tissu à l'heure. C'est tout ce que je demande.","if":{"trustGte":["nadia",3]}},{"who":"nadia","text":"On aurait pu mieux préparer ça ensemble.","if":{"trustLte":["nadia",1]}},{"who":"ctrl","text":"Débriefing demain. Retenez ce que chacun vous a dit : c'est de la matière pour votre dossier de restitution."}],"hiddenNote":{"html":"Note du Contrôleur, transmise en fin de mission : « Cellule, une chose encore. Vous avez signé un engagement long et exclusif sans audit RSE préalable à l'Étape 4. Ce choix n'a eu aucun effet visible sur vos jauges, mais gardez-le en tête pour la suite de la campagne : un écart RSE découvert après signature coûte toujours plus cher que celui qu'on détecte avant. »","pdfTitle":"Note du Contrôleur (contrat signé sans audit RSE) :","pdfText":"Ce choix n'a eu aucun effet visible sur les jauges, mais un écart RSE découvert après signature coûte toujours plus cher que celui qu'on détecte avant."},"justif":true};
+const DRIVE_LINK = MISSION.drive;
+const CAST = MISSION.cast;
+const STEPS = MISSION.steps;
+const DECISION_STEPS = MISSION.decisionSteps;
+Object.keys(STEPS).forEach(k=>{ const s = STEPS[k]; if(s.options) s.options.forEach((o,i)=>{ o.letter = String.fromCharCode(65+i); }); });
+
+const state = {
+  pendingStep: null,
+  team: "",
+  gauges: { tresorerie: 500, service: 92, cout: 11, resilience: 40, rse: 55 },
+  history: [],
+  hiddenNote: false,
+  flags: {},
+  choices: {},
+  justifs: {},
+  trust: Object.assign({}, MISSION.trustInit),
+  currentStep: "s1",
+  decisionsDone: 0,
+};
+
+const GAUGE_META = [
+  { key:"tresorerie", label:"Trésorerie", unit:"k€", color:"#0F9B8E", max:600 },
+  { key:"service", label:"Taux de service", unit:"%", color:"#FB8B24", max:100 },
+  { key:"cout", label:"Coût logistique", unit:"% CA", color:"#8D99AE", max:25 },
+  { key:"resilience", label:"Résilience", unit:"/100", color:"#0F9B8E", max:100 },
+  { key:"rse", label:"Image RSE", unit:"/100", color:"#FB8B24", max:100 },
+];
+
+
+// ============================================================
+// BOOT SEQUENCE
+// ============================================================
+const bootLines = MISSION.boot;
+
+function runBoot(){
+  const log = document.getElementById('boot-log');
+  let i = 0;
+  function typeLine(lineObj, onDone){
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.style.opacity = '1';
+    const textSpan = document.createElement('span');
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'cursor';
+    div.appendChild(textSpan);
+    div.appendChild(cursorSpan);
+    log.appendChild(div);
+    const full = lineObj.text;
+    let c = 0;
+    function tick(){
+      textSpan.textContent = full.slice(0, c);
+      c++;
+      if(c <= full.length){
+        setTimeout(tick, 14 + Math.random()*18);
+      } else {
+        cursorSpan.remove();
+        if(lineObj.suffix){
+          const b = document.createElement('b');
+          b.className = lineObj.cls;
+          b.textContent = ' ' + lineObj.suffix;
+          div.appendChild(b);
+        }
+        setTimeout(onDone, 220);
+      }
+    }
+    tick();
+  }
+  function next(){
+    if(i >= bootLines.length){
+      document.getElementById('boot-form').classList.add('show');
+      return;
+    }
+    typeLine(bootLines[i], ()=>{ i++; next(); });
+  }
+  next();
+}
+runBoot();
+
+document.getElementById('team-name-input').addEventListener('input', (e)=>{
+  document.getElementById('boot-enter').disabled = e.target.value.trim().length === 0;
+});
+document.getElementById('team-name-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !document.getElementById('boot-enter').disabled) showRepriseForm();
+});
+document.getElementById('boot-enter').addEventListener('click', showRepriseForm);
+document.getElementById('reprise-confirm').addEventListener('click', confirmReprise);
+
+function showRepriseForm(){
+  state.team = document.getElementById('team-name-input').value.trim() || "Cellule NOMAD";
+  document.getElementById('boot-form').classList.remove('show');
+  document.getElementById('boot-form').style.display = 'none';
+  document.getElementById('reprise-team-name').textContent = state.team;
+  document.getElementById('reprise-form').classList.add('show');
+}
+
+function confirmReprise(){
+  const tresorerie = parseFloat(document.getElementById('reprise-tresorerie').value);
+  const service = parseFloat(document.getElementById('reprise-service').value);
+  const cout = parseFloat(document.getElementById('reprise-cout').value);
+  const resilience = parseFloat(document.getElementById('reprise-resilience').value);
+  const rse = parseFloat(document.getElementById('reprise-rse').value);
+  state.gauges = {
+    tresorerie: isNaN(tresorerie) ? 500 : tresorerie,
+    service: isNaN(service) ? 92 : clamp(service, 0, 100),
+    cout: isNaN(cout) ? 11 : clamp(cout, 0, 30),
+    resilience: isNaN(resilience) ? 40 : clamp(resilience, 0, 100),
+    rse: isNaN(rse) ? 55 : clamp(rse, 0, 100),
+  };
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('boot').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('team-tag').textContent = "CELLULE — " + state.team.toUpperCase();
+  document.getElementById('brief-team-name').textContent = state.team;
+  document.getElementById('bilan-team-name').textContent = "— " + state.team;
+  renderGauges();
+  renderMissionStep();
+  updateProgress();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+Array.from(document.querySelectorAll('.navitem')).forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(btn.disabled) return;
+    Array.from(document.querySelectorAll('.navitem')).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    Array.from(document.querySelectorAll('.panel')).forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ============================================================
+// GAUGES
+// ============================================================
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+function renderGauges(){
+  const list = document.getElementById('gauge-list');
+  list.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const pct = clamp((val / g.max) * 100, 2, 100);
+    const row = document.createElement('div');
+    row.className = 'gauge-row';
+    row.innerHTML = `
+      <div class="gauge-top"><span class="gauge-name">${g.label}</span><span class="gauge-val" id="gval-${g.key}">${fmtVal(g,val)}</span></div>
+      <div class="gauge-track"><div class="gauge-fill" id="gfill-${g.key}" style="width:${pct}%;background:${g.color}"></div></div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function fmtVal(g, v){
+  if(g.key === 'tresorerie') return Math.round(v) + ' k€';
+  if(g.key === 'cout') return v.toFixed(1) + '%';
+  return Math.round(v) + (g.key==='service' ? '%' : '/100');
+}
+
+function applyEffects(effects){
+  if(!effects) return;
+  Object.keys(effects).forEach(k=>{
+    state.gauges[k] += effects[k];
+  });
+  // clamps
+  state.gauges.service = clamp(state.gauges.service, 0, 100);
+  state.gauges.resilience = clamp(state.gauges.resilience, 0, 100);
+  state.gauges.rse = clamp(state.gauges.rse, 0, 100);
+  state.gauges.cout = clamp(state.gauges.cout, 0, 30);
+  state.gauges.tresorerie = clamp(state.gauges.tresorerie, 0, 900);
+  renderGauges();
+}
+
+function effectsToText(effects){
+  if(!effects || Object.keys(effects).length===0) return "Aucun effet immédiat sur les jauges.";
+  const names = {tresorerie:"Trésorerie", service:"Service", cout:"Coût logistique", resilience:"Résilience", rse:"RSE"};
+  const units = {tresorerie:" k€", service:" pts", cout:" pts", resilience:" pts", rse:" pts"};
+  return Object.keys(effects).map(k=>{
+    const v = effects[k];
+    return (v>0?"+":"") + v + units[k] + " " + names[k];
+  }).join("  ·  ");
+}
+
+function effectsToHTML(effects){
+  if(!effects || Object.keys(effects).length===0) return '<span class="effect-tag" style="background:#EEF0F3;color:#8D99AE;">Aucun effet visible</span>';
+  const names = {tresorerie:"Trésorerie", service:"Service", cout:"Coût log.", resilience:"Résilience", rse:"RSE"};
+  const units = {tresorerie:"k€", service:"pts", cout:"pts", resilience:"pts", rse:"pts"};
+  return Object.keys(effects).map(k=>{
+    const v = effects[k];
+    const cls = v >= 0 ? 'effect-up' : 'effect-down';
+    return `<span class="effect-tag ${cls}">${names[k]} ${v>0?'+':''}${v}${units[k]}</span>`;
+  }).join('');
+}
+
+// ============================================================
+// MISSION RENDERING
+// ============================================================
+function updateProgress(){
+  const pct = Math.round((state.decisionsDone / DECISION_STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('nav-mission-badge').textContent = state.decisionsDone + '/' + DECISION_STEPS.length;
+  if(state.decisionsDone >= DECISION_STEPS.length){
+    document.getElementById('nav-bilan').disabled = false;
+  }
+}
+
+function renderStepDots(currentOrder){
+  const wrap = document.getElementById('step-dots');
+  wrap.innerHTML = '';
+  for(let i=1;i<=4;i++){
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i < currentOrder ? ' done' : (i === currentOrder ? ' current' : ''));
+    wrap.appendChild(d);
+  }
+}
+
+let hintsShown = 0;
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fill(s){ return String(s).split('{team}').join(state.team || 'Cellule'); }
+function pdfSafe(s){ return String(s).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2192/g,'-').replace(/[^\x20-\x7E\xA0-\xFF\u0152\u0153\u2013\u2014\u2026\u20AC]/g,''); }
+
+// Conditions : flag, notFlag, trustGte/Lte/Eq [qui, n], chose [etape, lettre], gaugeGte/Lt [jauge, n], tier
+function condOk(c){
+  if(!c) return true;
+  if(c.flag && !state.flags[c.flag]) return false;
+  if(c.notFlag && state.flags[c.notFlag]) return false;
+  if(c.trustGte && !(state.trust[c.trustGte[0]] >= c.trustGte[1])) return false;
+  if(c.trustLte && !(state.trust[c.trustLte[0]] <= c.trustLte[1])) return false;
+  if(c.trustEq && !(state.trust[c.trustEq[0]] === c.trustEq[1])) return false;
+  if(c.chose && state.choices[c.chose[0]] !== c.chose[1]) return false;
+  if(c.gaugeGte && !(state.gauges[c.gaugeGte[0]] >= c.gaugeGte[1])) return false;
+  if(c.gaugeLt && !(state.gauges[c.gaugeLt[0]] < c.gaugeLt[1])) return false;
+  if(c.tier && state.controllerTier !== c.tier) return false;
+  return true;
+}
+
+function avatarHTML(who){
+  const c = CAST[who]; if(!c) return '';
+  return `<div class="avatar" style="background:${c.color}">${esc(c.initials)}</div>`;
+}
+function dlgHTML(lines){
+  const ok = (lines||[]).filter(l=>condOk(l.if));
+  return ok.map((l,i)=>{
+    const delay = `style="animation-delay:${(i*0.16).toFixed(2)}s"`;
+    if(l.who === 'narr') return `<div class="dline narr" ${delay}><div class="dbody"><div class="dbubble">${esc(fill(l.text))}</div></div></div>`;
+    const c = CAST[l.who] || {name:'', role:''};
+    return `<div class="dline ${l.who==='ctrl'?'ctrl':''}" ${delay}>${avatarHTML(l.who)}<div class="dbody"><div class="dwho">${esc(c.name)}<span>${esc(c.role)}</span></div><div class="dbubble">${esc(fill(l.text))}</div></div></div>`;
+  }).join('');
+}
+const TRUST_LABELS = ['méfiant','réservé','neutre','confiant','allié'];
+function trustPips(v){ let h=''; for(let i=0;i<4;i++){ h += `<span class="pip ${i<v?'on':''} ${v>=3?'hi':(v<=1?'lo':'mid')}"></span>`; } return h; }
+function relStripHTML(){
+  return `<div class="rel-strip">` + MISSION.relations.map(k=>{
+    const c = CAST[k], v = state.trust[k];
+    return `<div class="rel-chip" title="${esc(c.name)} : ${TRUST_LABELS[v]}">${avatarHTML(k)}<div><div class="rel-name">${esc(c.name.split(' ')[0])}</div><div class="pips">${trustPips(v)}</div></div></div>`;
+  }).join('') + `</div>`;
+}
+
+function renderMissionStep(){
+  const step = STEPS[state.currentStep];
+  document.getElementById('step-title').textContent = step.title;
+  renderStepDots(step.order);
+  const content = document.getElementById('step-content');
+  hintsShown = 0;
+  const head = step.place ? `<div class="scene-head"><span class="dot"></span>${esc(step.place)}</div>` : '';
+  const rel = `<div id="rel-wrap">${relStripHTML()}</div>`;
+
+  if(step.type === 'choice'){
+    content.innerHTML = rel + head + `<div class="dlg">${dlgHTML(step.scene)}</div>` +
+      (step.briefing ? `<div class="briefing-box"><span class="who">LE CONTRÔLEUR — TRANSMISSION</span>${esc(step.briefing)}</div>` : '') +
+      `<p class="step-prompt">${esc(step.prompt)}</p>
+       <div id="options-wrap"></div>
+       <div id="reaction-wrap"></div>
+       <div id="hint-zone">
+         <button class="hint-btn" id="hint-btn">💡 Demander une piste au Contrôleur</button>
+         <div id="hint-list"></div>
+       </div>`;
+    const ow = document.getElementById('options-wrap');
+    step.options.forEach(opt=>{
+      const cost = (opt.effects && opt.effects.tresorerie) ? opt.effects.tresorerie : 0;
+      const affordable = (state.gauges.tresorerie + cost) >= 0;
+      const lockedByReq = opt.requires && !condOk(opt.requires.cond);
+      const b = document.createElement('button');
+      b.className = 'option';
+      const base = `<span class="opt-letter">${opt.letter}</span><span class="opt-text">${esc(opt.text)}</span>`;
+      if(lockedByReq){
+        b.classList.add('locked'); b.disabled = true;
+        b.innerHTML = base + `<div class="opt-locked-msg">🔒 ${esc(opt.requires.msg)}</div>`;
+      } else if(!affordable){
+        b.classList.add('locked'); b.disabled = true;
+        b.innerHTML = base + `<div class="opt-locked-msg">🔒 Budget insuffisant : cette option nécessite ${Math.abs(cost)} k€, il vous reste ${state.gauges.tresorerie} k€.</div>`;
+      } else {
+        b.innerHTML = base;
+        b.addEventListener('click', ()=> chooseOption(step, opt, b));
+      }
+      ow.appendChild(b);
+    });
+    document.getElementById('hint-btn').addEventListener('click', ()=> showHint(step));
+  } else if(step.type === 'scene'){
+    content.innerHTML = rel + head + `<div class="dlg">${dlgHTML(step.scene)}</div><button class="continue-btn" id="continue-btn">Continuer →</button>`;
+    document.getElementById('continue-btn').addEventListener('click', ()=>{
+      state.currentStep = step.next; markDirty();
+      renderMissionStep();
+    });
+  } else if(step.type === 'bilan'){
+    content.innerHTML = `<div class="narration-box">Mission terminée. Rendez-vous dans l'onglet <strong>Bilan &amp; export</strong> pour consulter le résultat complet de votre cellule.</div>`;
+    unlockBilan();
+  }
+  const m = document.getElementById('main'); if(m) m.scrollTop = 0;
+}
+
+function showHint(step){
+  if(hintsShown >= step.hints.length) return;
+  const div = document.createElement('div');
+  div.className = 'hint-card';
+  div.textContent = "Piste " + (hintsShown+1) + " — " + step.hints[hintsShown];
+  document.getElementById('hint-list').appendChild(div);
+  hintsShown++;
+  if(hintsShown >= step.hints.length){
+    document.getElementById('hint-btn').disabled = true;
+    document.getElementById('hint-btn').textContent = "Vous avez utilisé vos 2 pistes pour cette étape";
+  }
+}
+
+function justifBoxHTML(step){
+  return `<div class="justif-box">
+    <div class="justif-title">Justifiez votre choix par écrit</div>
+    <div class="justif-q">${esc(step.reflection || '')}</div>
+    <textarea id="justif-input" rows="4" aria-label="Justification de votre choix" placeholder="Pourquoi cette option ? Sur quels éléments du dossier ou du cours vous appuyez-vous ? Que feriez-vous différemment ?"></textarea>
+    <div class="justif-hint">Cet encart nourrit votre dossier de restitution. Vous pourrez le compléter ou le corriger dans l'onglet Bilan avant d'exporter le PDF.</div>
+  </div>`;
+}
+function bindJustif(stepId){
+  const ta = document.getElementById('justif-input');
+  if(!ta) return;
+  ta.value = state.justifs[stepId] || '';
+  ta.addEventListener('input', ()=>{ state.justifs[stepId] = ta.value; markDirty(); });
+}
+
+function applyTrust(map){
+  const out = [];
+  Object.keys(map||{}).forEach(k=>{
+    const before = state.trust[k], after = clamp(before + map[k], 0, 4);
+    state.trust[k] = after;
+    if(after !== before) out.push({who:k, delta:after-before});
+  });
+  return out;
+}
+function pickVerdict(opt){
+  const vi = (opt.verdictIf||[]).find(v=>condOk(v.if));
+  return vi ? {tone:vi.tone, text:vi.text} : opt.verdict;
+}
+
+function chooseOption(step, opt, btnEl){
+  const verdict = pickVerdict(opt);   // jugé AVANT les effets : on évalue ce que la cellule avait en main au moment de décider
+  Array.from(document.querySelectorAll('#options-wrap .option')).forEach(b=>{ b.disabled = true; b.style.opacity = '0.55'; });
+  btnEl.classList.add('selected'); btnEl.style.opacity = '1';
+
+  applyEffects(opt.effects);
+  if(opt.hidden) state.hiddenNote = true;
+  (opt.setFlags||[]).forEach(f=>{ state.flags[f] = true; });
+  state.choices[state.currentStep] = opt.letter;
+  const deltas = applyTrust(opt.trust);
+  const reaction = (opt.reaction||[]).filter(l=>condOk(l.if)).map(l=>({who:l.who, text:fill(l.text)}));
+
+  state.pendingStep = opt.next; markDirty();
+  state.history.push({
+    stepId: state.currentStep,
+    stepTitle: step.title,
+    optionLabel: opt.letter + ". " + opt.text,
+    effectsText: effectsToText(opt.effects),
+    verdict: verdict || null,
+    reflection: step.reflection || null,
+    reaction: reaction,
+    trustDeltas: deltas,
+  });
+  if(DECISION_STEPS.includes(state.currentStep)){ state.decisionsDone++; updateProgress(); }
+
+  const tags = deltas.map(d=>`<span class="trust-delta ${d.delta>0?'trust-up':'trust-down'}">${esc(CAST[d.who].name.split(' ')[0])} ${d.delta>0?'↑':'↓'}</span>`).join('');
+  document.getElementById('reaction-wrap').innerHTML =
+    `<div class="react-box"><div class="react-title">Réactions dans la salle</div>
+       <div class="dlg">${dlgHTML(reaction)}</div>
+       <div class="react-meta"><div class="meta-label">Relations</div>${tags || '<span class="trust-delta trust-flat">inchangées</span>'}</div>
+       <div class="react-meta"><div class="meta-label">Effet(s) de ce choix sur vos jauges</div>${effectsToHTML(opt.effects)}</div>
+       ${MISSION.justif ? justifBoxHTML(step) : ''}
+       <button class="continue-btn" id="continue-after-choice">Continuer →</button>
+     </div>`;
+  bindJustif(state.currentStep);
+  document.getElementById('rel-wrap').innerHTML = relStripHTML();
+  document.getElementById('hint-zone').style.display = 'none';
+  document.getElementById('continue-after-choice').addEventListener('click', ()=>{
+    state.currentStep = opt.next; state.pendingStep = null; markDirty();
+    renderMissionStep();
+  });
+  const rb = document.getElementById('reaction-wrap');
+  if(rb && rb.scrollIntoView) rb.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ============================================================
+// BILAN
+// ============================================================
+function unlockBilan(){
+  document.getElementById('nav-bilan').disabled = false;
+  document.getElementById('bilan-locked').style.display = 'none';
+  document.getElementById('bilan-content').style.display = 'block';
+
+  const gwrap = document.getElementById('bilan-gauges');
+  gwrap.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const pct = clamp((val/g.max)*100, 2, 100);
+    const row = document.createElement('div');
+    row.className = 'bilan-gauge';
+    row.innerHTML = `<div class="top"><span>${g.label}</span><span>${fmtVal(g,val)}</span></div>
+      <div class="bilan-track"><div class="bilan-fill" style="width:${pct}%;background:${g.color}"></div></div>`;
+    gwrap.appendChild(row);
+  });
+
+  const hgrid = document.getElementById('handoff-grid');
+  hgrid.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const item = document.createElement('div');
+    item.className = 'handoff-item';
+    item.innerHTML = `<div class="hi-label">${g.label}</div><div class="hi-val">${fmtVal(g,val)}</div>`;
+    hgrid.appendChild(item);
+  });
+  document.getElementById('handoff-team').textContent = state.team;
+
+  const table = document.getElementById('bilan-path');
+  table.innerHTML = `<tr><th style="width:22%;">Étape</th><th style="width:50%;">Décision de la cellule</th><th>Effet</th></tr>` +
+    state.history.map(h=>`<tr><td><strong>${h.stepTitle}</strong></td><td>${h.optionLabel}</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--steel);">${h.effectsText}</td></tr>`).join('');
+
+  const noteWrap = document.getElementById('bilan-hidden-note');
+  noteWrap.innerHTML = state.hiddenNote ? `<div class="note-hidden">🔒 ${esc(fill(MISSION.hiddenNote.html))}</div>` : '';
+
+  renderControllerAnalysis();
+  renderEpilogue();
+  renderPortfolioQuestions();
+}
+
+function renderEpilogue(){
+  document.getElementById('epilogue-lines').innerHTML = dlgHTML(MISSION.epilogue);
+  document.getElementById('epilogue-rel').innerHTML = relStripHTML();
+}
+
+function renderPortfolioQuestions(){
+  const wrap = document.getElementById('portfolio-questions');
+  const items = state.history.filter(h=>h.reflection);
+  if(!MISSION.justif){
+    wrap.innerHTML = items.map(h=>`
+      <div class="pq-item">
+        <div class="pq-step">${h.stepTitle}</div>
+        <div class="pq-text">${h.reflection}</div>
+      </div>
+    `).join('');
+    return;
+  }
+  document.getElementById('pb-title-el').textContent = '🎓 Vos justifications pour le dossier de restitution';
+  wrap.innerHTML = `<div class="pq-note">Rédigez ici la justification de chaque décision. Votre texte est enregistré dans le brouillon et repris tel quel dans l'export PDF : relisez-le avant de l'envoyer à votre formateur.</div>` +
+    items.map(h=>`
+      <div class="pq-item">
+        <div class="pq-step">${esc(h.stepTitle)}</div>
+        <div class="pq-text">${esc(h.reflection)}</div>
+        <textarea class="pq-answer" data-step="${esc(h.stepId)}" aria-label="Justification : ${esc(h.stepTitle)}" placeholder="Votre justification...">${esc(state.justifs[h.stepId] || '')}</textarea>
+      </div>`).join('');
+  Array.from(wrap.querySelectorAll('.pq-answer')).forEach(ta=>{
+    ta.addEventListener('input', ()=>{ state.justifs[ta.dataset.step] = ta.value; markDirty(); });
+  });
+}
+
+const TONE_ICON = { positive:"✓", mixed:"~", risky:"!" };
+const TONE_LABEL = { positive:"Choix pertinent", mixed:"Choix à double tranchant", risky:"Choix risqué" };
+
+function renderControllerAnalysis(){
+  const vwrap = document.getElementById('controller-verdicts');
+  vwrap.innerHTML = state.history.filter(h=>h.verdict).map(h=>`
+    <div class="verdict-row">
+      <div class="verdict-icon ${h.verdict.tone}">${TONE_ICON[h.verdict.tone]}</div>
+      <div class="verdict-body">
+        <div class="vb-step">${h.stepTitle.toUpperCase()} · ${TONE_LABEL[h.verdict.tone]}</div>
+        <div class="vb-text">${h.verdict.text}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const score = state.history.reduce((acc,h)=>{
+    if(!h.verdict) return acc;
+    if(h.verdict.tone==='positive') return acc+1;
+    if(h.verdict.tone==='risky') return acc-1;
+    return acc;
+  }, 0);
+
+  const tier = score >= 2 ? 'good' : (score <= -2 ? 'risky' : 'mixed');
+  const synth = document.getElementById('controller-synthesis');
+  synth.className = 'ca-synthesis tier-' + tier;
+  synth.textContent = fill(MISSION.synth[tier]);
+  state.controllerScore = score;
+  state.controllerTier = tier;
+}
+
+// ============================================================
+// EXPORTS
+// ============================================================
+document.getElementById('btn-drive').addEventListener('click', ()=>{
+  window.open(DRIVE_LINK, '_blank');
+});
+
+document.getElementById('btn-pdf').addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const INK = [20,33,61];
+  const ORANGE = [251,139,36];
+  const TEAL = [15,155,142];
+  const DANGER = [192,69,58];
+  const STEEL = [110,120,140];
+  const TONE_COLOR = { positive: TEAL, mixed: ORANGE, risky: DANGER };
+  let y = 20;
+
+  function ensureSpace(needed){
+    if(y + needed > 280){ doc.addPage(); y = 20; }
+  }
+
+  doc.setFillColor(...INK);
+  doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('CELLULE NOMAD — Bilan de mission', 14, 13);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.text('Mission ' + MISSION.n + ' — « ' + MISSION.title + ' » — Altiva Outdoor', 14, 20);
+  doc.setFontSize(8);
+  doc.setTextColor(...[251,139,36]);
+  doc.text('Pièce du dossier de restitution — examen final de campagne', 14, 25);
+
+  y = 38;
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('Cellule : ' + state.team, 14, y);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...STEEL);
+  doc.text('Export généré le ' + new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR'), 14, y+5);
+
+  y += 14;
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.8);
+  doc.line(14, y, 40, y);
+  y += 9;
+
+  // ---- CARNET DE BORD (boxed, prominent) ----
+  const boxTop = y;
+  const boxHeight = 34;
+  doc.setFillColor(...INK);
+  doc.roundedRect(14, boxTop, 182, boxHeight, 2, 2, 'F');
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.6);
+  doc.roundedRect(14, boxTop, 182, boxHeight, 2, 2, 'S');
+  doc.setTextColor(...ORANGE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10.5);
+  doc.text('CARNET DE BORD — à ressaisir au début de la Mission ' + (MISSION.n + 1), 19, boxTop + 8);
+
+  const colW = 182 / 5;
+  GAUGE_META.forEach((g,i)=>{
+    const val = state.gauges[g.key];
+    const cx = 14 + i*colW + colW/2;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(200,205,220);
+    doc.text(g.label.toUpperCase(), cx, boxTop + 17, {align:'center'});
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(13);
+    doc.setTextColor(255,255,255);
+    doc.text(fmtVal(g,val), cx, boxTop + 26, {align:'center'});
+  });
+  y = boxTop + boxHeight + 10;
+
+  // ---- DECISIONS ----
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Décisions prises', 14, y);
+  y += 7;
+
+  state.history.forEach((h)=>{
+    ensureSpace(22);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...INK);
+    doc.text(h.stepTitle, 14, y);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(50,50,50);
+    const lines = doc.splitTextToSize(h.optionLabel, 180);
+    doc.text(lines, 16, y);
+    y += lines.length * 4.6 + 1;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...STEEL);
+    doc.text(h.effectsText, 16, y);
+    y += 5;
+    if(h.reaction && h.reaction.length){
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.3);
+      doc.setTextColor(70,70,70);
+      h.reaction.forEach(l=>{
+        const who = (CAST[l.who] ? CAST[l.who].name + ' : ' : '');
+        const ls = doc.splitTextToSize(pdfSafe(who + l.text), 170);
+        ensureSpace(ls.length * 3.9 + 2);
+        doc.text(ls, 20, y);
+        y += ls.length * 3.9 + 1.2;
+      });
+    }
+    y += 4;
+  });
+
+  if(state.hiddenNote){
+    ensureSpace(22);
+    y += 3;
+    doc.setFillColor(250,235,230);
+    doc.rect(12, y-5, 186, 20, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(180,60,50);
+    doc.text(pdfSafe(MISSION.hiddenNote.pdfTitle), 15, y);
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    const noteLines = doc.splitTextToSize(pdfSafe(MISSION.hiddenNote.pdfText), 178);
+    doc.text(noteLines, 15, y+5);
+    y += 22;
+  }
+
+  // ---- RELATIONS + ÉPILOGUE ----
+  ensureSpace(24);
+  y += 3;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Relations en fin de mission', 14, y);
+  y += 6;
+  MISSION.relations.forEach(k=>{
+    const cc = CAST[k], v = state.trust[k];
+    ensureSpace(6);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(50,50,50);
+    doc.text(pdfSafe(cc.name + ' (' + cc.role + ') : ' + TRUST_LABELS[v] + ' (' + v + '/4)'), 16, y);
+    y += 5;
+  });
+  const epLines = (MISSION.epilogue || []).filter(l=>condOk(l.if));
+  if(epLines.length){
+    ensureSpace(14);
+    y += 3;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...INK);
+    doc.text('Epilogue', 14, y);
+    y += 6;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(70,70,70);
+    epLines.forEach(l=>{
+      const who = (CAST[l.who] ? CAST[l.who].name + ' : ' : '');
+      const ls = doc.splitTextToSize(pdfSafe(who + fill(l.text)), 172);
+      ensureSpace(ls.length * 4 + 2);
+      doc.text(ls, 16, y);
+      y += ls.length * 4 + 1.5;
+    });
+  }
+
+  // ---- QUESTIONS POUR LE DOSSIER DE RESTITUTION (examen final) ----
+  const reflectionEntries = state.history.filter(h=>h.reflection);
+  if(reflectionEntries.length){
+    ensureSpace(26);
+    y += 4;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(10,90,82);
+    doc.text(MISSION.justif ? 'Justifications de la cellule - dossier de restitution (examen final)' : 'Questions pour votre dossier de restitution (examen final)', 14, y);
+    y += 5;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8);
+    doc.setTextColor(...STEEL);
+    const introQ = doc.splitTextToSize(MISSION.justif ? 'Justifications rédigées par la cellule pour chaque décision. À conserver avec les exports des prochaines missions : elles serviront de base à votre présentation orale de fin de campagne.' : 'À conserver avec les exports des prochaines missions : ces questions vous aideront à construire votre présentation orale de fin de campagne.', 178);
+    doc.text(introQ, 14, y);
+    y += introQ.length * 3.8 + 4;
+
+    const pdfParas = (t, w)=> String(t).split(/\r?\n/).flatMap(p=> p.trim() ? doc.splitTextToSize(pdfSafe(p), w) : ['']);
+    reflectionEntries.forEach(h=>{
+      ensureSpace(MISSION.justif ? 30 : 18);
+      doc.setFillColor(234,246,244);
+      const qLines = doc.splitTextToSize(pdfSafe(h.reflection), 172);
+      const boxH = 6 + qLines.length * 4.3;
+      doc.roundedRect(14, y-4, 182, boxH, 1.5, 1.5, 'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(15,155,142);
+      doc.text(h.stepTitle.toUpperCase(), 18, y);
+      doc.setFont('helvetica','italic');
+      doc.setFontSize(9);
+      doc.setTextColor(40,60,58);
+      doc.text(qLines, 18, y+5);
+      y += boxH + 4;
+      if(MISSION.justif){
+        const raw = (state.justifs[h.stepId] || '').trim();
+        doc.setFont('helvetica', raw ? 'normal' : 'italic');
+        doc.setFontSize(9.3);
+        if(raw) doc.setTextColor(40,40,40); else doc.setTextColor(150,150,150);
+        const ans = raw ? pdfParas(raw, 168) : ['Justification non renseignee.'];
+        ans.forEach(ln=>{ ensureSpace(5); doc.text(ln, 20, y); y += 4.5; });
+        y += 4;
+      }
+    });
+    y += 2;
+  }
+
+  // ---- ANALYSE DU CONTRÔLEUR ----
+  ensureSpace(20);
+  y += 4;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Analyse du Contrôleur', 14, y);
+  y += 7;
+
+  state.history.forEach(h=>{
+    if(!h.verdict) return;
+    ensureSpace(16);
+    const c = TONE_COLOR[h.verdict.tone] || STEEL;
+    doc.setFillColor(...c);
+    doc.circle(16, y-1.5, 1.6, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...c);
+    doc.text(h.stepTitle, 20, y);
+    y += 4.2;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(50,50,50);
+    const vLines = doc.splitTextToSize(h.verdict.text, 176);
+    doc.text(vLines, 20, y);
+    y += vLines.length * 4.4 + 3;
+  });
+
+  if(state.controllerTier){
+    ensureSpace(24);
+    y += 2;
+    const tierColor = state.controllerTier === 'good' ? TEAL : (state.controllerTier === 'risky' ? DANGER : ORANGE);
+    doc.setDrawColor(...tierColor);
+    doc.setLineWidth(0.8);
+    doc.line(14, y-2, 14, y+18);
+    const synthText = document.getElementById('controller-synthesis').textContent;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.setTextColor(70,70,70);
+    const sLines = doc.splitTextToSize(synthText, 172);
+    doc.text(sLines, 19, y+2);
+    y += sLines.length * 4.4 + 8;
+  }
+
+  // ---- CONSIGNE ----
+  ensureSpace(14);
+  y += 2;
+  doc.setFillColor(255,247,238);
+  doc.roundedRect(14, y-5, 182, 12, 2, 2, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(150,90,20);
+  doc.text('Consigne : envoyez ce PDF à votre formateur après chaque mission.', 18, y+2);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...STEEL);
+  doc.text('Document généré automatiquement par le terminal Cellule NOMAD — usage pédagogique, débriefing en classe.', 14, 290);
+
+  doc.save('Bilan_Mission' + MISSION.n + '_' + draftSlug(state.team) + '.pdf');
+  UI.dirty = false; updateDraftStatus();
+});
+
+// ============================================================
+// BROUILLONS — sauvegarde / restauration manuelle (fichier .json)
+// ============================================================
+const MISSION_ID = MISSION.id;
+const UI = { dirty:false, lastSave:null };
+
+function toast(msg){
+  Array.from(document.querySelectorAll('.toast')).forEach(x=>x.remove());
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role','status'); t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ if(t.parentNode) t.parentNode.removeChild(t); }, 3600);
+}
+function draftSlug(s){ return String(s||'cellule').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,30) || 'cellule'; }
+function draftStamp(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes()); }
+
+function updateDraftStatus(){
+  const el = document.getElementById('draft-status'); if(!el) return;
+  if(UI.dirty){ el.className='dirty'; el.textContent='Modifications non enregistrées'; }
+  else if(UI.lastSave){ el.className=''; el.textContent='Brouillon enregistré à '+UI.lastSave; }
+  else { el.className=''; el.textContent='Aucun brouillon enregistré'; }
+}
+function markDirty(){ UI.dirty = true; updateDraftStatus(); }
+
+function saveDraft(){
+  if(!state.team){ toast("Saisissez d'abord le nom de votre cellule."); return; }
+  const snapshot = {
+    team: state.team,
+    gauges: state.gauges,
+    history: state.history,
+    hiddenNote: state.hiddenNote,
+    flags: state.flags || {},
+    choices: state.choices || {},
+    justifs: state.justifs || {},
+    trust: state.trust || {},
+    // si un choix vient d'être fait mais pas encore "validé" par Continuer, on reprend à l'étape suivante
+    currentStep: state.pendingStep || state.currentStep,
+    decisionsDone: state.decisionsDone,
+  };
+  const data = JSON.stringify({ app:'nomad', mission:MISSION_ID, savedAt:new Date().toISOString(), state:snapshot });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+  a.download = 'brouillon_'+MISSION_ID+'_'+draftSlug(state.team)+'_'+draftStamp()+'.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  const d = new Date();
+  UI.lastSave = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  UI.dirty = false; updateDraftStatus();
+  toast('Brouillon téléchargé. Conservez ce fichier pour reprendre plus tard.');
+}
+
+function isValidDraft(o){
+  if(!o || o.app!=='nomad' || o.mission!==MISSION_ID || !o.state) return false;
+  const s = o.state;
+  if(!s.team || !s.gauges || !Array.isArray(s.history) || !STEPS[s.currentStep]) return false;
+  return ['tresorerie','service','cout','resilience','rse'].every(k=>typeof s.gauges[k]==='number' && isFinite(s.gauges[k]));
+}
+
+function showPanel(name){
+  Array.from(document.querySelectorAll('.navitem')).forEach(b=>b.classList.toggle('active', b.dataset.panel===name));
+  Array.from(document.querySelectorAll('.panel')).forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+  const m = document.getElementById('main'); if(m) m.scrollTop = 0;
+}
+
+function applyDraft(o){
+  const s = o.state;
+  state.team = String(s.team).slice(0,40);
+  state.gauges = { tresorerie:s.gauges.tresorerie, service:s.gauges.service, cout:s.gauges.cout, resilience:s.gauges.resilience, rse:s.gauges.rse };
+  state.history = s.history;
+  state.hiddenNote = !!s.hiddenNote;
+  state.flags = s.flags || {};
+  state.choices = s.choices || {};
+  state.justifs = (s.justifs && typeof s.justifs === 'object') ? s.justifs : {};
+  state.trust = Object.assign({}, MISSION.trustInit, s.trust || {});
+  state.currentStep = s.currentStep;
+  state.decisionsDone = s.decisionsDone || 0;
+  state.pendingStep = null;
+
+  document.getElementById('boot').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('team-tag').textContent = "CELLULE — " + state.team.toUpperCase();
+  document.getElementById('brief-team-name').textContent = state.team;
+  document.getElementById('bilan-team-name').textContent = "— " + state.team;
+  document.getElementById('bilan-locked').style.display = 'block';
+  document.getElementById('bilan-content').style.display = 'none';
+  document.getElementById('nav-bilan').disabled = true;
+
+  renderGauges(); updateProgress(); renderMissionStep();
+  showPanel(STEPS[state.currentStep].type==='bilan' ? 'bilan' : 'mission');
+  UI.dirty = false; UI.lastSave = null; updateDraftStatus();
+  toast('Brouillon restauré.');
+}
+
+function restoreDraftFile(file){
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const o = JSON.parse(r.result);
+      if(!isValidDraft(o)) throw new Error('format');
+      applyDraft(o);
+    }catch(e){
+      toast("Ce fichier n'est pas un brouillon valide de la Mission "+MISSION_ID.slice(1)+".");
+    }
+  };
+  r.onerror = ()=>toast('Lecture du fichier impossible.');
+  r.readAsText(file);
+}
+
+function pickDraft(){
+  if(UI.dirty && state.team && !confirm("Des modifications ne sont pas enregistrées. Restaurer un brouillon va les remplacer. Continuer ?")) return;
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = ()=>{ if(inp.files[0]) restoreDraftFile(inp.files[0]); };
+  inp.click();
+}
+
+document.getElementById('btn-save-draft').addEventListener('click', saveDraft);
+document.getElementById('btn-restore-draft').addEventListener('click', pickDraft);
+document.getElementById('boot-restore').addEventListener('click', pickDraft);
+window.addEventListener('beforeunload', (e)=>{ if(UI.dirty && state.team){ e.preventDefault(); e.returnValue=''; } });
+</script>
+<style>#sidebar{padding-top:2.8rem}</style>
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>
+</body>
+</html>
