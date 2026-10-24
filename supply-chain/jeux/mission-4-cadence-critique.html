@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CELLULE NOMAD — Terminal de Mission 4</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#14213D;
+    --ink2:#1E3A5F;
+    --ink3:#1C2B52;
+    --orange:#FB8B24;
+    --orange-dim:#a8621c;
+    --teal:#0F9B8E;
+    --steel:#8D99AE;
+    --steel-light:#E4E7EC;
+    --paper:#FAFAF9;
+    --white:#FFFFFF;
+    --text:#2A2E3A;
+    --danger:#C0453A;
+    --mono: 'Consolas','SFMono-Regular',Menlo,monospace;
+    --sans: Arial, 'Helvetica Neue', sans-serif;
+    --body: Calibri, 'Segoe UI', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--ink);font-family:var(--body);color:var(--text);}
+  ::selection{background:var(--orange);color:white;}
+  button{font-family:inherit;cursor:pointer;}
+  a{color:inherit;}
+
+  /* ============ BOOT SCREEN ============ */
+  #boot{
+    position:fixed;inset:0;background:var(--ink);color:#B9C4E0;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    z-index:100; padding:2rem;
+  }
+  #boot .boot-box{max-width:640px;width:100%;}
+  #boot .boot-logo{font-family:var(--sans);font-weight:800;font-size:2.2rem;color:var(--white);letter-spacing:1px;margin-bottom:.2rem;}
+  #boot .boot-logo span{color:var(--orange);}
+  #boot .boot-sub{font-family:var(--mono);font-size:.8rem;color:var(--steel);margin-bottom:2rem;letter-spacing:1px;}
+  #boot-log{
+    font-family:var(--mono);font-size:.85rem;line-height:1.9;min-height:220px;
+    border-left:2px solid var(--teal); padding-left:1rem;
+  }
+  #boot-log .line{opacity:0;animation:fadeIn .4s forwards;}
+  #boot-log .ok{color:var(--teal);}
+  #boot-log .warn{color:var(--orange);}
+  @keyframes fadeIn{to{opacity:1;}}
+  .cursor{display:inline-block;width:8px;height:1em;background:var(--orange);vertical-align:middle;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  #boot-form{margin-top:2rem;display:none;}
+  #boot-form.show{display:block;animation:fadeIn .5s forwards;}
+  #boot-form label{display:block;font-family:var(--mono);font-size:.78rem;color:var(--steel);margin-bottom:.5rem;letter-spacing:1px;}
+  #boot-form input{
+    width:100%;background:#0f1a30;border:1px solid #33456f;color:var(--white);
+    padding:.7rem .9rem;font-family:var(--body);font-size:1rem;border-radius:4px;outline:none;
+  }
+  #boot-form input:focus{border-color:var(--orange);}
+  #boot-enter{
+    margin-top:1.2rem; background:var(--orange); color:var(--ink); border:none;
+    padding:.8rem 1.8rem; font-weight:bold; font-size:.95rem; border-radius:4px;
+    letter-spacing:.5px; transition:transform .15s, box-shadow .15s;
+  }
+  #boot-enter:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(251,139,36,.35);}
+  #boot-enter:disabled{opacity:.4;cursor:not-allowed;}
+
+  #reprise-form{margin-top:2rem;display:none;max-width:640px;}
+  #reprise-form.show{display:block;animation:fadeIn .5s forwards;}
+  .reprise-title{font-family:var(--mono);font-size:.85rem;color:var(--orange);letter-spacing:1px;margin-bottom:.7rem;font-weight:bold;}
+  .reprise-instr{font-size:.85rem;color:#B9C4E0;line-height:1.55;margin-bottom:1.3rem;}
+  .reprise-grid{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:1.4rem;}
+  .reprise-field{flex:1 1 150px;}
+  .reprise-field label{display:block;font-family:var(--mono);font-size:.68rem;color:var(--steel);margin-bottom:.4rem;letter-spacing:.5px;}
+  .reprise-field input{
+    width:100%;background:#0f1a30;border:1px solid #33456f;color:var(--white);
+    padding:.6rem .7rem;font-family:var(--body);font-size:1rem;border-radius:4px;outline:none;
+  }
+  .reprise-field input:focus{border-color:var(--teal);}
+  #reprise-confirm{
+    background:var(--teal); color:white; border:none;
+    padding:.8rem 1.8rem; font-weight:bold; font-size:.95rem; border-radius:4px;
+    letter-spacing:.5px; transition:transform .15s, box-shadow .15s;
+  }
+  #reprise-confirm:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(15,155,142,.35);}
+
+  /* ============ APP SHELL ============ */
+  #app{display:none;height:100vh;width:100%;}
+  #app.show{display:flex;}
+
+  #sidebar{
+    width:280px;flex:none;background:var(--ink);color:var(--white);
+    display:flex;flex-direction:column;padding:1.4rem 1.1rem;
+    border-right:1px solid #24345c;
+  }
+  .brand{display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;}
+  .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);}
+  .brand-name{font-family:var(--sans);font-weight:800;font-size:1.05rem;letter-spacing:.5px;}
+  .brand-name span{color:var(--orange);}
+  .team-tag{font-family:var(--mono);font-size:.72rem;color:var(--steel);margin-bottom:1.4rem;}
+
+  .progress-wrap{margin-bottom:1.6rem;}
+  .progress-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--steel);font-family:var(--mono);margin-bottom:.4rem;}
+  .progress-bar{height:6px;border-radius:4px;background:#24345c;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--orange));width:0%;transition:width .6s ease;}
+
+  nav.navlist{display:flex;flex-direction:column;gap:.25rem;margin-bottom:1.6rem;}
+  .navitem{
+    display:flex;align-items:center;gap:.65rem;padding:.65rem .7rem;border-radius:8px;
+    color:#B9C4E0;font-size:.88rem;font-weight:600;background:transparent;border:none;text-align:left;
+    transition:background .15s,color .15s;
+  }
+  .navitem .ic{width:18px;height:18px;flex:none;opacity:.85;}
+  .navitem:hover{background:#1c2b52;color:var(--white);}
+  .navitem.active{background:var(--orange);color:var(--ink);}
+  .navitem.active .ic{opacity:1;}
+  .navitem[disabled]{opacity:.35;cursor:not-allowed;}
+  .navitem[disabled]:hover{background:transparent;color:#B9C4E0;}
+  .navbadge{margin-left:auto;font-family:var(--mono);font-size:.65rem;background:#24345c;color:var(--steel);padding:.1rem .4rem;border-radius:4px;}
+  .navitem.active .navbadge{background:rgba(20,33,61,.25);color:var(--ink);}
+
+  .gauges{margin-top:auto;border-top:1px solid #24345c;padding-top:1rem;}
+  .gauges h4{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);margin:0 0 .8rem;text-transform:uppercase;}
+  .gauge-row{margin-bottom:.65rem;}
+  .gauge-top{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.25rem;}
+  .gauge-name{color:#B9C4E0;}
+  .gauge-val{font-family:var(--mono);font-weight:bold;color:var(--white);}
+  .gauge-track{height:5px;background:#24345c;border-radius:3px;overflow:hidden;}
+  .gauge-fill{height:100%;border-radius:3px;transition:width .7s ease;}
+  .delta-pop{
+    position:absolute;font-family:var(--mono);font-weight:bold;font-size:.7rem;
+    animation:popUp 1.4s ease forwards; pointer-events:none;
+  }
+  @keyframes popUp{
+    0%{opacity:0;transform:translateY(0);}
+    15%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0;transform:translateY(-16px);}
+  }
+
+  /* ============ MAIN AREA ============ */
+  #main{flex:1;overflow-y:auto;background:var(--paper);position:relative;}
+  .panel{display:none;padding:3rem 3.5rem;max-width:980px;margin:0 auto;animation:fadeSlide .4s ease forwards;}
+  .panel.active{display:block;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .kicker{font-family:var(--body);font-weight:bold;font-size:.72rem;letter-spacing:1.5px;color:var(--orange);text-transform:uppercase;margin-bottom:.5rem;}
+  h1.ptitle{font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--ink);margin:0 0 .9rem;}
+  .lead{font-size:1.02rem;color:#444;line-height:1.55;margin-bottom:1.8rem;max-width:760px;}
+
+  .card{background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.1rem;}
+  .card h3{margin:0 0 .5rem;color:var(--ink);font-size:1.05rem;}
+  .card p{margin:.3rem 0;line-height:1.55;font-size:.94rem;color:#3a3f4d;}
+  .accent-left{border-left:4px solid var(--teal);}
+  .accent-left.orange{border-left-color:var(--orange);}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-bottom:2rem;}
+  .stat-card{background:var(--ink);border-radius:10px;padding:1rem .9rem;color:white;position:relative;overflow:hidden;}
+  .stat-card .stat-icon{font-size:1.3rem;margin-bottom:.4rem;}
+  .stat-card .stat-val{font-family:var(--sans);font-weight:800;font-size:1.3rem;}
+  .stat-card .stat-label{font-size:.68rem;color:#B9C4E0;margin-top:.1rem;}
+
+  /* Mission step */
+  .step-dots{display:flex;gap:.5rem;margin-bottom:1.6rem;}
+  .step-dot{width:32px;height:6px;border-radius:4px;background:var(--steel-light);}
+  .step-dot.done{background:var(--teal);}
+  .step-dot.current{background:var(--orange);}
+
+  .briefing-box{
+    background:var(--ink);color:#dfe4f2;border-radius:12px;padding:1.6rem 1.8rem;margin-bottom:1.6rem;
+    border-left:5px solid var(--orange); font-style:italic; line-height:1.6; position:relative;
+  }
+  .briefing-box .who{font-family:var(--mono);font-style:normal;font-size:.72rem;color:var(--orange);letter-spacing:1px;margin-bottom:.5rem;display:block;}
+
+  .option{
+    display:block;width:100%;text-align:left;background:var(--white);border:2px solid var(--steel-light);
+    border-radius:10px;padding:1.05rem 1.3rem;margin-bottom:.8rem;transition:border-color .15s, transform .1s, box-shadow .15s;
+  }
+  .option:hover{border-color:var(--teal);transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,155,142,.12);}
+  .option.selected{border-color:var(--orange);background:#FFF7EE;}
+  .option .opt-letter{
+    display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    background:var(--ink);color:white;font-family:var(--sans);font-weight:bold;font-size:.8rem;margin-right:.7rem;
+  }
+  .option .opt-text{font-size:.96rem;color:var(--text);}
+  .option:disabled{cursor:default;}
+  .option.locked{border-color:#EADCD4;background:#FBF8F6;cursor:not-allowed;}
+  .option.locked:hover{transform:none;box-shadow:none;border-color:#EADCD4;}
+  .option.locked .opt-letter{background:var(--steel);}
+  .option.locked .opt-text{color:#A8ADB8;}
+  .opt-locked-msg{margin-top:.5rem;margin-left:2.1rem;font-size:.78rem;color:var(--danger);font-weight:600;}
+
+  #hint-zone{margin-top:1.4rem;}
+  .hint-btn{
+    background:none;border:1.5px dashed var(--steel);color:var(--steel);padding:.55rem 1rem;border-radius:8px;
+    font-size:.85rem;font-weight:600;
+  }
+  .hint-btn:hover{border-color:var(--orange);color:var(--orange-dim);}
+  .hint-card{
+    background:#FBF3E3;border-left:4px solid var(--orange);border-radius:8px;padding:.9rem 1.1rem;margin-top:.7rem;
+    font-size:.88rem;color:#5a4420;font-style:italic;
+  }
+
+  .continue-btn{
+    background:var(--orange);color:var(--ink);border:none;padding:.85rem 1.9rem;font-weight:bold;border-radius:8px;
+    font-size:.95rem;margin-top:.5rem;
+  }
+  .continue-btn:hover{filter:brightness(1.05);}
+  .continue-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  .effect-tag{
+    display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.15rem .5rem;border-radius:5px;margin:.15rem .3rem .15rem 0;
+  }
+  .effect-up{background:#E4F5F2;color:var(--teal);}
+  .effect-down{background:#FBEAE8;color:var(--danger);}
+
+  .narration-box{background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;line-height:1.6;}
+
+  /* Bilan */
+  .bilan-gauge{margin-bottom:1.1rem;}
+  .bilan-gauge .top{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.3rem;color:var(--ink);font-weight:600;}
+  .bilan-track{height:12px;background:var(--steel-light);border-radius:6px;overflow:hidden;}
+  .bilan-fill{height:100%;border-radius:6px;}
+
+  .path-table{width:100%;border-collapse:collapse;margin-top:1rem;}
+  .path-table th{text-align:left;font-family:var(--mono);font-size:.68rem;color:var(--steel);text-transform:uppercase;padding:.5rem;border-bottom:2px solid var(--ink);}
+  .path-table td{padding:.7rem .5rem;border-bottom:1px solid var(--steel-light);font-size:.88rem;vertical-align:top;}
+  .path-table tr:last-child td{border-bottom:none;}
+
+  .export-row{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+  .export-btn{
+    flex:1;min-width:260px;display:flex;align-items:center;gap:.9rem;padding:1.1rem 1.3rem;border-radius:12px;border:none;
+    text-align:left;color:white;transition:transform .15s;
+  }
+  .export-btn:hover{transform:translateY(-2px);}
+  .export-btn.drive{background:var(--teal);}
+  .export-btn.pdf{background:var(--ink);}
+  .export-btn .eb-title{font-weight:bold;font-size:.98rem;}
+  .export-btn .eb-sub{font-size:.76rem;opacity:.85;margin-top:.15rem;}
+  .export-btn .eb-icon{font-size:1.5rem;}
+
+  .lock-msg{color:var(--steel);font-size:.95rem;font-style:italic;padding:2rem;text-align:center;border:2px dashed var(--steel-light);border-radius:12px;}
+
+  .note-hidden{background:#2a1518;border-left:4px solid var(--danger);color:#f3d9d7;border-radius:8px;padding:1rem 1.2rem;margin-top:1.2rem;font-size:.88rem;font-style:italic;}
+
+  .controller-analysis{background:var(--white);border:1px solid var(--steel-light);border-radius:12px;padding:1.5rem 1.7rem;margin-top:1.6rem;}
+  .ca-title{font-family:var(--sans);font-weight:800;font-size:1.05rem;color:var(--ink);margin-bottom:1rem;}
+  .verdict-row{display:flex;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--steel-light);}
+  .verdict-row:last-child{border-bottom:none;}
+  .verdict-icon{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:white;font-weight:bold;}
+  .verdict-icon.positive{background:var(--teal);}
+  .verdict-icon.mixed{background:var(--orange);}
+  .verdict-icon.risky{background:var(--danger);}
+  .verdict-body .vb-step{font-size:.78rem;color:var(--steel);font-family:var(--mono);margin-bottom:.15rem;}
+  .verdict-body .vb-text{font-size:.9rem;color:var(--text);line-height:1.45;}
+  .ca-synthesis{margin-top:1.2rem;padding:1.1rem 1.3rem;border-radius:10px;font-size:.92rem;line-height:1.55;font-style:italic;}
+  .ca-synthesis.tier-good{background:#EAF6F4;color:#0a5a52;border-left:4px solid var(--teal);}
+  .ca-synthesis.tier-mixed{background:#FDF3E6;color:#7a5217;border-left:4px solid var(--orange);}
+  .ca-synthesis.tier-risky{background:#FBEAE8;color:#8a2f26;border-left:4px solid var(--danger);}
+
+  .consigne-banner{background:#FFF7EE;border:1.5px dashed var(--orange);border-radius:10px;padding:.9rem 1.2rem;margin-top:1.6rem;font-size:.88rem;color:#7a4d17;}
+
+  .portfolio-box{background:#EAF6F4;border:1.5px solid var(--teal);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.6rem;}
+  .pb-title{font-family:var(--sans);font-weight:800;font-size:1.02rem;color:#0a5a52;margin-bottom:.5rem;}
+  .pb-instr{font-size:.85rem;color:#0a5a52;line-height:1.5;margin:0 0 1rem;}
+  .pq-item{background:var(--white);border-radius:8px;padding:.8rem 1rem;margin-bottom:.6rem;}
+  .pq-item:last-child{margin-bottom:0;}
+  .pq-step{font-family:var(--mono);font-size:.68rem;color:var(--teal);text-transform:uppercase;margin-bottom:.25rem;font-weight:bold;}
+  .pq-text{font-size:.88rem;color:var(--text);line-height:1.4;font-style:italic;}
+
+  .handoff-box{
+    background:var(--ink); border-radius:14px; padding:1.6rem 1.8rem; margin:1.6rem 0 2rem;
+    border:2px solid var(--orange); position:relative;
+  }
+  .handoff-title{font-family:var(--sans);font-weight:800;color:var(--white);font-size:1.1rem;margin-bottom:.6rem;}
+  .handoff-instr{color:#C9CFDE;font-size:.88rem;line-height:1.5;margin:0 0 1.2rem;max-width:720px;}
+  .handoff-grid{display:flex;flex-wrap:wrap;gap:.8rem;}
+  .handoff-item{background:#1c2b52;border-radius:10px;padding:.9rem .7rem;text-align:center;flex:1 1 140px;}
+  .handoff-item .hi-label{font-family:var(--mono);font-size:.62rem;color:var(--steel);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+  .handoff-item .hi-val{font-family:var(--sans);font-weight:800;font-size:1.35rem;color:var(--white);}
+  .handoff-footer{margin-top:1.1rem;font-family:var(--mono);font-size:.72rem;color:var(--steel);}
+  @media (max-width:880px){ .handoff-item{flex-basis:45%;} }
+
+  @media (max-width:880px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;height:auto;}
+    .panel{padding:1.6rem;}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ============ BROUILLONS ============ */
+  #sidebar{overflow-y:auto;}
+  .navlist{margin-bottom:1rem;}
+  .progress-wrap{margin-bottom:1.1rem;}
+  .draft-box{border-top:1px solid #24345c;padding-top:.9rem;margin-bottom:1rem;}
+  .draft-box h4{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);margin:0 0 .6rem;text-transform:uppercase;}
+  .draft-btn{display:block;width:100%;background:transparent;border:1px dashed #3a4a75;color:#B9C4E0;padding:.5rem .65rem;border-radius:6px;font-size:.78rem;margin-bottom:.4rem;text-align:left;transition:border-color .15s,color .15s;}
+  .draft-btn:hover{border-color:var(--orange);color:var(--white);}
+  #draft-status{font-family:var(--mono);font-size:.62rem;color:var(--steel);line-height:1.4;}
+  #draft-status.dirty{color:var(--orange);}
+  #boot-restore{margin-top:1.1rem;display:block;background:none;border:none;color:var(--steel);font-family:var(--mono);font-size:.75rem;text-decoration:underline;padding:0;}
+  #boot-restore:hover{color:var(--orange);}
+  .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--white);padding:.75rem 1.2rem;border-radius:8px;border-left:4px solid var(--orange);font-size:.85rem;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:90vw;}
+
+  /* ============ IMMERSION : scènes, dialogues, relations ============ */
+  .scene-head{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.74rem;color:var(--steel);letter-spacing:.4px;margin:0 0 1rem;}
+  .scene-head .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex:none;}
+  .dlg{margin-bottom:1.3rem;}
+  .dline{display:flex;gap:.8rem;margin-bottom:.8rem;align-items:flex-start;opacity:0;animation:dlgIn .4s ease forwards;}
+  @keyframes dlgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .avatar{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:.78rem;color:#fff;letter-spacing:.3px;}
+  .dbody{flex:1;min-width:0;}
+  .dwho{font-size:.74rem;font-weight:bold;color:var(--ink);margin-bottom:.18rem;}
+  .dwho span{font-weight:normal;color:var(--steel);margin-left:.45rem;}
+  .dbubble{background:var(--white);border:1px solid var(--steel-light);border-radius:4px 12px 12px 12px;padding:.65rem .9rem;font-size:.93rem;line-height:1.5;color:var(--text);}
+  .dline.narr .dbubble{background:transparent;border:none;padding:0 0 0 .2rem;color:var(--steel);font-style:italic;}
+  .dline.ctrl .dbubble{background:var(--ink);border-color:var(--ink);color:#dfe4f2;font-style:italic;}
+  .step-prompt{font-weight:600;color:var(--ink);margin:0 0 .8rem;}
+  .react-box{background:#FBF8F3;border:1px solid #EFE3D2;border-radius:12px;padding:1.1rem 1.2rem 1.2rem;margin-top:1.3rem;}
+  .react-title{font-family:var(--mono);font-size:.7rem;letter-spacing:1px;color:var(--orange-dim);text-transform:uppercase;margin-bottom:.9rem;}
+  .react-meta{margin:.5rem 0 .2rem;}
+  .meta-label{font-size:.74rem;color:var(--steel);margin-bottom:.25rem;}
+  .trust-delta{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.15rem .5rem;border-radius:5px;margin:.15rem .3rem .15rem 0;}
+  .trust-up{background:#E4F5F2;color:var(--teal);}
+  .trust-down{background:#FBEAE8;color:var(--danger);}
+  .trust-flat{background:#EEF0F3;color:var(--steel);}
+  .rel-strip{display:flex;flex-wrap:wrap;gap:.55rem;margin:0 0 1.2rem;}
+  .rel-chip{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1px solid var(--steel-light);border-radius:999px;padding:.22rem .8rem .22rem .25rem;}
+  .rel-chip .avatar{width:26px;height:26px;font-size:.6rem;}
+  .rel-name{font-size:.7rem;font-weight:bold;color:var(--ink);line-height:1.1;}
+  .pips{display:flex;gap:2px;margin-top:2px;}
+  .pip{width:9px;height:5px;border-radius:2px;background:var(--steel-light);}
+  .pip.on.hi{background:var(--teal);} .pip.on.mid{background:var(--orange);} .pip.on.lo{background:var(--danger);}
+  .epilogue-box{background:var(--white);border:1px solid var(--steel-light);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.6rem;}
+  .ep-title{font-family:var(--sans);font-weight:800;font-size:1.05rem;color:var(--ink);margin-bottom:1rem;}
+  .ep-rel-title{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);text-transform:uppercase;margin:.4rem 0 .6rem;}
+  .cast-title{font-family:var(--sans);font-size:1.05rem;color:var(--ink);margin:1.6rem 0 .8rem;}
+  .cast-grid{display:flex;flex-wrap:wrap;gap:.8rem;}
+  .cast-card{flex:1 1 260px;display:flex;gap:.8rem;background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:.85rem .95rem;}
+  .cast-card .cc-name{font-weight:bold;color:var(--ink);font-size:.92rem;}
+  .cast-card .cc-role{font-size:.72rem;color:var(--orange-dim);margin:.1rem 0 .3rem;font-weight:bold;}
+  .cast-card .cc-bio{font-size:.82rem;color:#4a4f5c;line-height:1.4;}
+
+  /* ============ JUSTIFICATION ÉCRITE ============ */
+  .justif-box{margin-top:1.1rem;padding-top:1rem;border-top:1px dashed #E3D6C2;}
+  .justif-title{font-weight:bold;color:var(--ink);font-size:.92rem;margin-bottom:.25rem;}
+  .justif-q{font-size:.82rem;color:#5a4420;font-style:italic;margin-bottom:.55rem;line-height:1.4;}
+  .justif-box textarea,.pq-answer{display:block;width:100%;min-height:96px;resize:vertical;border:1.5px solid var(--steel-light);border-radius:8px;padding:.65rem .8rem;font-family:var(--body);font-size:.93rem;line-height:1.45;color:var(--text);background:#fff;outline:none;}
+  .justif-box textarea:focus,.pq-answer:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,155,142,.12);}
+  .justif-hint{font-size:.72rem;color:var(--steel);margin:.35rem 0 .9rem;}
+  .pq-answer{margin-top:.55rem;min-height:84px;}
+  .pq-note{background:#fff;border-left:3px solid var(--teal);border-radius:6px;padding:.6rem .8rem;font-size:.8rem;color:#0a5a52;margin-bottom:.8rem;line-height:1.45;}
+
+  /* ============ MOTEUR V2 : navigation, lien du cours, formats de questions ============ */
+  .course-link{display:block;margin:0 0 1rem;padding:.6rem .7rem;border-radius:8px;background:rgba(15,155,142,.14);border:1px solid rgba(15,155,142,.55);color:#BFEDE8;font-size:.8rem;font-weight:700;text-decoration:none;transition:background .15s,border-color .15s;}
+  .course-link:hover{background:rgba(15,155,142,.28);border-color:var(--teal);color:#fff;}
+  .step-toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:0 0 1rem;}
+  .back-btn{background:var(--white);border:1.5px solid var(--steel-light);color:var(--ink);border-radius:8px;padding:.4rem .8rem;font-size:.8rem;font-weight:700;transition:border-color .15s,color .15s;}
+  .back-btn:hover:not([disabled]){border-color:var(--orange);color:var(--orange-dim);}
+  .back-btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .course-chip{display:inline-block;border-radius:999px;background:#E8F6F4;border:1px solid #BFE3DE;color:#0a5a52;padding:.38rem .85rem;font-size:.78rem;font-weight:700;text-decoration:none;}
+  .course-chip:hover{background:#D6EEEA;}
+  .dots-label{margin-left:.6rem;font-family:var(--mono);font-size:.72rem;color:var(--steel);align-self:center;}
+  .step-dots{flex-wrap:wrap;gap:.35rem;}
+  .step-dot{width:22px;}
+
+  .fb-box{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.9rem 1rem;margin:0 0 1rem;}
+  .fb-title{font-weight:bold;color:var(--ink);font-size:.9rem;margin-bottom:.5rem;}
+  .fb-list{list-style:none;margin:0;padding:0;}
+  .fb-list li{padding:.5rem .65rem;border-left:3px solid var(--steel-light);margin-bottom:.4rem;font-size:.85rem;line-height:1.4;background:#FAFAF9;border-radius:0 6px 6px 0;}
+  .fb-list li.ok{border-left-color:var(--teal);} .fb-list li.ko{border-left-color:var(--danger);}
+  .fb-list li b{font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;}
+  .fb-list li.ok b{color:var(--teal);} .fb-list li.ko b{color:var(--danger);}
+  .fb-sub{color:#5a6070;font-size:.8rem;}
+  .fb-method{margin-top:.6rem;font-size:.82rem;color:#4a4f5c;line-height:1.45;background:#F3F8F7;border-radius:6px;padding:.55rem .7rem;}
+  .fb-table{border-collapse:collapse;width:100%;font-size:.82rem;margin-top:.3rem;}
+  .fb-table th{text-align:left;font-family:var(--mono);font-size:.64rem;text-transform:uppercase;color:var(--steel);border-bottom:2px solid var(--ink);padding:.3rem .4rem;}
+  .fb-table td{padding:.35rem .4rem;border-bottom:1px solid var(--steel-light);}
+
+  .locked{pointer-events:none;}
+  .locked .seg,.locked .rk-row,.locked .hs-node,.locked .al-cell,.locked .tn-row{opacity:.75;}
+
+  /* classement */
+  .cls-legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.78rem;color:#4a4f5c;margin-bottom:.8rem;background:#fff;border:1px solid var(--steel-light);border-radius:8px;padding:.55rem .75rem;}
+  .cls-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.7rem .85rem;margin-bottom:.55rem;}
+  .cls-text{flex:1 1 280px;font-size:.9rem;line-height:1.4;}
+  .cls-ctl{display:flex;flex-wrap:wrap;gap:.35rem;}
+  .seg{background:#F3F5F8;border:1.5px solid var(--steel-light);color:var(--ink);border-radius:999px;padding:.35rem .8rem;font-size:.78rem;font-weight:700;transition:all .12s;}
+  .seg:hover{border-color:var(--teal);}
+  .seg.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .cls-ctl select,.calc-row select{border:1.5px solid var(--steel-light);border-radius:8px;padding:.45rem .6rem;font-size:.85rem;background:#fff;color:var(--text);font-family:var(--body);min-width:200px;}
+
+  /* calcul */
+  .calc-givens{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;}
+  .giv{background:#fff;border:1px solid var(--steel-light);border-radius:8px;padding:.45rem .75rem;display:flex;flex-direction:column;min-width:140px;}
+  .giv span{font-size:.7rem;color:var(--steel);} .giv b{font-size:.98rem;color:var(--ink);}
+  .calc-row{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.65rem .85rem;margin-bottom:.55rem;}
+  .calc-row label{flex:1 1 300px;font-size:.88rem;line-height:1.35;}
+  .calc-row input{width:150px;border:1.5px solid var(--steel-light);border-radius:8px;padding:.5rem .65rem;font-size:.95rem;font-family:var(--body);outline:none;}
+  .calc-row input:focus,.calc-row select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,155,142,.12);}
+  .calc-unit{font-size:.78rem;color:var(--steel);}
+
+  /* schéma de ligne */
+  .hs-line{display:flex;align-items:stretch;gap:.25rem;flex-wrap:wrap;margin-bottom:.8rem;}
+  .hs-node{flex:1 1 170px;text-align:left;background:#fff;border:2px solid var(--steel-light);border-radius:12px;padding:.8rem .85rem;transition:all .15s;}
+  .hs-node:hover{border-color:var(--teal);transform:translateY(-1px);}
+  .hs-node.on{border-color:var(--orange);background:#FFF7EE;box-shadow:0 6px 16px rgba(251,139,36,.16);}
+  .hs-name{font-weight:800;color:var(--ink);font-size:.95rem;} .hs-cap{font-family:var(--mono);font-size:.76rem;color:var(--teal);margin:.15rem 0 .5rem;}
+  .hs-qlabel{font-size:.66rem;text-transform:uppercase;letter-spacing:.5px;color:var(--steel);display:block;margin-bottom:.2rem;}
+  .hs-pile{display:flex;flex-wrap:wrap;gap:2px;min-height:14px;} .hs-pile i{width:11px;height:11px;background:var(--orange);border-radius:2px;display:block;} .hs-pile em{font-size:.72rem;color:var(--steel);}
+  .hs-note{font-size:.78rem;color:#4a4f5c;margin-top:.5rem;line-height:1.35;}
+  .hs-arrow{align-self:center;color:var(--steel);font-weight:bold;font-size:1.2rem;padding:0 .1rem;}
+
+  /* classement + Gantt */
+  .rk-row{display:flex;align-items:center;gap:.6rem;background:#fff;border:1.5px solid var(--steel-light);border-radius:10px;padding:.55rem .7rem;margin-bottom:.45rem;cursor:grab;}
+  .rk-row.drag{opacity:.4;} .rk-row.over{border-color:var(--orange);}
+  .rk-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:.74rem;font-weight:bold;display:flex;align-items:center;justify-content:center;}
+  .rk-grip{color:var(--steel);font-size:1rem;letter-spacing:-2px;}
+  .rk-text{flex:1;font-size:.86rem;line-height:1.4;} .rk-meta{display:block;font-family:var(--mono);font-size:.7rem;color:var(--teal);margin-top:.1rem;}
+  .rk-btns{display:flex;flex-direction:column;gap:2px;} .rk-btns button{border:1px solid var(--steel-light);background:#F3F5F8;border-radius:5px;font-size:.62rem;line-height:1;padding:.22rem .45rem;color:var(--ink);} .rk-btns button:hover:not([disabled]){border-color:var(--orange);} .rk-btns button[disabled]{opacity:.3;}
+  .gt-wrap{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.85rem 1rem 1rem;margin:.9rem 0;}
+  .gt-marks{position:relative;height:30px;} .gt-mark{position:absolute;transform:translateX(-50%);text-align:center;font-size:.64rem;font-weight:bold;color:var(--ink);} .gt-mark:after{content:"";display:block;width:2px;height:10px;background:var(--ink);margin:1px auto 0;}
+  .gt-row{display:flex;height:40px;border-radius:6px;overflow:hidden;background:#EEF0F3;}
+  .gt-bar{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;border-right:2px solid #fff;transition:width .25s;} .gt-bar.ok{background:var(--teal);} .gt-bar.late{background:var(--danger);}
+  .gt-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.64rem;color:var(--steel);margin-top:.2rem;}
+  .gt-metrics{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;} .gt-metrics div{flex:1 1 140px;background:#F7F8FA;border-radius:8px;padding:.45rem .65rem;} .gt-metrics span{display:block;font-size:.66rem;color:var(--steel);} .gt-metrics b{font-size:1rem;color:var(--ink);}
+
+  /* répartition d'investissement */
+  .al-info{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:.82rem;margin-bottom:.7rem;color:#4a4f5c;}
+  .al-grid{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.8rem;}
+  .al-cell{flex:1 1 150px;background:#fff;border:2px solid var(--steel-light);border-radius:12px;padding:.7rem .8rem;text-align:center;} .al-cell.min{border-color:var(--orange);}
+  .al-name{font-weight:800;color:var(--ink);font-size:.9rem;} .al-cap{font-size:1.4rem;font-weight:800;color:var(--teal);margin:.2rem 0;} .al-cap small{font-size:.66rem;color:var(--steel);font-weight:normal;}
+  .al-step{display:flex;align-items:center;justify-content:center;gap:.7rem;} .al-step button{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--steel-light);background:#F3F5F8;font-size:1.1rem;font-weight:bold;color:var(--ink);} .al-step button:hover:not([disabled]){border-color:var(--orange);} .al-step button[disabled]{opacity:.3;} .al-step b{font-size:1.1rem;min-width:18px;}
+  .al-live{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;}
+  .al-bars{position:relative;display:flex;gap:.8rem;align-items:flex-end;height:150px;padding:0 .5rem .1rem;border-bottom:2px solid var(--steel-light);}
+  .al-bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;} .al-bar i{display:block;width:60%;background:var(--teal);border-radius:4px 4px 0 0;transition:height .25s;} .al-bar i.min{background:var(--orange);} .al-bar span{position:absolute;bottom:-1.4rem;font-size:.66rem;color:var(--steel);}
+  .al-target{position:absolute;left:0;right:0;border-top:2px dashed var(--ink);} .al-target span{position:absolute;right:0;top:-1.15rem;font-size:.64rem;font-weight:bold;color:var(--ink);background:#fff;padding:0 .2rem;}
+  .al-debit{margin-top:2rem;font-size:.9rem;} .al-debit.ok b{color:var(--teal);} .al-debit.ko b{color:var(--danger);} .al-debit small{color:var(--steel);}
+
+  /* réglage en direct */
+  .tn-row{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.7rem .9rem;margin-bottom:.55rem;} .tn-row label{display:block;font-size:.86rem;margin-bottom:.3rem;}
+  .tn-ctl{display:flex;align-items:center;gap:.9rem;} .tn-ctl input{flex:1;accent-color:var(--orange);} .tn-val{min-width:80px;text-align:right;font-family:var(--mono);color:var(--ink);}
+  .tn-live{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0 1rem;}
+  .tn-metric{flex:1 1 170px;background:#fff;border:2px solid var(--steel-light);border-radius:10px;padding:.55rem .75rem;} .tn-metric.ok{border-color:var(--teal);} .tn-metric.ko{border-color:var(--danger);}
+  .tn-mlabel{font-size:.7rem;color:var(--steel);} .tn-mval{font-size:1.2rem;font-weight:800;color:var(--ink);} .tn-mval small{font-size:.66rem;color:var(--steel);font-weight:normal;}
+  .tn-mbar{height:5px;background:#EEF0F3;border-radius:3px;margin-top:.3rem;overflow:hidden;} .tn-mbar i{display:block;height:100%;background:var(--steel);transition:width .2s;} .tn-metric.ok .tn-mbar i{background:var(--teal);} .tn-metric.ko .tn-mbar i{background:var(--danger);}
+  .tn-mhint{font-size:.66rem;color:var(--steel);margin-top:.25rem;}
+  .od-note{background:#FFF4E5;border:1.5px solid var(--orange);border-radius:8px;padding:.6rem .8rem;margin-bottom:.8rem;font-size:.82rem;color:#7a4d17;line-height:1.4;}
+  .opt-od-msg{margin-top:.45rem;margin-left:2.1rem;font-size:.76rem;color:#b25d0b;font-weight:600;}
+  .rk-letter{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:var(--teal);color:#fff;font-size:.72rem;margin-right:.5rem;font-weight:bold;}
+</style>
+</head>
+<body>
+
+<!-- ============ BOOT SCREEN ============ -->
+<div id="boot">
+  <div class="boot-box">
+    <div class="boot-logo">CELLULE <span>NOMAD</span></div>
+    <div class="boot-sub">TERMINAL D'INTERVENTION — RÉSILIENCE SUPPLY CHAIN</div>
+    <div id="boot-log"></div>
+    <div id="boot-form">
+      <label>NOM DE VOTRE CELLULE (ÉQUIPE)</label>
+      <input type="text" id="team-name-input" placeholder="Ex : Cellule Aurore" maxlength="40">
+      <br>
+      <button id="boot-enter" disabled>Continuer →</button>
+      <button id="boot-restore" type="button">Reprendre un brouillon enregistré (.json)</button>
+    </div>
+    <div id="reprise-form">
+      <div class="reprise-title">REPRISE DE CAMPAGNE — Mission 3 → Mission 4</div>
+      <p class="reprise-instr">Cellule <strong id="reprise-team-name"></strong>, saisissez les 5 valeurs de votre <strong>carnet de bord de la Mission 3</strong> (notées ou capturées en fin de mission précédente). Si vous démarrez une nouvelle campagne sans historique, laissez les valeurs par défaut.</p>
+      <div class="reprise-grid">
+        <div class="reprise-field">
+          <label>Trésorerie (k€)</label>
+          <input type="number" id="reprise-tresorerie" value="500" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Taux de service (%)</label>
+          <input type="number" id="reprise-service" value="92" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Coût logistique (%)</label>
+          <input type="number" id="reprise-cout" value="11" step="0.1">
+        </div>
+        <div class="reprise-field">
+          <label>Résilience (/100)</label>
+          <input type="number" id="reprise-resilience" value="40" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Image RSE (/100)</label>
+          <input type="number" id="reprise-rse" value="55" step="1">
+        </div>
+      </div>
+      <button id="reprise-confirm">Confirmer et rejoindre le terminal →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app">
+  <div id="sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div class="brand-name">NOMAD<span>.</span></div>
+    </div>
+    <div class="team-tag" id="team-tag">CELLULE —</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>PROGRESSION MISSION</span><span id="progress-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <nav class="navlist">
+      <button class="navitem" data-panel="brief">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Brief de mission
+      </button>
+      <button class="navitem" data-panel="dossier">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-3H5a2 2 0 0 0-2 2Z"/></svg>
+        Dossier Altiva Outdoor
+      </button>
+      <button class="navitem" data-panel="controleur">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        Le Contrôleur
+      </button>
+      <button class="navitem active" data-panel="mission">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
+        Mission : Cadence critique
+        <span class="navbadge" id="nav-mission-badge">0/4</span>
+      </button>
+      <button class="navitem" data-panel="bilan" disabled id="nav-bilan">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+        Bilan &amp; export
+      </button>
+    </nav>
+
+    <a class="course-link" id="course-link" href="https://docs.google.com/presentation/d/1A1MwQF1y06-9pBhLSNA0xoQxo6U6eVwE/edit?usp=drivesdk&amp;ouid=111400757778053252382&amp;rtpof=true&amp;sd=true" target="_blank" rel="noopener">📘 Ouvrir le cours (Séance 4)</a>
+
+    <div class="draft-box">
+      <h4>Brouillon</h4>
+      <button class="draft-btn" id="btn-save-draft" type="button">&#8595; Enregistrer un brouillon</button>
+      <button class="draft-btn" id="btn-restore-draft" type="button">&#8593; Restaurer un brouillon</button>
+      <div id="draft-status">Aucun brouillon enregistré</div>
+    </div>
+
+    <div class="gauges">
+      <h4>Jauges de la cellule</h4>
+      <div id="gauge-list"></div>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <!-- BRIEF -->
+    <div class="panel active" id="panel-brief">
+      <div class="kicker">Terminal NOMAD</div>
+      <h1 class="ptitle">Brief de mission</h1>
+      <p class="lead">Bienvenue à nouveau, <span id="brief-team-name">Cellule</span>. Le tissu certifié est sécurisé : il faut maintenant le transformer, à temps, au bon coût et sans abîmer les équipes ni la promesse de la marque.</p>
+      <div class="card accent-left">
+        <h3>Où en est la campagne</h3>
+        <p>Votre cellule a stabilisé le réseau (Mission 1), fiabilisé la prévision (Mission 2) et négocié le tissu (Mission 3). Vos jauges de fin de mission vous accompagnent : c'est pourquoi vous les avez ressaisies à l'instant.</p>
+      </div>
+      <div class="card accent-left orange">
+        <h3>Votre mission aujourd'hui</h3>
+        <p><strong>« Cadence critique »</strong> : l'atelier de Villefranche doit sortir <strong>640 tentes par jour</strong> pour tenir les livraisons de la rentrée. Sa ligne n'a jamais tourné à ce rythme, et personne ne sait encore précisément où elle coince. Pendant une semaine, votre cellule pilote les décisions d'atelier : modes de production, planification, goulot, ordonnancement, performance, qualité.</p>
+      </div>
+      <div class="card">
+        <h3>Comment ça marche</h3>
+        <p><strong>14 questions, de formats variés</strong> : classements, calculs, repérage sur la ligne, répartition d'un budget, ordonnancement en direct, réglages avec indicateurs. Chaque réponse modifie vos jauges et la confiance des personnages, et chaque question est suivie d'un encart où <strong>vous justifiez votre réponse par écrit</strong>.</p>
+        <p><strong>Le cours est consultable à tout moment</strong> : bouton « Ouvrir le cours » dans la barre de gauche et lien sur chaque question, avec les diapositives utiles. <strong>Vous pouvez revenir en arrière</strong> et modifier une réponse (le nombre de retours figure dans votre export). Une fois la mission terminée, retrouvez votre bilan dans l'onglet <strong>Bilan &amp; export</strong>.</p>
+      </div>
+    </div>
+
+    <!-- DOSSIER ALTIVA -->
+    <div class="panel" id="panel-dossier">
+      <div class="kicker">Dossier client</div>
+      <h1 class="ptitle">Altiva Outdoor — l'atelier de Villefranche</h1>
+      <p class="lead">Ligne de fabrication des tentes : quatre postes en série, une équipe de couture expérimentée, un objectif jamais atteint.</p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-val">640 / jour</div><div class="stat-label">Demande à tenir</div></div>
+        <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">480 min</div><div class="stat-label">Temps utile par jour</div></div>
+        <div class="stat-card"><div class="stat-icon">🧵</div><div class="stat-val">60 / h</div><div class="stat-label">Cadence de la couture</div></div>
+        <div class="stat-card"><div class="stat-icon">🏭</div><div class="stat-val">4 postes</div><div class="stat-label">Découpe, assemblage, couture, finition</div></div>
+        <div class="stat-card"><div class="stat-icon">💶</div><div class="stat-val">50 k€</div><div class="stat-label">Enveloppe d'investissement</div></div>
+      </div>
+      <div class="card accent-left">
+        <h3>Contexte de la mission</h3>
+        <p>Le tissu GOTS arrive de chez le fournisseur, le plan de la saison est validé. Reste à produire : la ligne tentes de Villefranche tourne, mais des piles de pièces s'accumulent à un endroit précis, et la demande post-viral dépasse ce que l'atelier a jamais sorti.</p>
+      </div>
+      <div class="card accent-left orange">
+        <h3>Point d'attention</h3>
+        <p>Dans une ligne en série, le débit est fixé par le poste le plus lent. Investir ou accélérer ailleurs ne change rien : la compétence centrale de cette mission est de repérer ce qui limite le débit, puis de décider en conséquence.</p>
+      </div>
+      <h3 class="cast-title">Les personnages de la mission</h3>
+      <div class="cast-grid"><div class="cast-card"><div class="avatar" style="background:#BD4E24">EM</div><div><div class="cc-name">Élise Marchand</div><div class="cc-role">Directrice générale</div><div class="cc-bio">Dirigeante d'Altiva. Attentive aux résultats autant qu'à l'image de la marque. Elle jauge la cellule à ses décisions.</div></div></div><div class="cast-card"><div class="avatar" style="background:#E07B12">TB</div><div><div class="cc-name">Théo Brisset</div><div class="cc-role">Directeur commercial</div><div class="cc-bio">Commercial dans l'âme. Voit des opportunités partout, parfois avant que les chiffres ne les confirment.</div></div></div><div class="cast-card"><div class="avatar" style="background:#0F9B8E">NB</div><div><div class="cc-name">Nadia Benhamou</div><div class="cc-role">Directrice production &amp; supply chain</div><div class="cc-bio">Pragmatique. Défend la capacité réelle de l'usine, pas celle des présentations.</div></div></div><div class="cast-card"><div class="avatar" style="background:#5B6B85">MD</div><div><div class="cc-name">Marc Delorme</div><div class="cc-role">Directeur financier</div><div class="cc-bio">Gardien de la trésorerie. Pose les questions qui fâchent, et il a presque toujours une raison.</div></div></div><div class="cast-card"><div class="avatar" style="background:#7A4FA3">HP</div><div><div class="cc-name">Hugo Pelletier</div><div class="cc-role">Chef d'atelier couture</div><div class="cc-bio">Vingt ans de couture industrielle. Connaît chaque machine et chaque couturière par leur prénom, et dit ce qu'il voit sans détour.</div></div></div><div class="cast-card"><div class="avatar" style="background:#2F7FA3">SR</div><div><div class="cc-name">Sabine Roux</div><div class="cc-role">Responsable qualité &amp; maintenance</div><div class="cc-bio">Mesure tout : défauts, vibrations, arrêts. Préfère prévenir que réparer, et le prouve chiffres en main.</div></div></div></div>
+    </div>
+
+    <!-- CONTROLEUR -->
+    <div class="panel" id="panel-controleur">
+      <div class="kicker">Votre mentor</div>
+      <h1 class="ptitle">Le Contrôleur</h1>
+      <p class="lead">Voix de NOMAD, le Contrôleur brief chaque mission et peut vous éclairer si votre cellule bloque — mais ne décidera jamais à votre place.</p>
+      <div class="briefing-box">
+        <span class="who">LE CONTRÔLEUR — TRANSMISSION</span>
+        « Une usine ne produit jamais plus que son maillon le plus faible. Cette mission va vous demander de le trouver, de le protéger, puis de décider dans quel ordre le faire travailler. Revenir sur une réponse est permis : le but est de comprendre, pas de deviner du premier coup. Le cours est à portée de clic, et deux pistes vous attendent à chaque question. »
+      </div>
+      <div class="card">
+        <h3>Le système de pistes</h3>
+        <p>À chaque étape avec décision, un bouton « Demander une piste » est disponible. La première piste ouvre une perspective. La seconde, si vous la demandez, est plus directe. Utilisez-les sans hésiter : l'objectif est d'apprendre à bien arbitrer, pas de deviner une réponse cachée.</p>
+      </div>
+    </div>
+
+    <!-- MISSION -->
+    <div class="panel" id="panel-mission">
+      <div class="kicker">Mission 4 — Cadence critique</div>
+      <h1 class="ptitle" id="step-title">Chargement...</h1>
+      <div class="step-dots" id="step-dots"></div>
+      <div id="step-content"></div>
+    </div>
+
+    <!-- BILAN -->
+    <div class="panel" id="panel-bilan">
+      <div class="kicker">Fin de mission</div>
+      <h1 class="ptitle">Bilan de la Cellule <span id="bilan-team-name"></span></h1>
+      <div id="bilan-locked" class="lock-msg">Terminez la mission « Cadence critique » pour débloquer votre bilan.</div>
+      <div id="bilan-content" style="display:none;">
+        <p class="lead">Voici l'état final de vos jauges et le chemin emprunté. Ce bilan est la base idéale pour le débriefing collectif — et la première pièce de votre dossier de restitution pour l'examen final.</p>
+        <div id="bilan-gauges"></div>
+
+        <div class="handoff-box">
+          <div class="handoff-title">📋 Carnet de bord — à conserver pour la Mission 5</div>
+          <p class="handoff-instr">Au début de la prochaine mission, on vous demandera de ressaisir ces 5 valeurs pour reprendre la campagne là où vous l'avez laissée. <strong>Notez-les maintenant</strong> (papier, notes de téléphone, ou capture d'écran de cet encart) :</p>
+          <div class="handoff-grid" id="handoff-grid"></div>
+          <div class="handoff-footer">Cellule <strong id="handoff-team"></strong> — Mission 4 « Cadence critique » terminée</div>
+        </div>
+
+        <table class="path-table" id="bilan-path"></table>
+        <div id="bilan-hidden-note"></div>
+
+        <div class="epilogue-box">
+          <div class="ep-title">Épilogue</div>
+          <div class="dlg" id="epilogue-lines"></div>
+          <div class="ep-rel-title">Relations en fin de mission</div>
+          <div id="epilogue-rel"></div>
+        </div>
+
+        <div class="portfolio-box">
+          <div class="pb-title" id="pb-title-el">🎓 Questions pour votre dossier de restitution</div>
+          <p class="pb-instr">À la fin de la campagne, votre cellule présentera et justifiera ses choix à l'oral pour l'examen final. Ces questions, propres aux décisions de cette mission, vous aident à préparer cet argumentaire — répondez-y dès maintenant, à chaud, pendant que le contexte est encore frais.</p>
+          <div id="portfolio-questions"></div>
+        </div>
+
+        <div class="controller-analysis">
+          <div class="ca-title">🎖️ Analyse du Contrôleur</div>
+          <div id="controller-verdicts"></div>
+          <div class="ca-synthesis" id="controller-synthesis"></div>
+        </div>
+
+        <div class="consigne-banner">📤 <strong>Consigne :</strong> téléchargez le PDF de cette mission et envoyez-le à votre formateur avant la prochaine séance. <strong>Conservez aussi votre propre copie</strong> — vous en aurez besoin, avec celles des prochaines missions, pour préparer votre présentation orale de fin de campagne.</div>
+        <div class="export-row">
+          <button class="export-btn drive" id="btn-drive">
+            <div class="eb-icon">📘</div>
+            <div>
+              <div class="eb-title">Télécharger le cours (Séance 4)</div>
+              <div class="eb-sub">Ouvre le support de cours complet sur Google Drive</div>
+            </div>
+          </button>
+          <button class="export-btn pdf" id="btn-pdf">
+            <div class="eb-icon">📄</div>
+            <div>
+              <div class="eb-title">Exporter mes décisions en PDF</div>
+              <div class="eb-sub">Idéal pour le débriefing avec votre formateur</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const MISSION = {"id":"M4","n":4,"title":"Cadence critique","drive":"https://docs.google.com/presentation/d/1A1MwQF1y06-9pBhLSNA0xoQxo6U6eVwE/edit?usp=drivesdk&ouid=111400757778053252382&rtpof=true&sd=true","boot":[{"text":"> Initialisation du terminal NOMAD...","cls":""},{"text":"> Vérification des accès sécurisés...","cls":"ok","suffix":"OK"},{"text":"> Connexion au dossier client ALTIVA OUTDOOR...","cls":"ok","suffix":"ÉTABLIE"},{"text":"> Alerte détectée : ligne tentes sous-dimensionnée (640 tentes/jour demandées)","cls":"warn"},{"text":"> Chargement du dossier de mission « Cadence critique »...","cls":"ok","suffix":"PRÊT"},{"text":"> En attente d'identification de cellule...","cls":""}],"cast":{"ctrl":{"name":"Le Contrôleur","role":"NOMAD","initials":"CT","color":"#14213D","bio":"Voix de NOMAD. Briefe chaque mission, murmure des pistes, ne décide jamais à votre place."},"elise":{"name":"Élise Marchand","role":"Directrice générale","initials":"EM","color":"#BD4E24","bio":"Dirigeante d'Altiva. Attentive aux résultats autant qu'à l'image de la marque. Elle jauge la cellule à ses décisions."},"theo":{"name":"Théo Brisset","role":"Directeur commercial","initials":"TB","color":"#E07B12","bio":"Commercial dans l'âme. Voit des opportunités partout, parfois avant que les chiffres ne les confirment."},"nadia":{"name":"Nadia Benhamou","role":"Directrice production & supply chain","initials":"NB","color":"#0F9B8E","bio":"Pragmatique. Défend la capacité réelle de l'usine, pas celle des présentations."},"marc":{"name":"Marc Delorme","role":"Directeur financier","initials":"MD","color":"#5B6B85","bio":"Gardien de la trésorerie. Pose les questions qui fâchent, et il a presque toujours une raison."},"hugo":{"name":"Hugo Pelletier","role":"Chef d'atelier couture","initials":"HP","color":"#7A4FA3","bio":"Vingt ans de couture industrielle. Connaît chaque machine et chaque couturière par leur prénom, et dit ce qu'il voit sans détour."},"sabine":{"name":"Sabine Roux","role":"Responsable qualité & maintenance","initials":"SR","color":"#2F7FA3","bio":"Mesure tout : défauts, vibrations, arrêts. Préfère prévenir que réparer, et le prouve chiffres en main."}},"relations":["nadia","theo","marc","elise","hugo"],"trustInit":{"nadia":2,"theo":2,"marc":2,"elise":2,"hugo":2},"decisionSteps":["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14"],"steps":{"open":{"type":"scene","order":0,"title":"Lundi matin à l'atelier","place":"Lundi, 7 h 30 — Atelier de Villefranche, ligne tentes","scene":[{"who":"narr","text":"Les néons s'allument un à un. Sur les palettes, les premiers rouleaux de tissu GOTS arrivés de chez le fournisseur. Nadia Benhamou vous attend devant la ligne tentes, un casque sur la tête."},{"who":"nadia","text":"Bienvenue à Villefranche, cellule {team}. Le tissu est là, le plan de la saison est validé. Maintenant il faut sortir 640 tentes par jour avant la rentrée. Cette ligne n'a jamais fait ça."},{"who":"hugo","text":"Quatre postes en série : découpe, assemblage, couture, finition. Les couturières donnent tout. Mais ça coince quelque part, et je n'ai pas encore su dire où."},{"who":"theo","text":"Je vous le dis franchement : mes revendeurs ne peuvent plus attendre. Chaque jour de retard, des commandes partent chez la concurrence.","if":{"gaugeGte":["service",88]}},{"who":"theo","text":"Notre taux de service est déjà bas, et mes revendeurs perdent patience. Chaque jour de retard nous coûte des clients.","if":{"gaugeLt":["service",88]}},{"who":"marc","text":"Tout investissement passe par moi, et la trésorerie est tendue. Ne me demandez pas l'impossible.","if":{"gaugeLt":["tresorerie",250]}},{"who":"marc","text":"Nous avons de la marge, mais chaque euro devra être justifié devant moi.","if":{"gaugeGte":["tresorerie",250]}},{"who":"elise","text":"Et rappelez-vous que cet atelier est la vitrine de notre promesse RSE. Nous avons un trimestre à rattraper sur notre image : on produit vite, mais pas n'importe comment.","if":{"gaugeLt":["rse",55]}},{"who":"elise","text":"Cet atelier est la vitrine de notre promesse RSE. On produit vite, mais pas n'importe comment.","if":{"gaugeGte":["rse",55]}},{"who":"ctrl","text":"Quatorze questions vous attendent sur toute la semaine. Le cours est à portée de clic dans la barre de gauche : ne vous en privez pas. Et vous pouvez revenir sur une réponse si vous changez d'avis."}],"next":"q1"},"q1":{"type":"classify","order":1,"title":"Question 1 — Choisir le bon mode de production","place":"Lundi, 9 h — Bureau de la planification","course":{"part":"Partie 2 — Les modes de production","slides":"5 à 7"},"scene":[{"who":"nadia","text":"Avant de lancer quoi que ce soit, on doit décider comment on produit chaque référence : sur stock, assemblage à la commande, ou fabrication à la commande."},{"who":"theo","text":"Moi, je veux tout en stock, pour livrer en 48 heures. Les clients adorent ça."},{"who":"marc","text":"Et moi, je ne veux pas immobiliser de la trésorerie sur des invendus. On tranche cas par cas."}],"briefing":"Le bon mode dépend de trois choses : la prévisibilité de la demande, le délai que le client accepte, et le degré de personnalisation du produit.","prompt":"Associez chaque situation au mode de production le plus adapté.","categories":[{"id":"MTS","label":"Sur stock (MTS)","desc":"on fabrique sur prévision, on livre depuis le stock"},{"id":"ATO","label":"Assemblage à la commande (ATO)","desc":"modules sur prévision, assemblage final à la commande"},{"id":"MTO","label":"Fabrication à la commande (MTO)","desc":"on ne fabrique qu'à réception de la commande ferme"}],"items":[{"id":"i1","text":"Sac à dos 25 L, coloris standard, vendu toute l'année en grande distribution, demande stable et prévisible.","answer":"MTS","why":"Produit standard et demande prévisible : on peut fabriquer sur prévision et livrer depuis le stock."},{"id":"i2","text":"Tente 2 places dont le client choisit la couleur et l'abside, livrée sous 5 jours.","answer":"ATO","why":"Les modules sont fabriqués sur prévision et la configuration finale est assemblée à la commande : délai court et variété."},{"id":"i3","text":"Vestes techniques brodées pour l'équipe d'un club de montagne, 80 pièces, livraison sous 4 semaines.","answer":"MTO","why":"Produit personnalisé, commande ferme et délai long accepté : on ne fabrique qu'à la commande."},{"id":"i4","text":"Gourde isotherme à forte rotation, vendue partout, demande très régulière toute l'année.","answer":"MTS","why":"Même logique que le sac standard : produit simple, demande régulière, stock de produits finis sans grand risque."},{"id":"i5","text":"Collection capsule en série limitée, lancée seulement sur commandes fermes de revendeurs.","answer":"MTO","why":"Aucune prévision fiable et fort risque d'invendus : on attend les commandes fermes avant de produire."}],"thresholds":[{"min":5,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"service":3,"cout":-1},"trust":{"nadia":1,"marc":1},"verdict":{"tone":"positive","text":"Le bon mode selon la prévisibilité, le délai accepté et la personnalisation : vous protégez à la fois le service et la trésorerie."},"reaction":[{"who":"nadia","text":"Voilà un classement que je peux défendre devant l'atelier."},{"who":"marc","text":"Du stock seulement là où la demande est sûre : ça me convient."},{"who":"theo","text":"Bon, mes revendeurs auront leurs sacs standards en 48 heures. Je prends."}]},"mixed":{"effects":{"service":1},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Plusieurs choix justes, mais quelques références sont mal positionnées : un stock mal placé coûte de la trésorerie ou des délais."},"reaction":[{"who":"nadia","text":"Presque. Une ou deux références sont mal placées, et ça se paie."},{"who":"marc","text":"Je note les erreurs. Je préfère les corriger maintenant plutôt qu'en voyant les stocks gonfler."}]},"bad":{"effects":{"service":-3,"cout":1},"trust":{"nadia":-1,"marc":-1},"verdict":{"tone":"risky","text":"Avec ce classement, vous stockez ce qui ne se vendra pas et vous fabriquez à la commande ce qui devait partir demain : service et trésorerie en pâtissent."},"reaction":[{"who":"nadia","text":"Avec ça, on stocke ce qu'on ne vendra pas et on fait attendre ce qui doit partir demain."},{"who":"marc","text":"Voilà comment on bloque de la trésorerie pour rien."}]}},"hints":["Le Contrôleur : « Trois questions à se poser : la demande est-elle prévisible ? Quel délai le client accepte-t-il ? Le produit est-il personnalisé ? »","Le Contrôleur : « Plus le point de découplage est à droite, plus le délai client est court et plus le stock est élevé. Revoyez la diapositive correspondante. »"],"reflection":"Quels critères avez-vous utilisés pour choisir un mode de production pour chaque référence, et lesquels ont été les plus difficiles à trancher ?","next":"q2"},"q2":{"type":"rank","mode":"order","order":2,"title":"Question 2 — Du plan à l'atelier","place":"Lundi, 10 h — Salle de planification","course":{"part":"Partie 3 — Du plan à l'atelier","slides":"9 et 10"},"scene":[{"who":"nadia","text":"Théo m'a remis un tableau où tout est mélangé : volumes annuels, semaines, composants, heures. Remettez de l'ordre, s'il vous plaît."},{"who":"marc","text":"Un plan, c'est une cascade. Si un niveau est faux, l'erreur descend jusqu'à l'atelier."},{"who":"theo","text":"Moi, je regarde surtout les commandes. Le reste, c'est de l'intendance."},{"who":"nadia","text":"L'intendance, c'est ce qui permet de livrer, Théo."}],"briefing":"Chaque niveau affine le précédent : l'horizon se raccourcit, le détail augmente.","prompt":"Classez ces quatre niveaux de planification, du plus stratégique (en haut) au plus opérationnel (en bas).","items":[{"id":"lv1","title":"Volumes par famille de produits","text":"Sur 12 à 24 mois : aligne ventes, production et finance.","name":"PIC — Plan industriel et commercial"},{"id":"lv2","title":"Quantités de chaque produit fini","text":"Semaine par semaine, sur quelques mois : engagement ferme de production.","name":"PDP — Programme directeur de production"},{"id":"lv3","title":"Besoins en composants et matières","text":"Quoi commander ou lancer, en quelle quantité et à quelle date, selon stocks et délais.","name":"MRP — Calcul des besoins"},{"id":"lv4","title":"Ordre de passage sur les postes","text":"À la journée, à l'heure : quelle commande part en premier sur chaque machine.","name":"Ordonnancement"}],"start":["lv3","lv1","lv4","lv2"],"correctOrder":["lv1","lv2","lv3","lv4"],"thresholds":[{"min":4,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"resilience":3},"trust":{"elise":1,"nadia":1},"verdict":{"tone":"positive","text":"Vous maîtrisez la cascade PIC, PDP, MRP, ordonnancement : chaque niveau affine le précédent."},"reaction":[{"who":"elise","text":"Un plan lisible du sommet jusqu'à l'atelier. C'est rare, et c'est précieux."},{"who":"nadia","text":"Voilà qui me permet de savoir ce que j'attends à chaque niveau."}]},"mixed":{"effects":{"resilience":1},"trust":{"theo":-1},"verdict":{"tone":"mixed","text":"Une inversion suffit à produire un plan incohérent : un niveau mal placé fait descendre une erreur dans toute la cascade."},"reaction":[{"who":"nadia","text":"Presque. Une inversion, et c'est tout le plan qui se décale."},{"who":"theo","text":"L'intendance, je vous l'avais dit : ça se mélange facilement."}]},"bad":{"effects":{"resilience":-3},"trust":{"nadia":-1,"elise":-1},"verdict":{"tone":"risky","text":"Sans cascade claire, on lance un MRP sur un plan qui n'existe pas encore : l'usine se pilote à vue."},"reaction":[{"who":"elise","text":"Si on ne sait pas qui décide quoi à quel niveau, l'usine se pilote à vue."},{"who":"nadia","text":"On ne peut pas lancer un MRP sur un PDP qui n'existe pas encore."}]}},"hints":["Le Contrôleur : « Plus on descend, plus l'horizon raccourcit et plus le détail augmente. »","Le Contrôleur : « Le S&OP de la Mission 2 alimente le premier niveau. Le dernier se joue à l'heure près, sur la machine. »"],"reflection":"Qu'est-ce qui distingue, selon vous, un plan irréaliste d'un plan réalisable à chaque niveau de la cascade, et quelles conséquences cela a-t-il en aval ?","next":"q3"},"q3":{"type":"calc","order":3,"title":"Question 3 — Calculer les besoins en composants","place":"Lundi, 14 h — Service approvisionnements","course":{"part":"Partie 3 — Du plan à l'atelier","slides":"10 et 11"},"scene":[{"who":"nadia","text":"Le tissu est arrivé, mais je dois savoir combien de panneaux lancer et quand. Voici le programme directeur de la tente Aventure 2P."},{"who":"marc","text":"Je ne veux ni rupture, ni panneaux qui dorment sur une étagère. Donnez-moi les bons chiffres."}],"briefing":"Un MRP se calcule dans l'ordre : besoin brut, stock, besoin net, puis décalage par le délai d'approvisionnement.","prompt":"Calculez les quantités demandées.","givens":[{"label":"PDP tentes (S1 / S2 / S3 / S4)","value":"50 / 70 / 60 / 40"},{"label":"Nomenclature","value":"1 tente = 2 panneaux"},{"label":"Stock initial","value":"150 panneaux"},{"label":"Délai d'approvisionnement","value":"1 semaine"},{"label":"Lancement","value":"lot pour lot"}],"fields":[{"id":"f1","label":"Besoin brut en panneaux, semaine 2","answer":140,"tol":0,"unit":"panneaux"},{"id":"f2","label":"Besoin net en panneaux, semaine 2 (après déduction du stock restant)","answer":90,"tol":0,"unit":"panneaux"},{"id":"f3","label":"Quantité de panneaux à lancer en semaine 2, pour couvrir le besoin net de la semaine 3","answer":120,"tol":0,"unit":"panneaux"}],"method":"Besoin brut = PDP × 2 : 100, 140, 120, 80. Le stock de 150 couvre la semaine 1 (il en reste 50), donc le besoin net de la semaine 2 est 140 − 50 = 90. En semaine 3, le stock est épuisé : besoin net de 120. Avec un délai d'une semaine, ces 120 panneaux doivent être lancés dès la semaine 2.","thresholds":[{"min":3,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"tresorerie":10,"service":2},"trust":{"marc":1,"nadia":1},"verdict":{"tone":"positive","text":"Un MRP juste évite à la fois les ruptures de composants et le stock inutile : vous commandez ce qu'il faut, quand il faut."},"reaction":[{"who":"nadia","text":"Les chiffres tombent juste : je lance les ordres ce soir."},{"who":"marc","text":"Ni rupture, ni stock qui dort. Je signe."}]},"mixed":{"effects":{"tresorerie":0},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Une étape du calcul a glissé : la déduction du stock ou le décalage du délai sont les deux erreurs classiques d'un MRP."},"reaction":[{"who":"nadia","text":"Il y a un écart quelque part. Dans le doute, je recalcule avec vous avant de lancer."},{"who":"marc","text":"Une erreur de colonne, et on commande trop, ou trop tard."}]},"bad":{"effects":{"tresorerie":-20,"service":-3},"trust":{"nadia":-1,"marc":-1},"verdict":{"tone":"risky","text":"Un MRP faux produit soit des ruptures de composants, soit du stock inutile : dans les deux cas, ça coûte."},"reaction":[{"who":"nadia","text":"Avec ces quantités, on risque la rupture de panneaux en semaine 3."},{"who":"marc","text":"Et si on a trop commandé, c'est ma trésorerie qui dort sur des palettes."}]}},"hints":["Le Contrôleur : « Besoin brut = programme de production × quantité par produit. Puis on retire ce qui est déjà en stock. »","Le Contrôleur : « Le délai d'une semaine décale l'ordre : ce que vous devez recevoir en semaine 3 se lance en semaine 2. »"],"reflection":"Comment avez-vous organisé votre calcul MRP (brut, stock, net, décalage), et quelle erreur coûterait le plus cher à Altiva : commander trop tôt, trop tard ou en trop grande quantité ?","next":"t2"},"t2":{"type":"scene","order":3,"title":"Mercredi : la ligne ne suit pas","place":"Mercredi, 8 h — Sur la ligne tentes","scene":[{"who":"narr","text":"Deux jours ont passé. Les premières tentes sortent, mais pas au rythme promis. Dans l'atelier, des piles de pièces coupées s'entassent à un endroit précis."},{"who":"marc","text":"Vos chiffres de composants tiennent : on ne manquera de rien. On peut donc se concentrer sur la cadence.","if":{"chose":["q3","good"]}},{"who":"marc","text":"J'ai dû refaire certains ordres de composants à la main. Je préférerais ne plus avoir à le faire.","if":{"chose":["q3","bad"]}},{"who":"hugo","text":"Regardez par vous-même : certains postes attendent, d'autres débordent."},{"who":"nadia","text":"Théo m'annonce 640 tentes par jour à livrer. Voyons ce que ça implique pour la cadence."}],"next":"q4"},"q4":{"type":"calc","order":4,"title":"Question 4 — Le rythme imposé par la demande","place":"Mercredi, 8 h 30 — Tableau de bord de la ligne","course":{"part":"Partie 4 — Capacité et goulots","slides":"13"},"scene":[{"who":"nadia","text":"La demande est de 640 tentes par jour. Les équipes disposent de 480 minutes utiles par jour."},{"who":"hugo","text":"À la couture, une tente prend environ une minute."},{"who":"theo","text":"Alors ça passe, non ?"}],"briefing":"Le takt time est le rythme que la demande impose. Le temps de cycle est ce que le poste fait réellement.","prompt":"Calculez le rythme imposé par la demande, puis comparez-le au temps de cycle de la couture.","givens":[{"label":"Temps utile par jour","value":"480 min"},{"label":"Demande à tenir","value":"640 tentes / jour"},{"label":"Temps de cycle de la couture","value":"1 min par tente"}],"fields":[{"id":"f1","label":"Takt time (en minutes par tente)","answer":0.75,"tol":0.01,"unit":"min / tente"},{"id":"f2","label":"La couture, avec un cycle de 1 minute par tente, tient-elle ce rythme ?","kind":"select","options":["Oui","Non"],"answer":"Non"},{"id":"f3","label":"Combien de tentes par heure la couture doit-elle atteindre pour tenir la demande ?","answer":80,"tol":0.5,"unit":"tentes / h"}],"method":"Takt time = temps disponible ÷ demande = 480 ÷ 640 = 0,75 minute par tente (45 secondes). La couture met 1 minute : elle est plus lente que le rythme demandé, donc elle ne tient pas. Il lui faut 640 ÷ 8 h = 80 tentes par heure, au lieu de 60.","thresholds":[{"min":3,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"service":2,"resilience":1},"trust":{"nadia":1,"hugo":1},"verdict":{"tone":"positive","text":"Le takt time donne le rythme que la demande impose : comparé au temps de cycle, il révèle immédiatement les postes qui ne suivent pas."},"reaction":[{"who":"hugo","text":"Quarante-cinq secondes par tente... On est à une minute : il nous manque quinze secondes sur chaque pièce."},{"who":"nadia","text":"Voilà un diagnostic clair."},{"who":"theo","text":"Donc on ne tient pas la demande telle quelle. Merci de me le dire franchement."}]},"mixed":{"effects":{},"trust":{"hugo":-1},"verdict":{"tone":"mixed","text":"Une partie du raisonnement est juste, mais le takt time doit se calculer précisément : c'est lui qui fixe l'objectif de chaque poste."},"reaction":[{"who":"hugo","text":"On y est presque. Mais avec un chiffre approximatif, je ne peux pas dire à mes équipes quoi viser."},{"who":"nadia","text":"Reprenez le calcul : temps disponible divisé par la demande."}]},"bad":{"effects":{"service":-3},"trust":{"theo":-1,"hugo":-1},"verdict":{"tone":"risky","text":"Sans takt time juste, on croit tenir une demande que la ligne ne peut pas absorber : les retards s'accumulent sans qu'on comprenne pourquoi."},"reaction":[{"who":"theo","text":"On m'avait dit que ça passait ! Mes revendeurs comptent là-dessus."},{"who":"hugo","text":"Si on se trompe sur le rythme, on le découvre à la fin de la semaine, quand il est trop tard."}]}},"hints":["Le Contrôleur : « Le takt, c'est le temps disponible divisé par la demande. »","Le Contrôleur : « Si le temps de cycle d'un poste dépasse le takt, ce poste ne suit pas la demande. »"],"reflection":"Qu'est-ce que le takt time vous apprend de plus que la simple capacité d'un poste, et comment l'utiliseriez-vous pour dimensionner l'atelier ?","next":"q5"},"q5":{"type":"hotspot","order":5,"title":"Question 5 — Où est le goulot ?","place":"Mercredi, 10 h — Le long de la ligne","course":{"part":"Partie 4 — Capacité et goulots","slides":"13 et 14"},"scene":[{"who":"hugo","text":"Je vous montre la ligne. Les chiffres sont ceux de ce matin."},{"who":"narr","text":"Quatre postes en série. Devant l'un d'eux, les bacs débordent. Un autre attend, les bras croisés, qu'on lui apporte des pièces."},{"who":"nadia","text":"Dites-moi lequel limite toute la ligne."}],"briefing":"Un goulot se reconnaît à la file d'attente qui s'accumule devant lui, et aux postes en aval qui attendent.","prompt":"Touchez le poste qui constitue le goulot d'étranglement, puis validez.","nodes":[{"id":"decoupe","label":"Découpe","cap":"120 pièces/h","queue":2,"note":"Travaille à plein régime, très peu d'en-cours devant elle."},{"id":"assemblage","label":"Assemblage","cap":"90 pièces/h","queue":5,"note":"Un peu d'attente, tient sa cadence sans difficulté."},{"id":"couture","label":"Couture","cap":"60 pièces/h","queue":14,"note":"File de 14 lots en attente. Ne s'arrête jamais de coudre."},{"id":"finition","label":"Finition","cap":"100 pièces/h","queue":0,"note":"Attend souvent des pièces cousues pour travailler."}],"correct":"couture","outcomeByNode":{"couture":"good","decoupe":"wrongDecoupe","assemblage":"wrongAssemblage","finition":"wrongFinition"},"explain":"La couture a la plus faible capacité (60 pièces/h), la plus longue file d'attente (14 lots) et fait attendre la finition : c'est le goulot. Elle limite le débit de toute la ligne.","outcomes":{"good":{"effects":{"service":3,"resilience":2},"trust":{"hugo":1,"nadia":1},"setFlags":["goulotTrouve"],"verdict":{"tone":"positive","text":"Bien repéré : la file d'attente devant la couture et la finition qui attend désignent le goulot. Tout l'effort d'amélioration doit se concentrer là."},"reaction":[{"who":"hugo","text":"C'est la couture. On le sentait tous sans l'avoir jamais dit aussi clairement."},{"who":"nadia","text":"Maintenant, on sait où concentrer nos efforts."}]},"wrongDecoupe":{"effects":{"service":-3,"tresorerie":-10},"trust":{"hugo":-1,"nadia":-1},"verdict":{"tone":"risky","text":"La découpe est le poste le plus rapide : jamais un goulot. Ici, la file d'attente se trouve devant la couture."},"reaction":[{"who":"hugo","text":"La découpe ? Elle tourne trop vite, justement : ce sont ses pièces qui s'entassent devant la couture."},{"who":"nadia","text":"On a failli investir au mauvais endroit."}]},"wrongAssemblage":{"effects":{"service":-3,"tresorerie":-10},"trust":{"hugo":-1},"verdict":{"tone":"risky","text":"L'assemblage suit sa cadence : le vrai blocage est en aval, devant la couture."},"reaction":[{"who":"hugo","text":"L'assemblage suit très bien. Regardez plutôt la file devant la couture."},{"who":"nadia","text":"Avec 90 pièces par heure, il n'est pas ce qui nous limite."}]},"wrongFinition":{"effects":{"service":-3,"tresorerie":-10},"trust":{"hugo":-1},"verdict":{"tone":"risky","text":"La finition attend, justement : c'est un symptôme et non la cause. Elle manque de pièces cousues."},"reaction":[{"who":"hugo","text":"La finition attend les bras croisés : c'est la preuve que le blocage est avant elle, à la couture."},{"who":"nadia","text":"Un poste qui attend n'est jamais le goulot."}]}},"hints":["Le Contrôleur : « Cherchez la file d'attente la plus longue, et le poste qui attend juste après elle. »","Le Contrôleur : « La capacité la plus faible de la chaîne fixe le débit de toute la ligne. »"],"reflection":"Quels indices vous ont permis de repérer le goulot, et pourquoi les autres postes ne peuvent-ils pas en être un ?","next":"q6"},"q6":{"type":"alloc","order":6,"title":"Question 6 — Investir au bon endroit","place":"Mercredi, 14 h — Bureau de Marc Delorme","course":{"part":"Partie 4 — Capacité et goulots","slides":"14 et 15"},"scene":[{"who":"marc","text":"J'ai débloqué cinq tranches de 10 000 euros pour augmenter la capacité de la ligne. Chaque tranche ajoute 10 pièces par heure au poste où vous la placez. Je ne veux pas en dépenser plus que nécessaire."},{"who":"marc","text":"Et vu l'état de la trésorerie, chaque tranche inutile se verra tout de suite.","if":{"gaugeLt":["tresorerie",200]}},{"who":"theo","text":"Mets-en partout, qu'on soit sûrs !"},{"who":"nadia","text":"Ne dispersons pas. Rappelez-vous où est le goulot."},{"who":"hugo","text":"À la couture, on peut ajouter des machines et former du monde."}],"briefing":"Théorie des contraintes : on exploite d'abord le goulot, on subordonne le reste, et on n'« élève » la contrainte que jusqu'au besoin réel.","prompt":"Répartissez les tranches d'investissement entre les quatre postes. Objectif : tenir 80 pièces par heure au moindre coût.","units":5,"unitCost":10,"gain":10,"target":80,"stations":[{"id":"decoupe","label":"Découpe","cap":120},{"id":"assemblage","label":"Assemblage","cap":90},{"id":"couture","label":"Couture","cap":60},{"id":"finition","label":"Finition","cap":100}],"rules":[{"if":"debit>=80 && used<=2","outcome":"optimal"},{"if":"debit>=80","outcome":"overspend"},{"if":"debit>60","outcome":"short"},{"if":"true","outcome":"wasted"}],"dynamicEffects":{"tresorerie":"-10*used"},"explain":"Le débit de la ligne est celui de son poste le plus lent : deux tranches à la couture portent la ligne à 80 pièces/h, exactement la demande. Au-delà, c'est l'assemblage (90) qui devient le prochain goulot.","outcomes":{"optimal":{"effects":{"service":10,"resilience":5},"trust":{"marc":1,"nadia":1,"hugo":1},"setFlags":["capacite80"],"verdict":{"tone":"positive","text":"Théorie des contraintes en action : vous n'investissez qu'au goulot, jusqu'à ce que la demande soit tenue, et pas un euro de plus."},"reaction":[{"who":"marc","text":"Vingt mille euros, au bon poste, pour tenir la demande : c'est exactement ce que je voulais."},{"who":"nadia","text":"Quatre-vingts pièces à l'heure à la couture. La ligne suit enfin."},{"who":"hugo","text":"Deux machines de plus et deux couturières formées : je m'en occupe dès demain."},{"who":"theo","text":"Parfait : mes revendeurs auront leurs tentes."}]},"overspend":{"effects":{"service":8,"resilience":3},"trust":{"marc":-1,"nadia":1},"setFlags":["capacite80"],"verdict":{"tone":"mixed","text":"La demande est tenue, mais une partie de l'investissement ne sert à rien : au-delà de 80 pièces/h, le prochain goulot (l'assemblage) bride la ligne."},"reaction":[{"who":"marc","text":"On atteint l'objectif, mais j'aurais économisé dix mille euros avec un peu plus de rigueur."},{"who":"nadia","text":"Au-delà de 90 pièces par heure, c'est l'assemblage qui bride. Retenez-le pour la suite."},{"who":"hugo","text":"Ça avance, c'est l'essentiel."}]},"short":{"effects":{"service":4},"trust":{"theo":-1,"nadia":1},"verdict":{"tone":"mixed","text":"Vous améliorez le débit, mais pas assez pour tenir la demande : la ligne livrera encore en retard."},"reaction":[{"who":"theo","text":"Soixante-dix pièces par heure, ça ne suffit pas. On reste en retard."},{"who":"nadia","text":"Un pas dans la bonne direction, mais il en faut un de plus à la couture."},{"who":"marc","text":"Au moins, je n'ai rien dépensé pour rien."}]},"wasted":{"effects":{"service":-3,"resilience":-3},"trust":{"marc":-2,"nadia":-1,"hugo":-1},"setFlags":["investMal"],"verdict":{"tone":"risky","text":"Investir ailleurs qu'au goulot n'augmente pas le débit : c'est de la trésorerie dépensée pour rien."},"reaction":[{"who":"marc","text":"Vous venez de dépenser ma trésorerie sans gagner une seule pièce à l'heure."},{"who":"hugo","text":"Les machines sont arrivées, mais la couture n'a pas bougé d'un pouce."},{"who":"nadia","text":"Je vous l'avais dit : le goulot d'abord."}]}},"hints":["Le Contrôleur : « Combien de pièces par heure sort la ligne ? C'est la plus petite des capacités. »","Le Contrôleur : « Ajouter de la capacité à un poste qui n'est pas le goulot ne change rien au débit de la ligne. »"],"reflection":"Comment avez-vous réparti vos tranches d'investissement, et en quoi la théorie des contraintes justifie-t-elle ce choix ?","next":"q7"},"q7":{"type":"choice","order":7,"title":"Question 7 — Lancer la production en amont","place":"Jeudi, 8 h — Salle de pilotage","course":{"part":"Partie 4 — Capacité et goulots","slides":"15 et 16"},"scene":[{"who":"theo","text":"Je viens de recevoir trois commandes de plus. Lançons toute la matière dès ce matin : la découpe tourne à plein et on prend de l'avance."},{"who":"nadia","text":"Et on empile des pièces coupées devant la couture, comme ces trois derniers jours."},{"who":"hugo","text":"Si on lance plus que ce qu'elle peut coudre, les bacs débordent, les pièces s'abîment et on perd du temps à chercher."},{"who":"marc","text":"Des pièces coupées qui attendent, c'est de la trésorerie immobilisée."}],"briefing":"Drum, Buffer, Rope : le goulot donne le tempo, un tampon le protège des aléas, et la corde limite ce qu'on lance en amont.","prompt":"Comment lancez-vous la production en amont de la couture ?","options":[{"text":"Lancer toute la matière dès ce matin pour que la découpe et l'assemblage tournent à plein régime.","next":"t3","effects":{"tresorerie":-20,"cout":1,"service":-2},"trust":{"theo":1,"nadia":-1,"hugo":-1},"verdict":{"tone":"risky","text":"Pousser la matière plus vite que le goulot ne l'absorbe crée des en-cours, immobilise de la trésorerie et masque les problèmes."},"reaction":[{"who":"theo","text":"Voilà de l'action ! Les machines tournent."},{"who":"nadia","text":"Les bacs vont déborder avant midi."},{"who":"marc","text":"Mon tableau de trésorerie vient de virer au rouge."}]},{"text":"Supprimer tout stock tampon devant la couture pour limiter les en-cours au strict minimum.","next":"t3","effects":{"tresorerie":5,"service":-3},"trust":{"marc":1,"hugo":-1},"verdict":{"tone":"mixed","text":"Réduire les en-cours est une bonne intention, mais sans tampon devant le goulot, le moindre aléa en amont l'arrête : et une heure perdue au goulot est perdue pour toute l'usine."},"reaction":[{"who":"marc","text":"Zéro stock en attente : je valide."},{"who":"hugo","text":"Et si la découpe a un souci, la couture reste à l'arrêt. Ça ne pardonne pas."},{"who":"nadia","text":"Un tampon bien dimensionné, ce n'est pas du gaspillage : c'est une protection."}]},{"text":"Lancer en amont au rythme de la couture (la corde), en gardant un petit tampon devant elle (le buffer).","next":"t3","effects":{"service":5,"tresorerie":5,"resilience":3},"setFlags":["rope"],"trust":{"nadia":2,"hugo":1,"theo":-1},"verdict":{"tone":"positive","text":"Drum-Buffer-Rope : le goulot donne le tempo, le tampon le protège des aléas amont et la corde évite d'empiler de l'en-cours. Peu de stock, mais au bon endroit."},"reaction":[{"who":"nadia","text":"On lance au rythme de la couture, avec une demi-journée de tampon devant elle. C'est propre."},{"who":"hugo","text":"Mes couturières ne manqueront jamais de pièces, et on n'étouffe plus les allées."},{"who":"theo","text":"Moins d'avance sur le papier, mais plus de pièces qui sortent vraiment. Je prends."},{"who":"marc","text":"Un tampon limité, des en-cours qui baissent : parfait."}]}],"hints":["Le Contrôleur : « Qui donne le tempo à l'usine entière ? »","Le Contrôleur : « Un tampon protège le goulot ; la corde empêche de lancer plus que ce qu'il peut absorber. »"],"reflection":"Quel équilibre avez-vous cherché entre en-cours, trésorerie immobilisée et protection du goulot, et pourquoi ?"},"t3":{"type":"scene","order":7,"title":"Jeudi après-midi : cinq commandes pour la couture","place":"Jeudi, 13 h — Bureau d'ordonnancement","scene":[{"who":"narr","text":"L'après-midi, le carnet de commandes déborde de demandes urgentes. Cinq ordres attendent leur tour sur la couture, et chaque client a sa propre échéance."},{"who":"nadia","text":"La couture est notre goulot. L'ordre dans lequel on lui donne le travail change tout."},{"who":"elise","text":"Une couture à 80 pièces par heure, c'est un bel acquis. Ne le gâchons pas avec un mauvais ordre de passage.","if":{"flag":"capacite80"}},{"who":"marc","text":"Après l'investissement d'hier, je veux que cet ordonnancement soit irréprochable.","if":{"flag":"investMal"}},{"who":"theo","text":"Chaque client m'appelle toutes les heures. Il y en a un qui menace d'annuler."}],"next":"q8"},"q8":{"type":"rank","mode":"gantt","order":8,"title":"Question 8 — Ordonnancer le goulot","place":"Jeudi, 14 h — Salle de pilotage","course":{"part":"Partie 5 — Ordonnancer","slides":"18 à 20"},"scene":[{"who":"narr","text":"Cinq commandes à passer sur la couture. Les durées sont en heures de poste, les échéances sont celles promises aux clients."},{"who":"theo","text":"Camp Base doit avoir sa commande dans trois heures, sinon elle annule. Elle est toute petite, mais très urgente."},{"who":"nadia","text":"Et le grand magasin Les Cimes attend la plus grosse commande de la semaine."}],"briefing":"Réorganisez les commandes comme vous le souhaitez : le Gantt et les indicateurs se mettent à jour en direct.","prompt":"Choisissez l'ordre de passage des cinq commandes sur la couture, puis validez.","items":[{"id":"A","short":"A","title":"Les Cimes (grand magasin)","p":6,"d":8},{"id":"B","short":"B","title":"Boutique Altitude","p":2,"d":5},{"id":"C","short":"C","title":"Club Alpin de Savoie","p":4,"d":14},{"id":"D","short":"D","title":"NordOutdoor (distributeur)","p":3,"d":10},{"id":"E","short":"E","title":"Camp Base (revendeur)","p":1,"d":3}],"start":["A","B","C","D","E"],"rules":[{"when":"edd","outcome":"edd"},{"when":"spt","outcome":"spt"},{"when":"fifo","outcome":"fifo"},{"when":"other","maxTotalLate":8,"outcome":"good"},{"when":"other","outcome":"poor"}],"outcomes":{"edd":{"effects":{"service":6},"trust":{"theo":1,"elise":1,"nadia":1},"verdict":{"tone":"positive","text":"EDD : en traitant l'échéance la plus proche d'abord, vous limitez le retard le plus grave : c'est la règle qui protège la promesse faite à chaque client."},"reaction":[{"who":"theo","text":"Camp Base livrée à l'heure, et les autres retards sont minimes. Bravo."},{"who":"elise","text":"Peu de retard, aucun client sacrifié : c'est ainsi que l'on tient nos promesses."},{"who":"nadia","text":"Un ordre lisible pour l'atelier."}]},"spt":{"effects":{"service":5,"cout":-1},"trust":{"nadia":1,"marc":1,"theo":-1},"verdict":{"tone":"positive","text":"SPT : en passant d'abord les commandes les plus courtes, vous réduisez le délai moyen et le nombre de commandes en retard ; mais la plus longue finit très en retard."},"reaction":[{"who":"nadia","text":"Le flux est très fluide : les petites commandes sortent vite."},{"who":"marc","text":"Un seul client en retard, c'est efficace. Reste à lui expliquer."},{"who":"theo","text":"Les Cimes va attendre jusqu'à la fin de la journée... j'aurai un appel difficile à passer."}]},"fifo":{"effects":{"service":-4},"trust":{"theo":-1,"elise":-1},"verdict":{"tone":"risky","text":"FIFO : premier arrivé, premier servi. Simple, mais la plus longue commande bloque toutes les autres et plusieurs clients sont livrés en retard."},"reaction":[{"who":"theo","text":"Camp Base annule sa commande. Je vous l'avais dit : elle était urgente."},{"who":"nadia","text":"L'ordre d'arrivée, c'est simple à appliquer, mais il ignore les urgences."},{"who":"elise","text":"Trois clients en retard sur cinq : ce n'est pas notre standard."}]},"good":{"effects":{"service":4},"trust":{"nadia":1},"verdict":{"tone":"positive","text":"Votre ordre ne correspond à aucune règle classique, mais il donne un bon résultat : sachez l'expliquer, c'est le rôle de votre justification."},"reaction":[{"who":"nadia","text":"Ce n'est ni du FIFO, ni du SPT, ni de l'EDD, mais ça tient la route. Il faudra l'expliquer à l'atelier."},{"who":"theo","text":"Peu de retards, c'est ce qui compte pour moi."}]},"poor":{"effects":{"service":-3},"trust":{"theo":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Cet ordre cumule trop de retard : il ne suit aucune logique de priorité claire (urgence, durée ou échéance)."},"reaction":[{"who":"theo","text":"Plusieurs clients vont être livrés bien trop tard. Je ne vois pas la logique."},{"who":"nadia","text":"Une règle de priorité, même simple, aurait donné un meilleur résultat."}]}},"hints":["Le Contrôleur : « Une commande très urgente et très courte doit-elle vraiment attendre derrière une grosse commande peu urgente ? »","Le Contrôleur : « Trois règles classiques : premier arrivé, durée la plus courte, échéance la plus proche. Chacune protège quelque chose de différent. »"],"reflection":"Quelle logique a guidé votre ordre de passage, et quel client avez-vous accepté de faire attendre, et pourquoi ?","next":"q9"},"q9":{"type":"choice","order":9,"title":"Question 9 — Fixer une règle par défaut","place":"Jeudi, 16 h — Comité de direction restreint","course":{"part":"Partie 5 — Ordonnancer","slides":"18 à 20"},"scene":[{"who":"elise","text":"La couture va fonctionner ainsi pendant des semaines. J'ai besoin d'une règle simple, que toute l'équipe comprenne et applique sans moi."},{"who":"nadia","text":"Ce que vous avez fait cet après-midi, c'est de l'EDD. Les échéances ont été tenues.","if":{"chose":["q8","edd"]}},{"who":"nadia","text":"Cet après-midi, vous avez privilégié les commandes courtes : le flux est bon, mais Les Cimes a attendu.","if":{"chose":["q8","spt"]}},{"who":"nadia","text":"Cet après-midi, l'ordre d'arrivée nous a coûté trois clients en retard. On ne peut pas continuer ainsi.","if":{"chose":["q8","fifo"]}},{"who":"theo","text":"Priorité aux urgences clients !"},{"who":"marc","text":"Priorité à ce qui coûte le moins : sortir vite et libérer la ligne."},{"who":"nadia","text":"Et moi, je veux une règle que mes équipes peuvent appliquer cent fois par jour sans réfléchir."}],"briefing":"Chaque règle de priorité protège quelque chose de différent : les échéances, le flux, ou la simplicité.","prompt":"Quelle règle d'ordonnancement fixez-vous par défaut pour la couture ?","options":[{"text":"EDD : traiter d'abord la commande dont l'échéance promise est la plus proche.","next":"t4","effects":{"service":3,"resilience":2},"trust":{"theo":1,"elise":1},"verdict":{"tone":"positive","text":"EDD limite le retard le plus grave et protège la promesse faite à chaque client : c'est le choix le plus cohérent quand les délais sont l'enjeu principal."},"reaction":[{"who":"elise","text":"Une règle claire, qui protège nos engagements. Adoptée."},{"who":"theo","text":"Mes clients urgents passent enfin avant les autres."},{"who":"marc","text":"Elle demande de bien suivre les échéances, mais je valide."}]},{"text":"SPT : traiter d'abord la commande la plus courte à fabriquer.","next":"t4","effects":{"cout":-1,"service":1},"trust":{"marc":1,"theo":-1},"verdictIf":[{"if":{"chose":["q8","spt"]},"tone":"mixed","text":"Cohérent avec votre choix précédent, mais SPT repousse sans cesse les longues commandes : prévoyez un garde-fou pour ne pas pénaliser toujours les mêmes clients."}],"verdict":{"tone":"mixed","text":"SPT accélère le flux et réduit le nombre de retards, mais les longues commandes risquent d'attendre indéfiniment : la règle est à encadrer."},"reaction":[{"who":"marc","text":"Les petites commandes sortent vite, la ligne ne s'embouteille pas : ça me plaît."},{"who":"theo","text":"Et si Les Cimes passe toujours en dernier ? Ils vont s'impatienter."},{"who":"nadia","text":"Je veux bien, mais il faudra un plafond d'attente pour les grosses commandes."}]},{"text":"FIFO : premier arrivé, premier servi, simple et perçu comme équitable.","next":"t4","effects":{"service":-3},"trust":{"nadia":1,"elise":-1,"theo":-1},"verdict":{"tone":"risky","text":"FIFO est la plus simple mais elle ignore les urgences et les durées : une grosse commande peut bloquer toutes les autres, et des promesses clients sont rompues."},"reaction":[{"who":"nadia","text":"C'est simple à appliquer, c'est vrai."},{"who":"elise","text":"Je ne suis pas sûre qu'on puisse tenir nos promesses avec ça."},{"who":"theo","text":"Ça, c'est une garantie de clients mécontents."}]}],"hints":["Le Contrôleur : « Qu'est-ce qui compte le plus pour Altiva ici : le flux, la simplicité, ou les promesses faites aux clients ? »","Le Contrôleur : « Chaque règle a une limite : laquelle seriez-vous prêts à accepter, et comment la compenseriez-vous ? »"],"reflection":"Pourquoi cette règle par défaut plutôt que les deux autres, et quelle garantie mettriez-vous en place pour compenser sa principale limite ?"},"t4":{"type":"scene","order":9,"title":"Vendredi : la tournée de l'atelier","place":"Vendredi, 7 h 45 — Tournée de l'atelier","scene":[{"who":"narr","text":"Dernier jour de la semaine. Hugo propose une tournée complète de l'atelier : « Regardons ce qui nous fait perdre du temps sans rien apporter. »"},{"who":"hugo","text":"Je vais vous montrer ce que je vois tous les jours. Dites-moi à quelle catégorie de gaspillage chaque situation correspond."},{"who":"nadia","text":"Depuis qu'on lance au rythme de la couture, les allées sont plus propres. Mais il en reste beaucoup.","if":{"flag":"rope"}},{"who":"elise","text":"Le Lean, c'est aussi une affaire de culture. On ne chasse pas les gaspillages pour punir : on le fait pour mieux produire."},{"who":"marc","text":"Chaque gaspillage supprimé, c'est du coût en moins."}],"next":"q10"},"q10":{"type":"classify","order":10,"title":"Question 10 — Chasser les gaspillages","place":"Vendredi, 8 h — Dans les allées de l'atelier","course":{"part":"Partie 6 — Lean et performance","slides":"22"},"scene":[{"who":"hugo","text":"J'ai noté sept situations pendant la semaine. Chacune correspond à un gaspillage différent : à vous de les reconnaître."}],"briefing":"Les sept « muda » du Lean : surproduction, attentes, transports, sur-traitement, stocks, mouvements, défauts.","prompt":"Associez chaque observation de terrain au type de gaspillage qu'elle illustre.","categories":[{"id":"surproduction","label":"Surproduction"},{"id":"attentes","label":"Attentes"},{"id":"transports","label":"Transports"},{"id":"surtraitement","label":"Sur-traitement"},{"id":"stocks","label":"Stocks"},{"id":"mouvements","label":"Mouvements"},{"id":"defauts","label":"Défauts"}],"items":[{"id":"i1","text":"Des rouleaux de tissu traversent trois bâtiments avant d'arriver à la couture.","answer":"transports","why":"Déplacer de la matière sans la transformer ne crée aucune valeur."},{"id":"i2","text":"Deux machines à coudre attendent chaque matin que les pièces découpées arrivent.","answer":"attentes","why":"Des machines ou des personnes qui patientent : c'est du temps perdu."},{"id":"i3","text":"Une équipe a cousu 200 tentes de plus que la commande : elles encombrent l'allée.","answer":"surproduction","why":"Produire plus ou plus tôt que nécessaire : le gaspillage qui engendre tous les autres."},{"id":"i4","text":"Des opérateurs traversent l'atelier pour aller chercher leurs outils.","answer":"mouvements","why":"Des gestes et des déplacements d'opérateurs inutiles dus à un poste mal organisé."},{"id":"i5","text":"Chaque tente passe trois contrôles identiques de la même caractéristique.","answer":"surtraitement","why":"Faire plus que ce que le client demande : des contrôles redondants."},{"id":"i6","text":"Un entrepôt de six semaines de tissu immobilise 300 k€ de trésorerie.","answer":"stocks","why":"Des matières en excès : trésorerie immobilisée, problèmes masqués."},{"id":"i7","text":"12 % des coutures doivent être reprises avant la finition.","answer":"defauts","why":"Des pièces à retoucher ou à rebuter : matière, temps et énergie perdus."}],"thresholds":[{"min":7,"outcome":"good"},{"min":5,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"cout":-1,"rse":2},"trust":{"hugo":1,"elise":1},"verdict":{"tone":"positive","text":"Vous reconnaissez chaque gaspillage : c'est la première étape pour les supprimer, et c'est aussi un levier RSE."},"reaction":[{"who":"hugo","text":"Vous avez l'œil. Sur le terrain, c'est la moitié du travail."},{"who":"elise","text":"Moins de gaspillage, c'est moins de coût et un meilleur bilan pour notre promesse."}]},"mixed":{"effects":{},"trust":{"hugo":-1},"verdict":{"tone":"mixed","text":"Vous identifiez la plupart des gaspillages, mais certains restent confondus : or un gaspillage mal nommé se corrige mal."},"reaction":[{"who":"hugo","text":"Pas mal. Mais deux situations sont mal rangées, et je les vois encore tous les jours."},{"who":"marc","text":"Un gaspillage qu'on ne sait pas nommer, on ne sait pas le chiffrer."}]},"bad":{"effects":{"cout":1},"trust":{"hugo":-1,"marc":-1},"verdict":{"tone":"risky","text":"Trop de gaspillages restent invisibles : la traque Lean ne peut pas démarrer sans les reconnaître."},"reaction":[{"who":"hugo","text":"Si on ne les reconnaît pas, on continue à les subir sans le savoir."},{"who":"marc","text":"Ce sont autant de coûts qui nous échappent."}]}},"hints":["Le Contrôleur : « Demandez-vous à chaque fois : le client accepterait-il de payer pour cela ? »","Le Contrôleur : « Sept gaspillages, sept mots : surproduction, attentes, transports, sur-traitement, stocks, mouvements, défauts. »"],"reflection":"Quel gaspillage vous semble le plus coûteux pour Altiva, et par quoi commenceriez-vous pour le réduire ?","next":"q11"},"q11":{"type":"calc","order":11,"title":"Question 11 — Calculer le TRS du goulot","place":"Vendredi, 9 h 30 — Poste de couture n° 2 (le goulot)","course":{"part":"Partie 6 — Lean et performance","slides":"24 et 25"},"scene":[{"who":"sabine","text":"Sabine Roux, qualité et maintenance. Voici les relevés d'hier sur la couture, notre goulot."},{"who":"elise","text":"Je veux un seul indicateur que je puisse suivre chaque semaine."}],"briefing":"Le TRS mesure la part du temps requis réellement transformée en pièces bonnes : disponibilité × performance × qualité.","prompt":"Calculez les trois composantes du TRS de la couture, puis le TRS.","givens":[{"label":"Temps requis","value":"480 min"},{"label":"Arrêts (pannes, changements de série)","value":"60 min"},{"label":"Cadence nominale","value":"1 pièce / min"},{"label":"Pièces produites","value":"336"},{"label":"Pièces conformes","value":"294"}],"fields":[{"id":"f1","label":"Disponibilité","answer":87.5,"tol":0.6,"unit":"%"},{"id":"f2","label":"Performance","answer":80,"tol":0.6,"unit":"%"},{"id":"f3","label":"Qualité","answer":87.5,"tol":0.6,"unit":"%"},{"id":"f4","label":"TRS de la couture","answer":61.25,"tol":0.7,"unit":"%"}],"method":"Disponibilité = (480 − 60) ÷ 480 = 87,5 %. Performance = 336 pièces produites ÷ 420 pièces possibles à 1 pièce/min sur 420 min de fonctionnement = 80 %. Qualité = 294 ÷ 336 = 87,5 %. TRS = 87,5 % × 80 % × 87,5 % = 61,25 %, soit aussi 294 pièces conformes ÷ 480 minutes.","thresholds":[{"min":4,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"resilience":2,"service":2},"trust":{"elise":1,"hugo":1},"verdict":{"tone":"positive","text":"Un TRS bien calculé révèle où le temps du goulot est perdu : chaque point gagné au goulot vaut un point de débit pour toute l'usine."},"reaction":[{"who":"sabine","text":"Exact. Et ça nous montre que près de 40 % du temps du goulot est perdu : voilà notre vrai réservoir de capacité."},{"who":"elise","text":"Un chiffre à suivre chaque semaine. Merci."},{"who":"hugo","text":"Pour une fois, on a un chiffre qui parle à toute l'équipe."}]},"mixed":{"effects":{},"trust":{"hugo":-1},"verdict":{"tone":"mixed","text":"Certaines composantes sont justes, d'autres non : or c'est leur décomposition qui permet de savoir où agir."},"reaction":[{"who":"sabine","text":"Il y a un écart sur une des composantes. Reprenez-les une à une : sans elles, on ne sait pas où agir."},{"who":"elise","text":"Un TRS approximatif, c'est un indicateur qu'on ne peut pas piloter."}]},"bad":{"effects":{"service":-2},"trust":{"elise":-1,"hugo":-1},"verdict":{"tone":"risky","text":"Sans TRS fiable, on ne sait pas où le goulot perd son temps : les actions d'amélioration partent dans tous les sens."},"reaction":[{"who":"elise","text":"Si l'indicateur est faux, nos décisions le seront aussi."},{"who":"sabine","text":"Je vous donne la méthode, mais il faut la refaire avant de décider quoi améliorer."}]}},"hints":["Le Contrôleur : « TRS = disponibilité × performance × qualité. Chaque composante se calcule séparément. »","Le Contrôleur : « La performance se compare à la production théorique sur le temps de fonctionnement, pas sur les 480 minutes. »"],"reflection":"Quelle composante du TRS est la plus faible au goulot, et quel levier du cours mobiliseriez-vous en premier pour l'améliorer ?","next":"q12"},"q12":{"type":"classify","order":12,"title":"Question 12 — Choisir le bon outil Lean","place":"Vendredi, 11 h — Atelier, point de rassemblement","course":{"part":"Partie 6 — Lean et performance","slides":"23"},"scene":[{"who":"hugo","text":"J'ai quatre outils dans ma boîte : 5S, SMED, Kanban et Poka-yoke. Mais chaque problème appelle le sien."},{"who":"sabine","text":"Le bon outil, c'est celui qui s'attaque à la vraie cause, pas celui qu'on connaît le mieux."}],"briefing":"5S : organiser le poste. SMED : réduire les changements de série. Kanban : produire quand l'aval consomme. Poka-yoke : empêcher l'erreur.","prompt":"Associez chaque situation à l'outil Lean le plus adapté.","categories":[{"id":"5S","label":"5S","desc":"organiser et standardiser le poste"},{"id":"SMED","label":"SMED","desc":"réduire le temps de changement de série"},{"id":"Kanban","label":"Kanban","desc":"tirer la production selon la consommation"},{"id":"Poka-yoke","label":"Poka-yoke","desc":"rendre l'erreur impossible ou visible"}],"items":[{"id":"i1","text":"Changer le réglage de la machine à coudre prend 45 minutes : on groupe donc de très grosses séries.","answer":"SMED","why":"Réduire le temps de changement de série permet de petites séries, donc moins de stock et plus de réactivité."},{"id":"i2","text":"On cherche sans cesse les gabarits et les bobines : le poste est encombré.","answer":"5S","why":"Trier, ranger, nettoyer, standardiser, maintenir : un poste organisé évite les pertes de temps."},{"id":"i3","text":"La découpe produit sans savoir si la couture a besoin des pièces : les en-cours s'entassent.","answer":"Kanban","why":"Un signal visuel déclenche la production seulement quand le poste suivant consomme."},{"id":"i4","text":"Des pièces mal assemblées passent au poste suivant : aucun détrompeur n'empêche de les monter à l'envers.","answer":"Poka-yoke","why":"Un dispositif qui rend l'erreur impossible ou immédiatement visible évite de transmettre un défaut."},{"id":"i5","text":"Le poste de contrôle est mal éclairé et mal rangé : on perd du temps à chaque pièce.","answer":"5S","why":"Même logique d'organisation du poste de travail."}],"thresholds":[{"min":5,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"cout":-1,"resilience":2},"trust":{"hugo":1,"nadia":1},"verdict":{"tone":"positive","text":"Chaque outil est associé au problème qu'il résout : vous ne gaspillez pas d'énergie à traiter la mauvaise cause."},"reaction":[{"who":"hugo","text":"Voilà une boîte à outils qui sert vraiment. On commence par le SMED sur la couture n° 2."},{"who":"sabine","text":"Et le poka-yoke de montage, je le mets en place la semaine prochaine."}]},"mixed":{"effects":{},"trust":{"hugo":-1},"verdict":{"tone":"mixed","text":"Plusieurs outils sont bien choisis, mais une confusion subsiste : un mauvais outil traite le symptôme sans résoudre la cause."},"reaction":[{"who":"hugo","text":"On y est presque, mais pas tout à fait : le mauvais outil me ferait perdre du temps."},{"who":"sabine","text":"Reprenons les causes : organisation, changement de série, pilotage, erreur."}]},"bad":{"effects":{"cout":1},"trust":{"hugo":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Des outils mal associés aux problèmes : on risque d'investir du temps et de l'énergie sans améliorer la performance."},"reaction":[{"who":"hugo","text":"Si on prend un marteau pour visser, ça ne marchera pas."},{"who":"nadia","text":"Chaque outil a son usage : il faut revoir la correspondance."}]}},"hints":["Le Contrôleur : « Cherchez la cause : désordre, changement de série, flux mal piloté, ou erreur non détectée ? »","Le Contrôleur : « Le SMED traite le temps de changement ; le Kanban traite le pilotage du flux. »"],"reflection":"Quel outil Lean aurait, selon vous, le plus d'impact sur la couture n° 2 (le goulot), et comment le déploieriez-vous concrètement ?","next":"t5"},"t5":{"type":"scene","order":12,"title":"Vendredi après-midi : une alerte sur la machine du goulot","place":"Vendredi, 14 h — Atelier, poste de couture n° 2","scene":[{"who":"sabine","text":"Alerte : le capteur de vibration de la machine n° 2 de la couture dérive depuis ce matin."},{"who":"hugo","text":"C'est notre machine au goulot. Si elle tombe en panne pendant le pic, tout s'arrête."},{"who":"nadia","text":"L'atelier est fermé ce week-end. Lundi, on repart à pleine charge."},{"who":"marc","text":"Une intervention, ça coûte. Une panne au mauvais moment, ça coûte bien plus."}],"next":"q13"},"q13":{"type":"choice","order":13,"title":"Question 13 — Que faire de la machine du goulot ?","place":"Vendredi, 14 h 30 — Poste de couture n° 2","course":{"part":"Partie 7 — Qualité, maintenance, RSE","slides":"27"},"scene":[{"who":"sabine","text":"Le capteur annonce une usure du roulement principal. Elle peut tenir quelques jours, ou lâcher demain."},{"who":"hugo","text":"Sur le goulot, je ne veux aucun risque. Mais je ne veux pas non plus perdre une journée de production."}],"briefing":"Maintenance curative, préventive ou prédictive : sur la machine qui fixe le débit de toute l'usine, le choix n'est pas anodin.","prompt":"Que décidez-vous pour la machine n° 2 ?","options":[{"text":"Attendre la panne et réparer en urgence si elle se produit (maintenance curative).","next":"q14","effects":{"tresorerie":-30,"service":-6,"resilience":-4},"trust":{"marc":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Réparer après la panne sur le goulot est le pire scénario : une heure perdue au goulot est perdue pour toute l'usine, au moment du pic."},"reaction":[{"who":"sabine","text":"On gagne du temps aujourd'hui, et on le paie triple le jour de la panne."},{"who":"nadia","text":"Lundi, au pic de production, ce serait une catastrophe."},{"who":"marc","text":"Une panne au goulot coûte bien plus cher qu'une intervention planifiée."}]},{"text":"Planifier une intervention préventive ce week-end, atelier fermé, et poser un suivi prédictif sur la machine.","next":"q14","effects":{"tresorerie":-10,"resilience":6,"service":2,"rse":2},"setFlags":["maintPlan"],"trust":{"nadia":1,"hugo":1,"marc":1},"verdict":{"tone":"positive","text":"Intervenir hors production, avant la panne, et surveiller l'état de la machine : c'est la combinaison la plus efficace pour protéger le goulot."},"reaction":[{"who":"sabine","text":"Intervention samedi matin, capteur de suivi installé. On évite l'arrêt de lundi."},{"who":"hugo","text":"Mes équipes seront sereines lundi."},{"who":"marc","text":"Dix mille euros contre un arrêt du goulot au pic : c'est un bon calcul."}]},{"text":"Arrêter la machine immédiatement et l'inspecter pendant la journée de vendredi.","next":"q14","effects":{"tresorerie":-15,"service":-3},"trust":{"theo":-1,"hugo":-1},"verdictIf":[{"if":{"flag":"rope"},"tone":"mixed","text":"Arrêter le goulot en pleine journée coûte de la production ; le tampon mis en place à la question 7 permet d'absorber l'arrêt, mais le week-end fermé offrait une fenêtre sans aucune perte."}],"verdict":{"tone":"risky","text":"Arrêter le goulot en pleine journée coûte de la production alors que le week-end fermé offre une fenêtre d'intervention sans perte."},"reaction":[{"who":"theo","text":"On arrête la couture un vendredi, en pleine semaine de livraison ?!"},{"who":"hugo","text":"Grâce au tampon, la finition peut continuer quelques heures. Mais pas plus.","if":{"flag":"rope"}},{"who":"hugo","text":"Dès que la couture s'arrête, la finition n'a plus rien à faire.","if":{"notFlag":"rope"}},{"who":"sabine","text":"Je comprends l'inquiétude, mais on pouvait attendre samedi."}]}],"hints":["Le Contrôleur : « Quand l'atelier est-il fermé ? Quelle fenêtre permet d'intervenir sans perdre de production ? »","Le Contrôleur : « Curative : après la panne. Préventive : à intervalles réguliers. Prédictive : en surveillant l'état réel de la machine. »"],"reflection":"Quel type de maintenance avez-vous choisi, et pourquoi est-il adapté à une machine qui est le goulot de la ligne ?"},"q14":{"type":"tune","order":14,"title":"Question 14 — Régler la cadence de la semaine prochaine","place":"Vendredi, 16 h — Bureau de Nadia, tableau de cadence","course":{"part":"Partie 7 — Qualité, maintenance, RSE","slides":"27 et 28"},"scene":[{"who":"nadia","text":"La semaine prochaine, l'objectif est de 3 000 tentes conformes. Je peux régler la cadence de la couture et proposer des heures supplémentaires à l'équipe."},{"who":"hugo","text":"Mes couturières donnent beaucoup. Pousser les machines et les gens, ça se paie : en défauts d'abord, en fatigue ensuite."},{"who":"sabine","text":"Au-delà de la cadence nominale, mon taux de défauts monte. Je vous donne les courbes en direct."},{"who":"sabine","text":"La machine n° 2 a été révisée : elle tient la cadence nominale sans souci.","if":{"flag":"maintPlan"}},{"who":"elise","text":"Je ne veux ni d'une usine épuisée, ni de tentes à reprendre. Notre promesse, c'est aussi la manière dont on produit."},{"who":"theo","text":"Mais je veux mes 3 000 tentes !"}],"briefing":"Observez ce qui monte quand vous augmentez la cadence : pas seulement la production, mais aussi les défauts et le risque pour les équipes.","prompt":"Réglez la cadence de la couture et les heures supplémentaires pour la semaine à venir, puis validez.","sliders":[{"id":"cad","label":"Cadence de la couture (en % de la cadence nominale)","min":80,"max":130,"step":5,"value":100,"unit":"%"},{"id":"ot","label":"Heures supplémentaires par semaine pour l'équipe","min":0,"max":12,"step":2,"value":0,"unit":"h"}],"metrics":[{"id":"base","label":"Capacité nominale de la couture","expr":"60 + 20*F.capacite80","unit":"pièces/h","hint":"Dépend de votre investissement à la question 6."},{"id":"brut","label":"Tentes produites sur la semaine","expr":"base*cad/100*(40+ot)","unit":"tentes","bar":4200},{"id":"defect","label":"Taux de défauts","expr":"3 + Math.max(0, cad-100)*0.4 + ot*0.25","unit":"%","digits":1,"okExpr":"defect<=8","bar":20,"hint":"Alerte au-delà de 8 %"},{"id":"bon","label":"Tentes conformes (objectif : 3 000)","expr":"brut*(1-defect/100)","unit":"tentes","okExpr":"bon>=3000","bar":4200},{"id":"risque","label":"Risque social et sécurité","expr":"Math.max(0, cad-100)*1.2 + ot*4","unit":"/ 100","okExpr":"risque<=50","bar":100,"hint":"Alerte au-delà de 50"}],"rules":[{"if":"risque>50","outcome":"burnout"},{"if":"defect>8","outcome":"quality"},{"if":"bon<3000","outcome":"short"},{"if":"true","outcome":"balanced"}],"explain":"Le bon réglage est durable : il tient l'objectif de tentes conformes sans que les défauts ni le risque pour les équipes ne dépassent leur seuil d'alerte.","outcomes":{"balanced":{"effects":{"service":6,"rse":5,"resilience":2},"trust":{"elise":1,"hugo":1,"nadia":1},"verdict":{"tone":"positive","text":"Vous tenez l'objectif sans sacrifier la qualité ni les équipes : une cadence soutenable, appuyée sur la capacité du goulot, est la plus rentable."},"reaction":[{"who":"elise","text":"Trois mille tentes conformes, et des équipes qui ne sont pas à bout. C'est la production que je veux montrer."},{"who":"hugo","text":"Mes équipes vous remercient."},{"who":"sabine","text":"Les défauts restent à des niveaux normaux."},{"who":"theo","text":"Trois mille tentes : je les vends toutes."}]},"burnout":{"effects":{"rse":-10,"resilience":-5,"service":3},"trust":{"hugo":-2,"elise":-1},"verdict":{"tone":"risky","text":"Pousser la cadence et les heures supplémentaires au-delà du supportable dégrade la sécurité et la santé des équipes : le risque social explose, et la RSE avec."},"reaction":[{"who":"hugo","text":"Mes équipes sont épuisées. Ça ne tiendra pas deux semaines."},{"who":"elise","text":"Je vous l'avais dit : notre promesse RSE n'est pas négociable."},{"who":"sabine","text":"Avec ce rythme, je redoute les accidents."}]},"quality":{"effects":{"rse":-3,"cout":1,"service":-3},"trust":{"hugo":-1,"nadia":-1},"verdict":{"tone":"risky","text":"En forçant la cadence, le taux de défauts grimpe : vous produisez plus, mais vous reprenez et rebutez beaucoup (coût de non-qualité)."},"reaction":[{"who":"sabine","text":"Le taux de défauts bondit : ce sont des rebuts, de la reprise et des retours clients à venir."},{"who":"marc","text":"Les rebuts, c'est de l'argent qui part à la poubelle."}]},"short":{"effects":{"service":-6},"trust":{"theo":-1},"verdict":{"tone":"mixed","text":"Vous protégez la qualité et les équipes, mais l'objectif de 3 000 tentes conformes n'est pas atteint : sans capacité supplémentaire au goulot, la ligne ne peut pas le tenir durablement."},"reaction":[{"who":"theo","text":"On est en dessous de 3 000. Des commandes vont glisser."},{"who":"nadia","text":"Sans la capacité de la couture, on est au bout de ce qu'on peut faire proprement."},{"who":"elise","text":"Mieux vaut un peu de retard que des équipes épuisées. Mais il faudra y revenir."}]}},"hints":["Le Contrôleur : « Observez ce qui monte quand vous augmentez la cadence : pas seulement la production. »","Le Contrôleur : « Le bon réglage est souvent près de la cadence nominale : la capacité durable se construit au goulot. »"],"reflection":"Quel compromis avez-vous trouvé entre quantité produite, qualité et conditions de travail, et en quoi votre décision d'investissement de la question 6 a-t-elle compté ?","next":"end"},"end":{"type":"bilan","order":15,"title":"Bilan de mission"}},"synth":{"good":"« Cellule {team}, votre semaine à l'atelier a été solide. Vous avez cherché le goulot avant d'investir, choisi des règles qui protègent les promesses faites aux clients, et gardé les équipes et la qualité en ligne de mire. C'est exactement le type d'arbitrage qu'on attend d'une cellule NOMAD. Continuez ainsi pour la Mission 5. »","mixed":"« Cellule {team}, votre semaine a été marquée par des arbitrages contrastés : de bons réflexes, mais aussi des décisions qui ont coûté du temps ou de l'argent. Un goulot mal repéré ou une règle mal choisie se paie vite : on en reparle à la Mission 5. »","risky":"« Cellule {team}, je dois être honnête : plusieurs de vos décisions ont ignoré ce qui limite réellement la production, et la ligne en a payé le prix en retards, en trésorerie ou en tension dans les équipes. Attendez-vous à ce que la Mission 5 soit plus exigeante. »"},"epilogue":[{"who":"narr","text":"Vendredi soir, 19 h. Les dernières tentes de la semaine sortent de la finition. La ligne s'arrête. Dans la salle de pilotage, il reste quelques tasses et un tableau couvert de notes."},{"who":"elise","text":"Cellule {team}, vous avez fait de cet atelier une ligne qui sait où elle perd du temps, et ce qu'elle protège. Je garde votre numéro.","if":{"tier":"good"}},{"who":"elise","text":"Cellule {team}, du bon et du moins bon, mais l'atelier a avancé cette semaine. On verra à l'usage.","if":{"tier":"mixed"}},{"who":"elise","text":"Cellule {team}, je ne vous cache pas mes doutes : la ligne a payé plusieurs de vos choix. Je la surveillerai de très près.","if":{"tier":"risky"}},{"who":"nadia","text":"Ma ligne a enfin un diagnostic clair. Merci d'avoir cherché le goulot avant de chercher des coupables.","if":{"trustGte":["nadia",3]}},{"who":"nadia","text":"On ne s'est pas toujours compris. J'aurais aimé qu'on regarde plus souvent la ligne ensemble.","if":{"trustLte":["nadia",1]}},{"who":"hugo","text":"Mes équipes préfèrent travailler avec des gens qui regardent le terrain. Revenez quand vous voulez.","if":{"trustGte":["hugo",3]}},{"who":"hugo","text":"Mes couturières ont beaucoup donné cette semaine. J'espère qu'on les écoutera davantage.","if":{"trustLte":["hugo",1]}},{"who":"theo","text":"Mes revendeurs auront leurs tentes. Je ne l'oublierai pas.","if":{"trustGte":["theo",3]}},{"who":"theo","text":"Vous avez freiné plus d'une de mes demandes. J'espère que vous aviez raison.","if":{"trustLte":["theo",1]}},{"who":"marc","text":"Des dépenses justifiées, des gaspillages traqués. Je signe sans trembler.","if":{"trustGte":["marc",3]}},{"who":"marc","text":"Je regarderai chaque euro de très près la semaine prochaine.","if":{"trustLte":["marc",1]}},{"who":"sabine","text":"Les relevés de la semaine sont dans le dossier : TRS, défauts, maintenance. Ils vous seront utiles."},{"who":"ctrl","text":"Débriefing demain. Retenez ce que chacun vous a dit et revoyez vos justifications : c'est de la matière pour votre dossier de restitution."}],"hiddenNote":{"html":"Note du Contrôleur : aucune décision de cette mission n'a déclenché de note cachée.","pdfTitle":"Note du Contrôleur :","pdfText":"Aucune décision de cette mission n'a déclenché de note cachée."},"justif":true,"startStep":"open","tier":{"good":5,"risky":-3}};
+const DRIVE_LINK = MISSION.drive;
+const CAST = MISSION.cast;
+const STEPS = MISSION.steps;
+const DECISION_STEPS = MISSION.decisionSteps;
+Object.keys(STEPS).forEach(k=>{ const s = STEPS[k]; if(s.options) s.options.forEach((o,i)=>{ o.letter = String.fromCharCode(65+i); }); });
+
+const state = {
+  pendingStep: null,
+  team: "",
+  gauges: { tresorerie: 500, service: 92, cout: 11, resilience: 40, rse: 55 },
+  history: [],
+  hiddenNote: false,
+  flags: {},
+  choices: {},
+  justifs: {},
+  attempts: {},
+  backCount: 0,
+  navStack: [],
+  trust: Object.assign({}, MISSION.trustInit),
+  currentStep: MISSION.startStep || "s1",
+  decisionsDone: 0,
+};
+
+const GAUGE_META = [
+  { key:"tresorerie", label:"Trésorerie", unit:"k€", color:"#0F9B8E", max:600 },
+  { key:"service", label:"Taux de service", unit:"%", color:"#FB8B24", max:100 },
+  { key:"cout", label:"Coût logistique", unit:"% CA", color:"#8D99AE", max:25 },
+  { key:"resilience", label:"Résilience", unit:"/100", color:"#0F9B8E", max:100 },
+  { key:"rse", label:"Image RSE", unit:"/100", color:"#FB8B24", max:100 },
+];
+
+
+// ============================================================
+// BOOT SEQUENCE
+// ============================================================
+const bootLines = MISSION.boot;
+
+function runBoot(){
+  const log = document.getElementById('boot-log');
+  let i = 0;
+  function typeLine(lineObj, onDone){
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.style.opacity = '1';
+    const textSpan = document.createElement('span');
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'cursor';
+    div.appendChild(textSpan);
+    div.appendChild(cursorSpan);
+    log.appendChild(div);
+    const full = lineObj.text;
+    let c = 0;
+    function tick(){
+      textSpan.textContent = full.slice(0, c);
+      c++;
+      if(c <= full.length){
+        setTimeout(tick, 14 + Math.random()*18);
+      } else {
+        cursorSpan.remove();
+        if(lineObj.suffix){
+          const b = document.createElement('b');
+          b.className = lineObj.cls;
+          b.textContent = ' ' + lineObj.suffix;
+          div.appendChild(b);
+        }
+        setTimeout(onDone, 220);
+      }
+    }
+    tick();
+  }
+  function next(){
+    if(i >= bootLines.length){
+      document.getElementById('boot-form').classList.add('show');
+      return;
+    }
+    typeLine(bootLines[i], ()=>{ i++; next(); });
+  }
+  next();
+}
+runBoot();
+
+document.getElementById('team-name-input').addEventListener('input', (e)=>{
+  document.getElementById('boot-enter').disabled = e.target.value.trim().length === 0;
+});
+document.getElementById('team-name-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !document.getElementById('boot-enter').disabled) showRepriseForm();
+});
+document.getElementById('boot-enter').addEventListener('click', showRepriseForm);
+document.getElementById('reprise-confirm').addEventListener('click', confirmReprise);
+
+function showRepriseForm(){
+  state.team = document.getElementById('team-name-input').value.trim() || "Cellule NOMAD";
+  document.getElementById('boot-form').classList.remove('show');
+  document.getElementById('boot-form').style.display = 'none';
+  document.getElementById('reprise-team-name').textContent = state.team;
+  document.getElementById('reprise-form').classList.add('show');
+}
+
+function confirmReprise(){
+  const tresorerie = parseFloat(document.getElementById('reprise-tresorerie').value);
+  const service = parseFloat(document.getElementById('reprise-service').value);
+  const cout = parseFloat(document.getElementById('reprise-cout').value);
+  const resilience = parseFloat(document.getElementById('reprise-resilience').value);
+  const rse = parseFloat(document.getElementById('reprise-rse').value);
+  state.gauges = {
+    tresorerie: isNaN(tresorerie) ? 500 : tresorerie,
+    service: isNaN(service) ? 92 : clamp(service, 0, 100),
+    cout: isNaN(cout) ? 11 : clamp(cout, 0, 30),
+    resilience: isNaN(resilience) ? 40 : clamp(resilience, 0, 100),
+    rse: isNaN(rse) ? 55 : clamp(rse, 0, 100),
+  };
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('boot').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('team-tag').textContent = "CELLULE — " + state.team.toUpperCase();
+  document.getElementById('brief-team-name').textContent = state.team;
+  document.getElementById('bilan-team-name').textContent = "— " + state.team;
+  renderGauges();
+  startMission();
+  updateProgress();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+Array.from(document.querySelectorAll('.navitem')).forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(btn.disabled) return;
+    Array.from(document.querySelectorAll('.navitem')).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    Array.from(document.querySelectorAll('.panel')).forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ============================================================
+// GAUGES
+// ============================================================
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+function renderGauges(){
+  const list = document.getElementById('gauge-list');
+  list.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const pct = clamp((val / g.max) * 100, 2, 100);
+    const row = document.createElement('div');
+    row.className = 'gauge-row';
+    row.innerHTML = `
+      <div class="gauge-top"><span class="gauge-name">${g.label}</span><span class="gauge-val" id="gval-${g.key}">${fmtVal(g,val)}</span></div>
+      <div class="gauge-track"><div class="gauge-fill" id="gfill-${g.key}" style="width:${pct}%;background:${g.color}"></div></div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function fmtVal(g, v){
+  if(g.key === 'tresorerie') return Math.round(v) + ' k€';
+  if(g.key === 'cout') return v.toFixed(1) + '%';
+  return Math.round(v) + (g.key==='service' ? '%' : '/100');
+}
+
+function applyEffects(effects){
+  if(!effects) return;
+  Object.keys(effects).forEach(k=>{
+    state.gauges[k] += effects[k];
+  });
+  // clamps
+  state.gauges.service = clamp(state.gauges.service, 0, 100);
+  state.gauges.resilience = clamp(state.gauges.resilience, 0, 100);
+  state.gauges.rse = clamp(state.gauges.rse, 0, 100);
+  state.gauges.cout = clamp(state.gauges.cout, 0, 30);
+  state.gauges.tresorerie = clamp(state.gauges.tresorerie, 0, 900);
+  renderGauges();
+}
+
+function effectsToText(effects){
+  if(!effects || Object.keys(effects).length===0) return "Aucun effet immédiat sur les jauges.";
+  const names = {tresorerie:"Trésorerie", service:"Service", cout:"Coût logistique", resilience:"Résilience", rse:"RSE"};
+  const units = {tresorerie:" k€", service:" pts", cout:" pts", resilience:" pts", rse:" pts"};
+  return Object.keys(effects).map(k=>{
+    const v = effects[k];
+    return (v>0?"+":"") + v + units[k] + " " + names[k];
+  }).join("  ·  ");
+}
+
+function effectsToHTML(effects){
+  if(!effects || Object.keys(effects).length===0) return '<span class="effect-tag" style="background:#EEF0F3;color:#8D99AE;">Aucun effet visible</span>';
+  const names = {tresorerie:"Trésorerie", service:"Service", cout:"Coût log.", resilience:"Résilience", rse:"RSE"};
+  const units = {tresorerie:"k€", service:"pts", cout:"pts", resilience:"pts", rse:"pts"};
+  return Object.keys(effects).map(k=>{
+    const v = effects[k];
+    const good = (k === 'cout') ? v <= 0 : v >= 0;
+    const cls = good ? 'effect-up' : 'effect-down';
+    return `<span class="effect-tag ${cls}">${names[k]} ${v>0?'+':''}${v}${units[k]}</span>`;
+  }).join('');
+}
+
+// ============================================================
+// MISSION RENDERING
+// ============================================================
+function updateProgress(){
+  const pct = Math.round((state.decisionsDone / DECISION_STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('nav-mission-badge').textContent = state.decisionsDone + '/' + DECISION_STEPS.length;
+  document.getElementById('nav-bilan').disabled = !(state.decisionsDone >= DECISION_STEPS.length);
+}
+
+function renderStepDots(){
+  const wrap = document.getElementById('step-dots');
+  wrap.innerHTML = '';
+  const N = DECISION_STEPS.length, step = STEPS[state.currentStep];
+  const idx = DECISION_STEPS.indexOf(state.currentStep);
+  const cur = idx >= 0 ? idx : state.decisionsDone;
+  for(let i=0;i<N;i++){
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i < state.decisionsDone ? ' done' : (i === cur && step.type !== 'bilan' ? ' current' : ''));
+    wrap.appendChild(d);
+  }
+  const t = document.createElement('span'); t.className = 'dots-label';
+  t.textContent = step.type === 'bilan' ? 'Mission terminée' : (step.type === 'scene' ? 'Avant la question ' : 'Question ') + Math.min(cur + 1, N) + ' sur ' + N;
+  wrap.appendChild(t);
+}
+
+let hintsShown = 0;
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fill(s){ return String(s).split('{team}').join(state.team || 'Cellule'); }
+function pdfSafe(s){ return String(s).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2192/g,'-').replace(/[^\x20-\x7E\xA0-\xFF\u0152\u0153\u2013\u2014\u2026\u20AC]/g,''); }
+function num(v){ const n = parseFloat(String(v).replace(/\s/g,'').replace(',','.')); return isNaN(n) ? NaN : n; }
+function fmtN(n, d){ return Number(n).toLocaleString('fr-FR', {maximumFractionDigits: (d===undefined?1:d)}); }
+
+// Conditions : flag, notFlag, trustGte/Lte/Eq [qui, n], chose [etape, cle], gaugeGte/Lt [jauge, n], tier
+function condOk(c){
+  if(!c) return true;
+  if(c.flag && !state.flags[c.flag]) return false;
+  if(c.notFlag && state.flags[c.notFlag]) return false;
+  if(c.trustGte && !(state.trust[c.trustGte[0]] >= c.trustGte[1])) return false;
+  if(c.trustLte && !(state.trust[c.trustLte[0]] <= c.trustLte[1])) return false;
+  if(c.trustEq && !(state.trust[c.trustEq[0]] === c.trustEq[1])) return false;
+  if(c.chose && state.choices[c.chose[0]] !== c.chose[1]) return false;
+  if(c.gaugeGte && !(state.gauges[c.gaugeGte[0]] >= c.gaugeGte[1])) return false;
+  if(c.gaugeLt && !(state.gauges[c.gaugeLt[0]] < c.gaugeLt[1])) return false;
+  if(c.tier && state.controllerTier !== c.tier) return false;
+  return true;
+}
+
+// Petites expressions écrites par l'auteur de la mission (règles de calcul des questions interactives)
+function X(expr, vars){
+  const names = Object.keys(vars || {});
+  const F = new Proxy({}, { get: (t, k) => (state.flags[k] ? 1 : 0) });
+  try{
+    const fn = Function.apply(null, names.concat(['F','G','TR','Math','return (' + expr + ');']));
+    return fn.apply(null, names.map(k => vars[k]).concat([F, state.gauges, state.trust, Math]));
+  }catch(e){ return NaN; }
+}
+
+function avatarHTML(who){
+  const c = CAST[who]; if(!c) return '';
+  return `<div class="avatar" style="background:${c.color}">${esc(c.initials)}</div>`;
+}
+function dlgHTML(lines){
+  const ok = (lines||[]).filter(l=>condOk(l.if));
+  return ok.map((l,i)=>{
+    const delay = `style="animation-delay:${(i*0.16).toFixed(2)}s"`;
+    if(l.who === 'narr') return `<div class="dline narr" ${delay}><div class="dbody"><div class="dbubble">${esc(fill(l.text))}</div></div></div>`;
+    const c = CAST[l.who] || {name:'', role:''};
+    return `<div class="dline ${l.who==='ctrl'?'ctrl':''}" ${delay}>${avatarHTML(l.who)}<div class="dbody"><div class="dwho">${esc(c.name)}<span>${esc(c.role)}</span></div><div class="dbubble">${esc(fill(l.text))}</div></div></div>`;
+  }).join('');
+}
+const TRUST_LABELS = ['méfiant','réservé','neutre','confiant','allié'];
+function trustPips(v){ let h=''; for(let i=0;i<4;i++){ h += `<span class="pip ${i<v?'on':''} ${v>=3?'hi':(v<=1?'lo':'mid')}"></span>`; } return h; }
+function relStripHTML(){
+  return `<div class="rel-strip">` + MISSION.relations.map(k=>{
+    const c = CAST[k], v = state.trust[k];
+    return `<div class="rel-chip" title="${esc(c.name)} : ${TRUST_LABELS[v]}">${avatarHTML(k)}<div><div class="rel-name">${esc(c.name.split(' ')[0])}</div><div class="pips">${trustPips(v)}</div></div></div>`;
+  }).join('') + `</div>`;
+}
+
+// ------------------------------------------------------------------ navigation : retour en arrière
+function snapshot(stepOverride){
+  return {
+    step: stepOverride || state.currentStep,
+    gauges: Object.assign({}, state.gauges), flags: Object.assign({}, state.flags),
+    choices: Object.assign({}, state.choices), trust: Object.assign({}, state.trust),
+    hiddenNote: state.hiddenNote, decisionsDone: state.decisionsDone, histLen: state.history.length,
+  };
+}
+function restoreSnap(s){
+  state.currentStep = s.step;
+  state.gauges = Object.assign({}, s.gauges); state.flags = Object.assign({}, s.flags);
+  state.choices = Object.assign({}, s.choices); state.trust = Object.assign({}, s.trust);
+  state.hiddenNote = s.hiddenNote; state.decisionsDone = s.decisionsDone;
+  state.history.length = s.histLen;
+  state.pendingStep = null; state.controllerTier = undefined;
+}
+function startMission(){
+  state.currentStep = MISSION.startStep || 's1';
+  state.navStack = [snapshot()];
+  UI.answered = false;
+  renderMissionStep();
+}
+function enterStep(id){
+  state.currentStep = id; state.pendingStep = null;
+  state.navStack.push(snapshot());
+  UI.answered = false; markDirty();
+  renderMissionStep();
+}
+function goBack(){
+  if(UI.answered){
+    restoreSnap(state.navStack[state.navStack.length - 1]);
+  } else if(state.navStack.length > 1){
+    state.navStack.pop();
+    restoreSnap(state.navStack[state.navStack.length - 1]);
+  } else { return; }
+  state.backCount = (state.backCount || 0) + 1;
+  UI.answered = false;
+  document.getElementById('bilan-locked').style.display = 'block';
+  document.getElementById('bilan-content').style.display = 'none';
+  renderGauges(); updateProgress(); markDirty();
+  renderMissionStep();
+}
+function toolbarHTML(step){
+  const canBack = UI.answered || state.navStack.length > 1;
+  const label = UI.answered ? '↶ Modifier ma réponse' : '← Revenir';
+  const c = step.course;
+  const chip = DRIVE_LINK ? `<a class="course-chip" href="${esc(DRIVE_LINK)}" target="_blank" rel="noopener" title="Ouvre le support de cours dans un nouvel onglet">📘 Cours${c ? ' — ' + esc(c.part) + (c.slides ? ' · diapos ' + esc(c.slides) : '') : ''}</a>` : '';
+  return `<div class="step-toolbar"><button type="button" class="back-btn" id="btn-back" ${canBack ? '' : 'disabled'}>${label}</button>${chip}</div>`;
+}
+function bindToolbar(){ const b = document.getElementById('btn-back'); if(b) b.addEventListener('click', goBack); }
+function refreshToolbar(){ const w = document.getElementById('toolbar-wrap'); if(!w) return; w.innerHTML = toolbarHTML(STEPS[state.currentStep]); bindToolbar(); }
+
+// ------------------------------------------------------------------ rendu d'une étape
+function renderMissionStep(){
+  const step = STEPS[state.currentStep];
+  document.getElementById('step-title').textContent = step.title;
+  renderStepDots();
+  const content = document.getElementById('step-content');
+  hintsShown = 0;
+  const head = step.place ? `<div class="scene-head"><span class="dot"></span>${esc(step.place)}</div>` : '';
+  const rel = `<div id="rel-wrap">${relStripHTML()}</div>`;
+  const tb = `<div id="toolbar-wrap">${toolbarHTML(step)}</div>`;
+
+  if(step.type === 'scene'){
+    content.innerHTML = tb + rel + head + `<div class="dlg">${dlgHTML(step.scene)}</div><button class="continue-btn" id="continue-btn">Continuer →</button>`;
+    document.getElementById('continue-btn').addEventListener('click', ()=> enterStep(step.next));
+  } else if(step.type === 'bilan'){
+    content.innerHTML = tb + `<div class="narration-box">Mission terminée. Rendez-vous dans l'onglet <strong>Bilan &amp; export</strong> pour consulter le résultat complet de votre cellule.</div>`;
+    unlockBilan();
+  } else {
+    content.innerHTML = tb + rel + head + `<div class="dlg">${dlgHTML(step.scene)}</div>` +
+      (step.briefing ? `<div class="briefing-box"><span class="who">LE CONTRÔLEUR — TRANSMISSION</span>${esc(step.briefing)}</div>` : '') +
+      `<p class="step-prompt">${esc(step.prompt)}</p>
+       <div id="q-wrap"></div>
+       <div id="reaction-wrap"></div>
+       <div id="hint-zone">
+         <button class="hint-btn" id="hint-btn">💡 Demander une piste au Contrôleur</button>
+         <div id="hint-list"></div>
+       </div>`;
+    (QUI[step.type] || QUI.choice)(step, document.getElementById('q-wrap'));
+    document.getElementById('hint-btn').addEventListener('click', ()=> showHint(step));
+  }
+  bindToolbar();
+  const m = document.getElementById('main'); if(m) m.scrollTop = 0;
+}
+
+function showHint(step){
+  if(hintsShown >= step.hints.length) return;
+  const div = document.createElement('div');
+  div.className = 'hint-card';
+  div.textContent = "Piste " + (hintsShown+1) + " — " + step.hints[hintsShown];
+  document.getElementById('hint-list').appendChild(div);
+  hintsShown++;
+  if(hintsShown >= step.hints.length){
+    document.getElementById('hint-btn').disabled = true;
+    document.getElementById('hint-btn').textContent = "Vous avez utilisé vos 2 pistes pour cette étape";
+  }
+}
+
+// ------------------------------------------------------------------ résolution commune d'une réponse
+function justifBoxHTML(step){
+  return `<div class="justif-box">
+    <div class="justif-title">Justifiez votre réponse par écrit</div>
+    <div class="justif-q">${esc(step.reflection || '')}</div>
+    <textarea id="justif-input" rows="4" aria-label="Justification de votre réponse" placeholder="Pourquoi cette réponse ? Sur quels éléments du dossier ou du cours vous appuyez-vous ? Que feriez-vous différemment ?"></textarea>
+    <div class="justif-hint">Cet encart nourrit votre dossier de restitution. Vous pourrez le compléter ou le corriger dans l'onglet Bilan avant d'exporter le PDF.</div>
+  </div>`;
+}
+function bindJustif(stepId){
+  const ta = document.getElementById('justif-input');
+  if(!ta) return;
+  ta.value = state.justifs[stepId] || '';
+  ta.addEventListener('input', ()=>{ state.justifs[stepId] = ta.value; markDirty(); });
+}
+function applyTrust(map){
+  const out = [];
+  Object.keys(map||{}).forEach(k=>{
+    if(!(k in state.trust)) return;
+    const before = state.trust[k], after = clamp(before + map[k], 0, 4);
+    state.trust[k] = after;
+    if(after !== before) out.push({who:k, delta:after-before});
+  });
+  return out;
+}
+function pickVerdict(o){
+  const vi = (o.verdictIf||[]).find(v=>condOk(v.if));
+  return vi ? {tone:vi.tone, text:vi.text} : o.verdict;
+}
+
+function commit(step, o, key, label, extra){
+  extra = extra || {};
+  const stepId = state.currentStep;
+  const verdict = pickVerdict(o);   // jugé AVANT les effets : on évalue ce que la cellule avait en main au moment de décider
+  const effects = Object.assign({}, o.effects || {});
+  Object.keys(extra.dyn || {}).forEach(k=>{ effects[k] = (effects[k] || 0) + extra.dyn[k]; });
+  applyEffects(effects);
+  if(o.hidden) state.hiddenNote = true;
+  (o.setFlags||[]).forEach(f=>{ state.flags[f] = true; });
+  state.choices[stepId] = key;
+  const deltas = applyTrust(o.trust);
+  const reaction = (o.reaction||[]).filter(l=>condOk(l.if)).map(l=>({who:l.who, text:fill(l.text)}));
+  const next = o.next || step.next;
+
+  state.pendingStep = next; markDirty();
+  state.attempts[stepId] = (state.attempts[stepId] || 0) + 1;
+  state.history.push({
+    stepId: stepId, stepTitle: step.title, optionLabel: label, detail: extra.detail || [],
+    effectsText: effectsToText(effects), verdict: verdict || null, reflection: step.reflection || null,
+    reaction: reaction, trustDeltas: deltas, attempt: state.attempts[stepId],
+  });
+  if(DECISION_STEPS.includes(stepId)){ state.decisionsDone++; updateProgress(); }
+  UI.answered = true;
+
+  const tags = deltas.map(d=>`<span class="trust-delta ${d.delta>0?'trust-up':'trust-down'}">${esc(CAST[d.who].name.split(' ')[0])} ${d.delta>0?'↑':'↓'}</span>`).join('');
+  document.getElementById('reaction-wrap').innerHTML =
+    `<div class="react-box"><div class="react-title">${extra.feedbackHTML ? 'Résultat et réactions dans la salle' : 'Réactions dans la salle'}</div>
+       ${extra.feedbackHTML ? `<div class="fb-box">${extra.feedbackHTML}</div>` : ''}
+       <div class="dlg">${dlgHTML(reaction)}</div>
+       <div class="react-meta"><div class="meta-label">Relations</div>${tags || '<span class="trust-delta trust-flat">inchangées</span>'}</div>
+       <div class="react-meta"><div class="meta-label">Effet(s) sur vos jauges</div>${effectsToHTML(effects)}</div>
+       ${MISSION.justif ? justifBoxHTML(step) : ''}
+       <button class="continue-btn" id="continue-after-choice">Continuer →</button>
+     </div>`;
+  bindJustif(stepId);
+  document.getElementById('rel-wrap').innerHTML = relStripHTML();
+  document.getElementById('hint-zone').style.display = 'none';
+  document.getElementById('continue-after-choice').addEventListener('click', ()=> enterStep(next));
+  refreshToolbar();
+  const rb = document.getElementById('reaction-wrap');
+  if(rb && rb.scrollIntoView) rb.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function lockQ(){
+  const w = document.getElementById('q-wrap'); if(!w) return;
+  w.classList.add('locked');
+  Array.from(w.querySelectorAll('button,select,input')).forEach(e=>{ e.disabled = true; });
+  Array.from(w.querySelectorAll('.rk-row')).forEach(e=>{ e.draggable = false; });
+}
+function submitBar(wrap, onSubmit){
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'continue-btn q-submit'; b.id = 'q-submit'; b.textContent = 'Valider ma réponse'; b.disabled = true;
+  b.addEventListener('click', ()=>{ b.disabled = true; onSubmit(); });
+  wrap.appendChild(b);
+  return b;
+}
+function submitAnswer(step, ans){
+  const r = EVAL[step.type](step, ans);
+  lockQ();
+  commit(step, step.outcomes[r.key], r.key, r.label, r);
+}
+
+// ------------------------------------------------------------------ formats de questions : interfaces
+const QUI = {};
+const EVAL = {};
+
+// QCM avec conséquences
+QUI.choice = function(step, wrap){
+  const ow = document.createElement('div'); ow.id = 'options-wrap';
+  const status = step.options.map(opt=>{
+    const cost = (opt.effects && opt.effects.tresorerie) ? opt.effects.tresorerie : 0;
+    return { opt, cost, affordable: (state.gauges.tresorerie + cost) >= 0, lockedByReq: !!(opt.requires && !condOk(opt.requires.cond)) };
+  });
+  // si toutes les options dépassent le budget, on ne bloque pas l'élève : elles restent ouvertes (découvert)
+  const overdraft = !status.some(s=>!s.lockedByReq && s.affordable) && status.some(s=>!s.lockedByReq);
+  if(overdraft){
+    const n = document.createElement('div'); n.className = 'od-note';
+    n.textContent = "Trésorerie épuisée : toutes les options dépassent votre budget. Elles restent ouvertes, mais votre trésorerie plafonne à 0 et la direction financière le remarquera.";
+    wrap.appendChild(n);
+  }
+  wrap.appendChild(ow);
+  status.forEach(s=>{
+    const opt = s.opt;
+    const b = document.createElement('button');
+    b.className = 'option';
+    const base = `<span class="opt-letter">${opt.letter}</span><span class="opt-text">${esc(opt.text)}</span>`;
+    if(s.lockedByReq){
+      b.classList.add('locked'); b.disabled = true;
+      b.innerHTML = base + `<div class="opt-locked-msg">🔒 ${esc(opt.requires.msg)}</div>`;
+    } else if(!s.affordable && !overdraft){
+      b.classList.add('locked'); b.disabled = true;
+      b.innerHTML = base + `<div class="opt-locked-msg">🔒 Budget insuffisant : cette option nécessite ${Math.abs(s.cost)} k€, il vous reste ${state.gauges.tresorerie} k€.</div>`;
+    } else {
+      b.innerHTML = base + (!s.affordable ? `<div class="opt-od-msg">Option à ${Math.abs(s.cost)} k€ : au-delà de votre trésorerie (${state.gauges.tresorerie} k€), vous serez à découvert.</div>` : '');
+      b.addEventListener('click', ()=> chooseOption(step, opt, b));
+    }
+    ow.appendChild(b);
+  });
+};
+function chooseOption(step, opt, btnEl){
+  Array.from(document.querySelectorAll('#options-wrap .option')).forEach(b=>{ b.disabled = true; b.style.opacity = '0.55'; });
+  btnEl.classList.add('selected'); btnEl.style.opacity = '1';
+  commit(step, opt, opt.letter, opt.letter + '. ' + opt.text, {});
+}
+
+function byThreshold(step, score){
+  const t = step.thresholds.slice().sort((a,b)=>b.min-a.min).find(t=>score >= t.min);
+  return t ? t.outcome : step.thresholds[step.thresholds.length-1].outcome;
+}
+function fbList(rows){ return `<ul class="fb-list">${rows.join('')}</ul>`; }
+
+// Classement : associer chaque situation à une catégorie
+QUI.classify = function(step, wrap){
+  const cats = step.categories, items = step.items, ans = {};
+  const useSel = cats.length > 4;
+  if(!useSel){
+    const lg = document.createElement('div'); lg.className = 'cls-legend';
+    lg.innerHTML = cats.map(c=>`<span><b>${esc(c.label)}</b>${c.desc ? ' : ' + esc(c.desc) : ''}</span>`).join('');
+    wrap.appendChild(lg);
+  }
+  const list = document.createElement('div'); list.className = 'cls-list';
+  items.forEach(it=>{
+    const row = document.createElement('div'); row.className = 'cls-row';
+    row.innerHTML = `<div class="cls-text">${esc(it.text)}</div>`;
+    const ctl = document.createElement('div'); ctl.className = 'cls-ctl';
+    if(useSel){
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', it.text);
+      sel.innerHTML = `<option value="">Choisir…</option>` + cats.map(c=>`<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+      sel.addEventListener('change', ()=>{ if(sel.value) ans[it.id] = sel.value; else delete ans[it.id]; check(); });
+      ctl.appendChild(sel);
+    } else {
+      cats.forEach(c=>{
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'seg'; b.textContent = c.label;
+        b.addEventListener('click', ()=>{ ans[it.id] = c.id; Array.from(ctl.children).forEach(x=>x.classList.remove('on')); b.classList.add('on'); check(); });
+        ctl.appendChild(b);
+      });
+    }
+    row.appendChild(ctl); list.appendChild(row);
+  });
+  wrap.appendChild(list);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, ans));
+  function check(){ sub.disabled = !items.every(it=>ans[it.id]); }
+};
+EVAL.classify = function(step, ans){
+  let score = 0; const rows = [], detail = [];
+  const catLabel = id => (step.categories.find(c=>c.id===id) || {}).label || id;
+  step.items.forEach(it=>{
+    const ok = ans[it.id] === it.answer; if(ok) score++;
+    rows.push(`<li class="${ok?'ok':'ko'}"><b>${ok?'Correct':'À revoir'}</b> — ${esc(it.text)}<br><span class="fb-sub">Votre réponse : ${esc(catLabel(ans[it.id]))}${ok ? '' : ' · Attendu : ' + esc(catLabel(it.answer))}. ${esc(it.why || '')}</span></li>`);
+    detail.push(`${it.text} -> ${catLabel(ans[it.id])} (${ok ? 'correct' : 'attendu : ' + catLabel(it.answer)})`);
+  });
+  return { key: byThreshold(step, score), label: `${score} sur ${step.items.length} éléments correctement classés`, detail,
+           feedbackHTML: `<div class="fb-title">Correction : ${score} / ${step.items.length}</div>` + fbList(rows) };
+};
+
+// Calcul : saisie de valeurs numériques (ou choix oui/non) avec tolérance
+QUI.calc = function(step, wrap){
+  const ans = {};
+  const box = document.createElement('div'); box.className = 'calc-box';
+  if(step.givens){
+    box.innerHTML = `<div class="calc-givens">${step.givens.map(g=>`<div class="giv"><span>${esc(g.label)}</span><b>${esc(g.value)}</b></div>`).join('')}</div>`;
+  }
+  step.fields.forEach(f=>{
+    const row = document.createElement('div'); row.className = 'calc-row';
+    row.innerHTML = `<label>${esc(f.label)}</label>`;
+    let inp;
+    if(f.kind === 'select'){
+      inp = document.createElement('select');
+      inp.innerHTML = `<option value="">Choisir…</option>` + f.options.map(o=>`<option>${esc(o)}</option>`).join('');
+      inp.addEventListener('change', ()=>{ ans[f.id] = inp.value; check(); });
+    } else {
+      inp = document.createElement('input'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.autocomplete = 'off';
+      inp.placeholder = f.unit || 'Votre résultat';
+      inp.addEventListener('input', ()=>{ ans[f.id] = inp.value.trim(); check(); });
+    }
+    inp.setAttribute('aria-label', f.label);
+    row.appendChild(inp);
+    if(f.unit && f.kind !== 'select'){ const u = document.createElement('span'); u.className = 'calc-unit'; u.textContent = f.unit; row.appendChild(u); }
+    box.appendChild(row);
+  });
+  wrap.appendChild(box);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, ans));
+  function check(){ sub.disabled = !step.fields.every(f=>ans[f.id]); }
+};
+EVAL.calc = function(step, ans){
+  let score = 0; const rows = [], detail = [];
+  step.fields.forEach(f=>{
+    const raw = ans[f.id]; let ok, shown, exp;
+    if(f.kind === 'select'){ ok = raw === f.answer; shown = raw; exp = f.answer; }
+    else {
+      const v = num(raw); ok = !isNaN(v) && Math.abs(v - f.answer) <= (f.tol || 0);
+      shown = isNaN(v) ? '—' : fmtN(v, 2) + (f.unit ? ' ' + f.unit : '');
+      exp = fmtN(f.answer, 2) + (f.unit ? ' ' + f.unit : '');
+    }
+    if(ok) score++;
+    rows.push(`<li class="${ok?'ok':'ko'}"><b>${ok?'Correct':'À revoir'}</b> — ${esc(f.label)}<br><span class="fb-sub">Votre réponse : ${esc(shown)}${ok ? '' : ' · Attendu : ' + esc(exp)}</span></li>`);
+    detail.push(`${f.label} : ${shown}${ok ? '' : ' (attendu : ' + exp + ')'}`);
+  });
+  return { key: byThreshold(step, score), label: `${score} sur ${step.fields.length} résultats exacts`, detail,
+           feedbackHTML: `<div class="fb-title">Correction : ${score} / ${step.fields.length}</div>` + fbList(rows) + (step.method ? `<div class="fb-method"><b>Méthode :</b> ${esc(step.method)}</div>` : '') };
+};
+
+// Repérage : désigner un élément sur un schéma de la ligne
+QUI.hotspot = function(step, wrap){
+  let sel = null;
+  const line = document.createElement('div'); line.className = 'hs-line';
+  step.nodes.forEach((n, i)=>{
+    const q = Math.min(n.queue || 0, 16);
+    const pile = Array.from({length: q}, ()=>'<i></i>').join('');
+    const card = document.createElement('button'); card.type = 'button'; card.className = 'hs-node';
+    card.innerHTML = `<div class="hs-name">${esc(n.label)}</div><div class="hs-cap">${esc(n.cap)}</div>
+      <div class="hs-queue" title="${q} lots en attente"><span class="hs-qlabel">File d'attente</span><div class="hs-pile">${pile || '<em>vide</em>'}</div></div>
+      <div class="hs-note">${esc(n.note)}</div>`;
+    card.addEventListener('click', ()=>{
+      sel = n.id; Array.from(line.querySelectorAll('.hs-node')).forEach(x=>x.classList.remove('on')); card.classList.add('on'); sub.disabled = false;
+    });
+    line.appendChild(card);
+    if(i < step.nodes.length - 1){ const ar = document.createElement('div'); ar.className = 'hs-arrow'; ar.textContent = '→'; line.appendChild(ar); }
+  });
+  wrap.appendChild(line);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, sel));
+};
+EVAL.hotspot = function(step, ans){
+  const n = step.nodes.find(x=>x.id===ans);
+  const key = step.outcomeByNode[ans];
+  const ok = ans === step.correct;
+  return { key, label: `Poste désigné : ${n.label}`, detail: [ok ? 'Poste désigné : ' + n.label + ' (correct)' : 'Poste désigné : ' + n.label + ' (attendu : ' + step.nodes.find(x=>x.id===step.correct).label + ')'],
+           feedbackHTML: `<div class="fb-title">${ok ? 'Bien repéré' : 'Ce n\'est pas le goulot'}</div><div class="fb-method">${esc(step.explain)}</div>` };
+};
+
+// Ordonnancement : réordonner des cartes (ordre simple, ou Gantt avec indicateurs en direct)
+function schedMetrics(order, jobs){
+  let t = 0, flow = 0, late = 0, nlate = 0, maxl = 0; const bars = [];
+  order.forEach(id=>{ const j = jobs[id]; const s = t; t += j.p; const l = Math.max(0, t - j.d); flow += t; late += l; if(l > 0) nlate++; maxl = Math.max(maxl, l); bars.push({id, s, e:t, l, d:j.d}); });
+  return {bars, total:t, avgFlow: flow/order.length, totalLate: late, nLate: nlate, maxLate: maxl};
+}
+function ganttHTML(order, step){
+  const jobs = {}; step.items.forEach(i=>{ jobs[i.id] = i; });
+  const m = schedMetrics(order, jobs);
+  const span = Math.max(m.total, ...step.items.map(i=>i.d));
+  const bars = m.bars.map(b=>`<div class="gt-bar ${b.l>0?'late':'ok'}" style="width:${(b.e-b.s)/span*100}%" title="${esc(jobs[b.id].title)} : ${b.s} h à ${b.e} h, échéance ${b.d} h"><b>${esc(jobs[b.id].short || b.id)}</b></div>`).join('');
+  const marks = m.bars.map(b=>`<div class="gt-mark" style="left:${b.d/span*100}%" title="Échéance ${esc(jobs[b.id].title)} : ${b.d} h"><span>${esc(jobs[b.id].short || b.id)}</span></div>`).join('');
+  return `<div class="gt-wrap"><div class="gt-marks">${marks}</div><div class="gt-row">${bars}</div>
+    <div class="gt-axis"><span>0 h</span><span>${fmtN(span/2,1)} h</span><span>${fmtN(span,1)} h</span></div>
+    <div class="gt-metrics">
+      <div><span>Délai moyen de passage</span><b>${fmtN(m.avgFlow,1)} h</b></div>
+      <div><span>Retard cumulé</span><b>${fmtN(m.totalLate,1)} h</b></div>
+      <div><span>Commandes en retard</span><b>${m.nLate} sur ${order.length}</b></div>
+      <div><span>Retard maximum</span><b>${fmtN(m.maxLate,1)} h</b></div>
+    </div></div>`;
+}
+QUI.rank = function(step, wrap){
+  let order = step.start.slice();
+  const items = {}; step.items.forEach(i=>{ items[i.id] = i; });
+  const box = document.createElement('div'); box.className = 'rk-box'; wrap.appendChild(box);
+  let live = null;
+  if(step.mode === 'gantt'){ live = document.createElement('div'); live.className = 'rk-live'; wrap.appendChild(live); }
+  const sub = submitBar(wrap, ()=> submitAnswer(step, order));
+  sub.disabled = false;
+  function move(from, to){ if(to < 0 || to >= order.length || from === to) return; const [x] = order.splice(from, 1); order.splice(to, 0, x); paint(); }
+  function paint(){
+    box.innerHTML = '';
+    order.forEach((id, idx)=>{
+      const it = items[id];
+      const row = document.createElement('div'); row.className = 'rk-row'; row.draggable = true; row.dataset.idx = idx; row.dataset.id = id;
+      row.innerHTML = `<span class="rk-n">${idx+1}</span><span class="rk-grip" aria-hidden="true">⋮⋮</span>
+        <div class="rk-text"><b>${it.short && it.p !== undefined ? '<span class="rk-letter">' + esc(it.short) + '</span>' : ''}${esc(it.title)}</b>${it.p !== undefined ? `<span class="rk-meta">${it.p} h de fabrication · échéance ${it.d} h</span>` : ''}${it.text ? `<br>${esc(it.text)}` : ''}</div>
+        <div class="rk-btns"><button type="button" data-d="-1" aria-label="Monter" ${idx===0?'disabled':''}>▲</button><button type="button" data-d="1" aria-label="Descendre" ${idx===order.length-1?'disabled':''}>▼</button></div>`;
+      Array.from(row.querySelectorAll('button')).forEach(b=> b.addEventListener('click', ()=> move(idx, idx + Number(b.dataset.d))));
+      row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', String(idx)); row.classList.add('drag'); });
+      row.addEventListener('dragend', ()=> row.classList.remove('drag'));
+      row.addEventListener('dragover', e=>{ e.preventDefault(); row.classList.add('over'); });
+      row.addEventListener('dragleave', ()=> row.classList.remove('over'));
+      row.addEventListener('drop', e=>{ e.preventDefault(); const from = Number(e.dataTransfer.getData('text/plain')); if(!isNaN(from)) move(from, idx); });
+      box.appendChild(row);
+    });
+    if(live) live.innerHTML = ganttHTML(order, step);
+  }
+  paint();
+  wrap.__order = ()=> order;
+};
+function evalGantt(step, ans){
+  const jobs = {}; step.items.forEach(i=>{ jobs[i.id] = i; });
+  const idxOf = id => step.start.indexOf(id);
+  const fifo = step.start.slice();
+  const spt = step.items.slice().sort((a,b)=>a.p-b.p || idxOf(a.id)-idxOf(b.id)).map(i=>i.id);
+  const edd = step.items.slice().sort((a,b)=>a.d-b.d || idxOf(a.id)-idxOf(b.id)).map(i=>i.id);
+  const same = (a,b)=> a.join() === b.join();
+  const m = schedMetrics(ans, jobs);
+  const kind = same(ans, edd) ? 'edd' : (same(ans, spt) ? 'spt' : (same(ans, fifo) ? 'fifo' : 'other'));
+  const rule = step.rules.find(r=> r.when === kind || (r.when === 'other' && kind === 'other' && (r.maxTotalLate === undefined || m.totalLate <= r.maxTotalLate)));
+  const kindLabel = { edd:'EDD (échéance la plus proche)', spt:'SPT (durée la plus courte)', fifo:'FIFO (ordre d\'arrivée)', other:'ordre personnalisé' }[kind];
+  const row = (name, o) => { const mm = schedMetrics(o, jobs); return `<tr><td>${name}</td><td>${fmtN(mm.avgFlow,1)} h</td><td>${fmtN(mm.totalLate,1)} h</td><td>${mm.nLate} sur ${o.length}</td><td>${fmtN(mm.maxLate,1)} h</td></tr>`; };
+  const short = id => jobs[id].short || id;
+  return { key: rule.outcome,
+    label: `Ordre choisi : ${ans.map(short).join(' > ')} (${kindLabel})`,
+    detail: [`Délai moyen ${fmtN(m.avgFlow,1)} h ; retard cumulé ${fmtN(m.totalLate,1)} h ; ${m.nLate} commande(s) en retard ; retard maximum ${fmtN(m.maxLate,1)} h`],
+    feedbackHTML: `<div class="fb-title">Votre ordonnancement : ${esc(kindLabel)}</div>
+      <table class="fb-table"><tr><th>Ordre</th><th>Délai moyen</th><th>Retard cumulé</th><th>En retard</th><th>Retard max</th></tr>
+      ${row('<b>Le vôtre</b> (' + ans.map(short).join('-') + ')', ans)}${row('FIFO (' + fifo.map(short).join('-') + ')', fifo)}${row('SPT (' + spt.map(short).join('-') + ')', spt)}${row('EDD (' + edd.map(short).join('-') + ')', edd)}</table>` };
+}
+EVAL.rank = function(step, ans){
+  if(step.mode === 'gantt') return evalGantt(step, ans);
+  let score = 0; const rows = [];
+  const nm = id => { const it = step.items.find(x=>x.id===id); return it.name || it.title; };
+  step.correctOrder.forEach((id, i)=>{ if(ans[i] === id) score++; });
+  step.correctOrder.forEach((id, i)=>{ const ok = ans[i] === id; rows.push(`<li class="${ok?'ok':'ko'}"><b>${i+1}.</b> ${esc(nm(id))}${ok ? '' : `<br><span class="fb-sub">Vous aviez placé ici : ${esc(nm(ans[i]))}</span>`}</li>`); });
+  return { key: byThreshold(step, score), label: `Ordre proposé : ${score} niveau(x) sur ${step.correctOrder.length} bien placé(s)`,
+           detail: ['Ordre proposé : ' + ans.map(nm).join(' > '), 'Ordre attendu : ' + step.correctOrder.map(nm).join(' > ')],
+           feedbackHTML: `<div class="fb-title">Ordre attendu : ${score} / ${step.correctOrder.length} bien placés</div>` + fbList(rows) };
+};
+
+// Allocation : répartir des tranches d'investissement, avec le débit de la ligne recalculé en direct
+QUI.alloc = function(step, wrap){
+  const maxUnits = Math.max(0, Math.min(step.units, Math.floor(state.gauges.tresorerie / step.unitCost)));
+  const U = {}; step.stations.forEach(s=>{ U[s.id] = 0; });
+  const info = document.createElement('div'); info.className = 'al-info'; wrap.appendChild(info);
+  const grid = document.createElement('div'); grid.className = 'al-grid'; wrap.appendChild(grid);
+  const live = document.createElement('div'); live.className = 'al-live'; wrap.appendChild(live);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, Object.assign({}, U)));
+  sub.disabled = false;
+  const used = ()=> Object.values(U).reduce((a,b)=>a+b, 0);
+  function caps(){ const o = {}; step.stations.forEach(s=>{ o[s.id] = s.cap + step.gain * U[s.id]; }); return o; }
+  function paint(){
+    const c = caps(), debit = Math.min(...Object.values(c)), left = maxUnits - used();
+    info.innerHTML = `<span>Tranches disponibles : <b>${left}</b> / ${maxUnits}</span><span>Investi : <b>${used() * step.unitCost} k€</b></span><span>Objectif : <b>${step.target} pièces/h</b></span>`;
+    grid.innerHTML = '';
+    step.stations.forEach(s=>{
+      const cell = document.createElement('div'); cell.className = 'al-cell' + (c[s.id] === debit ? ' min' : '');
+      cell.innerHTML = `<div class="al-name">${esc(s.label)}</div><div class="al-cap">${c[s.id]} <small>pièces/h</small></div>
+        <div class="al-step"><button type="button" data-d="-1" aria-label="Retirer une tranche" ${U[s.id]===0?'disabled':''}>−</button><b>${U[s.id]}</b><button type="button" data-d="1" aria-label="Ajouter une tranche" ${left===0?'disabled':''}>+</button></div>`;
+      Array.from(cell.querySelectorAll('button')).forEach(b=> b.addEventListener('click', ()=>{ U[s.id] += Number(b.dataset.d); paint(); }));
+      grid.appendChild(cell);
+    });
+    const scale = Math.max(...step.stations.map(s=>s.cap + step.gain * step.units), step.target) * 1.05;
+    live.innerHTML = `<div class="al-bars">${step.stations.map(s=>`<div class="al-bar" title="${esc(s.label)}"><i class="${c[s.id]===debit?'min':''}" style="height:${c[s.id]/scale*100}%"></i><span>${esc(s.label)}</span></div>`).join('')}<div class="al-target" style="bottom:${step.target/scale*100}%"><span>Objectif ${step.target}</span></div></div>
+      <div class="al-debit ${debit >= step.target ? 'ok' : 'ko'}">Débit de la ligne : <b>${debit} pièces/h</b> <small>(le poste le plus lent fixe le débit de toute la ligne)</small></div>`;
+  }
+  paint();
+};
+EVAL.alloc = function(step, ans){
+  const c = {}; step.stations.forEach(s=>{ c[s.id] = s.cap + step.gain * (ans[s.id] || 0); });
+  const debit = Math.min(...Object.values(c));
+  const used = Object.values(ans).reduce((a,b)=>a+b, 0);
+  const vars = Object.assign({debit, used}, ans);
+  const rule = step.rules.find(r=> X(r.if, vars));
+  const dyn = {}; Object.keys(step.dynamicEffects || {}).forEach(k=>{ dyn[k] = X(step.dynamicEffects[k], vars); });
+  const rep = step.stations.map(s=>`${s.label} : ${ans[s.id] || 0} tranche(s)`).join(' ; ');
+  return { key: rule.outcome, dyn,
+    label: `Répartition (${used * step.unitCost} k€) : ${rep} ; débit de la ligne ${debit} pièces/h`,
+    detail: [`Objectif ${step.target} pièces/h ; débit obtenu ${debit} pièces/h ; ${used} tranche(s) investie(s)`],
+    feedbackHTML: `<div class="fb-title">Débit de la ligne : ${debit} pièces/h (objectif ${step.target})</div>
+      <table class="fb-table"><tr><th>Poste</th><th>Avant</th><th>Tranches</th><th>Après</th></tr>${step.stations.map(s=>`<tr><td>${esc(s.label)}</td><td>${s.cap}</td><td>${ans[s.id] || 0}</td><td>${c[s.id]}</td></tr>`).join('')}</table>
+      <div class="fb-method">Coût engagé : ${used * step.unitCost} k€. ${esc(step.explain || '')}</div>` };
+};
+
+// Réglage : curseurs avec indicateurs recalculés en direct
+function tuneCompute(step, vals){
+  const vars = Object.assign({}, vals); const out = [];
+  step.metrics.forEach(m=>{ const v = X(m.expr, vars); vars[m.id] = v; out.push({m, v, ok: m.okExpr ? !!X(m.okExpr, vars) : null}); });
+  return {vars, out};
+}
+QUI.tune = function(step, wrap){
+  const vals = {}; step.sliders.forEach(s=>{ vals[s.id] = s.value; });
+  const sl = document.createElement('div'); sl.className = 'tn-sliders'; wrap.appendChild(sl);
+  const live = document.createElement('div'); live.className = 'tn-live'; wrap.appendChild(live);
+  step.sliders.forEach(s=>{
+    const row = document.createElement('div'); row.className = 'tn-row';
+    row.innerHTML = `<label>${esc(s.label)}</label><div class="tn-ctl"><input type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}" aria-label="${esc(s.label)}"><b class="tn-val">${s.value} ${esc(s.unit||'')}</b></div>`;
+    const inp = row.querySelector('input'), val = row.querySelector('.tn-val');
+    inp.addEventListener('input', ()=>{ vals[s.id] = Number(inp.value); val.textContent = inp.value + ' ' + (s.unit||''); paint(); });
+    sl.appendChild(row);
+  });
+  const sub = submitBar(wrap, ()=> submitAnswer(step, Object.assign({}, vals)));
+  sub.disabled = false;
+  function paint(){
+    const r = tuneCompute(step, vals);
+    live.innerHTML = r.out.map(o=>{
+      const m = o.m, pct = m.bar ? Math.max(0, Math.min(100, o.v / m.bar * 100)) : null;
+      return `<div class="tn-metric ${o.ok===null?'':(o.ok?'ok':'ko')}"><div class="tn-mlabel">${esc(m.label)}</div><div class="tn-mval">${fmtN(o.v, m.digits === undefined ? 0 : m.digits)} <small>${esc(m.unit||'')}</small></div>${pct!==null ? `<div class="tn-mbar"><i style="width:${pct}%"></i></div>` : ''}${m.hint ? `<div class="tn-mhint">${esc(m.hint)}</div>` : ''}</div>`;
+    }).join('');
+  }
+  paint();
+};
+EVAL.tune = function(step, ans){
+  const r = tuneCompute(step, ans);
+  const rule = step.rules.find(x=> X(x.if, r.vars));
+  const fb = r.out.map(o=>`<tr><td>${esc(o.m.label)}</td><td>${fmtN(o.v, o.m.digits === undefined ? 0 : o.m.digits)} ${esc(o.m.unit||'')}</td></tr>`).join('');
+  const sliders = step.sliders.map(s=>`${s.label} : ${ans[s.id]} ${s.unit||''}`).join(' ; ');
+  return { key: rule.outcome, label: 'Réglage retenu : ' + sliders,
+    detail: r.out.map(o=>`${o.m.label} : ${fmtN(o.v, o.m.digits === undefined ? 0 : o.m.digits)} ${o.m.unit||''}`),
+    feedbackHTML: `<div class="fb-title">Résultat de votre réglage</div><table class="fb-table"><tr><th>Indicateur</th><th>Valeur</th></tr>${fb}</table>${step.explain ? `<div class="fb-method">${esc(step.explain)}</div>` : ''}` };
+};
+
+// ============================================================
+// BILAN
+// ============================================================
+function unlockBilan(){
+  document.getElementById('nav-bilan').disabled = false;
+  document.getElementById('bilan-locked').style.display = 'none';
+  document.getElementById('bilan-content').style.display = 'block';
+
+  const gwrap = document.getElementById('bilan-gauges');
+  gwrap.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const pct = clamp((val/g.max)*100, 2, 100);
+    const row = document.createElement('div');
+    row.className = 'bilan-gauge';
+    row.innerHTML = `<div class="top"><span>${g.label}</span><span>${fmtVal(g,val)}</span></div>
+      <div class="bilan-track"><div class="bilan-fill" style="width:${pct}%;background:${g.color}"></div></div>`;
+    gwrap.appendChild(row);
+  });
+
+  const hgrid = document.getElementById('handoff-grid');
+  hgrid.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const item = document.createElement('div');
+    item.className = 'handoff-item';
+    item.innerHTML = `<div class="hi-label">${g.label}</div><div class="hi-val">${fmtVal(g,val)}</div>`;
+    hgrid.appendChild(item);
+  });
+  document.getElementById('handoff-team').textContent = state.team;
+
+  const table = document.getElementById('bilan-path');
+  table.innerHTML = `<tr><th style="width:22%;">Étape</th><th style="width:50%;">Décision de la cellule</th><th>Effet</th></tr>` +
+    state.history.map(h=>`<tr><td><strong>${h.stepTitle}</strong></td><td>${h.optionLabel}</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--steel);">${h.effectsText}</td></tr>`).join('');
+
+  const noteWrap = document.getElementById('bilan-hidden-note');
+  noteWrap.innerHTML = state.hiddenNote ? `<div class="note-hidden">🔒 ${esc(fill(MISSION.hiddenNote.html))}</div>` : '';
+
+  renderControllerAnalysis();
+  renderEpilogue();
+  renderPortfolioQuestions();
+}
+
+function renderEpilogue(){
+  document.getElementById('epilogue-lines').innerHTML = dlgHTML(MISSION.epilogue);
+  document.getElementById('epilogue-rel').innerHTML = relStripHTML();
+}
+
+function renderPortfolioQuestions(){
+  const wrap = document.getElementById('portfolio-questions');
+  const items = state.history.filter(h=>h.reflection);
+  if(!MISSION.justif){
+    wrap.innerHTML = items.map(h=>`
+      <div class="pq-item">
+        <div class="pq-step">${h.stepTitle}</div>
+        <div class="pq-text">${h.reflection}</div>
+      </div>
+    `).join('');
+    return;
+  }
+  document.getElementById('pb-title-el').textContent = '🎓 Vos justifications pour le dossier de restitution';
+  wrap.innerHTML = `<div class="pq-note">Rédigez ici la justification de chaque décision. Votre texte est enregistré dans le brouillon et repris tel quel dans l'export PDF : relisez-le avant de l'envoyer à votre formateur.</div>` +
+    items.map(h=>`
+      <div class="pq-item">
+        <div class="pq-step">${esc(h.stepTitle)}</div>
+        <div class="pq-text">${esc(h.reflection)}</div>
+        <textarea class="pq-answer" data-step="${esc(h.stepId)}" aria-label="Justification : ${esc(h.stepTitle)}" placeholder="Votre justification...">${esc(state.justifs[h.stepId] || '')}</textarea>
+      </div>`).join('');
+  Array.from(wrap.querySelectorAll('.pq-answer')).forEach(ta=>{
+    ta.addEventListener('input', ()=>{ state.justifs[ta.dataset.step] = ta.value; markDirty(); });
+  });
+}
+
+const TONE_ICON = { positive:"✓", mixed:"~", risky:"!" };
+const TONE_LABEL = { positive:"Choix pertinent", mixed:"Choix à double tranchant", risky:"Choix risqué" };
+
+function renderControllerAnalysis(){
+  const vwrap = document.getElementById('controller-verdicts');
+  vwrap.innerHTML = state.history.filter(h=>h.verdict).map(h=>`
+    <div class="verdict-row">
+      <div class="verdict-icon ${h.verdict.tone}">${TONE_ICON[h.verdict.tone]}</div>
+      <div class="verdict-body">
+        <div class="vb-step">${h.stepTitle.toUpperCase()} · ${TONE_LABEL[h.verdict.tone]}</div>
+        <div class="vb-text">${h.verdict.text}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const score = state.history.reduce((acc,h)=>{
+    if(!h.verdict) return acc;
+    if(h.verdict.tone==='positive') return acc+1;
+    if(h.verdict.tone==='risky') return acc-1;
+    return acc;
+  }, 0);
+
+  const th = MISSION.tier || {good:2, risky:-2};
+  const tier = score >= th.good ? 'good' : (score <= th.risky ? 'risky' : 'mixed');
+  const synth = document.getElementById('controller-synthesis');
+  synth.className = 'ca-synthesis tier-' + tier;
+  synth.textContent = fill(MISSION.synth[tier]);
+  state.controllerScore = score;
+  state.controllerTier = tier;
+}
+
+// ============================================================
+// EXPORTS
+// ============================================================
+document.getElementById('btn-drive').addEventListener('click', ()=>{
+  window.open(DRIVE_LINK, '_blank');
+});
+
+document.getElementById('btn-pdf').addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const INK = [20,33,61];
+  const ORANGE = [251,139,36];
+  const TEAL = [15,155,142];
+  const DANGER = [192,69,58];
+  const STEEL = [110,120,140];
+  const TONE_COLOR = { positive: TEAL, mixed: ORANGE, risky: DANGER };
+  let y = 20;
+
+  function ensureSpace(needed){
+    if(y + needed > 280){ doc.addPage(); y = 20; }
+  }
+
+  doc.setFillColor(...INK);
+  doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('CELLULE NOMAD — Bilan de mission', 14, 13);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.text('Mission ' + MISSION.n + ' — « ' + MISSION.title + ' » — Altiva Outdoor', 14, 20);
+  doc.setFontSize(8);
+  doc.setTextColor(...[251,139,36]);
+  doc.text('Pièce du dossier de restitution — examen final de campagne', 14, 25);
+
+  y = 38;
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('Cellule : ' + state.team, 14, y);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...STEEL);
+  doc.text('Export généré le ' + new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR') + (state.backCount ? '  -  Retours en arrière : ' + state.backCount : ''), 14, y+5);
+
+  y += 14;
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.8);
+  doc.line(14, y, 40, y);
+  y += 9;
+
+  // ---- CARNET DE BORD (boxed, prominent) ----
+  const boxTop = y;
+  const boxHeight = 34;
+  doc.setFillColor(...INK);
+  doc.roundedRect(14, boxTop, 182, boxHeight, 2, 2, 'F');
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.6);
+  doc.roundedRect(14, boxTop, 182, boxHeight, 2, 2, 'S');
+  doc.setTextColor(...ORANGE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10.5);
+  doc.text('CARNET DE BORD — à ressaisir au début de la Mission ' + (MISSION.n + 1), 19, boxTop + 8);
+
+  const colW = 182 / 5;
+  GAUGE_META.forEach((g,i)=>{
+    const val = state.gauges[g.key];
+    const cx = 14 + i*colW + colW/2;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(200,205,220);
+    doc.text(g.label.toUpperCase(), cx, boxTop + 17, {align:'center'});
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(13);
+    doc.setTextColor(255,255,255);
+    doc.text(fmtVal(g,val), cx, boxTop + 26, {align:'center'});
+  });
+  y = boxTop + boxHeight + 10;
+
+  // ---- DECISIONS ----
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Décisions prises', 14, y);
+  y += 7;
+
+  state.history.forEach((h)=>{
+    ensureSpace(22);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...INK);
+    doc.text(h.stepTitle, 14, y);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(50,50,50);
+    const lines = doc.splitTextToSize(pdfSafe(h.optionLabel), 180);
+    doc.text(lines, 16, y);
+    y += lines.length * 4.6 + 1;
+    if(h.detail && h.detail.length){
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.3);
+      doc.setTextColor(90,90,90);
+      h.detail.forEach(dl=>{
+        const dls = doc.splitTextToSize(pdfSafe(dl), 168);
+        ensureSpace(dls.length * 3.9 + 2);
+        doc.text(dls, 20, y);
+        y += dls.length * 3.9 + 0.8;
+      });
+      y += 1;
+    }
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...STEEL);
+    doc.text(h.effectsText, 16, y);
+    y += 5;
+    if(h.attempt && h.attempt > 1){
+      doc.setFont('helvetica','italic');
+      doc.setFontSize(8);
+      doc.setTextColor(...ORANGE);
+      doc.text('Réponse modifiée après retour en arrière (tentative ' + h.attempt + ').', 16, y);
+      y += 4.5;
+    }
+    if(h.reaction && h.reaction.length){
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.3);
+      doc.setTextColor(70,70,70);
+      h.reaction.forEach(l=>{
+        const who = (CAST[l.who] ? CAST[l.who].name + ' : ' : '');
+        const ls = doc.splitTextToSize(pdfSafe(who + l.text), 170);
+        ensureSpace(ls.length * 3.9 + 2);
+        doc.text(ls, 20, y);
+        y += ls.length * 3.9 + 1.2;
+      });
+    }
+    y += 4;
+  });
+
+  if(state.hiddenNote){
+    ensureSpace(22);
+    y += 3;
+    doc.setFillColor(250,235,230);
+    doc.rect(12, y-5, 186, 20, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(180,60,50);
+    doc.text(pdfSafe(MISSION.hiddenNote.pdfTitle), 15, y);
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    const noteLines = doc.splitTextToSize(pdfSafe(MISSION.hiddenNote.pdfText), 178);
+    doc.text(noteLines, 15, y+5);
+    y += 22;
+  }
+
+  // ---- RELATIONS + ÉPILOGUE ----
+  ensureSpace(24);
+  y += 3;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Relations en fin de mission', 14, y);
+  y += 6;
+  MISSION.relations.forEach(k=>{
+    const cc = CAST[k], v = state.trust[k];
+    ensureSpace(6);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(50,50,50);
+    doc.text(pdfSafe(cc.name + ' (' + cc.role + ') : ' + TRUST_LABELS[v] + ' (' + v + '/4)'), 16, y);
+    y += 5;
+  });
+  const epLines = (MISSION.epilogue || []).filter(l=>condOk(l.if));
+  if(epLines.length){
+    ensureSpace(14);
+    y += 3;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...INK);
+    doc.text('Epilogue', 14, y);
+    y += 6;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(70,70,70);
+    epLines.forEach(l=>{
+      const who = (CAST[l.who] ? CAST[l.who].name + ' : ' : '');
+      const ls = doc.splitTextToSize(pdfSafe(who + fill(l.text)), 172);
+      ensureSpace(ls.length * 4 + 2);
+      doc.text(ls, 16, y);
+      y += ls.length * 4 + 1.5;
+    });
+  }
+
+  // ---- QUESTIONS POUR LE DOSSIER DE RESTITUTION (examen final) ----
+  const reflectionEntries = state.history.filter(h=>h.reflection);
+  if(reflectionEntries.length){
+    ensureSpace(26);
+    y += 4;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(10,90,82);
+    doc.text(MISSION.justif ? 'Justifications de la cellule - dossier de restitution (examen final)' : 'Questions pour votre dossier de restitution (examen final)', 14, y);
+    y += 5;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8);
+    doc.setTextColor(...STEEL);
+    const introQ = doc.splitTextToSize(MISSION.justif ? 'Justifications rédigées par la cellule pour chaque décision. À conserver avec les exports des prochaines missions : elles serviront de base à votre présentation orale de fin de campagne.' : 'À conserver avec les exports des prochaines missions : ces questions vous aideront à construire votre présentation orale de fin de campagne.', 178);
+    doc.text(introQ, 14, y);
+    y += introQ.length * 3.8 + 4;
+
+    const pdfParas = (t, w)=> String(t).split(/\r?\n/).flatMap(p=> p.trim() ? doc.splitTextToSize(pdfSafe(p), w) : ['']);
+    reflectionEntries.forEach(h=>{
+      ensureSpace(MISSION.justif ? 30 : 18);
+      doc.setFillColor(234,246,244);
+      const qLines = doc.splitTextToSize(pdfSafe(h.reflection), 172);
+      const boxH = 6 + qLines.length * 4.3;
+      doc.roundedRect(14, y-4, 182, boxH, 1.5, 1.5, 'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(15,155,142);
+      doc.text(h.stepTitle.toUpperCase(), 18, y);
+      doc.setFont('helvetica','italic');
+      doc.setFontSize(9);
+      doc.setTextColor(40,60,58);
+      doc.text(qLines, 18, y+5);
+      y += boxH + 4;
+      if(MISSION.justif){
+        const raw = (state.justifs[h.stepId] || '').trim();
+        doc.setFont('helvetica', raw ? 'normal' : 'italic');
+        doc.setFontSize(9.3);
+        if(raw) doc.setTextColor(40,40,40); else doc.setTextColor(150,150,150);
+        const ans = raw ? pdfParas(raw, 168) : ['Justification non renseignee.'];
+        ans.forEach(ln=>{ ensureSpace(5); doc.text(ln, 20, y); y += 4.5; });
+        y += 4;
+      }
+    });
+    y += 2;
+  }
+
+  // ---- ANALYSE DU CONTRÔLEUR ----
+  ensureSpace(20);
+  y += 4;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Analyse du Contrôleur', 14, y);
+  y += 7;
+
+  state.history.forEach(h=>{
+    if(!h.verdict) return;
+    ensureSpace(16);
+    const c = TONE_COLOR[h.verdict.tone] || STEEL;
+    doc.setFillColor(...c);
+    doc.circle(16, y-1.5, 1.6, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...c);
+    doc.text(h.stepTitle, 20, y);
+    y += 4.2;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(50,50,50);
+    const vLines = doc.splitTextToSize(h.verdict.text, 176);
+    doc.text(vLines, 20, y);
+    y += vLines.length * 4.4 + 3;
+  });
+
+  if(state.controllerTier){
+    ensureSpace(24);
+    y += 2;
+    const tierColor = state.controllerTier === 'good' ? TEAL : (state.controllerTier === 'risky' ? DANGER : ORANGE);
+    doc.setDrawColor(...tierColor);
+    doc.setLineWidth(0.8);
+    doc.line(14, y-2, 14, y+18);
+    const synthText = document.getElementById('controller-synthesis').textContent;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.setTextColor(70,70,70);
+    const sLines = doc.splitTextToSize(synthText, 172);
+    doc.text(sLines, 19, y+2);
+    y += sLines.length * 4.4 + 8;
+  }
+
+  // ---- CONSIGNE ----
+  ensureSpace(14);
+  y += 2;
+  doc.setFillColor(255,247,238);
+  doc.roundedRect(14, y-5, 182, 12, 2, 2, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(150,90,20);
+  doc.text('Consigne : envoyez ce PDF à votre formateur après chaque mission.', 18, y+2);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...STEEL);
+  doc.text('Document généré automatiquement par le terminal Cellule NOMAD — usage pédagogique, débriefing en classe.', 14, 290);
+
+  doc.save('Bilan_Mission' + MISSION.n + '_' + draftSlug(state.team) + '.pdf');
+  UI.dirty = false; updateDraftStatus();
+});
+
+// ============================================================
+// BROUILLONS — sauvegarde / restauration manuelle (fichier .json)
+// ============================================================
+const MISSION_ID = MISSION.id;
+const UI = { dirty:false, lastSave:null };
+
+function toast(msg){
+  Array.from(document.querySelectorAll('.toast')).forEach(x=>x.remove());
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role','status'); t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ if(t.parentNode) t.parentNode.removeChild(t); }, 3600);
+}
+function draftSlug(s){ return String(s||'cellule').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,30) || 'cellule'; }
+function draftStamp(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes()); }
+
+function updateDraftStatus(){
+  const el = document.getElementById('draft-status'); if(!el) return;
+  if(UI.dirty){ el.className='dirty'; el.textContent='Modifications non enregistrées'; }
+  else if(UI.lastSave){ el.className=''; el.textContent='Brouillon enregistré à '+UI.lastSave; }
+  else { el.className=''; el.textContent='Aucun brouillon enregistré'; }
+}
+function markDirty(){ UI.dirty = true; updateDraftStatus(); }
+
+function saveDraft(){
+  if(!state.team){ toast("Saisissez d'abord le nom de votre cellule."); return; }
+  const stack = state.navStack.slice();
+  if(state.pendingStep){ stack.push(snapshot(state.pendingStep)); }
+  const draftState = {
+    team: state.team,
+    gauges: state.gauges,
+    history: state.history,
+    hiddenNote: state.hiddenNote,
+    flags: state.flags || {},
+    choices: state.choices || {},
+    justifs: state.justifs || {},
+    trust: state.trust || {},
+    // si un choix vient d'être fait mais pas encore "validé" par Continuer, on reprend à l'étape suivante
+    currentStep: state.pendingStep || state.currentStep,
+    decisionsDone: state.decisionsDone,
+    attempts: state.attempts || {},
+    backCount: state.backCount || 0,
+    navStack: stack,
+  };
+  const data = JSON.stringify({ app:'nomad', mission:MISSION_ID, savedAt:new Date().toISOString(), state:draftState });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+  a.download = 'brouillon_'+MISSION_ID+'_'+draftSlug(state.team)+'_'+draftStamp()+'.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  const d = new Date();
+  UI.lastSave = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  UI.dirty = false; updateDraftStatus();
+  toast('Brouillon téléchargé. Conservez ce fichier pour reprendre plus tard.');
+}
+
+function isValidDraft(o){
+  if(!o || o.app!=='nomad' || o.mission!==MISSION_ID || !o.state) return false;
+  const s = o.state;
+  if(!s.team || !s.gauges || !Array.isArray(s.history) || !STEPS[s.currentStep]) return false;
+  return ['tresorerie','service','cout','resilience','rse'].every(k=>typeof s.gauges[k]==='number' && isFinite(s.gauges[k]));
+}
+
+function showPanel(name){
+  Array.from(document.querySelectorAll('.navitem')).forEach(b=>b.classList.toggle('active', b.dataset.panel===name));
+  Array.from(document.querySelectorAll('.panel')).forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+  const m = document.getElementById('main'); if(m) m.scrollTop = 0;
+}
+
+function applyDraft(o){
+  const s = o.state;
+  state.team = String(s.team).slice(0,40);
+  state.gauges = { tresorerie:s.gauges.tresorerie, service:s.gauges.service, cout:s.gauges.cout, resilience:s.gauges.resilience, rse:s.gauges.rse };
+  state.history = s.history;
+  state.hiddenNote = !!s.hiddenNote;
+  state.flags = s.flags || {};
+  state.choices = s.choices || {};
+  state.justifs = (s.justifs && typeof s.justifs === 'object') ? s.justifs : {};
+  state.trust = Object.assign({}, MISSION.trustInit, s.trust || {});
+  state.currentStep = s.currentStep;
+  state.decisionsDone = s.decisionsDone || 0;
+  state.pendingStep = null;
+  state.attempts = (s.attempts && typeof s.attempts === 'object') ? s.attempts : {};
+  state.backCount = s.backCount || 0;
+  state.navStack = (Array.isArray(s.navStack) && s.navStack.length) ? s.navStack : [snapshot()];
+  UI.answered = false;
+
+  document.getElementById('boot').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('team-tag').textContent = "CELLULE — " + state.team.toUpperCase();
+  document.getElementById('brief-team-name').textContent = state.team;
+  document.getElementById('bilan-team-name').textContent = "— " + state.team;
+  document.getElementById('bilan-locked').style.display = 'block';
+  document.getElementById('bilan-content').style.display = 'none';
+  document.getElementById('nav-bilan').disabled = true;
+
+  renderGauges(); updateProgress(); renderMissionStep();
+  showPanel(STEPS[state.currentStep].type==='bilan' ? 'bilan' : 'mission');
+  UI.dirty = false; UI.lastSave = null; updateDraftStatus();
+  toast('Brouillon restauré.');
+}
+
+function restoreDraftFile(file){
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const o = JSON.parse(r.result);
+      if(!isValidDraft(o)) throw new Error('format');
+      applyDraft(o);
+    }catch(e){
+      toast("Ce fichier n'est pas un brouillon valide de la Mission "+MISSION_ID.slice(1)+".");
+    }
+  };
+  r.onerror = ()=>toast('Lecture du fichier impossible.');
+  r.readAsText(file);
+}
+
+function pickDraft(){
+  if(UI.dirty && state.team && !confirm("Des modifications ne sont pas enregistrées. Restaurer un brouillon va les remplacer. Continuer ?")) return;
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = ()=>{ if(inp.files[0]) restoreDraftFile(inp.files[0]); };
+  inp.click();
+}
+
+document.getElementById('btn-save-draft').addEventListener('click', saveDraft);
+document.getElementById('btn-restore-draft').addEventListener('click', pickDraft);
+document.getElementById('boot-restore').addEventListener('click', pickDraft);
+window.addEventListener('beforeunload', (e)=>{ if(UI.dirty && state.team){ e.preventDefault(); e.returnValue=''; } });
+</script>
+<style>#sidebar{padding-top:2.8rem}</style>
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>
+</body>
+</html>

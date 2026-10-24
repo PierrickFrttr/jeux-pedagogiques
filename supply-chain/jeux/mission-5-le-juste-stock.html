@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CELLULE NOMAD — Terminal de Mission 5</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#14213D;
+    --ink2:#1E3A5F;
+    --ink3:#1C2B52;
+    --orange:#FB8B24;
+    --orange-dim:#a8621c;
+    --teal:#0F9B8E;
+    --steel:#8D99AE;
+    --steel-light:#E4E7EC;
+    --paper:#FAFAF9;
+    --white:#FFFFFF;
+    --text:#2A2E3A;
+    --danger:#C0453A;
+    --mono: 'Consolas','SFMono-Regular',Menlo,monospace;
+    --sans: Arial, 'Helvetica Neue', sans-serif;
+    --body: Calibri, 'Segoe UI', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--ink);font-family:var(--body);color:var(--text);}
+  ::selection{background:var(--orange);color:white;}
+  button{font-family:inherit;cursor:pointer;}
+  a{color:inherit;}
+
+  /* ============ BOOT SCREEN ============ */
+  #boot{
+    position:fixed;inset:0;background:var(--ink);color:#B9C4E0;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    z-index:100; padding:2rem;
+  }
+  #boot .boot-box{max-width:640px;width:100%;}
+  #boot .boot-logo{font-family:var(--sans);font-weight:800;font-size:2.2rem;color:var(--white);letter-spacing:1px;margin-bottom:.2rem;}
+  #boot .boot-logo span{color:var(--orange);}
+  #boot .boot-sub{font-family:var(--mono);font-size:.8rem;color:var(--steel);margin-bottom:2rem;letter-spacing:1px;}
+  #boot-log{
+    font-family:var(--mono);font-size:.85rem;line-height:1.9;min-height:220px;
+    border-left:2px solid var(--teal); padding-left:1rem;
+  }
+  #boot-log .line{opacity:0;animation:fadeIn .4s forwards;}
+  #boot-log .ok{color:var(--teal);}
+  #boot-log .warn{color:var(--orange);}
+  @keyframes fadeIn{to{opacity:1;}}
+  .cursor{display:inline-block;width:8px;height:1em;background:var(--orange);vertical-align:middle;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  #boot-form{margin-top:2rem;display:none;}
+  #boot-form.show{display:block;animation:fadeIn .5s forwards;}
+  #boot-form label{display:block;font-family:var(--mono);font-size:.78rem;color:var(--steel);margin-bottom:.5rem;letter-spacing:1px;}
+  #boot-form input{
+    width:100%;background:#0f1a30;border:1px solid #33456f;color:var(--white);
+    padding:.7rem .9rem;font-family:var(--body);font-size:1rem;border-radius:4px;outline:none;
+  }
+  #boot-form input:focus{border-color:var(--orange);}
+  #boot-enter{
+    margin-top:1.2rem; background:var(--orange); color:var(--ink); border:none;
+    padding:.8rem 1.8rem; font-weight:bold; font-size:.95rem; border-radius:4px;
+    letter-spacing:.5px; transition:transform .15s, box-shadow .15s;
+  }
+  #boot-enter:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(251,139,36,.35);}
+  #boot-enter:disabled{opacity:.4;cursor:not-allowed;}
+
+  #reprise-form{margin-top:2rem;display:none;max-width:640px;}
+  #reprise-form.show{display:block;animation:fadeIn .5s forwards;}
+  .reprise-title{font-family:var(--mono);font-size:.85rem;color:var(--orange);letter-spacing:1px;margin-bottom:.7rem;font-weight:bold;}
+  .reprise-instr{font-size:.85rem;color:#B9C4E0;line-height:1.55;margin-bottom:1.3rem;}
+  .reprise-grid{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:1.4rem;}
+  .reprise-field{flex:1 1 150px;}
+  .reprise-field label{display:block;font-family:var(--mono);font-size:.68rem;color:var(--steel);margin-bottom:.4rem;letter-spacing:.5px;}
+  .reprise-field input{
+    width:100%;background:#0f1a30;border:1px solid #33456f;color:var(--white);
+    padding:.6rem .7rem;font-family:var(--body);font-size:1rem;border-radius:4px;outline:none;
+  }
+  .reprise-field input:focus{border-color:var(--teal);}
+  #reprise-confirm{
+    background:var(--teal); color:white; border:none;
+    padding:.8rem 1.8rem; font-weight:bold; font-size:.95rem; border-radius:4px;
+    letter-spacing:.5px; transition:transform .15s, box-shadow .15s;
+  }
+  #reprise-confirm:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(15,155,142,.35);}
+
+  /* ============ APP SHELL ============ */
+  #app{display:none;height:100vh;width:100%;}
+  #app.show{display:flex;}
+
+  #sidebar{
+    width:280px;flex:none;background:var(--ink);color:var(--white);
+    display:flex;flex-direction:column;padding:1.4rem 1.1rem;
+    border-right:1px solid #24345c;
+  }
+  .brand{display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;}
+  .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);}
+  .brand-name{font-family:var(--sans);font-weight:800;font-size:1.05rem;letter-spacing:.5px;}
+  .brand-name span{color:var(--orange);}
+  .team-tag{font-family:var(--mono);font-size:.72rem;color:var(--steel);margin-bottom:1.4rem;}
+
+  .progress-wrap{margin-bottom:1.6rem;}
+  .progress-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--steel);font-family:var(--mono);margin-bottom:.4rem;}
+  .progress-bar{height:6px;border-radius:4px;background:#24345c;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--orange));width:0%;transition:width .6s ease;}
+
+  nav.navlist{display:flex;flex-direction:column;gap:.25rem;margin-bottom:1.6rem;}
+  .navitem{
+    display:flex;align-items:center;gap:.65rem;padding:.65rem .7rem;border-radius:8px;
+    color:#B9C4E0;font-size:.88rem;font-weight:600;background:transparent;border:none;text-align:left;
+    transition:background .15s,color .15s;
+  }
+  .navitem .ic{width:18px;height:18px;flex:none;opacity:.85;}
+  .navitem:hover{background:#1c2b52;color:var(--white);}
+  .navitem.active{background:var(--orange);color:var(--ink);}
+  .navitem.active .ic{opacity:1;}
+  .navitem[disabled]{opacity:.35;cursor:not-allowed;}
+  .navitem[disabled]:hover{background:transparent;color:#B9C4E0;}
+  .navbadge{margin-left:auto;font-family:var(--mono);font-size:.65rem;background:#24345c;color:var(--steel);padding:.1rem .4rem;border-radius:4px;}
+  .navitem.active .navbadge{background:rgba(20,33,61,.25);color:var(--ink);}
+
+  .gauges{margin-top:auto;border-top:1px solid #24345c;padding-top:1rem;}
+  .gauges h4{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);margin:0 0 .8rem;text-transform:uppercase;}
+  .gauge-row{margin-bottom:.65rem;}
+  .gauge-top{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.25rem;}
+  .gauge-name{color:#B9C4E0;}
+  .gauge-val{font-family:var(--mono);font-weight:bold;color:var(--white);}
+  .gauge-track{height:5px;background:#24345c;border-radius:3px;overflow:hidden;}
+  .gauge-fill{height:100%;border-radius:3px;transition:width .7s ease;}
+  .delta-pop{
+    position:absolute;font-family:var(--mono);font-weight:bold;font-size:.7rem;
+    animation:popUp 1.4s ease forwards; pointer-events:none;
+  }
+  @keyframes popUp{
+    0%{opacity:0;transform:translateY(0);}
+    15%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0;transform:translateY(-16px);}
+  }
+
+  /* ============ MAIN AREA ============ */
+  #main{flex:1;overflow-y:auto;background:var(--paper);position:relative;}
+  .panel{display:none;padding:3rem 3.5rem;max-width:980px;margin:0 auto;animation:fadeSlide .4s ease forwards;}
+  .panel.active{display:block;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .kicker{font-family:var(--body);font-weight:bold;font-size:.72rem;letter-spacing:1.5px;color:var(--orange);text-transform:uppercase;margin-bottom:.5rem;}
+  h1.ptitle{font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--ink);margin:0 0 .9rem;}
+  .lead{font-size:1.02rem;color:#444;line-height:1.55;margin-bottom:1.8rem;max-width:760px;}
+
+  .card{background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.1rem;}
+  .card h3{margin:0 0 .5rem;color:var(--ink);font-size:1.05rem;}
+  .card p{margin:.3rem 0;line-height:1.55;font-size:.94rem;color:#3a3f4d;}
+  .accent-left{border-left:4px solid var(--teal);}
+  .accent-left.orange{border-left-color:var(--orange);}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-bottom:2rem;}
+  .stat-card{background:var(--ink);border-radius:10px;padding:1rem .9rem;color:white;position:relative;overflow:hidden;}
+  .stat-card .stat-icon{font-size:1.3rem;margin-bottom:.4rem;}
+  .stat-card .stat-val{font-family:var(--sans);font-weight:800;font-size:1.3rem;}
+  .stat-card .stat-label{font-size:.68rem;color:#B9C4E0;margin-top:.1rem;}
+
+  /* Mission step */
+  .step-dots{display:flex;gap:.5rem;margin-bottom:1.6rem;}
+  .step-dot{width:32px;height:6px;border-radius:4px;background:var(--steel-light);}
+  .step-dot.done{background:var(--teal);}
+  .step-dot.current{background:var(--orange);}
+
+  .briefing-box{
+    background:var(--ink);color:#dfe4f2;border-radius:12px;padding:1.6rem 1.8rem;margin-bottom:1.6rem;
+    border-left:5px solid var(--orange); font-style:italic; line-height:1.6; position:relative;
+  }
+  .briefing-box .who{font-family:var(--mono);font-style:normal;font-size:.72rem;color:var(--orange);letter-spacing:1px;margin-bottom:.5rem;display:block;}
+
+  .option{
+    display:block;width:100%;text-align:left;background:var(--white);border:2px solid var(--steel-light);
+    border-radius:10px;padding:1.05rem 1.3rem;margin-bottom:.8rem;transition:border-color .15s, transform .1s, box-shadow .15s;
+  }
+  .option:hover{border-color:var(--teal);transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,155,142,.12);}
+  .option.selected{border-color:var(--orange);background:#FFF7EE;}
+  .option .opt-letter{
+    display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    background:var(--ink);color:white;font-family:var(--sans);font-weight:bold;font-size:.8rem;margin-right:.7rem;
+  }
+  .option .opt-text{font-size:.96rem;color:var(--text);}
+  .option:disabled{cursor:default;}
+  .option.locked{border-color:#EADCD4;background:#FBF8F6;cursor:not-allowed;}
+  .option.locked:hover{transform:none;box-shadow:none;border-color:#EADCD4;}
+  .option.locked .opt-letter{background:var(--steel);}
+  .option.locked .opt-text{color:#A8ADB8;}
+  .opt-locked-msg{margin-top:.5rem;margin-left:2.1rem;font-size:.78rem;color:var(--danger);font-weight:600;}
+
+  #hint-zone{margin-top:1.4rem;}
+  .hint-btn{
+    background:none;border:1.5px dashed var(--steel);color:var(--steel);padding:.55rem 1rem;border-radius:8px;
+    font-size:.85rem;font-weight:600;
+  }
+  .hint-btn:hover{border-color:var(--orange);color:var(--orange-dim);}
+  .hint-card{
+    background:#FBF3E3;border-left:4px solid var(--orange);border-radius:8px;padding:.9rem 1.1rem;margin-top:.7rem;
+    font-size:.88rem;color:#5a4420;font-style:italic;
+  }
+
+  .continue-btn{
+    background:var(--orange);color:var(--ink);border:none;padding:.85rem 1.9rem;font-weight:bold;border-radius:8px;
+    font-size:.95rem;margin-top:.5rem;
+  }
+  .continue-btn:hover{filter:brightness(1.05);}
+  .continue-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  .effect-tag{
+    display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.15rem .5rem;border-radius:5px;margin:.15rem .3rem .15rem 0;
+  }
+  .effect-up{background:#E4F5F2;color:var(--teal);}
+  .effect-down{background:#FBEAE8;color:var(--danger);}
+
+  .narration-box{background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;line-height:1.6;}
+
+  /* Bilan */
+  .bilan-gauge{margin-bottom:1.1rem;}
+  .bilan-gauge .top{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.3rem;color:var(--ink);font-weight:600;}
+  .bilan-track{height:12px;background:var(--steel-light);border-radius:6px;overflow:hidden;}
+  .bilan-fill{height:100%;border-radius:6px;}
+
+  .path-table{width:100%;border-collapse:collapse;margin-top:1rem;}
+  .path-table th{text-align:left;font-family:var(--mono);font-size:.68rem;color:var(--steel);text-transform:uppercase;padding:.5rem;border-bottom:2px solid var(--ink);}
+  .path-table td{padding:.7rem .5rem;border-bottom:1px solid var(--steel-light);font-size:.88rem;vertical-align:top;}
+  .path-table tr:last-child td{border-bottom:none;}
+
+  .export-row{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+  .export-btn{
+    flex:1;min-width:260px;display:flex;align-items:center;gap:.9rem;padding:1.1rem 1.3rem;border-radius:12px;border:none;
+    text-align:left;color:white;transition:transform .15s;
+  }
+  .export-btn:hover{transform:translateY(-2px);}
+  .export-btn.drive{background:var(--teal);}
+  .export-btn.pdf{background:var(--ink);}
+  .export-btn .eb-title{font-weight:bold;font-size:.98rem;}
+  .export-btn .eb-sub{font-size:.76rem;opacity:.85;margin-top:.15rem;}
+  .export-btn .eb-icon{font-size:1.5rem;}
+
+  .lock-msg{color:var(--steel);font-size:.95rem;font-style:italic;padding:2rem;text-align:center;border:2px dashed var(--steel-light);border-radius:12px;}
+
+  .note-hidden{background:#2a1518;border-left:4px solid var(--danger);color:#f3d9d7;border-radius:8px;padding:1rem 1.2rem;margin-top:1.2rem;font-size:.88rem;font-style:italic;}
+
+  .controller-analysis{background:var(--white);border:1px solid var(--steel-light);border-radius:12px;padding:1.5rem 1.7rem;margin-top:1.6rem;}
+  .ca-title{font-family:var(--sans);font-weight:800;font-size:1.05rem;color:var(--ink);margin-bottom:1rem;}
+  .verdict-row{display:flex;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--steel-light);}
+  .verdict-row:last-child{border-bottom:none;}
+  .verdict-icon{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:white;font-weight:bold;}
+  .verdict-icon.positive{background:var(--teal);}
+  .verdict-icon.mixed{background:var(--orange);}
+  .verdict-icon.risky{background:var(--danger);}
+  .verdict-body .vb-step{font-size:.78rem;color:var(--steel);font-family:var(--mono);margin-bottom:.15rem;}
+  .verdict-body .vb-text{font-size:.9rem;color:var(--text);line-height:1.45;}
+  .ca-synthesis{margin-top:1.2rem;padding:1.1rem 1.3rem;border-radius:10px;font-size:.92rem;line-height:1.55;font-style:italic;}
+  .ca-synthesis.tier-good{background:#EAF6F4;color:#0a5a52;border-left:4px solid var(--teal);}
+  .ca-synthesis.tier-mixed{background:#FDF3E6;color:#7a5217;border-left:4px solid var(--orange);}
+  .ca-synthesis.tier-risky{background:#FBEAE8;color:#8a2f26;border-left:4px solid var(--danger);}
+
+  .consigne-banner{background:#FFF7EE;border:1.5px dashed var(--orange);border-radius:10px;padding:.9rem 1.2rem;margin-top:1.6rem;font-size:.88rem;color:#7a4d17;}
+
+  .portfolio-box{background:#EAF6F4;border:1.5px solid var(--teal);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.6rem;}
+  .pb-title{font-family:var(--sans);font-weight:800;font-size:1.02rem;color:#0a5a52;margin-bottom:.5rem;}
+  .pb-instr{font-size:.85rem;color:#0a5a52;line-height:1.5;margin:0 0 1rem;}
+  .pq-item{background:var(--white);border-radius:8px;padding:.8rem 1rem;margin-bottom:.6rem;}
+  .pq-item:last-child{margin-bottom:0;}
+  .pq-step{font-family:var(--mono);font-size:.68rem;color:var(--teal);text-transform:uppercase;margin-bottom:.25rem;font-weight:bold;}
+  .pq-text{font-size:.88rem;color:var(--text);line-height:1.4;font-style:italic;}
+
+  .handoff-box{
+    background:var(--ink); border-radius:14px; padding:1.6rem 1.8rem; margin:1.6rem 0 2rem;
+    border:2px solid var(--orange); position:relative;
+  }
+  .handoff-title{font-family:var(--sans);font-weight:800;color:var(--white);font-size:1.1rem;margin-bottom:.6rem;}
+  .handoff-instr{color:#C9CFDE;font-size:.88rem;line-height:1.5;margin:0 0 1.2rem;max-width:720px;}
+  .handoff-grid{display:flex;flex-wrap:wrap;gap:.8rem;}
+  .handoff-item{background:#1c2b52;border-radius:10px;padding:.9rem .7rem;text-align:center;flex:1 1 140px;}
+  .handoff-item .hi-label{font-family:var(--mono);font-size:.62rem;color:var(--steel);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+  .handoff-item .hi-val{font-family:var(--sans);font-weight:800;font-size:1.35rem;color:var(--white);}
+  .handoff-footer{margin-top:1.1rem;font-family:var(--mono);font-size:.72rem;color:var(--steel);}
+  @media (max-width:880px){ .handoff-item{flex-basis:45%;} }
+
+  @media (max-width:880px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;height:auto;}
+    .panel{padding:1.6rem;}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ============ BROUILLONS ============ */
+  #sidebar{overflow-y:auto;}
+  .navlist{margin-bottom:1rem;}
+  .progress-wrap{margin-bottom:1.1rem;}
+  .draft-box{border-top:1px solid #24345c;padding-top:.9rem;margin-bottom:1rem;}
+  .draft-box h4{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);margin:0 0 .6rem;text-transform:uppercase;}
+  .draft-btn{display:block;width:100%;background:transparent;border:1px dashed #3a4a75;color:#B9C4E0;padding:.5rem .65rem;border-radius:6px;font-size:.78rem;margin-bottom:.4rem;text-align:left;transition:border-color .15s,color .15s;}
+  .draft-btn:hover{border-color:var(--orange);color:var(--white);}
+  #draft-status{font-family:var(--mono);font-size:.62rem;color:var(--steel);line-height:1.4;}
+  #draft-status.dirty{color:var(--orange);}
+  #boot-restore{margin-top:1.1rem;display:block;background:none;border:none;color:var(--steel);font-family:var(--mono);font-size:.75rem;text-decoration:underline;padding:0;}
+  #boot-restore:hover{color:var(--orange);}
+  .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--white);padding:.75rem 1.2rem;border-radius:8px;border-left:4px solid var(--orange);font-size:.85rem;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:90vw;}
+
+  /* ============ IMMERSION : scènes, dialogues, relations ============ */
+  .scene-head{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.74rem;color:var(--steel);letter-spacing:.4px;margin:0 0 1rem;}
+  .scene-head .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex:none;}
+  .dlg{margin-bottom:1.3rem;}
+  .dline{display:flex;gap:.8rem;margin-bottom:.8rem;align-items:flex-start;opacity:0;animation:dlgIn .4s ease forwards;}
+  @keyframes dlgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .avatar{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:.78rem;color:#fff;letter-spacing:.3px;}
+  .dbody{flex:1;min-width:0;}
+  .dwho{font-size:.74rem;font-weight:bold;color:var(--ink);margin-bottom:.18rem;}
+  .dwho span{font-weight:normal;color:var(--steel);margin-left:.45rem;}
+  .dbubble{background:var(--white);border:1px solid var(--steel-light);border-radius:4px 12px 12px 12px;padding:.65rem .9rem;font-size:.93rem;line-height:1.5;color:var(--text);}
+  .dline.narr .dbubble{background:transparent;border:none;padding:0 0 0 .2rem;color:var(--steel);font-style:italic;}
+  .dline.ctrl .dbubble{background:var(--ink);border-color:var(--ink);color:#dfe4f2;font-style:italic;}
+  .step-prompt{font-weight:600;color:var(--ink);margin:0 0 .8rem;}
+  .react-box{background:#FBF8F3;border:1px solid #EFE3D2;border-radius:12px;padding:1.1rem 1.2rem 1.2rem;margin-top:1.3rem;}
+  .react-title{font-family:var(--mono);font-size:.7rem;letter-spacing:1px;color:var(--orange-dim);text-transform:uppercase;margin-bottom:.9rem;}
+  .react-meta{margin:.5rem 0 .2rem;}
+  .meta-label{font-size:.74rem;color:var(--steel);margin-bottom:.25rem;}
+  .trust-delta{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.15rem .5rem;border-radius:5px;margin:.15rem .3rem .15rem 0;}
+  .trust-up{background:#E4F5F2;color:var(--teal);}
+  .trust-down{background:#FBEAE8;color:var(--danger);}
+  .trust-flat{background:#EEF0F3;color:var(--steel);}
+  .rel-strip{display:flex;flex-wrap:wrap;gap:.55rem;margin:0 0 1.2rem;}
+  .rel-chip{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1px solid var(--steel-light);border-radius:999px;padding:.22rem .8rem .22rem .25rem;}
+  .rel-chip .avatar{width:26px;height:26px;font-size:.6rem;}
+  .rel-name{font-size:.7rem;font-weight:bold;color:var(--ink);line-height:1.1;}
+  .pips{display:flex;gap:2px;margin-top:2px;}
+  .pip{width:9px;height:5px;border-radius:2px;background:var(--steel-light);}
+  .pip.on.hi{background:var(--teal);} .pip.on.mid{background:var(--orange);} .pip.on.lo{background:var(--danger);}
+  .epilogue-box{background:var(--white);border:1px solid var(--steel-light);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.6rem;}
+  .ep-title{font-family:var(--sans);font-weight:800;font-size:1.05rem;color:var(--ink);margin-bottom:1rem;}
+  .ep-rel-title{font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--steel);text-transform:uppercase;margin:.4rem 0 .6rem;}
+  .cast-title{font-family:var(--sans);font-size:1.05rem;color:var(--ink);margin:1.6rem 0 .8rem;}
+  .cast-grid{display:flex;flex-wrap:wrap;gap:.8rem;}
+  .cast-card{flex:1 1 260px;display:flex;gap:.8rem;background:var(--white);border:1px solid var(--steel-light);border-radius:10px;padding:.85rem .95rem;}
+  .cast-card .cc-name{font-weight:bold;color:var(--ink);font-size:.92rem;}
+  .cast-card .cc-role{font-size:.72rem;color:var(--orange-dim);margin:.1rem 0 .3rem;font-weight:bold;}
+  .cast-card .cc-bio{font-size:.82rem;color:#4a4f5c;line-height:1.4;}
+
+  /* ============ JUSTIFICATION ÉCRITE ============ */
+  .justif-box{margin-top:1.1rem;padding-top:1rem;border-top:1px dashed #E3D6C2;}
+  .justif-title{font-weight:bold;color:var(--ink);font-size:.92rem;margin-bottom:.25rem;}
+  .justif-q{font-size:.82rem;color:#5a4420;font-style:italic;margin-bottom:.55rem;line-height:1.4;}
+  .justif-box textarea,.pq-answer{display:block;width:100%;min-height:96px;resize:vertical;border:1.5px solid var(--steel-light);border-radius:8px;padding:.65rem .8rem;font-family:var(--body);font-size:.93rem;line-height:1.45;color:var(--text);background:#fff;outline:none;}
+  .justif-box textarea:focus,.pq-answer:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,155,142,.12);}
+  .justif-hint{font-size:.72rem;color:var(--steel);margin:.35rem 0 .9rem;}
+  .pq-answer{margin-top:.55rem;min-height:84px;}
+  .pq-note{background:#fff;border-left:3px solid var(--teal);border-radius:6px;padding:.6rem .8rem;font-size:.8rem;color:#0a5a52;margin-bottom:.8rem;line-height:1.45;}
+
+  /* ============ MOTEUR V2 : navigation, lien du cours, formats de questions ============ */
+  .course-link{display:block;margin:0 0 1rem;padding:.6rem .7rem;border-radius:8px;background:rgba(15,155,142,.14);border:1px solid rgba(15,155,142,.55);color:#BFEDE8;font-size:.8rem;font-weight:700;text-decoration:none;transition:background .15s,border-color .15s;}
+  .course-link:hover{background:rgba(15,155,142,.28);border-color:var(--teal);color:#fff;}
+  .step-toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:0 0 1rem;}
+  .back-btn{background:var(--white);border:1.5px solid var(--steel-light);color:var(--ink);border-radius:8px;padding:.4rem .8rem;font-size:.8rem;font-weight:700;transition:border-color .15s,color .15s;}
+  .back-btn:hover:not([disabled]){border-color:var(--orange);color:var(--orange-dim);}
+  .back-btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .course-chip{display:inline-block;border-radius:999px;background:#E8F6F4;border:1px solid #BFE3DE;color:#0a5a52;padding:.38rem .85rem;font-size:.78rem;font-weight:700;text-decoration:none;}
+  .course-chip:hover{background:#D6EEEA;}
+  .dots-label{margin-left:.6rem;font-family:var(--mono);font-size:.72rem;color:var(--steel);align-self:center;}
+  .step-dots{flex-wrap:wrap;gap:.35rem;}
+  .step-dot{width:22px;}
+
+  .fb-box{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.9rem 1rem;margin:0 0 1rem;}
+  .fb-title{font-weight:bold;color:var(--ink);font-size:.9rem;margin-bottom:.5rem;}
+  .fb-list{list-style:none;margin:0;padding:0;}
+  .fb-list li{padding:.5rem .65rem;border-left:3px solid var(--steel-light);margin-bottom:.4rem;font-size:.85rem;line-height:1.4;background:#FAFAF9;border-radius:0 6px 6px 0;}
+  .fb-list li.ok{border-left-color:var(--teal);} .fb-list li.ko{border-left-color:var(--danger);}
+  .fb-list li b{font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;}
+  .fb-list li.ok b{color:var(--teal);} .fb-list li.ko b{color:var(--danger);}
+  .fb-sub{color:#5a6070;font-size:.8rem;}
+  .fb-method{margin-top:.6rem;font-size:.82rem;color:#4a4f5c;line-height:1.45;background:#F3F8F7;border-radius:6px;padding:.55rem .7rem;}
+  .fb-table{border-collapse:collapse;width:100%;font-size:.82rem;margin-top:.3rem;}
+  .fb-table th{text-align:left;font-family:var(--mono);font-size:.64rem;text-transform:uppercase;color:var(--steel);border-bottom:2px solid var(--ink);padding:.3rem .4rem;}
+  .fb-table td{padding:.35rem .4rem;border-bottom:1px solid var(--steel-light);}
+
+  .locked{pointer-events:none;}
+  .locked .seg,.locked .rk-row,.locked .hs-node,.locked .al-cell,.locked .tn-row{opacity:.75;}
+
+  /* classement */
+  .cls-legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.78rem;color:#4a4f5c;margin-bottom:.8rem;background:#fff;border:1px solid var(--steel-light);border-radius:8px;padding:.55rem .75rem;}
+  .cls-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.7rem .85rem;margin-bottom:.55rem;}
+  .cls-text{flex:1 1 280px;font-size:.9rem;line-height:1.4;}
+  .cls-ctl{display:flex;flex-wrap:wrap;gap:.35rem;}
+  .seg{background:#F3F5F8;border:1.5px solid var(--steel-light);color:var(--ink);border-radius:999px;padding:.35rem .8rem;font-size:.78rem;font-weight:700;transition:all .12s;}
+  .seg:hover{border-color:var(--teal);}
+  .seg.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .cls-ctl select,.calc-row select{border:1.5px solid var(--steel-light);border-radius:8px;padding:.45rem .6rem;font-size:.85rem;background:#fff;color:var(--text);font-family:var(--body);min-width:200px;}
+
+  /* calcul */
+  .calc-givens{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;}
+  .giv{background:#fff;border:1px solid var(--steel-light);border-radius:8px;padding:.45rem .75rem;display:flex;flex-direction:column;min-width:140px;}
+  .giv span{font-size:.7rem;color:var(--steel);} .giv b{font-size:.98rem;color:var(--ink);}
+  .calc-row{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.65rem .85rem;margin-bottom:.55rem;}
+  .calc-row label{flex:1 1 300px;font-size:.88rem;line-height:1.35;}
+  .calc-row input{width:150px;border:1.5px solid var(--steel-light);border-radius:8px;padding:.5rem .65rem;font-size:.95rem;font-family:var(--body);outline:none;}
+  .calc-row input:focus,.calc-row select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,155,142,.12);}
+  .calc-unit{font-size:.78rem;color:var(--steel);}
+
+  /* schéma de ligne */
+  .hs-line{display:flex;align-items:stretch;gap:.25rem;flex-wrap:wrap;margin-bottom:.8rem;}
+  .hs-node{flex:1 1 170px;text-align:left;background:#fff;border:2px solid var(--steel-light);border-radius:12px;padding:.8rem .85rem;transition:all .15s;}
+  .hs-node:hover{border-color:var(--teal);transform:translateY(-1px);}
+  .hs-node.on{border-color:var(--orange);background:#FFF7EE;box-shadow:0 6px 16px rgba(251,139,36,.16);}
+  .hs-name{font-weight:800;color:var(--ink);font-size:.95rem;} .hs-cap{font-family:var(--mono);font-size:.76rem;color:var(--teal);margin:.15rem 0 .5rem;}
+  .hs-qlabel{font-size:.66rem;text-transform:uppercase;letter-spacing:.5px;color:var(--steel);display:block;margin-bottom:.2rem;}
+  .hs-pile{display:flex;flex-wrap:wrap;gap:2px;min-height:14px;} .hs-pile i{width:11px;height:11px;background:var(--orange);border-radius:2px;display:block;} .hs-pile em{font-size:.72rem;color:var(--steel);}
+  .hs-note{font-size:.78rem;color:#4a4f5c;margin-top:.5rem;line-height:1.35;}
+  .hs-arrow{align-self:center;color:var(--steel);font-weight:bold;font-size:1.2rem;padding:0 .1rem;}
+
+  /* classement + Gantt */
+  .rk-row{display:flex;align-items:center;gap:.6rem;background:#fff;border:1.5px solid var(--steel-light);border-radius:10px;padding:.55rem .7rem;margin-bottom:.45rem;cursor:grab;}
+  .rk-row.drag{opacity:.4;} .rk-row.over{border-color:var(--orange);}
+  .rk-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:.74rem;font-weight:bold;display:flex;align-items:center;justify-content:center;}
+  .rk-grip{color:var(--steel);font-size:1rem;letter-spacing:-2px;}
+  .rk-text{flex:1;font-size:.86rem;line-height:1.4;} .rk-meta{display:block;font-family:var(--mono);font-size:.7rem;color:var(--teal);margin-top:.1rem;}
+  .rk-btns{display:flex;flex-direction:column;gap:2px;} .rk-btns button{border:1px solid var(--steel-light);background:#F3F5F8;border-radius:5px;font-size:.62rem;line-height:1;padding:.22rem .45rem;color:var(--ink);} .rk-btns button:hover:not([disabled]){border-color:var(--orange);} .rk-btns button[disabled]{opacity:.3;}
+  .gt-wrap{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.85rem 1rem 1rem;margin:.9rem 0;}
+  .gt-marks{position:relative;height:30px;} .gt-mark{position:absolute;transform:translateX(-50%);text-align:center;font-size:.64rem;font-weight:bold;color:var(--ink);} .gt-mark:after{content:"";display:block;width:2px;height:10px;background:var(--ink);margin:1px auto 0;}
+  .gt-row{display:flex;height:40px;border-radius:6px;overflow:hidden;background:#EEF0F3;}
+  .gt-bar{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;border-right:2px solid #fff;transition:width .25s;} .gt-bar.ok{background:var(--teal);} .gt-bar.late{background:var(--danger);}
+  .gt-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.64rem;color:var(--steel);margin-top:.2rem;}
+  .gt-metrics{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;} .gt-metrics div{flex:1 1 140px;background:#F7F8FA;border-radius:8px;padding:.45rem .65rem;} .gt-metrics span{display:block;font-size:.66rem;color:var(--steel);} .gt-metrics b{font-size:1rem;color:var(--ink);}
+
+  /* répartition d'investissement */
+  .al-info{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:.82rem;margin-bottom:.7rem;color:#4a4f5c;}
+  .al-grid{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.8rem;}
+  .al-cell{flex:1 1 150px;background:#fff;border:2px solid var(--steel-light);border-radius:12px;padding:.7rem .8rem;text-align:center;} .al-cell.min{border-color:var(--orange);}
+  .al-name{font-weight:800;color:var(--ink);font-size:.9rem;} .al-cap{font-size:1.4rem;font-weight:800;color:var(--teal);margin:.2rem 0;} .al-cap small{font-size:.66rem;color:var(--steel);font-weight:normal;}
+  .al-step{display:flex;align-items:center;justify-content:center;gap:.7rem;} .al-step button{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--steel-light);background:#F3F5F8;font-size:1.1rem;font-weight:bold;color:var(--ink);} .al-step button:hover:not([disabled]){border-color:var(--orange);} .al-step button[disabled]{opacity:.3;} .al-step b{font-size:1.1rem;min-width:18px;}
+  .al-live{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;}
+  .al-bars{position:relative;display:flex;gap:.8rem;align-items:flex-end;height:150px;padding:0 .5rem .1rem;border-bottom:2px solid var(--steel-light);}
+  .al-bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;} .al-bar i{display:block;width:60%;background:var(--teal);border-radius:4px 4px 0 0;transition:height .25s;} .al-bar i.min{background:var(--orange);} .al-bar span{position:absolute;bottom:-1.4rem;font-size:.66rem;color:var(--steel);}
+  .al-target{position:absolute;left:0;right:0;border-top:2px dashed var(--ink);} .al-target span{position:absolute;right:0;top:-1.15rem;font-size:.64rem;font-weight:bold;color:var(--ink);background:#fff;padding:0 .2rem;}
+  .al-debit{margin-top:2rem;font-size:.9rem;} .al-debit.ok b{color:var(--teal);} .al-debit.ko b{color:var(--danger);} .al-debit small{color:var(--steel);}
+
+  /* réglage en direct */
+  .tn-row{background:#fff;border:1px solid var(--steel-light);border-radius:10px;padding:.7rem .9rem;margin-bottom:.55rem;} .tn-row label{display:block;font-size:.86rem;margin-bottom:.3rem;}
+  .tn-ctl{display:flex;align-items:center;gap:.9rem;} .tn-ctl input{flex:1;accent-color:var(--orange);} .tn-val{min-width:80px;text-align:right;font-family:var(--mono);color:var(--ink);}
+  .tn-live{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0 1rem;}
+  .tn-metric{flex:1 1 170px;background:#fff;border:2px solid var(--steel-light);border-radius:10px;padding:.55rem .75rem;} .tn-metric.ok{border-color:var(--teal);} .tn-metric.ko{border-color:var(--danger);}
+  .tn-mlabel{font-size:.7rem;color:var(--steel);} .tn-mval{font-size:1.2rem;font-weight:800;color:var(--ink);} .tn-mval small{font-size:.66rem;color:var(--steel);font-weight:normal;}
+  .tn-mbar{height:5px;background:#EEF0F3;border-radius:3px;margin-top:.3rem;overflow:hidden;} .tn-mbar i{display:block;height:100%;background:var(--steel);transition:width .2s;} .tn-metric.ok .tn-mbar i{background:var(--teal);} .tn-metric.ko .tn-mbar i{background:var(--danger);}
+  .tn-mhint{font-size:.66rem;color:var(--steel);margin-top:.25rem;}
+  .od-note{background:#FFF4E5;border:1.5px solid var(--orange);border-radius:8px;padding:.6rem .8rem;margin-bottom:.8rem;font-size:.82rem;color:#7a4d17;line-height:1.4;}
+  .opt-od-msg{margin-top:.45rem;margin-left:2.1rem;font-size:.76rem;color:#b25d0b;font-weight:600;}
+  .rk-letter{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:var(--teal);color:#fff;font-size:.72rem;margin-right:.5rem;font-weight:bold;}
+</style>
+</head>
+<body>
+
+<!-- ============ BOOT SCREEN ============ -->
+<div id="boot">
+  <div class="boot-box">
+    <div class="boot-logo">CELLULE <span>NOMAD</span></div>
+    <div class="boot-sub">TERMINAL D'INTERVENTION — RÉSILIENCE SUPPLY CHAIN</div>
+    <div id="boot-log"></div>
+    <div id="boot-form">
+      <label>NOM DE VOTRE CELLULE (ÉQUIPE)</label>
+      <input type="text" id="team-name-input" placeholder="Ex : Cellule Aurore" maxlength="40">
+      <br>
+      <button id="boot-enter" disabled>Continuer →</button>
+      <button id="boot-restore" type="button">Reprendre un brouillon enregistré (.json)</button>
+    </div>
+    <div id="reprise-form">
+      <div class="reprise-title">REPRISE DE CAMPAGNE — Mission 4 → Mission 5</div>
+      <p class="reprise-instr">Cellule <strong id="reprise-team-name"></strong>, saisissez les 5 valeurs de votre <strong>carnet de bord de la Mission 4</strong> (notées ou capturées en fin de mission précédente). Si vous démarrez une nouvelle campagne sans historique, laissez les valeurs par défaut.</p>
+      <div class="reprise-grid">
+        <div class="reprise-field">
+          <label>Trésorerie (k€)</label>
+          <input type="number" id="reprise-tresorerie" value="500" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Taux de service (%)</label>
+          <input type="number" id="reprise-service" value="92" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Coût logistique (%)</label>
+          <input type="number" id="reprise-cout" value="11" step="0.1">
+        </div>
+        <div class="reprise-field">
+          <label>Résilience (/100)</label>
+          <input type="number" id="reprise-resilience" value="40" step="1">
+        </div>
+        <div class="reprise-field">
+          <label>Image RSE (/100)</label>
+          <input type="number" id="reprise-rse" value="55" step="1">
+        </div>
+      </div>
+      <button id="reprise-confirm">Confirmer et rejoindre le terminal →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app">
+  <div id="sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div class="brand-name">NOMAD<span>.</span></div>
+    </div>
+    <div class="team-tag" id="team-tag">CELLULE —</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>PROGRESSION MISSION</span><span id="progress-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <nav class="navlist">
+      <button class="navitem" data-panel="brief">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Brief de mission
+      </button>
+      <button class="navitem" data-panel="dossier">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-3H5a2 2 0 0 0-2 2Z"/></svg>
+        Dossier Altiva Outdoor
+      </button>
+      <button class="navitem" data-panel="controleur">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        Le Contrôleur
+      </button>
+      <button class="navitem active" data-panel="mission">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
+        Mission : Le juste stock
+        <span class="navbadge" id="nav-mission-badge">0/4</span>
+      </button>
+      <button class="navitem" data-panel="bilan" disabled id="nav-bilan">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+        Bilan &amp; export
+      </button>
+    </nav>
+
+    <a class="course-link" id="course-link" href="https://docs.google.com/presentation/d/1MXbQSMp-AL3WvnfL-Q0NfGcj53wlIAMs/edit?usp=drivesdk&amp;ouid=111400757778053252382&amp;rtpof=true&amp;sd=true" target="_blank" rel="noopener">📘 Ouvrir le cours (Séance 5)</a>
+
+    <div class="draft-box">
+      <h4>Brouillon</h4>
+      <button class="draft-btn" id="btn-save-draft" type="button">&#8595; Enregistrer un brouillon</button>
+      <button class="draft-btn" id="btn-restore-draft" type="button">&#8593; Restaurer un brouillon</button>
+      <div id="draft-status">Aucun brouillon enregistré</div>
+    </div>
+
+    <div class="gauges">
+      <h4>Jauges de la cellule</h4>
+      <div id="gauge-list"></div>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <!-- BRIEF -->
+    <div class="panel active" id="panel-brief">
+      <div class="kicker">Terminal NOMAD</div>
+      <h1 class="ptitle">Brief de mission</h1>
+      <p class="lead">Bienvenue à nouveau, <span id="brief-team-name">Cellule</span>. La production tourne, mais l'entrepôt d'Altiva a un problème paradoxal : trop de stock et des ruptures en même temps.</p>
+      <div class="card accent-left">
+        <h3>Où en est la campagne</h3>
+        <p>Votre cellule a stabilisé le réseau (Mission 1), fiabilisé la prévision (Mission 2), négocié le tissu (Mission 3) et débloqué la ligne de production (Mission 4). Vos jauges de fin de mission vous accompagnent : c'est pourquoi vous les avez ressaisies à l'instant.</p>
+      </div>
+      <div class="card accent-left orange">
+        <h3>Votre mission aujourd'hui</h3>
+        <p><strong>« Le juste stock »</strong> : l'entrepôt central de Saint-Priest immobilise <strong>6,5 M€ de marchandises</strong>, alors que le taux de service plafonne à 94 %. Pendant une semaine, votre cellule pilote les décisions de stock : types de stocks et coûts, classement des références, quantités à commander, niveaux de sécurité, organisation de l'entrepôt, partage des stocks et invendus.</p>
+      </div>
+      <div class="card">
+        <h3>Comment ça marche</h3>
+        <p><strong>17 questions, de formats variés</strong> : classements, calculs, ordonnancement, repérage sur le plan de l'entrepôt, réglage de la quantité commandée avec les coûts recalculés en direct, choix à conséquences. Chaque réponse modifie vos jauges et la confiance des personnages, et chaque question est suivie d'un encart où <strong>vous justifiez votre réponse par écrit</strong>.</p>
+        <p><strong>Le cours est consultable à tout moment</strong> : bouton « Ouvrir le cours » dans la barre de gauche et lien sur chaque question, avec les diapositives utiles. Toutes les formules y sont détaillées terme par terme. <strong>Vous pouvez revenir en arrière</strong> et modifier une réponse (le nombre de retours figure dans votre export). Une fois la mission terminée, retrouvez votre bilan dans l'onglet <strong>Bilan &amp; export</strong>.</p>
+      </div>
+    </div>
+
+    <!-- DOSSIER ALTIVA -->
+    <div class="panel" id="panel-dossier">
+      <div class="kicker">Dossier client</div>
+      <h1 class="ptitle">Altiva Outdoor — l'entrepôt de Saint-Priest</h1>
+      <p class="lead">Entrepôt central qui alimente les revendeurs d'Europe : environ 400 références, 12 000 emplacements, une collection qui change chaque saison.</p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val">6,5 M€</div><div class="stat-label">Valeur du stock</div></div>
+        <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val">~400</div><div class="stat-label">Références actives</div></div>
+        <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-val">94 %</div><div class="stat-label">Taux de service actuel</div></div>
+        <div class="stat-card"><div class="stat-icon">🏬</div><div class="stat-val">9 dépôts</div><div class="stat-label">Dépôts régionaux</div></div>
+        <div class="stat-card"><div class="stat-icon">♻️</div><div class="stat-val">3 200</div><div class="stat-label">Parkas invendues</div></div>
+      </div>
+      <div class="card accent-left">
+        <h3>Contexte de la mission</h3>
+        <p>La production est enfin au niveau, mais le stock est mal réparti : des palettes dorment sur des références qui ne se vendent plus, pendant que des références très demandées sont en rupture. La trésorerie, le service client et l'image RSE se jouent dans ce stock.</p>
+      </div>
+      <div class="card accent-left orange">
+        <h3>Point d'attention</h3>
+        <p>Un stock se pilote par référence et par politique : on ne gère pas de la même façon une référence qui pèse 40 % de la valeur et une référence erratique de faible valeur. Les bonnes décisions s'appuient sur des calculs, pas sur l'intuition.</p>
+      </div>
+      <h3 class="cast-title">Les personnages de la mission</h3>
+      <div class="cast-grid"><div class="cast-card"><div class="avatar" style="background:#BD4E24">EM</div><div><div class="cc-name">Élise Marchand</div><div class="cc-role">Directrice générale</div><div class="cc-bio">Dirigeante d'Altiva. Attentive aux résultats autant qu'à l'image de la marque. Elle jauge la cellule à ses décisions.</div></div></div><div class="cast-card"><div class="avatar" style="background:#E07B12">TB</div><div><div class="cc-name">Théo Brisset</div><div class="cc-role">Directeur commercial</div><div class="cc-bio">Commercial dans l'âme. Voit des opportunités partout, parfois avant que les chiffres ne les confirment.</div></div></div><div class="cast-card"><div class="avatar" style="background:#0F9B8E">NB</div><div><div class="cc-name">Nadia Benhamou</div><div class="cc-role">Directrice production &amp; supply chain</div><div class="cc-bio">Pragmatique. Défend la capacité réelle de l'usine, pas celle des présentations.</div></div></div><div class="cast-card"><div class="avatar" style="background:#5B6B85">MD</div><div><div class="cc-name">Marc Delorme</div><div class="cc-role">Directeur financier</div><div class="cc-bio">Gardien de la trésorerie. Pose les questions qui fâchent, et il a presque toujours une raison.</div></div></div><div class="cast-card"><div class="avatar" style="background:#C2762B">SH</div><div><div class="cc-name">Samir Haddad</div><div class="cc-role">Responsable de l'entrepôt</div><div class="cc-bio">Dix ans d'entrepôt, de la réception à l'expédition. Sait où est chaque palette, et pourquoi elle y est.</div></div></div><div class="cast-card"><div class="avatar" style="background:#2F7FA3">SR</div><div><div class="cc-name">Sabine Roux</div><div class="cc-role">Responsable qualité &amp; maintenance</div><div class="cc-bio">Mesure tout : défauts, vibrations, arrêts. Préfère prévenir que réparer, et le prouve chiffres en main.</div></div></div></div>
+    </div>
+
+    <!-- CONTROLEUR -->
+    <div class="panel" id="panel-controleur">
+      <div class="kicker">Votre mentor</div>
+      <h1 class="ptitle">Le Contrôleur</h1>
+      <p class="lead">Voix de NOMAD, le Contrôleur brief chaque mission et peut vous éclairer si votre cellule bloque — mais ne décidera jamais à votre place.</p>
+      <div class="briefing-box">
+        <span class="who">LE CONTRÔLEUR — TRANSMISSION</span>
+        « Un stock est à la fois une assurance et une dépense. Trop petit, il laisse passer les ruptures ; trop gros, il ronge la trésorerie et la planète. Cette mission vous demande de trouver le juste niveau, référence par référence. Les formules sont dans le cours, terme par terme : servez-vous-en, et n'hésitez pas à revenir sur une réponse. »
+      </div>
+      <div class="card">
+        <h3>Le système de pistes</h3>
+        <p>À chaque étape avec décision, un bouton « Demander une piste » est disponible. La première piste ouvre une perspective. La seconde, si vous la demandez, est plus directe. Utilisez-les sans hésiter : l'objectif est d'apprendre à bien arbitrer, pas de deviner une réponse cachée.</p>
+      </div>
+    </div>
+
+    <!-- MISSION -->
+    <div class="panel" id="panel-mission">
+      <div class="kicker">Mission 5 — Le juste stock</div>
+      <h1 class="ptitle" id="step-title">Chargement...</h1>
+      <div class="step-dots" id="step-dots"></div>
+      <div id="step-content"></div>
+    </div>
+
+    <!-- BILAN -->
+    <div class="panel" id="panel-bilan">
+      <div class="kicker">Fin de mission</div>
+      <h1 class="ptitle">Bilan de la Cellule <span id="bilan-team-name"></span></h1>
+      <div id="bilan-locked" class="lock-msg">Terminez la mission « Le juste stock » pour débloquer votre bilan.</div>
+      <div id="bilan-content" style="display:none;">
+        <p class="lead">Voici l'état final de vos jauges et le chemin emprunté. Ce bilan est la base idéale pour le débriefing collectif — et la première pièce de votre dossier de restitution pour l'examen final.</p>
+        <div id="bilan-gauges"></div>
+
+        <div class="handoff-box">
+          <div class="handoff-title">📋 Carnet de bord — à conserver pour la Mission 6</div>
+          <p class="handoff-instr">Au début de la prochaine mission, on vous demandera de ressaisir ces 5 valeurs pour reprendre la campagne là où vous l'avez laissée. <strong>Notez-les maintenant</strong> (papier, notes de téléphone, ou capture d'écran de cet encart) :</p>
+          <div class="handoff-grid" id="handoff-grid"></div>
+          <div class="handoff-footer">Cellule <strong id="handoff-team"></strong> — Mission 5 « Le juste stock » terminée</div>
+        </div>
+
+        <table class="path-table" id="bilan-path"></table>
+        <div id="bilan-hidden-note"></div>
+
+        <div class="epilogue-box">
+          <div class="ep-title">Épilogue</div>
+          <div class="dlg" id="epilogue-lines"></div>
+          <div class="ep-rel-title">Relations en fin de mission</div>
+          <div id="epilogue-rel"></div>
+        </div>
+
+        <div class="portfolio-box">
+          <div class="pb-title" id="pb-title-el">🎓 Questions pour votre dossier de restitution</div>
+          <p class="pb-instr">À la fin de la campagne, votre cellule présentera et justifiera ses choix à l'oral pour l'examen final. Ces questions, propres aux décisions de cette mission, vous aident à préparer cet argumentaire — répondez-y dès maintenant, à chaud, pendant que le contexte est encore frais.</p>
+          <div id="portfolio-questions"></div>
+        </div>
+
+        <div class="controller-analysis">
+          <div class="ca-title">🎖️ Analyse du Contrôleur</div>
+          <div id="controller-verdicts"></div>
+          <div class="ca-synthesis" id="controller-synthesis"></div>
+        </div>
+
+        <div class="consigne-banner">📤 <strong>Consigne :</strong> téléchargez le PDF de cette mission et envoyez-le à votre formateur avant la prochaine séance. <strong>Conservez aussi votre propre copie</strong> — vous en aurez besoin, avec celles des prochaines missions, pour préparer votre présentation orale de fin de campagne.</div>
+        <div class="export-row">
+          <button class="export-btn drive" id="btn-drive">
+            <div class="eb-icon">📘</div>
+            <div>
+              <div class="eb-title">Télécharger le cours (Séance 5)</div>
+              <div class="eb-sub">Ouvre le support de cours complet sur Google Drive</div>
+            </div>
+          </button>
+          <button class="export-btn pdf" id="btn-pdf">
+            <div class="eb-icon">📄</div>
+            <div>
+              <div class="eb-title">Exporter mes décisions en PDF</div>
+              <div class="eb-sub">Idéal pour le débriefing avec votre formateur</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const MISSION = {"id":"M5","n":5,"title":"Le juste stock","drive":"https://docs.google.com/presentation/d/1MXbQSMp-AL3WvnfL-Q0NfGcj53wlIAMs/edit?usp=drivesdk&ouid=111400757778053252382&rtpof=true&sd=true","boot":[{"text":"> Initialisation du terminal NOMAD...","cls":""},{"text":"> Vérification des accès sécurisés...","cls":"ok","suffix":"OK"},{"text":"> Connexion au dossier client ALTIVA OUTDOOR...","cls":"ok","suffix":"ÉTABLIE"},{"text":"> Alerte détectée : stock de 6,5 M€ et ruptures simultanées (service 94 %)","cls":"warn"},{"text":"> Chargement du dossier de mission « Le juste stock »...","cls":"ok","suffix":"PRÊT"},{"text":"> En attente d'identification de cellule...","cls":""}],"cast":{"ctrl":{"name":"Le Contrôleur","role":"NOMAD","initials":"CT","color":"#14213D","bio":"Voix de NOMAD. Briefe chaque mission, murmure des pistes, ne décide jamais à votre place."},"elise":{"name":"Élise Marchand","role":"Directrice générale","initials":"EM","color":"#BD4E24","bio":"Dirigeante d'Altiva. Attentive aux résultats autant qu'à l'image de la marque. Elle jauge la cellule à ses décisions."},"theo":{"name":"Théo Brisset","role":"Directeur commercial","initials":"TB","color":"#E07B12","bio":"Commercial dans l'âme. Voit des opportunités partout, parfois avant que les chiffres ne les confirment."},"nadia":{"name":"Nadia Benhamou","role":"Directrice production & supply chain","initials":"NB","color":"#0F9B8E","bio":"Pragmatique. Défend la capacité réelle de l'usine, pas celle des présentations."},"marc":{"name":"Marc Delorme","role":"Directeur financier","initials":"MD","color":"#5B6B85","bio":"Gardien de la trésorerie. Pose les questions qui fâchent, et il a presque toujours une raison."},"samir":{"name":"Samir Haddad","role":"Responsable de l'entrepôt","initials":"SH","color":"#C2762B","bio":"Dix ans d'entrepôt, de la réception à l'expédition. Sait où est chaque palette, et pourquoi elle y est."},"sabine":{"name":"Sabine Roux","role":"Responsable qualité & maintenance","initials":"SR","color":"#2F7FA3","bio":"Mesure tout : défauts, vibrations, arrêts. Préfère prévenir que réparer, et le prouve chiffres en main."}},"relations":["marc","theo","nadia","elise","samir"],"trustInit":{"marc":2,"theo":2,"nadia":2,"elise":2,"samir":2},"decisionSteps":["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17"],"steps":{"open":{"type":"scene","order":0,"title":"Lundi matin à l'entrepôt","place":"Lundi, 8 h — Entrepôt central de Saint-Priest","scene":[{"who":"narr","text":"Les quais s'animent. Entre les racks de douze mètres, des caristes croisent des préparateurs, scanner à la main. Samir Haddad vous attend devant le plan de l'entrepôt."},{"who":"samir","text":"Bienvenue, cellule {team}. Quatre cents références, douze mille emplacements, et un stock qui gonfle sans cesse pendant que certaines références manquent. Je vous laisse la semaine pour m'aider à y voir clair."},{"who":"marc","text":"Six millions et demi d'euros de stock, avec une trésorerie déjà tendue : chaque palette inutile me coûte directement.","if":{"gaugeLt":["tresorerie",250]}},{"who":"marc","text":"Six millions et demi d'euros de stock. Nous avons de la marge, mais pas pour financer des palettes qui dorment.","if":{"gaugeGte":["tresorerie",250]}},{"who":"theo","text":"Notre taux de service est déjà mauvais, et j'ai des ruptures sur des références qui se vendent bien. Trop de stock au mauvais endroit, pas assez au bon.","if":{"gaugeLt":["service",90]}},{"who":"theo","text":"J'ai des revendeurs qui attendent des références en rupture, pendant que l'entrepôt déborde d'autres produits. Ça n'a aucun sens.","if":{"gaugeGte":["service",90]}},{"who":"elise","text":"Et n'oubliez pas les invendus de la dernière collection. Pour une marque comme la nôtre, détruire des produits est un vrai problème d'image, et notre bilan RSE en souffre déjà.","if":{"gaugeLt":["rse",55]}},{"who":"elise","text":"Et n'oubliez pas les invendus de la dernière collection : détruire des produits ne cadre pas avec notre promesse RSE.","if":{"gaugeGte":["rse",55]}},{"who":"nadia","text":"Trop de stock et trop de ruptures en même temps, ça veut dire qu'on n'a pas le bon stock, au bon endroit, avec les bonnes règles de réapprovisionnement."},{"who":"ctrl","text":"Dix-sept questions vous attendent. Le cours est à portée de clic dans la barre de gauche, avec les formules détaillées terme par terme. Et vous pouvez revenir sur une réponse si vous changez d'avis."}],"next":"q1"},"q1":{"type":"classify","order":1,"title":"Question 1 — De quel stock parle-t-on ?","place":"Lundi, 9 h — Salle de réunion de l'entrepôt","course":{"part":"Partie 2 — Fonctions, types et coûts","slides":"5 et 6"},"scene":[{"who":"samir","text":"Avant de parler chiffres, parlons vocabulaire. Quand on dit « stock », il y a plusieurs choses sous le même mot."},{"who":"marc","text":"Et chacune n'a pas la même utilité, ni la même légitimité à immobiliser mon argent."},{"who":"nadia","text":"J'ai relevé cinq situations dans l'entrepôt. Dites-moi à quel type de stock chacune correspond."}],"briefing":"Le stock de cycle couvre la consommation entre deux livraisons, le stock de sécurité absorbe les aléas, le stock d'anticipation prépare un pic ou un risque connu.","prompt":"Associez chaque situation au type de stock correspondant.","categories":[{"id":"cycle","label":"Stock de cycle","desc":"couvre la consommation entre deux réceptions"},{"id":"securite","label":"Stock de sécurité","desc":"absorbe les aléas de demande et de délai"},{"id":"anticipation","label":"Stock d'anticipation","desc":"prépare un pic ou un risque identifié"}],"items":[{"id":"i1","text":"En moyenne, la moitié de chaque commande de 1 200 réchauds sert à couvrir la consommation entre deux livraisons.","answer":"cycle","why":"Le stock de cycle dépend de la quantité commandée : en moyenne Q ÷ 2."},{"id":"i2","text":"Une marge de 80 doudounes gardée en plus, au cas où les ventes dépasseraient la prévision.","answer":"securite","why":"Une marge contre l'aléa de la demande : c'est le stock de sécurité."},{"id":"i3","text":"Des doudounes fabriquées dès juin pour la saison d'hiver, qui démarre en octobre.","answer":"anticipation","why":"Un stock constitué à l'avance pour un pic de demande prévisible."},{"id":"i4","text":"Des lots de tissu achetés en avance avant une hausse de prix annoncée par le fournisseur.","answer":"anticipation","why":"Un stock constitué volontairement pour un risque ou une opportunité identifiés (ici, la hausse de prix)."},{"id":"i5","text":"Quelques jours de consommation en plus pour absorber les retards habituels du transporteur.","answer":"securite","why":"Une protection contre l'aléa du délai : stock de sécurité."}],"thresholds":[{"min":5,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"resilience":2,"service":1},"trust":{"samir":1,"marc":1},"verdict":{"tone":"positive","text":"Vous distinguez les trois types de stocks : chacun a une fonction et un coût de possession différents, donc une politique différente."},"reaction":[{"who":"samir","text":"Voilà un vocabulaire qui permet de se parler sans malentendu."},{"who":"marc","text":"Maintenant je sais ce que je finance : du cycle, de la sécurité ou de l'anticipation."}]},"mixed":{"effects":{},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Plusieurs types sont reconnus, mais la frontière entre sécurité et anticipation reste floue : l'un protège de l'aléa, l'autre prépare un événement connu."},"reaction":[{"who":"samir","text":"Presque. La différence entre aléa et événement prévu est essentielle pour décider combien stocker."},{"who":"marc","text":"Je veux que chaque euro de stock ait une étiquette claire."}]},"bad":{"effects":{"resilience":-2},"trust":{"samir":-1,"marc":-1},"verdict":{"tone":"risky","text":"Sans distinguer les types de stocks, on ne peut pas décider lequel réduire : on risque de couper dans la sécurité alors que c'est le cycle qui est trop gros."},"reaction":[{"who":"samir","text":"Si on confond les trois, on coupera au hasard, et ce seront les ruptures qui nous le rappelleront."},{"who":"marc","text":"Réduire un stock sans savoir de quel type il est, c'est dangereux."}]}},"hints":["Le Contrôleur : « Demandez-vous à chaque fois : à quoi sert ce stock ? Couvrir la consommation normale, se protéger d'un aléa, ou préparer un événement connu ? »","Le Contrôleur : « Le stock de cycle est lié à la quantité commandée Q, le stock de sécurité à l'incertitude, le stock d'anticipation à un pic ou un risque identifié. »"],"reflection":"Quel type de stock vous semble le plus facile à réduire sans risque pour le service, et lequel le plus dangereux à couper, et pourquoi ?","next":"q2"},"q2":{"type":"classify","order":2,"title":"Question 2 — Combien coûte un stock ?","place":"Lundi, 11 h — Bureau de Marc Delorme","course":{"part":"Partie 2 — Fonctions, types et coûts","slides":"7"},"scene":[{"who":"marc","text":"Un stock coûte, mais de trois façons très différentes. Si on ne les distingue pas, on optimise au hasard."},{"who":"nadia","text":"Possession, passation, rupture : trois coûts qui poussent dans des directions opposées."},{"who":"theo","text":"Moi, je ne vois que celui de la rupture, parce que c'est celui que mes revendeurs me font payer."}],"briefing":"Possession : garder le stock. Passation : passer une commande. Rupture : ne pas avoir le produit quand le client le demande.","prompt":"Associez chaque dépense à la famille de coût dont elle relève.","categories":[{"id":"possession","label":"Coût de possession","desc":"garder le stock"},{"id":"passation","label":"Coût de passation","desc":"passer et recevoir une commande"},{"id":"rupture","label":"Coût de rupture","desc":"ne pas pouvoir livrer"}],"items":[{"id":"i1","text":"Loyer des mètres carrés occupés par le stock et assurance de la marchandise.","answer":"possession","why":"Des coûts liés à la durée de détention du stock."},{"id":"i2","text":"Saisie de la commande, suivi du fournisseur, contrôle à la réception et traitement de la facture.","answer":"passation","why":"Des frais fixes engagés à chaque commande, quelle que soit la quantité."},{"id":"i3","text":"Pénalité payée à un revendeur pour 200 sacs non livrés à la date promise.","answer":"rupture","why":"Une conséquence directe de ne pas avoir le produit au bon moment."},{"id":"i4","text":"Intérêts sur le capital immobilisé et risque de démarque sur les produits anciens.","answer":"possession","why":"Capital immobilisé et obsolescence font partie du taux de possession."},{"id":"i5","text":"Expédition express pour rattraper une rupture avant un week-end de promotion.","answer":"rupture","why":"Des frais d'urgence engagés parce qu'on a manqué de stock."},{"id":"i6","text":"Frais de transport d'approche d'une commande, quelle que soit la quantité commandée.","answer":"passation","why":"Un coût fixe par commande, indépendant de la quantité."}],"thresholds":[{"min":6,"outcome":"good"},{"min":4,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"tresorerie":5},"trust":{"marc":1,"nadia":1},"verdict":{"tone":"positive","text":"Les trois familles de coûts sont bien distinguées : c'est le préalable pour arbitrer entre commander souvent, stocker beaucoup ou risquer la rupture."},"reaction":[{"who":"marc","text":"Voilà un classement que je peux mettre en face de mon compte de résultat."},{"who":"nadia","text":"Maintenant, on sait quel levier agit sur quel coût."},{"who":"theo","text":"Bon, la rupture n'est pas le seul coût. Je l'admets."}]},"mixed":{"effects":{},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Certains coûts sont rattachés à la mauvaise famille : or la possession et la passation évoluent en sens inverse quand la quantité change."},"reaction":[{"who":"marc","text":"Une dépense mal rangée, et mon arbitrage est faussé."},{"who":"nadia","text":"Revoyez la distinction : coût fixe par commande, coût qui dépend du stock, coût d'une rupture."}]},"bad":{"effects":{"cout":1},"trust":{"marc":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Sans distinguer les trois coûts, on ne peut pas savoir si on commande trop souvent, si on stocke trop, ou si on risque trop la rupture."},"reaction":[{"who":"marc","text":"Si on mélange les coûts, on réduira le mauvais."},{"who":"nadia","text":"Chaque famille a son levier : on ne peut pas les confondre."}]}},"hints":["Le Contrôleur : « Une dépense dépend-elle de la durée de détention du stock, du nombre de commandes passées, ou d'un produit manquant ? »","Le Contrôleur : « Possession et passation évoluent en sens inverse quand la quantité commandée change : c'est la base de la formule de Wilson. »"],"reflection":"Pour Altiva, lequel des trois coûts vous semble le plus sous-estimé aujourd'hui, et comment le mesureriez-vous ?","next":"q3"},"q3":{"type":"calc","order":3,"title":"Question 3 — Mesurer rotation, couverture et service","place":"Lundi, 14 h — Salle de pilotage de l'entrepôt","course":{"part":"Partie 2 — Fonctions, types et coûts","slides":"8 et 9"},"scene":[{"who":"marc","text":"Voici les chiffres de l'année pour la gamme textile. Je veux savoir à quelle vitesse ce stock tourne, et ce que le client en retire."},{"who":"samir","text":"Côté clients, on a compté les lignes de commande du dernier mois : certaines n'ont pas pu partir complètes."},{"who":"theo","text":"Mon objectif de service est de 98 %. Dites-moi où on en est."}],"briefing":"Rotation = coût d'achat des ventes ÷ stock moyen. Couverture = 365 ÷ rotation. Taux de service = 100 − taux de rupture. Chaque formule est détaillée dans le cours.","prompt":"Calculez les indicateurs demandés.","givens":[{"label":"Coût d'achat des ventes annuelles","value":"4 200 k€"},{"label":"Stock initial / stock final","value":"580 k€ / 620 k€"},{"label":"Lignes demandées (dernier mois)","value":"2 500"},{"label":"Lignes non servies","value":"85"}],"fields":[{"id":"f1","label":"Stock moyen","answer":600,"tol":0.5,"unit":"k€"},{"id":"f2","label":"Rotation du stock","answer":7,"tol":0.05,"unit":"fois par an"},{"id":"f3","label":"Couverture du stock","answer":52.1,"tol":0.6,"unit":"jours"},{"id":"f4","label":"Taux de service","answer":96.6,"tol":0.1,"unit":"%"}],"method":"Stock moyen = (580 + 620) ÷ 2 = 600 k€. Rotation = 4 200 ÷ 600 = 7 fois par an. Couverture = 365 ÷ 7 ≈ 52 jours. Taux de rupture = 85 ÷ 2 500 × 100 = 3,4 % ; taux de service = 100 − 3,4 = 96,6 %, donc sous l'objectif de 98 %.","thresholds":[{"min":4,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"tresorerie":10,"service":2},"trust":{"marc":1,"theo":1},"verdict":{"tone":"positive","text":"Des indicateurs bien calculés : le stock se renouvelle 7 fois par an (52 jours de couverture) mais le service reste sous l'objectif. On a donc à la fois du stock et des ruptures : un problème de répartition, pas seulement de volume."},"reaction":[{"who":"marc","text":"Sept rotations, cinquante-deux jours de couverture : ce n'est pas catastrophique, mais pas brillant non plus."},{"who":"theo","text":"Quatre-vingt-seize virgule six : donc 3,4 % de lignes en retard. C'est exactement ce que me disent mes revendeurs."},{"who":"samir","text":"Voilà des chiffres qu'on peut suivre chaque semaine."}]},"mixed":{"effects":{"tresorerie":0},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Certains résultats sont justes, mais un calcul glisse : le stock moyen est la moyenne du stock initial et final, et la couverture se déduit de la rotation."},"reaction":[{"who":"marc","text":"Un chiffre faux, et mes arbitrages sont faussés."},{"who":"samir","text":"Reprenez les définitions : on moyenne d'abord le stock, puis on divise les ventes par ce stock moyen."}]},"bad":{"effects":{"tresorerie":-10,"service":-2},"trust":{"marc":-1,"theo":-1},"verdict":{"tone":"risky","text":"Des indicateurs faux conduisent à de mauvaises décisions : on peut croire le stock sain alors que le service est dégradé, ou l'inverse."},"reaction":[{"who":"theo","text":"Si les chiffres sont faux, mes revendeurs, eux, ne s'y trompent pas."},{"who":"marc","text":"Je ne peux pas piloter des stocks avec des indicateurs approximatifs."}]}},"hints":["Le Contrôleur : « Le stock moyen est la moyenne du stock initial et du stock final. La rotation divise les ventes (au coût d'achat) par ce stock moyen. »","Le Contrôleur : « Le taux de service est le complément du taux de rupture : lignes non servies divisées par lignes demandées. »"],"reflection":"Que vous disent ensemble la rotation, la couverture et le taux de service sur la santé du stock d'Altiva, et lequel vous inquiète le plus ?","next":"t1"},"t1":{"type":"scene","order":3,"title":"Mardi : quelles références surveiller ?","place":"Mardi, 8 h — Tableau de bord de l'entrepôt","scene":[{"who":"narr","text":"Le lendemain, Samir a imprimé la liste complète des références : quatre cents lignes, des milliers de chiffres."},{"who":"samir","text":"On ne peut pas surveiller quatre cents références avec la même attention. Il faut savoir lesquelles comptent vraiment."},{"who":"marc","text":"Vos indicateurs d'hier sont solides. On peut maintenant chercher où se trouve l'enjeu.","if":{"chose":["q3","good"]}},{"who":"marc","text":"Il y avait des erreurs dans les indicateurs d'hier. Je préfère qu'on soit très rigoureux aujourd'hui.","if":{"chose":["q3","bad"]}},{"who":"nadia","text":"Ce classement, c'est la base de toute politique de stock. Prenons huit références représentatives."}],"next":"q4"},"q4":{"type":"classify","order":4,"title":"Question 4 — Classer les références (ABC)","place":"Mardi, 9 h — Salle de pilotage","course":{"part":"Partie 3 — Classer pour piloter","slides":"11 à 14"},"scene":[{"who":"nadia","text":"Voici huit références, avec leur consommation annuelle et leur prix. La valeur totale de cette gamme est de 1 000 k€."},{"who":"samir","text":"Pour classer, on trie par valeur décroissante, on cumule les pourcentages, et on coupe : classe A jusqu'à 80 % cumulés, classe B jusqu'à 95 %, classe C pour le reste."},{"who":"theo","text":"Moi, je les surveille toutes de la même façon."},{"who":"marc","text":"Et tu perds du temps sur les références qui ne pèsent rien."}],"briefing":"Valeur annuelle = quantité × prix. Ensuite, on trie, on cumule les pourcentages de la valeur totale et on découpe en classes.","prompt":"Classez chaque référence en A, B ou C.","categories":[{"id":"A","label":"Classe A","desc":"jusqu'à 80 % de la valeur cumulée"},{"id":"B","label":"Classe B","desc":"jusqu'à 95 % cumulés"},{"id":"C","label":"Classe C","desc":"le reste"}],"items":[{"id":"i1","text":"Gants : 4 000 pièces × 5 € = 20 k€ par an.","answer":"C","why":"Valeur de 2 % : cumul de 99 %, donc classe C."},{"id":"i2","text":"Tente bivouac : 800 pièces × 500 € = 400 k€ par an.","answer":"A","why":"Valeur de 40 % : la plus grosse référence, classe A."},{"id":"i3","text":"Chaussettes : 5 000 pièces × 2 € = 10 k€ par an.","answer":"C","why":"Valeur de 1 % : classe C."},{"id":"i4","text":"Doudoune : 2 500 pièces × 100 € = 250 k€ par an.","answer":"A","why":"25 % de la valeur, cumul de 65 % avec la tente : classe A."},{"id":"i5","text":"Sac 30 L : 2 000 pièces × 40 € = 80 k€ par an.","answer":"B","why":"8 % de la valeur, cumul de 88 % : après les 80 % de la classe A, donc classe B."},{"id":"i6","text":"Réchaud : 3 000 pièces × 50 € = 150 k€ par an.","answer":"A","why":"15 % de la valeur : le cumul atteint exactement 80 % avec cette référence, donc encore classe A."},{"id":"i7","text":"Lampe frontale : 2 000 pièces × 20 € = 40 k€ par an.","answer":"C","why":"4 % de la valeur, cumul de 97 % : au-delà de 95 %, donc classe C."},{"id":"i8","text":"Pantalon de randonnée : 1 000 pièces × 50 € = 50 k€ par an.","answer":"B","why":"5 % de la valeur, cumul de 93 % : classe B."}],"thresholds":[{"min":8,"outcome":"good"},{"min":6,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"tresorerie":10,"cout":-1},"trust":{"samir":1,"marc":1,"nadia":1},"verdict":{"tone":"positive","text":"Un classement ABC rigoureux : trois références (A) pèsent 80 % de la valeur, trois autres (C) 6 %. C'est là que se concentre l'effort de pilotage."},"reaction":[{"who":"samir","text":"Trois références A sur huit : voilà où je mets mes inventaires fréquents et mon stock de sécurité calculé."},{"who":"marc","text":"Je regarde ces trois lignes chaque semaine. Pour les C, une revue rare suffira."},{"who":"theo","text":"Bon. Je vais arrêter de les suivre toutes au même niveau."}],"setFlags":["abcOK"]},"mixed":{"effects":{"tresorerie":5},"trust":{"samir":-1},"verdict":{"tone":"mixed","text":"Le classement est presque juste : une référence près d'une frontière de classe est mal placée. Les seuils (80 % et 95 %) doivent s'appliquer sur le pourcentage cumulé, après tri."},"reaction":[{"who":"samir","text":"Près des seuils, on se trompe vite. Il faut toujours trier, puis cumuler, puis couper."},{"who":"nadia","text":"Une référence mal classée, c'est un mauvais niveau de suivi pendant des mois."}]},"bad":{"effects":{"tresorerie":-10},"trust":{"samir":-1,"marc":-1},"verdict":{"tone":"risky","text":"Un classement ABC faux envoie l'attention au mauvais endroit : on surveille des références sans enjeu et on néglige celles qui pèsent l'essentiel de la valeur."},"reaction":[{"who":"marc","text":"On va continuer à gérer les gants avec autant de soin que les tentes bivouac. C'est du temps perdu."},{"who":"samir","text":"Reprenez le tri : on classe d'abord par valeur décroissante."}]}},"hints":["Le Contrôleur : « Commencez par trier les huit valeurs de la plus grande à la plus petite, puis cumulez : 40 %, 65 %, 80 %... »","Le Contrôleur : « Une référence est en classe A tant que le cumul n'a pas dépassé 80 %, puis B jusqu'à 95 %, et C au-delà. »"],"reflection":"Comment avez-vous procédé pour classer les références, et quelle politique de stock appliqueriez-vous à la tente bivouac par rapport aux chaussettes ?","next":"q5"},"q5":{"type":"classify","order":5,"title":"Question 5 — Mesurer la régularité de la demande (XYZ)","place":"Mardi, 14 h — Bureau de la prévision","course":{"part":"Partie 3 — Classer pour piloter","slides":"15 et 16"},"scene":[{"who":"nadia","text":"La valeur ne suffit pas. Une référence très demandée mais très régulière se gère plus facilement qu'une référence erratique."},{"who":"sabine","text":"Je vous donne la demande mensuelle moyenne (μ) et l'écart-type (σ) de cinq références, relevés sur deux ans."},{"who":"theo","text":"La collection capsule, c'est du coup de cœur : on vend tout ou rien. Ça ne se prévoit pas."}],"briefing":"Le coefficient de variation CV = σ ÷ μ mesure l'irrégularité. Seuils usuels : X si CV ≤ 0,5 ; Y de 0,5 à 1 ; Z au-delà de 1.","prompt":"Calculez le CV de chaque référence, puis classez-la en X, Y ou Z.","categories":[{"id":"X","label":"X — régulière","desc":"CV ≤ 0,5"},{"id":"Y","label":"Y — variable","desc":"CV entre 0,5 et 1"},{"id":"Z","label":"Z — erratique","desc":"CV > 1"}],"items":[{"id":"i1","text":"Chaussettes : μ = 400 pièces par mois, σ = 60.","answer":"X","why":"CV = 60 ÷ 400 = 0,15 : très régulière, classe X (combinée à la valeur C : gestion simple en grosses quantités)."},{"id":"i2","text":"Doudoune : μ = 120 pièces par mois, σ = 78.","answer":"Y","why":"CV = 78 ÷ 120 = 0,65 : variable. En classe A, elle relève donc de AY : stock de sécurité ajusté et suivi serré."},{"id":"i3","text":"Collection capsule : μ = 40 pièces par mois, σ = 70.","answer":"Z","why":"CV = 70 ÷ 40 = 1,75 : erratique. Une référence Z se commande sur besoin ou se fabrique à la commande."},{"id":"i4","text":"Réchaud : μ = 250 pièces par mois, σ = 100.","answer":"X","why":"CV = 100 ÷ 250 = 0,40 : régulière. En classe A, c'est AX : réapprovisionnement automatique, stock de sécurité réduit."},{"id":"i5","text":"Kit de réparation : μ = 80 pièces par mois, σ = 64.","answer":"Y","why":"CV = 64 ÷ 80 = 0,80 : variable, classe Y."}],"thresholds":[{"min":5,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"service":3,"resilience":2},"trust":{"nadia":1,"theo":1},"verdict":{"tone":"positive","text":"Le croisement valeur et régularité (ABC et XYZ) permet de choisir une politique par case : le réchaud (AX) se réapprovisionne automatiquement, la doudoune (AY) demande un suivi serré, la capsule (Z) se commande sur besoin."},"reaction":[{"who":"nadia","text":"Maintenant on peut choisir une politique par référence, pas une seule pour tout le monde."},{"who":"sabine","text":"Les références X sont celles où l'automatisation rapporte le plus."},{"who":"theo","text":"La capsule en Z : au moins on arrêtera de la stocker par habitude."}]},"mixed":{"effects":{"service":1},"trust":{"nadia":-1},"verdict":{"tone":"mixed","text":"Une ou deux références sont mal classées : le CV doit se calculer précisément, car les seuils décident de la politique de stock de sécurité."},"reaction":[{"who":"sabine","text":"Un CV mal calculé, c'est un stock de sécurité mal calibré ensuite."},{"who":"nadia","text":"Reprenez le calcul : écart-type divisé par la moyenne."}]},"bad":{"effects":{"service":-3},"trust":{"nadia":-1,"theo":-1},"verdict":{"tone":"risky","text":"Une demande erratique prise pour régulière conduit à sous-estimer le stock de sécurité nécessaire, donc aux ruptures ; l'inverse conduit au surstock."},"reaction":[{"who":"theo","text":"Si on prend l'imprévisible pour du régulier, ce sont encore mes revendeurs qui en pâtissent."},{"who":"sabine","text":"Le CV est la base de tout calcul de stock de sécurité : il faut le maîtriser."}]}},"hints":["Le Contrôleur : « CV = σ ÷ μ. Divisez l'écart-type par la moyenne, puis comparez à 0,5 et à 1. »","Le Contrôleur : « Plus le CV est élevé, plus la demande est imprévisible, et plus le stock de sécurité devra être élevé. »"],"reflection":"Quelle politique différente appliqueriez-vous à une référence AX et à une référence AZ, et pourquoi la valeur seule ne suffit-elle pas ?","next":"t2"},"t2":{"type":"scene","order":5,"title":"Mercredi : combien commander ?","place":"Mercredi, 8 h — Quai de réception","scene":[{"who":"narr","text":"Des camions déchargent des palettes de kits de réparation. Samir regarde le compteur de commandes de la semaine."},{"who":"samir","text":"On commande ces kits toutes les semaines, sans règle précise. Parfois on commande trop, parfois pas assez."},{"who":"nadia","text":"Avec le classement d'hier, on sait où concentrer l'effort. Passons aux quantités.","if":{"flag":"abcOK"}},{"who":"marc","text":"Une commande, c'est de la trésorerie qui sort. Je veux la bonne quantité, pas une habitude."}],"next":"q6"},"q6":{"type":"calc","order":6,"title":"Question 6 — La quantité économique de commande","place":"Mercredi, 9 h — Service approvisionnements","course":{"part":"Partie 4 — Quelle quantité commander","slides":"18 et 19"},"scene":[{"who":"samir","text":"Les kits de réparation de toile : on en consomme 18 000 par an, à un rythme très régulier. On les commande au feeling."},{"who":"marc","text":"Chaque commande nous coûte 90 euros de frais fixes. Et chaque kit immobilisé nous coûte une part de son prix chaque année."},{"who":"nadia","text":"Wilson a été inventé pour ça : trouver la quantité qui rend la somme des deux coûts la plus petite."}],"briefing":"Q* = √(2 × D × S ÷ H), avec H = taux de possession × prix unitaire. Chaque terme est expliqué dans le cours.","prompt":"Calculez le coût de possession d'un kit, la quantité économique, puis le rythme de commande.","givens":[{"label":"Demande annuelle D","value":"18 000 kits"},{"label":"Coût d'une commande S","value":"90 €"},{"label":"Prix unitaire","value":"20 €"},{"label":"Taux de possession","value":"20 % par an"},{"label":"Jours ouvrés par an","value":"240"}],"fields":[{"id":"f1","label":"Coût de possession annuel d'un kit (H)","answer":4,"tol":0.05,"unit":"€ par kit et par an"},{"id":"f2","label":"Quantité économique de commande (Q*)","answer":900,"tol":1,"unit":"kits"},{"id":"f3","label":"Nombre de commandes par an (N = D ÷ Q*)","answer":20,"tol":0.1,"unit":"commandes"},{"id":"f4","label":"Intervalle entre deux commandes","answer":12,"tol":0.1,"unit":"jours ouvrés"}],"method":"H = 20 % × 20 € = 4 € par kit et par an. Q* = √(2 × 18 000 × 90 ÷ 4) = √810 000 = 900 kits. Nombre de commandes = 18 000 ÷ 900 = 20 par an. Intervalle = 240 jours ouvrés ÷ 20 = 12 jours ouvrés.","thresholds":[{"min":4,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"tresorerie":10,"cout":-1},"trust":{"marc":1,"nadia":1},"verdict":{"tone":"positive","text":"Wilson bien appliqué : 900 kits par commande, 20 commandes par an. À l'optimum, le coût de passation (1 800 €) égale le coût de possession (1 800 €)."},"reaction":[{"who":"marc","text":"Neuf cents kits, vingt commandes par an : voilà une règle que je peux contrôler."},{"who":"nadia","text":"Une commande tous les douze jours ouvrés. C'est un rythme que l'équipe peut tenir."},{"who":"samir","text":"On arrête de commander au feeling."}],"setFlags":["wilsonOK"]},"mixed":{"effects":{"tresorerie":0},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Un terme a glissé : H se calcule en multipliant le taux de possession par le prix unitaire, et Q* se lit sous la racine de 2 × D × S ÷ H."},"reaction":[{"who":"marc","text":"Une erreur sur H et toute la quantité est fausse."},{"who":"nadia","text":"Reprenez les termes un par un : D, S, H."}]},"bad":{"effects":{"tresorerie":-15,"cout":1},"trust":{"marc":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Une quantité fausse coûte à chaque commande : trop petite, on multiplie les frais de passation ; trop grande, on immobilise du stock."},"reaction":[{"who":"marc","text":"Avec une mauvaise quantité, on paie deux fois : en frais de commande ou en stock."},{"who":"nadia","text":"Wilson ne pardonne pas une erreur sur H : il est sous la racine."}]}},"hints":["Le Contrôleur : « H est le coût de possession d'une seule unité sur une année : taux de possession multiplié par prix unitaire. »","Le Contrôleur : « Sous la racine : deux fois la demande annuelle, fois le coût d'une commande, divisé par H. »"],"reflection":"Pourquoi le coût de passation et le coût de possession sont-ils égaux à l'optimum, et que se passerait-il si Altiva commandait 300 kits à la fois ?","next":"q7"},"q7":{"type":"tune","order":7,"title":"Question 7 — Quand Wilson ne suffit pas : la remise","place":"Mercredi, 14 h — Négociation avec le fournisseur de kits","course":{"part":"Partie 4 — Quelle quantité commander","slides":"20 à 22"},"scene":[{"who":"samir","text":"Le fournisseur des kits vient de nous proposer une remise de 3 % sur tout le volume annuel, à condition de commander au moins 1 500 kits à la fois."},{"who":"nadia","text":"Wilson donne 900. Mais Wilson ne connaît pas les remises : il suppose que le prix est le même quelle que soit la quantité."},{"who":"marc","text":"Je veux le coût total annuel le plus bas, achat compris. Pas seulement les frais de commande et de stock."},{"who":"theo","text":"Moi, ce qui m'intéresse, c'est qu'on ne soit jamais en rupture de kits. Commander plus ne me dérange pas."}],"briefing":"Comparez les coûts totaux avec et sans remise : le coût d'achat entre en jeu dès que le prix dépend de la quantité commandée.","prompt":"Réglez la quantité commandée pour minimiser le coût total annuel, puis validez.","sliders":[{"id":"q","label":"Quantité commandée à chaque fois","min":300,"max":3000,"step":100,"value":900,"unit":"kits"}],"metrics":[{"id":"pass","label":"Coût de passation annuel","expr":"90*18000/q","unit":"€","digits":0,"bar":8000},{"id":"poss","label":"Coût de possession annuel","expr":"q/2*4","unit":"€","digits":0,"bar":8000},{"id":"achat","label":"Coût d'achat annuel (remise de 3 % dès 1 500)","expr":"18000*20*(q>=1500?0.97:1)","unit":"€","digits":0,"bar":400000},{"id":"total","label":"Coût total annuel","expr":"pass+poss+achat","unit":"€","digits":0,"okExpr":"total<=353500","hint":"Sans remise, Wilson donne 900 kits","bar":400000}],"rules":[{"if":"total<=353500","outcome":"optimal"},{"if":"total<=356000","outcome":"good"},{"if":"true","outcome":"wrong"}],"explain":"Sans remise, Wilson donne 900 kits (coût total de 363 600 €). Avec la remise, commander exactement 1 500 kits coûte 353 280 € : 10 320 € de moins. Au-delà de 1 500, le coût de possession grossit sans gain supplémentaire. Wilson ne tient pas compte des remises : il faut comparer les coûts totaux.","outcomes":{"optimal":{"effects":{"tresorerie":20,"cout":-1},"trust":{"marc":2,"nadia":1},"verdict":{"tone":"positive","text":"Vous avez repéré que la remise l'emporte sur l'optimum de Wilson : 1 500 kits, c'est 10 320 € d'économie par an, malgré un stock plus élevé."},"reaction":[{"who":"marc","text":"Dix mille euros d'économie par an, simplement en regardant le coût total. Voilà ce que j'appelle un raisonnement."},{"who":"nadia","text":"Wilson donne l'ordre de grandeur, la remise décide du seuil. Retenez-le pour la suite."},{"who":"theo","text":"Et un peu plus de stock de kits, c'est une rupture en moins. Je suis preneur."}],"setFlags":["remiseOK"]},"good":{"effects":{"tresorerie":10},"trust":{"marc":1},"verdict":{"tone":"mixed","text":"Vous captez la remise, mais en commandant plus que nécessaire : au-delà de 1 500 kits, vous immobilisez du stock sans gain supplémentaire."},"reaction":[{"who":"marc","text":"La remise est captée, mais chaque kit au-dessus de 1 500 me coûte du stock pour rien."},{"who":"nadia","text":"Le minimum de coût est exactement au seuil de la remise."}]},"wrong":{"effects":{"tresorerie":-15},"trust":{"marc":-1,"nadia":-1},"verdict":{"tone":"risky","text":"En restant sous le seuil de 1 500 kits, vous passez à côté de la remise : la formule de Wilson, appliquée seule, vous fait perdre plus de 10 000 € par an."},"reaction":[{"who":"marc","text":"On laisse dix mille euros sur la table parce qu'on a appliqué une formule sans regarder l'offre."},{"who":"nadia","text":"Wilson est un point de départ. Il ne remplace pas le calcul du coût total."}]}},"hints":["Le Contrôleur : « Faites glisser la quantité autour de 900, puis de 1 500, et regardez le coût total, pas seulement la passation ou la possession. »","Le Contrôleur : « Le coût d'achat annuel change dès que la quantité franchit le seuil de la remise. Comparez les totaux avant et après. »"],"reflection":"Pourquoi la quantité de Wilson n'est-elle pas la meilleure ici, et quelles autres contraintes (conditionnement, palettes, trésorerie) pourraient modifier votre choix ?","next":"t3"},"t3":{"type":"scene","order":7,"title":"Jeudi : quand commander ?","place":"Jeudi, 8 h — Salle de pilotage","scene":[{"who":"narr","text":"Jeudi matin, une alerte clignote sur l'écran de suivi : la doudoune, la référence la plus vendue, descend dangereusement."},{"who":"samir","text":"Hier, on a calé les quantités. Reste à décider quand déclencher la commande : trop tard, c'est la rupture ; trop tôt, c'est du stock en trop."},{"who":"marc","text":"Vous avez trouvé dix mille euros hier en regardant le coût total. J'espère autant aujourd'hui.","if":{"flag":"remiseOK"}},{"who":"marc","text":"Hier, la quantité retenue nous a coûté cher. Je compte sur vous pour ne pas recommencer sur le délai.","if":{"chose":["q7","wrong"]}},{"who":"theo","text":"Chaque jour de retard sur la doudoune, ce sont des ventes perdues. Ne tardez pas."}],"next":"q8"},"q8":{"type":"calc","order":8,"title":"Question 8 — Stock de sécurité et point de commande","place":"Jeudi, 9 h — Service approvisionnements","course":{"part":"Partie 5 — Quand commander","slides":"24 et 25"},"scene":[{"who":"nadia","text":"La doudoune est une référence A. Sa demande varie d'un jour à l'autre, et le fournisseur livre en neuf jours. Si on se trompe, on perd des ventes."},{"who":"theo","text":"Je veux 95 % de service sur cette référence. Pas moins."},{"who":"marc","text":"Et je veux que ça ne coûte pas un stock de sécurité absurde."},{"who":"sabine","text":"Voici les données statistiques de la doudoune, relevées sur deux ans."}],"briefing":"Stock de sécurité SS = z × σd × √L. Point de commande PC = d × L + SS. Chaque terme est détaillé dans le cours.","prompt":"Calculez la demande attendue pendant le délai, le stock de sécurité, puis le point de commande.","givens":[{"label":"Demande moyenne d","value":"50 doudounes par jour"},{"label":"Écart-type de la demande σd","value":"12 par jour"},{"label":"Délai d'approvisionnement L","value":"9 jours"},{"label":"Niveau de service 95 %","value":"z = 1,65"}],"fields":[{"id":"f1","label":"Demande attendue pendant le délai (d × L)","answer":450,"tol":0.5,"unit":"doudounes"},{"id":"f2","label":"Stock de sécurité (SS)","answer":59.4,"tol":0.6,"unit":"doudounes"},{"id":"f3","label":"Point de commande (PC)","answer":509.4,"tol":1,"unit":"doudounes"}],"method":"d × L = 50 × 9 = 450. SS = z × σd × √L = 1,65 × 12 × √9 = 1,65 × 12 × 3 = 59,4. PC = d × L + SS = 450 + 59,4 = 509,4. On déclenche donc la commande quand le stock disponible atteint environ 509 doudounes.","thresholds":[{"min":3,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"service":3,"resilience":2},"trust":{"nadia":1,"theo":1,"marc":1},"verdict":{"tone":"positive","text":"Un point de commande bien calculé : 509 doudounes. En dessous, la commande part ; elle arrive neuf jours plus tard, quand le stock est descendu autour de 59."},"reaction":[{"who":"nadia","text":"Cinq cent neuf : c'est le seuil que je paramètre dans le système ce matin."},{"who":"theo","text":"Quatre-vingt-quinze pour cent de service sur la doudoune. Voilà qui me rassure."},{"who":"marc","text":"Cinquante-neuf doudounes de sécurité : un stock que je peux justifier."}],"setFlags":["ssOK"]},"mixed":{"effects":{"service":1},"trust":{"nadia":-1},"verdict":{"tone":"mixed","text":"Un résultat est juste, mais le point de commande s'obtient en additionnant la demande attendue pendant le délai et le stock de sécurité."},"reaction":[{"who":"nadia","text":"Il y a un écart : le point de commande additionne les deux."},{"who":"marc","text":"Un seuil trop bas, c'est la rupture ; trop haut, c'est mon argent."}]},"bad":{"effects":{"service":-4},"trust":{"theo":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Un point de commande trop bas déclenche la commande trop tard : les ruptures se multiplient, surtout sur une référence de classe A."},"reaction":[{"who":"theo","text":"Avec un seuil trop bas, on tombe en rupture avant que la commande n'arrive."},{"who":"nadia","text":"Sur une référence A, une erreur de seuil se paie tout de suite."}]}},"hints":["Le Contrôleur : « SS = z × σd × √L. La racine porte sur le délai : ici, √9 vaut exactement 3. »","Le Contrôleur : « Le point de commande couvre la consommation attendue pendant le délai (d × L) plus le stock de sécurité. »"],"reflection":"Pourquoi le stock de sécurité croît-il comme la racine du délai et non proportionnellement, et que change un niveau de service de 99 % au lieu de 95 % ?","next":"q9"},"q9":{"type":"calc","order":9,"title":"Question 9 — Quand le fournisseur est irrégulier","place":"Jeudi, 11 h — Appel avec le fournisseur de doudounes","course":{"part":"Partie 5 — Quand commander","slides":"26"},"scene":[{"who":"nadia","text":"Le fournisseur de doudounes livre en moyenne en neuf jours, mais avec un retard type de deux jours. C'est le genre d'irrégularité qu'on avait déjà vue chez Valmont."},{"who":"samir","text":"Votre calcul de tout à l'heure tenait compte de la demande seule : voyons ce que change l'irrégularité du fournisseur.","if":{"flag":"ssOK"}},{"who":"marc","text":"S'il faut tripler le stock de sécurité pour se protéger de ses retards, mieux vaut peut-être lui demander d'être plus régulier."},{"who":"theo","text":"On peut lui mettre des pénalités de retard, comme à la Mission 3."}],"briefing":"Quand le délai varie aussi : SS = z × √(L × σd² + d² × σL²). Deux sources d'incertitude s'additionnent.","prompt":"Calculez le stock de sécurité avec un délai irrégulier, puis après fiabilisation du fournisseur.","givens":[{"label":"Demande moyenne d","value":"50 par jour"},{"label":"Écart-type de la demande σd","value":"12 par jour"},{"label":"Délai moyen L","value":"9 jours"},{"label":"Retard type du fournisseur σL","value":"2 jours"},{"label":"Niveau de service 95 %","value":"z = 1,65"}],"fields":[{"id":"f1","label":"Stock de sécurité avec σL = 2 jours","answer":175.4,"tol":1.5,"unit":"doudounes"},{"id":"f2","label":"Stock de sécurité si le fournisseur se fiabilise (σL = 1 jour)","answer":101.7,"tol":1.5,"unit":"doudounes"},{"id":"f3","label":"Par combien le stock de sécurité est-il multiplié par rapport au calcul précédent (59,4) quand σL = 2 jours ?","kind":"select","options":["× 1,5","× 3","× 5"],"answer":"× 3"}],"method":"Avec σL = 2 : SS = 1,65 × √(9 × 12² + 50² × 2²) = 1,65 × √(1 296 + 10 000) = 1,65 × √11 296 ≈ 1,65 × 106,3 ≈ 175,4. Avec σL = 1 : SS = 1,65 × √(1 296 + 2 500) = 1,65 × √3 796 ≈ 101,7. Rapport : 175,4 ÷ 59,4 ≈ 3.","thresholds":[{"min":3,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"resilience":5,"service":2},"trust":{"nadia":1,"marc":1,"theo":1},"verdict":{"tone":"positive","text":"Un fournisseur irrégulier triple le stock de sécurité nécessaire (175 contre 59). Le fiabiliser le ramène à 102 : parfois, un contrat avec pénalités coûte moins cher qu'un stock de protection."},"reaction":[{"who":"nadia","text":"Cent soixante-quinze doudounes en plus pour se protéger de ses retards : c'est énorme. On négocie un engagement de délai."},{"who":"marc","text":"Fiabiliser le fournisseur plutôt que stocker : voilà un arbitrage qui me plaît."},{"who":"theo","text":"Et des pénalités de retard, comme avec Valmont. Je m'en occupe."}]},"mixed":{"effects":{"resilience":2},"trust":{"nadia":-1},"verdict":{"tone":"mixed","text":"Un calcul est juste, mais l'effet de l'irrégularité du fournisseur est sous-estimé : l'incertitude du délai s'ajoute à celle de la demande sous la racine."},"reaction":[{"who":"nadia","text":"Les deux incertitudes s'additionnent sous la racine : il ne faut pas en oublier une."},{"who":"marc","text":"Un stock de sécurité sous-évalué, c'est la rupture qu'on découvre trop tard."}]},"bad":{"effects":{"resilience":-4},"trust":{"nadia":-1,"theo":-1},"verdict":{"tone":"risky","text":"Ignorer l'irrégularité du fournisseur conduit à un stock de sécurité très sous-dimensionné : les ruptures reviendront dès le premier retard."},"reaction":[{"who":"theo","text":"Si on ne compte pas ses retards, ce sont mes revendeurs qui les subissent."},{"who":"nadia","text":"La variabilité du délai pèse souvent plus que celle de la demande."}]}},"hints":["Le Contrôleur : « Deux termes sous la racine : L × σd² pour la demande, d² × σL² pour le délai. Calculez-les séparément avant de les additionner. »","Le Contrôleur : « Comparez 175 à 59 : quel rapport entier s'en approche ? »"],"reflection":"Fiabiliser le fournisseur ou augmenter le stock de sécurité : sur quels critères (coût, relation, risque) choisiriez-vous, et que retenez-vous de la Mission 3 ?","next":"q10"},"q10":{"type":"calc","order":10,"title":"Question 10 — Commander à date fixe","place":"Jeudi, 14 h — Gestion des références C et des commandes groupées","course":{"part":"Partie 5 — Quand commander","slides":"28"},"scene":[{"who":"samir","text":"Pour les petites références, on ne va pas surveiller le stock en continu. On passe une commande groupée chaque semaine chez le même fournisseur."},{"who":"nadia","text":"C'est la révision périodique : on commande à date fixe, la quantité varie. Elle expose le stock pendant la période entre deux revues, en plus du délai."},{"who":"marc","text":"Moins de suivi, c'est moins de travail. Mais est-ce que ça coûte plus de stock de sécurité ?"}],"briefing":"Niveau cible S = d × (T + L) + z × σd × √(T + L). L'exposition à l'aléa dure la période T plus le délai L.","prompt":"Calculez le stock de sécurité et le niveau cible en révision périodique, puis comparez.","givens":[{"label":"Demande moyenne d","value":"50 par jour"},{"label":"Écart-type de la demande σd","value":"12 par jour"},{"label":"Délai d'approvisionnement L","value":"9 jours"},{"label":"Période entre deux revues T","value":"7 jours"},{"label":"Niveau de service 95 %","value":"z = 1,65"}],"fields":[{"id":"f1","label":"Stock de sécurité en révision périodique (z × σd × √(T + L))","answer":79.2,"tol":0.6,"unit":"unités"},{"id":"f2","label":"Niveau cible S","answer":879.2,"tol":1,"unit":"unités"},{"id":"f3","label":"Comparé à la quantité fixe (SS = 59,4), le stock de sécurité en révision périodique est…","kind":"select","options":["Plus petit","Identique","Plus grand"],"answer":"Plus grand"}],"method":"T + L = 7 + 9 = 16 jours ; √16 = 4. SS = 1,65 × 12 × 4 = 79,2. S = d × (T + L) + SS = 50 × 16 + 79,2 = 879,2. Le stock de sécurité est plus grand qu'en point de commande (59,4), car l'exposition dure T + L jours au lieu de L.","thresholds":[{"min":3,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"resilience":2},"trust":{"nadia":1,"marc":1},"verdict":{"tone":"positive","text":"La révision périodique demande plus de stock de sécurité (79 contre 59) car l'incertitude s'étend sur T + L jours : le gain de simplicité et de commandes groupées se paie en stock."},"reaction":[{"who":"nadia","text":"Huit cent soixante-dix-neuf comme niveau cible : je paramètre la revue hebdomadaire."},{"who":"marc","text":"Un peu plus de stock de sécurité, mais moins de commandes et moins de suivi. Pour des références C, c'est un bon compromis."}]},"mixed":{"effects":{},"trust":{"nadia":-1},"verdict":{"tone":"mixed","text":"Un résultat est juste, mais l'exposition à l'aléa en révision périodique est T + L, pas seulement L : c'est pourquoi le stock de sécurité y est plus élevé."},"reaction":[{"who":"nadia","text":"On expose le stock pendant la période entre deux revues, en plus du délai."},{"who":"marc","text":"Un niveau cible mal calculé, et la revue du vendredi ne sert à rien."}]},"bad":{"effects":{"cout":1},"trust":{"nadia":-1,"marc":-1},"verdict":{"tone":"risky","text":"Un niveau cible faux fait commander trop ou trop peu à chaque revue : sur de nombreuses références C, l'erreur se multiplie."},"reaction":[{"who":"marc","text":"Sur cent références, une erreur de méthode devient une erreur de masse."},{"who":"nadia","text":"Reprenez la période : ici l'exposition est de seize jours."}]}},"hints":["Le Contrôleur : « Remplacez L par T + L dans la formule du stock de sécurité et dans la demande couverte. »","Le Contrôleur : « Plus la période d'exposition est longue, plus le stock de sécurité nécessaire est grand. »"],"reflection":"Dans quels cas préférez-vous le point de commande et dans quels cas la révision périodique, et quel prix en stock de sécurité acceptez-vous de payer ?","next":"t4"},"t4":{"type":"scene","order":10,"title":"Vendredi : l'entrepôt en pratique","place":"Vendredi, 7 h 30 — Dans l'entrepôt","scene":[{"who":"narr","text":"Dernier jour de la semaine. Samir propose de passer des chiffres au terrain : « Le meilleur plan de stock du monde ne sert à rien si l'entrepôt n'est pas organisé pour le suivre. »"},{"who":"samir","text":"On va suivre une palette de la réception à l'expédition, puis regarder où chaque référence est rangée, et comment on vérifie que le stock système est le bon."},{"who":"sabine","text":"Je compte sur vous pour la partie inventaire. C'est là que les écarts se cachent."},{"who":"nadia","text":"Depuis qu'on calcule les points de commande, les ruptures baissent un peu. Il faut maintenant que l'entrepôt suive.","if":{"flag":"ssOK"}}],"next":"q11"},"q11":{"type":"rank","mode":"order","order":11,"title":"Question 11 — Le chemin d'une palette","place":"Vendredi, 8 h — Quais de réception","course":{"part":"Partie 6 — Entrepôt et fiabilité du stock","slides":"30"},"scene":[{"who":"samir","text":"Suivons une palette de doudounes arrivée ce matin. Elle va traverser tout l'entrepôt, étape par étape."},{"who":"nadia","text":"Si une étape saute ou se fait dans le désordre, le stock système et le stock réel divergent."},{"who":"theo","text":"Moi, je ne connais que le début et la fin : elle arrive, elle part chez le revendeur."}],"briefing":"Cinq étapes jalonnent le flux d'un entrepôt, de l'arrivée de la marchandise à son départ.","prompt":"Remettez dans l'ordre les cinq étapes du flux d'un entrepôt.","items":[{"id":"recep","title":"Contrôle de la quantité et de la qualité","text":"Rapprochement avec le bon de commande, étiquetage de la marchandise.","name":"Réception"},{"id":"mise","title":"Affectation d'un emplacement","text":"Rangement de la palette et mise à jour du système d'information.","name":"Mise en stock"},{"id":"stock","title":"Conservation et gestion des emplacements","text":"Réapprovisionnement de la zone de préparation au fil des besoins.","name":"Stockage"},{"id":"prep","title":"Prélèvement des articles (picking)","text":"Regroupement par commande client et emballage.","name":"Préparation"},{"id":"exped","title":"Chargement et documents","text":"Remise au transporteur et suivi du départ.","name":"Expédition"}],"start":["exped","mise","prep","recep","stock"],"correctOrder":["recep","mise","stock","prep","exped"],"thresholds":[{"min":5,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"resilience":1},"trust":{"samir":1,"nadia":1},"verdict":{"tone":"positive","text":"Le flux est maîtrisé : réception, mise en stock, stockage, préparation, expédition. Chaque étape met à jour le système, ce qui garde le stock fiable."},"reaction":[{"who":"samir","text":"Réception, mise en stock, stockage, préparation, expédition : c'est exactement le chemin de la palette."},{"who":"theo","text":"Je comprends mieux pourquoi un retard à la réception retarde mes livraisons."}]},"mixed":{"effects":{},"trust":{"samir":-1},"verdict":{"tone":"mixed","text":"Le flux est presque correct : une inversion suffit à fausser le suivi (par exemple préparer avant d'avoir mis en stock)."},"reaction":[{"who":"samir","text":"Une inversion, et la palette n'est plus tracée comme il faut."},{"who":"nadia","text":"Le système suit les étapes dans l'ordre : on ne peut pas préparer ce qu'on n'a pas rangé."}]},"bad":{"effects":{"cout":1},"trust":{"samir":-1,"nadia":-1},"verdict":{"tone":"risky","text":"Un flux désordonné produit des erreurs de stock : marchandises introuvables, ruptures fantômes, écarts d'inventaire."},"reaction":[{"who":"samir","text":"Si on prépare avant de ranger, on retrouve des palettes introuvables."},{"who":"nadia","text":"Le flux de l'entrepôt doit être irréprochable pour que le stock soit fiable."}]}},"hints":["Le Contrôleur : « Suivez la palette : elle arrive, on la contrôle, on lui trouve une place, elle y reste, on en prélève, on expédie. »","Le Contrôleur : « La préparation d'une commande ne peut se faire qu'à partir d'un stock déjà rangé et enregistré. »"],"reflection":"À quelle étape du flux les erreurs de stock naissent-elles le plus souvent selon vous, et comment les prévenir ?","next":"q12"},"q12":{"type":"classify","order":12,"title":"Question 12 — Qui sort en premier ?","place":"Vendredi, 9 h — Zone de stockage","course":{"part":"Partie 6 — Entrepôt et fiabilité du stock","slides":"31"},"scene":[{"who":"samir","text":"Dans le même entrepôt, on stocke des produits de toute nature. Quelle règle de sortie appliquer dépend de ce qu'on stocke."},{"who":"sabine","text":"Certains produits ont une date limite : un lot ancien n'est pas toujours celui qui périme en premier."}],"briefing":"FIFO : premier entré, premier sorti. FEFO : premier expiré, premier sorti. LIFO : dernier entré, premier sorti.","prompt":"Associez chaque situation à la règle de sortie la plus adaptée.","categories":[{"id":"FIFO","label":"FIFO","desc":"le lot entré le plus tôt sort en premier"},{"id":"FEFO","label":"FEFO","desc":"le lot dont la date limite est la plus proche sort en premier"},{"id":"LIFO","label":"LIFO","desc":"le dernier lot entré sort en premier"}],"items":[{"id":"i1","text":"Colle de réparation de toile, en lots à dates limites différentes : le lot le plus ancien n'est pas toujours le plus proche de la péremption.","answer":"FEFO","why":"Dès qu'une date limite existe, on sort le lot qui expire en premier."},{"id":"i2","text":"Parkas de la collection précédente, à écouler avant l'arrivée de la nouvelle collection.","answer":"FIFO","why":"Pas de date limite : on écoule d'abord les produits les plus anciens pour éviter l'obsolescence."},{"id":"i3","text":"Cartouches de gaz avec une date de péremption variable selon les lots.","answer":"FEFO","why":"Une date de péremption : FEFO s'impose, par sécurité."},{"id":"i4","text":"Palettes en stockage dense en profondeur : la dernière palette déposée est la première accessible.","answer":"LIFO","why":"Le mode de stockage impose de reprendre d'abord ce qui est au bord, donc le dernier entré."}],"thresholds":[{"min":4,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"rse":2,"tresorerie":5},"trust":{"samir":1},"verdict":{"tone":"positive","text":"Chaque règle est associée à sa situation : FEFO pour les dates limites, FIFO pour limiter l'obsolescence, LIFO seulement quand le mode de stockage l'impose."},"reaction":[{"who":"samir","text":"FEFO sur les cartouches de gaz et la colle : on arrête de jeter des produits périmés."},{"who":"sabine","text":"Moins de péremptions, c'est aussi moins de déchets."}]},"mixed":{"effects":{},"trust":{"samir":-1},"verdict":{"tone":"mixed","text":"Une règle est mal associée : confondre FIFO et FEFO conduit à jeter des produits périmés alors que d'autres, plus anciens mais valides, restent en stock."},"reaction":[{"who":"samir","text":"Un lot périmé à la poubelle, c'est de l'argent et de la matière perdus."},{"who":"sabine","text":"Dès qu'il y a une date limite, c'est la date qui décide, pas l'ancienneté."}]},"bad":{"effects":{"rse":-2,"tresorerie":-5},"trust":{"samir":-1,"elise":-1},"verdict":{"tone":"risky","text":"Des règles de sortie inadaptées entraînent des produits périmés ou obsolètes jetés : un coût financier et un gaspillage environnemental."},"reaction":[{"who":"elise","text":"Jeter des produits périmés parce qu'on a mal choisi la règle de sortie, ce n'est pas acceptable."},{"who":"samir","text":"La règle de sortie, c'est le réflexe de base de l'entrepôt."}]}},"hints":["Le Contrôleur : « Y a-t-il une date limite de consommation ou d'utilisation ? Si oui, c'est elle qui décide de l'ordre de sortie. »","Le Contrôleur : « Le LIFO est rare : il découle du mode de stockage, pas d'un choix de gestion. »"],"reflection":"Quel produit d'Altiva est le plus exposé au risque de péremption ou d'obsolescence, et quelle règle de sortie lui appliqueriez-vous ?","next":"q13"},"q13":{"type":"hotspot","order":13,"noArrows":true,"title":"Question 13 — Où ranger les références A ?","place":"Vendredi, 10 h — Plan de l'entrepôt","course":{"part":"Partie 6 — Entrepôt et fiabilité du stock","slides":"32"},"scene":[{"who":"samir","text":"Les trois références A, tente bivouac, doudoune et réchaud, sont celles qu'on prélève le plus souvent, et celles qui pèsent le plus en valeur."},{"who":"nadia","text":"Aujourd'hui, elles sont rangées un peu partout, là où il restait de la place."},{"who":"sabine","text":"Chaque déplacement inutile d'un préparateur est du temps perdu, et du risque d'erreur ou d'accident."}],"briefing":"L'implantation doit minimiser les déplacements pour les références les plus sorties : celles de classe A.","prompt":"Touchez la zone où il faut ranger les références de classe A, puis validez.","nodes":[{"id":"quais","label":"Allées proches des quais","cap":"12 m des quais","note":"Accès direct à hauteur de main, circulation fluide, zone d'expédition voisine."},{"id":"fond","label":"Fond de l'entrepôt","cap":"95 m des quais","note":"Niveaux hauts, peu de circulation, beaucoup d'espace libre."},{"id":"mezz","label":"Mezzanine","cap":"45 m des quais, par escalier","note":"Charges lourdes difficiles à monter, accès par escalier."},{"id":"ext","label":"Zone de vrac extérieure","cap":"70 m des quais","note":"Exposée aux intempéries, peu sécurisée."}],"correct":"quais","outcomeByNode":{"quais":"good","fond":"wrongFond","mezz":"wrongMezz","ext":"wrongExt"},"explain":"Les références A sont les plus prélevées : on les place au plus près des quais d'expédition, à hauteur de main. Chaque mètre économisé est multiplié par des milliers de prélèvements.","outcomes":{"good":{"effects":{"cout":-1,"service":2},"trust":{"samir":1},"verdict":{"tone":"positive","text":"Les références A près des quais : c'est l'application directe du classement ABC à l'implantation. Moins de déplacements, moins d'erreurs, moins de coûts."},"reaction":[{"who":"samir","text":"Les A au plus près des quais : mes préparateurs vont gagner des kilomètres par jour."},{"who":"sabine","text":"Moins de marche, moins de fatigue, moins d'accidents."}]},"wrongFond":{"effects":{"cout":1},"trust":{"samir":-1},"verdict":{"tone":"risky","text":"Reléguer les références les plus prélevées au fond de l'entrepôt multiplie les déplacements : c'est l'inverse de la logique ABC."},"reaction":[{"who":"samir","text":"Les tentes bivouac au fond de l'entrepôt ? Mes préparateurs vont courir toute la journée."},{"who":"nadia","text":"On range près des quais ce qui sort le plus souvent."}]},"wrongMezz":{"effects":{"cout":1},"trust":{"samir":-1},"verdict":{"tone":"risky","text":"Une mezzanine accessible par escalier est mal adaptée à des références lourdes et très sorties : effort, lenteur et risque pour les opérateurs."},"reaction":[{"who":"sabine","text":"Monter des tentes de vingt kilos par un escalier, plusieurs fois par heure : c'est un risque pour la santé des équipes."},{"who":"samir","text":"La mezzanine, on la garde pour ce qui sort rarement."}]},"wrongExt":{"effects":{"cout":1,"rse":-1},"trust":{"samir":-1,"elise":-1},"verdict":{"tone":"risky","text":"Une zone de vrac extérieure expose le produit aux intempéries et pose des problèmes de sécurité : un mauvais choix pour des références de forte valeur."},"reaction":[{"who":"elise","text":"Nos produits de plus forte valeur à l'extérieur, sous la pluie ? Certainement pas."},{"who":"samir","text":"Les références A sont aussi celles qu'on protège le plus."}]}},"hints":["Le Contrôleur : « Quelles références prélève-t-on le plus souvent ? Où faut-il les placer pour minimiser les déplacements ? »","Le Contrôleur : « Les références de classe A se placent au plus près de la zone d'expédition, à hauteur de main. »"],"reflection":"Comment le classement ABC guide-t-il l'implantation de l'entrepôt, et quelles contraintes (poids, sécurité) pourraient nuancer votre choix ?","next":"q14"},"q14":{"type":"calc","order":14,"title":"Question 14 — Fiabiliser l'inventaire","place":"Vendredi, 11 h — Bureau de Sabine Roux","course":{"part":"Partie 6 — Entrepôt et fiabilité du stock","slides":"33 et 34"},"scene":[{"who":"sabine","text":"Cette semaine, on a compté six cents emplacements. Voici ce que j'ai relevé, y compris sur les tentes."},{"who":"samir","text":"Un écart de stock, c'est une commande de réapprovisionnement déclenchée trop tôt ou trop tard. Et pas seulement des chiffres."},{"who":"marc","text":"Un inventaire annuel qui arrête l'entrepôt trois jours, je n'en veux plus."}],"briefing":"Fiabilité = emplacements sans écart ÷ emplacements comptés × 100. Écart = stock physique compté − stock théorique du système.","prompt":"Calculez la fiabilité et l'écart d'inventaire, puis répondez aux deux questions de méthode.","givens":[{"label":"Emplacements comptés","value":"600"},{"label":"Emplacements sans écart","value":"570"},{"label":"Tentes : stock théorique / compté","value":"850 / 838"}],"fields":[{"id":"f1","label":"Fiabilité du stock","answer":95,"tol":0.1,"unit":"%"},{"id":"f2","label":"Écart d'inventaire sur les tentes (compté − théorique)","answer":-12,"tol":0.1,"unit":"tentes"},{"id":"f3","label":"Écart relatif sur les tentes","answer":-1.4,"tol":0.1,"unit":"%"},{"id":"f4","label":"Quel outil permet de fiabiliser le stock en continu, à chaque mouvement ?","kind":"select","options":["Un WMS avec scan ou RFID","Un inventaire annuel unique","Un tableur mis à jour à la main"],"answer":"Un WMS avec scan ou RFID"},{"id":"f5","label":"En inventaire tournant, à quelle fréquence compte-t-on une référence de classe A ?","kind":"select","options":["Chaque mois","Chaque trimestre","Une fois par an"],"answer":"Chaque mois"}],"method":"Fiabilité = 570 ÷ 600 × 100 = 95 %. Écart sur les tentes = 838 − 850 = −12 tentes, soit −12 ÷ 850 ≈ −1,4 %. Un WMS (scan ou RFID) enregistre chaque mouvement et fiabilise le stock en continu. En inventaire tournant, les références A se comptent le plus souvent (chaque mois), les B chaque trimestre, les C une fois par an.","thresholds":[{"min":5,"outcome":"good"},{"min":3,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"service":3,"resilience":2},"trust":{"samir":1,"marc":1},"verdict":{"tone":"positive","text":"Une fiabilité de 95 % reste en dessous de l'objectif usuel de 98 % : un WMS et un inventaire tournant, centré sur les références A, permettent de remonter ce niveau sans arrêter l'entrepôt."},"reaction":[{"who":"sabine","text":"Quatre-vingt-quinze pour cent : on peut mieux faire. Le WMS et un comptage mensuel des A, c'est la bonne direction."},{"who":"marc","text":"Un inventaire tournant plutôt qu'un arrêt de trois jours : je valide."},{"who":"samir","text":"Je prépare le déploiement des scans dès lundi."}]},"mixed":{"effects":{"service":1},"trust":{"samir":-1},"verdict":{"tone":"mixed","text":"Les calculs sont justes, mais la méthode d'inventaire est partiellement maîtrisée : seul un contrôle continu, centré sur les références les plus critiques, fiabilise vraiment le stock."},"reaction":[{"who":"sabine","text":"Un comptage annuel unique, c'est trop rare et trop lourd. Il faut du continu."},{"who":"marc","text":"Compter tout, tout le temps, ce n'est pas rentable : il faut cibler les références A."}]},"bad":{"effects":{"service":-3},"trust":{"samir":-1,"marc":-1},"verdict":{"tone":"risky","text":"Un stock système peu fiable fausse tous les calculs précédents : points de commande, quantités et service reposent sur des chiffres qui ne reflètent pas la réalité."},"reaction":[{"who":"samir","text":"Si le stock système est faux, tous nos calculs de réapprovisionnement le sont aussi."},{"who":"marc","text":"On construit des plans sur du sable."}]}},"hints":["Le Contrôleur : « La fiabilité compare le nombre d'emplacements sans écart au nombre d'emplacements comptés. L'écart compare le physique au théorique. »","Le Contrôleur : « Comptez plus souvent ce qui compte le plus : les références de classe A. »"],"reflection":"Quel est l'impact d'un stock système peu fiable sur les décisions de réapprovisionnement, et comment organiseriez-vous l'inventaire tournant à Saint-Priest ?","next":"t5"},"t5":{"type":"scene","order":14,"title":"Vendredi après-midi : réduire et partager","place":"Vendredi, 14 h — Salle de direction","scene":[{"who":"narr","text":"L'après-midi, la direction se réunit. Les chiffres de la semaine sont sur la table : quantités, seuils, inventaire. Reste à réduire les stocks sans créer de ruptures."},{"who":"elise","text":"Vous avez beaucoup calculé cette semaine. Maintenant, il faut décider de la manière dont on organise la chaîne pour avoir moins de stock, sans perdre en service.","if":{"flag":"ssOK"}},{"who":"marc","text":"Je veux voir le stock baisser de façon durable, pas seulement ce trimestre."},{"who":"theo","text":"Et je veux que mes revendeurs ne le sentent pas."}],"next":"q15"},"q15":{"type":"choice","order":15,"title":"Question 15 — Réduire le stock sans risquer la rupture","place":"Vendredi, 14 h 15 — Salle de direction","course":{"part":"Partie 7 — Réduire et partager les stocks","slides":"36"},"scene":[{"who":"marc","text":"Les kits de piquets : demande régulière, un fournisseur local, et pourtant je finance 40 % de stock de plus que nécessaire. Je veux le réduire."},{"who":"nadia","text":"Le fournisseur est fiable et ouvert à partager de l'information. On peut s'organiser autrement qu'en commandant à l'aveugle."},{"who":"theo","text":"Pas question d'une rupture de piquets au moment d'une grosse livraison de tentes."},{"who":"samir","text":"Côté entrepôt, je peux donner au fournisseur une visibilité en temps réel sur le niveau de stock."}],"briefing":"JAT : on supprime le stock, au prix d'une forte dépendance. VMI : le fournisseur gère le stock de son client. CPFR : on partage prévisions et plans.","prompt":"Quelle organisation retenez-vous pour les kits de piquets ?","options":[{"text":"Mettre en place un VMI : le fournisseur voit le stock en temps réel et déclenche lui-même les livraisons, avec un stock cible convenu ensemble.","next":"q16","effects":{"tresorerie":15,"resilience":4,"service":2},"trust":{"marc":1,"nadia":1,"samir":1},"verdict":{"tone":"positive","text":"Le VMI réduit le stock tout en gardant une sécurité : le fournisseur, bien informé, réapprovisionne au bon moment, avec un stock cible partagé. C'est le compromis le plus équilibré ici."},"reaction":[{"who":"marc","text":"Moins de stock chez nous, un fournisseur qui assume le suivi, un stock cible convenu : j'approuve."},{"who":"nadia","text":"Le partage d'information fait baisser le stock et les ruptures en même temps."},{"who":"theo","text":"Tant que le stock cible est tenu, mes tentes partiront avec leurs piquets."},{"who":"samir","text":"Je connecte le stock en temps réel dès lundi."}]},{"text":"Passer en juste-à-temps strict : supprimer tout stock de piquets et exiger une livraison chaque matin.","next":"q16","effects":{"tresorerie":20,"resilience":-6,"service":-3},"trust":{"marc":1,"theo":-1,"nadia":-1},"verdictIf":[{"if":{"gaugeGte":["resilience",70]},"tone":"mixed","text":"Le juste-à-temps libère de la trésorerie, et votre résilience actuelle élevée en limite le risque ; mais dépendre d'un seul fournisseur sans aucun stock reste fragile."}],"verdict":{"tone":"risky","text":"Le juste-à-temps strict exige des fournisseurs très fiables : avec un seul fournisseur et aucune marge, la première rupture arrête la production, comme vous l'avez vu en Mission 1."},"reaction":[{"who":"marc","text":"Zéro stock, zéro trésorerie immobilisée : c'est séduisant."},{"who":"theo","text":"Une grève de transport, et on n'a plus un piquet pour monter une tente. C'est trop risqué."},{"who":"nadia","text":"Le juste-à-temps demande une résilience qu'on n'a pas encore."}]},{"text":"Garder le fonctionnement actuel et doubler le stock de sécurité, pour se protéger de toute rupture.","next":"q16","effects":{"tresorerie":-25,"cout":1},"trust":{"marc":-2,"theo":1},"verdict":{"tone":"risky","text":"Doubler le stock de sécurité immobilise de la trésorerie sans traiter la cause : on se protège d'une incertitude qu'un meilleur partage d'information aurait réduite."},"reaction":[{"who":"theo","text":"Plus de stock, plus de tranquillité : ça me va."},{"who":"marc","text":"Vingt-cinq mille euros de plus qui dorment, pour ne rien changer au fonctionnement. Non."},{"who":"nadia","text":"On soigne le symptôme, pas la cause."}]}],"hints":["Le Contrôleur : « Le fournisseur est fiable et partage ses données : qu'est-ce qui permet de baisser le stock sans augmenter le risque de rupture ? »","Le Contrôleur : « Le juste-à-temps supprime le stock mais exige une chaîne très résiliente. Rappelez-vous la Mission 1. »"],"reflection":"Dans quelles conditions le VMI ou le juste-à-temps sont-ils préférables, et quels risques d'un partage d'information avec le fournisseur anticipez-vous ?"},"q16":{"type":"calc","order":16,"title":"Question 16 — Centraliser les stocks de sécurité","place":"Vendredi, 15 h 30 — Réseau des dépôts régionaux","course":{"part":"Partie 7 — Réduire et partager les stocks","slides":"37"},"scene":[{"who":"nadia","text":"Altiva sert aujourd'hui ses revendeurs depuis neuf dépôts régionaux, chacun avec son propre stock de sécurité sur la doudoune."},{"who":"marc","text":"Neuf stocks de sécurité, c'est neuf fois la même protection. Si on regroupait, on protégerait mieux avec moins."},{"who":"theo","text":"Mais un dépôt plus loin, c'est une livraison plus longue pour mes revendeurs."}],"briefing":"Les demandes régionales sont indépendantes : leurs variations se compensent en partie. Le stock de sécurité centralisé est celui de chaque dépôt divisé par √n.","prompt":"Calculez les stocks de sécurité avant et après centralisation.","givens":[{"label":"Nombre de dépôts n","value":"9"},{"label":"Écart-type de la demande d'un dépôt σ","value":"15 par jour"},{"label":"Délai d'approvisionnement L","value":"4 jours"},{"label":"Niveau de service 95 %","value":"z = 1,65"}],"fields":[{"id":"f1","label":"Stock de sécurité d'un seul dépôt (z × σ × √L)","answer":49.5,"tol":0.6,"unit":"doudounes"},{"id":"f2","label":"Stock de sécurité total des 9 dépôts (décentralisé)","answer":445.5,"tol":0.6,"unit":"doudounes"},{"id":"f3","label":"Stock de sécurité si on centralise sur un seul dépôt","answer":148.5,"tol":0.6,"unit":"doudounes"},{"id":"f4","label":"Réduction du stock de sécurité obtenue","answer":66.7,"tol":0.7,"unit":"%"}],"method":"Un dépôt : SS = 1,65 × 15 × √4 = 1,65 × 15 × 2 = 49,5. Décentralisé : 9 × 49,5 = 445,5. Centralisé : SS = 1,65 × 15 × √9 × √4 = 1,65 × 15 × 3 × 2 = 148,5, soit le total décentralisé divisé par √9 = 3. Réduction = 1 − 1 ÷ 3 ≈ 66,7 %.","thresholds":[{"min":4,"outcome":"good"},{"min":2,"outcome":"mixed"},{"min":0,"outcome":"bad"}],"outcomes":{"good":{"effects":{"tresorerie":15},"trust":{"marc":1,"nadia":1},"verdict":{"tone":"positive","text":"Centraliser divise le stock de sécurité par √n : de 445 à 148 doudounes (−67 %). La contrepartie, des délais et des coûts de transport plus élevés vers les clients éloignés, est à mettre dans la balance."},"reaction":[{"who":"marc","text":"Deux tiers de stock de sécurité en moins : cent quarante-huit doudounes au lieu de quatre cent quarante-cinq. C'est de la trésorerie libérée."},{"who":"nadia","text":"Reste à voir si les délais de livraison et le coût de transport le permettent. On peut centraliser par zones plutôt que d'un seul coup."},{"who":"theo","text":"Si mes revendeurs ne voient pas de différence sur les délais, je suis prêt à y réfléchir."}]},"mixed":{"effects":{"tresorerie":5},"trust":{"marc":-1},"verdict":{"tone":"mixed","text":"Certains calculs sont justes, mais la loi de la racine carrée est mal appliquée : le stock centralisé fait intervenir √n et non n."},"reaction":[{"who":"nadia","text":"La somme de neuf demandes indépendantes a un écart-type multiplié par trois, pas par neuf."},{"who":"marc","text":"Un gain mal calculé, c'est une décision mal fondée."}]},"bad":{"effects":{"tresorerie":-10},"trust":{"marc":-1,"theo":-1},"verdict":{"tone":"risky","text":"Une centralisation décidée sur un calcul faux peut dégrader le service (délais plus longs) sans apporter le gain de stock espéré."},"reaction":[{"who":"theo","text":"On allonge mes délais pour un gain qui n'existe pas ?"},{"who":"marc","text":"On ne centralise pas sur des chiffres qu'on n'a pas vérifiés."}]}},"hints":["Le Contrôleur : « Calculez d'abord le stock de sécurité d'un seul dépôt, puis multipliez par n pour le total décentralisé. »","Le Contrôleur : « La demande centralisée a pour écart-type σ × √n. Le stock centralisé vaut donc le total décentralisé divisé par √n. »"],"reflection":"Dans quelles conditions centraliser les stocks est-il pertinent pour Altiva, et quels coûts compensent le gain de stock de sécurité ?","next":"q17"},"q17":{"type":"choice","order":17,"title":"Question 17 — Que faire des parkas invendues ?","place":"Vendredi, 16 h 30 — Zone des invendus","course":{"part":"Partie 7 — Réduire et partager les stocks","slides":"38"},"scene":[{"who":"samir","text":"Trois mille deux cents parkas de la collection précédente occupent quarante palettes. Valeur : cent quatre-vingt-dix mille euros."},{"who":"marc","text":"Cent quatre-vingt-dix mille euros qui dorment. Je veux que cet espace et cet argent soient libérés cette semaine."},{"who":"elise","text":"Détruire des parkas en bon état : jamais. Notre promesse RSE n'y survivrait pas, et nos clients non plus."},{"who":"theo","text":"Ou on les solde massivement, et on oublie le problème."}],"briefing":"Un invendu est un stock dont la valeur diminue chaque mois. Plus on tarde, plus on perd : de la valeur et de la crédibilité.","prompt":"Quelle décision prenez-vous pour les parkas invendues ?","options":[{"text":"Les détruire pour libérer les quarante palettes et clore le sujet immédiatement.","next":"end","effects":{"rse":-10,"tresorerie":5},"trust":{"elise":-2,"marc":1},"verdict":{"tone":"risky","text":"Détruire des produits en bon état gaspille la matière, l'énergie et le travail déjà investis, et contredit directement le positionnement éco-responsable d'Altiva."},"reaction":[{"who":"marc","text":"Place libérée, problème réglé."},{"who":"elise","text":"Détruire des produits en bon état : c'est exactement ce qu'on s'était promis de ne plus faire."},{"who":"samir","text":"Mes équipes n'auront pas envie de jeter des parkas neuves."}]},{"text":"Les solder massivement en ligne à très bas prix pour tout écouler cette semaine.","next":"end","effects":{"tresorerie":15,"rse":-3},"trust":{"marc":1,"elise":-1,"theo":1},"verdict":{"tone":"mixed","text":"Solder évite la destruction et libère de la trésorerie, mais en bradant la valeur et l'image de la marque : une solution de dernier recours, pas un choix de fond."},"reaction":[{"who":"theo","text":"Les revendeurs vont râler que les parkas se vendent moins cher en ligne que chez eux."},{"who":"marc","text":"Quinze mille euros immédiats et de l'espace. Pas de quoi pavoiser, mais c'est correct."},{"who":"elise","text":"Brader nos produits abîme notre positionnement. Je préfère d'autres solutions."}]},{"text":"Reconditionner les parkas, les vendre en outlet à prix raisonnable et donner le reste à des associations (seconde vie).","next":"end","effects":{"rse":8,"tresorerie":-10,"resilience":2},"trust":{"elise":2,"samir":1,"marc":-1},"verdict":{"tone":"positive","text":"La seconde vie (reconditionnement, outlet, don) valorise le stock au lieu de le détruire : une solution cohérente avec la promesse RSE d'Altiva, même si elle demande un petit investissement."},"reaction":[{"who":"elise","text":"Voilà ce que j'attendais : donner une seconde vie à ce qu'on a produit. C'est cohérent avec ce qu'on promet."},{"who":"samir","text":"Mes équipes sont prêtes à reconditionner : ça leur redonne du sens."},{"who":"marc","text":"Dix mille euros d'investissement, mais l'espace sera libéré et l'image préservée. Je le note."},{"who":"theo","text":"L'outlet, ça fait des ventes en plus. Je prends."}]}],"hints":["Le Contrôleur : « Que dit la promesse RSE d'Altiva sur les produits en bon état qu'on ne vend plus ? »","Le Contrôleur : « Seconde vie : reconditionner, revendre autrement, donner. Détruire ne devrait être que le dernier recours. »"],"reflection":"Comment éviter que les invendus se reconstituent, et quel lien faites-vous avec la qualité de la prévision (Séance 2) et le stock de sécurité ?"},"end":{"type":"bilan","order":18,"title":"Bilan de mission"}},"synth":{"good":"« Cellule {team}, votre semaine à l'entrepôt a été solide. Vous avez mesuré avant de décider, classé les références, calculé les quantités et les seuils, fiabilisé l'inventaire, et gardé la trésorerie, le service et la RSE en équilibre. Continuez ainsi pour la Mission 6. »","mixed":"« Cellule {team}, votre semaine a été marquée par des arbitrages contrastés : de bons réflexes, mais aussi quelques calculs ou choix qui ont coûté de la trésorerie ou du service. Un stock se pilote avec des chiffres exacts : on en reparle à la Mission 6. »","risky":"« Cellule {team}, je dois être honnête : plusieurs de vos décisions de stock reposaient sur des calculs fragiles ou ignoraient un coût, et l'entrepôt en a payé le prix en trésorerie, en ruptures ou en image. Attendez-vous à ce que la Mission 6 soit plus exigeante. »"},"epilogue":[{"who":"narr","text":"Vendredi soir, 19 h. Les derniers camions quittent les quais de Saint-Priest. L'entrepôt est plus calme, et sur le grand écran du bureau, les indicateurs de la semaine s'affichent un à un."},{"who":"elise","text":"Cellule {team}, vous avez remis de la méthode dans un entrepôt qui vivait au feeling : classement, quantités, seuils, inventaire. Je garde votre numéro.","if":{"tier":"good"}},{"who":"elise","text":"Cellule {team}, du bon et du moins bon, mais l'entrepôt a progressé cette semaine. On verra à l'usage.","if":{"tier":"mixed"}},{"who":"elise","text":"Cellule {team}, je ne vous cache pas mes doutes : plusieurs de vos choix de stock reposaient sur des calculs fragiles. Je le surveillerai de très près.","if":{"tier":"risky"}},{"who":"marc","text":"Des quantités optimisées, des seuils justifiés, des gaspillages traqués. Je signe sans trembler.","if":{"trustGte":["marc",3]}},{"who":"marc","text":"Je regarderai chaque ligne de stock de très près la semaine prochaine.","if":{"trustLte":["marc",1]}},{"who":"theo","text":"Mes revendeurs auront leurs références. Je ne l'oublierai pas.","if":{"trustGte":["theo",3]}},{"who":"theo","text":"Vous avez parfois freiné mes demandes de stock. J'espère que vous aviez raison.","if":{"trustLte":["theo",1]}},{"who":"nadia","text":"Une chaîne qui sait quand commander et combien : c'est tout ce que je demandais.","if":{"trustGte":["nadia",3]}},{"who":"nadia","text":"On ne s'est pas toujours compris. J'aurais aimé qu'on travaille davantage ensemble sur les seuils.","if":{"trustLte":["nadia",1]}},{"who":"samir","text":"Mes équipes préfèrent travailler avec des gens qui regardent l'entrepôt de près. Revenez quand vous voulez.","if":{"trustGte":["samir",3]}},{"who":"samir","text":"L'entrepôt a beaucoup donné cette semaine. J'espère qu'on écoutera davantage le terrain.","if":{"trustLte":["samir",1]}},{"who":"sabine","text":"Les relevés de la semaine sont dans le dossier : fiabilité d'inventaire, écarts, comptages. Ils vous seront utiles."},{"who":"ctrl","text":"Débriefing demain. Retenez ce que chacun vous a dit et revoyez vos justifications : c'est de la matière pour votre dossier de restitution."}],"hiddenNote":{"html":"Note du Contrôleur : aucune décision de cette mission n'a déclenché de note cachée.","pdfTitle":"Note du Contrôleur :","pdfText":"Aucune décision de cette mission n'a déclenché de note cachée."},"justif":true,"startStep":"open","tier":{"good":7,"risky":-4}};
+const DRIVE_LINK = MISSION.drive;
+const CAST = MISSION.cast;
+const STEPS = MISSION.steps;
+const DECISION_STEPS = MISSION.decisionSteps;
+Object.keys(STEPS).forEach(k=>{ const s = STEPS[k]; if(s.options) s.options.forEach((o,i)=>{ o.letter = String.fromCharCode(65+i); }); });
+
+const state = {
+  pendingStep: null,
+  team: "",
+  gauges: { tresorerie: 500, service: 92, cout: 11, resilience: 40, rse: 55 },
+  history: [],
+  hiddenNote: false,
+  flags: {},
+  choices: {},
+  justifs: {},
+  attempts: {},
+  backCount: 0,
+  navStack: [],
+  trust: Object.assign({}, MISSION.trustInit),
+  currentStep: MISSION.startStep || "s1",
+  decisionsDone: 0,
+};
+
+const GAUGE_META = [
+  { key:"tresorerie", label:"Trésorerie", unit:"k€", color:"#0F9B8E", max:600 },
+  { key:"service", label:"Taux de service", unit:"%", color:"#FB8B24", max:100 },
+  { key:"cout", label:"Coût logistique", unit:"% CA", color:"#8D99AE", max:25 },
+  { key:"resilience", label:"Résilience", unit:"/100", color:"#0F9B8E", max:100 },
+  { key:"rse", label:"Image RSE", unit:"/100", color:"#FB8B24", max:100 },
+];
+
+
+// ============================================================
+// BOOT SEQUENCE
+// ============================================================
+const bootLines = MISSION.boot;
+
+function runBoot(){
+  const log = document.getElementById('boot-log');
+  let i = 0;
+  function typeLine(lineObj, onDone){
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.style.opacity = '1';
+    const textSpan = document.createElement('span');
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'cursor';
+    div.appendChild(textSpan);
+    div.appendChild(cursorSpan);
+    log.appendChild(div);
+    const full = lineObj.text;
+    let c = 0;
+    function tick(){
+      textSpan.textContent = full.slice(0, c);
+      c++;
+      if(c <= full.length){
+        setTimeout(tick, 14 + Math.random()*18);
+      } else {
+        cursorSpan.remove();
+        if(lineObj.suffix){
+          const b = document.createElement('b');
+          b.className = lineObj.cls;
+          b.textContent = ' ' + lineObj.suffix;
+          div.appendChild(b);
+        }
+        setTimeout(onDone, 220);
+      }
+    }
+    tick();
+  }
+  function next(){
+    if(i >= bootLines.length){
+      document.getElementById('boot-form').classList.add('show');
+      return;
+    }
+    typeLine(bootLines[i], ()=>{ i++; next(); });
+  }
+  next();
+}
+runBoot();
+
+document.getElementById('team-name-input').addEventListener('input', (e)=>{
+  document.getElementById('boot-enter').disabled = e.target.value.trim().length === 0;
+});
+document.getElementById('team-name-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !document.getElementById('boot-enter').disabled) showRepriseForm();
+});
+document.getElementById('boot-enter').addEventListener('click', showRepriseForm);
+document.getElementById('reprise-confirm').addEventListener('click', confirmReprise);
+
+function showRepriseForm(){
+  state.team = document.getElementById('team-name-input').value.trim() || "Cellule NOMAD";
+  document.getElementById('boot-form').classList.remove('show');
+  document.getElementById('boot-form').style.display = 'none';
+  document.getElementById('reprise-team-name').textContent = state.team;
+  document.getElementById('reprise-form').classList.add('show');
+}
+
+function confirmReprise(){
+  const tresorerie = parseFloat(document.getElementById('reprise-tresorerie').value);
+  const service = parseFloat(document.getElementById('reprise-service').value);
+  const cout = parseFloat(document.getElementById('reprise-cout').value);
+  const resilience = parseFloat(document.getElementById('reprise-resilience').value);
+  const rse = parseFloat(document.getElementById('reprise-rse').value);
+  state.gauges = {
+    tresorerie: isNaN(tresorerie) ? 500 : tresorerie,
+    service: isNaN(service) ? 92 : clamp(service, 0, 100),
+    cout: isNaN(cout) ? 11 : clamp(cout, 0, 30),
+    resilience: isNaN(resilience) ? 40 : clamp(resilience, 0, 100),
+    rse: isNaN(rse) ? 55 : clamp(rse, 0, 100),
+  };
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('boot').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('team-tag').textContent = "CELLULE — " + state.team.toUpperCase();
+  document.getElementById('brief-team-name').textContent = state.team;
+  document.getElementById('bilan-team-name').textContent = "— " + state.team;
+  renderGauges();
+  startMission();
+  updateProgress();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+Array.from(document.querySelectorAll('.navitem')).forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(btn.disabled) return;
+    Array.from(document.querySelectorAll('.navitem')).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    Array.from(document.querySelectorAll('.panel')).forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ============================================================
+// GAUGES
+// ============================================================
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+function renderGauges(){
+  const list = document.getElementById('gauge-list');
+  list.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const pct = clamp((val / g.max) * 100, 2, 100);
+    const row = document.createElement('div');
+    row.className = 'gauge-row';
+    row.innerHTML = `
+      <div class="gauge-top"><span class="gauge-name">${g.label}</span><span class="gauge-val" id="gval-${g.key}">${fmtVal(g,val)}</span></div>
+      <div class="gauge-track"><div class="gauge-fill" id="gfill-${g.key}" style="width:${pct}%;background:${g.color}"></div></div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function fmtVal(g, v){
+  if(g.key === 'tresorerie') return Math.round(v) + ' k€';
+  if(g.key === 'cout') return v.toFixed(1) + '%';
+  return Math.round(v) + (g.key==='service' ? '%' : '/100');
+}
+
+function applyEffects(effects){
+  if(!effects) return;
+  Object.keys(effects).forEach(k=>{
+    state.gauges[k] += effects[k];
+  });
+  // clamps
+  state.gauges.service = clamp(state.gauges.service, 0, 100);
+  state.gauges.resilience = clamp(state.gauges.resilience, 0, 100);
+  state.gauges.rse = clamp(state.gauges.rse, 0, 100);
+  state.gauges.cout = clamp(state.gauges.cout, 0, 30);
+  state.gauges.tresorerie = clamp(state.gauges.tresorerie, 0, 900);
+  renderGauges();
+}
+
+function effectsToText(effects){
+  if(!effects || Object.keys(effects).length===0) return "Aucun effet immédiat sur les jauges.";
+  const names = {tresorerie:"Trésorerie", service:"Service", cout:"Coût logistique", resilience:"Résilience", rse:"RSE"};
+  const units = {tresorerie:" k€", service:" pts", cout:" pts", resilience:" pts", rse:" pts"};
+  return Object.keys(effects).map(k=>{
+    const v = effects[k];
+    return (v>0?"+":"") + v + units[k] + " " + names[k];
+  }).join("  ·  ");
+}
+
+function effectsToHTML(effects){
+  if(!effects || Object.keys(effects).length===0) return '<span class="effect-tag" style="background:#EEF0F3;color:#8D99AE;">Aucun effet visible</span>';
+  const names = {tresorerie:"Trésorerie", service:"Service", cout:"Coût log.", resilience:"Résilience", rse:"RSE"};
+  const units = {tresorerie:"k€", service:"pts", cout:"pts", resilience:"pts", rse:"pts"};
+  return Object.keys(effects).map(k=>{
+    const v = effects[k];
+    const good = (k === 'cout') ? v <= 0 : v >= 0;
+    const cls = good ? 'effect-up' : 'effect-down';
+    return `<span class="effect-tag ${cls}">${names[k]} ${v>0?'+':''}${v}${units[k]}</span>`;
+  }).join('');
+}
+
+// ============================================================
+// MISSION RENDERING
+// ============================================================
+function updateProgress(){
+  const pct = Math.round((state.decisionsDone / DECISION_STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('nav-mission-badge').textContent = state.decisionsDone + '/' + DECISION_STEPS.length;
+  document.getElementById('nav-bilan').disabled = !(state.decisionsDone >= DECISION_STEPS.length);
+}
+
+function renderStepDots(){
+  const wrap = document.getElementById('step-dots');
+  wrap.innerHTML = '';
+  const N = DECISION_STEPS.length, step = STEPS[state.currentStep];
+  const idx = DECISION_STEPS.indexOf(state.currentStep);
+  const cur = idx >= 0 ? idx : state.decisionsDone;
+  for(let i=0;i<N;i++){
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i < state.decisionsDone ? ' done' : (i === cur && step.type !== 'bilan' ? ' current' : ''));
+    wrap.appendChild(d);
+  }
+  const t = document.createElement('span'); t.className = 'dots-label';
+  t.textContent = step.type === 'bilan' ? 'Mission terminée' : (step.type === 'scene' ? 'Avant la question ' : 'Question ') + Math.min(cur + 1, N) + ' sur ' + N;
+  wrap.appendChild(t);
+}
+
+let hintsShown = 0;
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fill(s){ return String(s).split('{team}').join(state.team || 'Cellule'); }
+function pdfSafe(s){ return String(s).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2192/g,'-').replace(/[^\x20-\x7E\xA0-\xFF\u0152\u0153\u2013\u2014\u2026\u20AC]/g,''); }
+function num(v){ const n = parseFloat(String(v).replace(/\s/g,'').replace(',','.')); return isNaN(n) ? NaN : n; }
+function fmtN(n, d){ return Number(n).toLocaleString('fr-FR', {maximumFractionDigits: (d===undefined?1:d)}); }
+
+// Conditions : flag, notFlag, trustGte/Lte/Eq [qui, n], chose [etape, cle], gaugeGte/Lt [jauge, n], tier
+function condOk(c){
+  if(!c) return true;
+  if(c.flag && !state.flags[c.flag]) return false;
+  if(c.notFlag && state.flags[c.notFlag]) return false;
+  if(c.trustGte && !(state.trust[c.trustGte[0]] >= c.trustGte[1])) return false;
+  if(c.trustLte && !(state.trust[c.trustLte[0]] <= c.trustLte[1])) return false;
+  if(c.trustEq && !(state.trust[c.trustEq[0]] === c.trustEq[1])) return false;
+  if(c.chose && state.choices[c.chose[0]] !== c.chose[1]) return false;
+  if(c.gaugeGte && !(state.gauges[c.gaugeGte[0]] >= c.gaugeGte[1])) return false;
+  if(c.gaugeLt && !(state.gauges[c.gaugeLt[0]] < c.gaugeLt[1])) return false;
+  if(c.tier && state.controllerTier !== c.tier) return false;
+  return true;
+}
+
+// Petites expressions écrites par l'auteur de la mission (règles de calcul des questions interactives)
+function X(expr, vars){
+  const names = Object.keys(vars || {});
+  const F = new Proxy({}, { get: (t, k) => (state.flags[k] ? 1 : 0) });
+  try{
+    const fn = Function.apply(null, names.concat(['F','G','TR','Math','return (' + expr + ');']));
+    return fn.apply(null, names.map(k => vars[k]).concat([F, state.gauges, state.trust, Math]));
+  }catch(e){ return NaN; }
+}
+
+function avatarHTML(who){
+  const c = CAST[who]; if(!c) return '';
+  return `<div class="avatar" style="background:${c.color}">${esc(c.initials)}</div>`;
+}
+function dlgHTML(lines){
+  const ok = (lines||[]).filter(l=>condOk(l.if));
+  return ok.map((l,i)=>{
+    const delay = `style="animation-delay:${(i*0.16).toFixed(2)}s"`;
+    if(l.who === 'narr') return `<div class="dline narr" ${delay}><div class="dbody"><div class="dbubble">${esc(fill(l.text))}</div></div></div>`;
+    const c = CAST[l.who] || {name:'', role:''};
+    return `<div class="dline ${l.who==='ctrl'?'ctrl':''}" ${delay}>${avatarHTML(l.who)}<div class="dbody"><div class="dwho">${esc(c.name)}<span>${esc(c.role)}</span></div><div class="dbubble">${esc(fill(l.text))}</div></div></div>`;
+  }).join('');
+}
+const TRUST_LABELS = ['méfiant','réservé','neutre','confiant','allié'];
+function trustPips(v){ let h=''; for(let i=0;i<4;i++){ h += `<span class="pip ${i<v?'on':''} ${v>=3?'hi':(v<=1?'lo':'mid')}"></span>`; } return h; }
+function relStripHTML(){
+  return `<div class="rel-strip">` + MISSION.relations.map(k=>{
+    const c = CAST[k], v = state.trust[k];
+    return `<div class="rel-chip" title="${esc(c.name)} : ${TRUST_LABELS[v]}">${avatarHTML(k)}<div><div class="rel-name">${esc(c.name.split(' ')[0])}</div><div class="pips">${trustPips(v)}</div></div></div>`;
+  }).join('') + `</div>`;
+}
+
+// ------------------------------------------------------------------ navigation : retour en arrière
+function snapshot(stepOverride){
+  return {
+    step: stepOverride || state.currentStep,
+    gauges: Object.assign({}, state.gauges), flags: Object.assign({}, state.flags),
+    choices: Object.assign({}, state.choices), trust: Object.assign({}, state.trust),
+    hiddenNote: state.hiddenNote, decisionsDone: state.decisionsDone, histLen: state.history.length,
+  };
+}
+function restoreSnap(s){
+  state.currentStep = s.step;
+  state.gauges = Object.assign({}, s.gauges); state.flags = Object.assign({}, s.flags);
+  state.choices = Object.assign({}, s.choices); state.trust = Object.assign({}, s.trust);
+  state.hiddenNote = s.hiddenNote; state.decisionsDone = s.decisionsDone;
+  state.history.length = s.histLen;
+  state.pendingStep = null; state.controllerTier = undefined;
+}
+function startMission(){
+  state.currentStep = MISSION.startStep || 's1';
+  state.navStack = [snapshot()];
+  UI.answered = false;
+  renderMissionStep();
+}
+function enterStep(id){
+  state.currentStep = id; state.pendingStep = null;
+  state.navStack.push(snapshot());
+  UI.answered = false; markDirty();
+  renderMissionStep();
+}
+function goBack(){
+  if(UI.answered){
+    restoreSnap(state.navStack[state.navStack.length - 1]);
+  } else if(state.navStack.length > 1){
+    state.navStack.pop();
+    restoreSnap(state.navStack[state.navStack.length - 1]);
+  } else { return; }
+  state.backCount = (state.backCount || 0) + 1;
+  UI.answered = false;
+  document.getElementById('bilan-locked').style.display = 'block';
+  document.getElementById('bilan-content').style.display = 'none';
+  renderGauges(); updateProgress(); markDirty();
+  renderMissionStep();
+}
+function toolbarHTML(step){
+  const canBack = UI.answered || state.navStack.length > 1;
+  const label = UI.answered ? '↶ Modifier ma réponse' : '← Revenir';
+  const c = step.course;
+  const chip = DRIVE_LINK ? `<a class="course-chip" href="${esc(DRIVE_LINK)}" target="_blank" rel="noopener" title="Ouvre le support de cours dans un nouvel onglet">📘 Cours${c ? ' — ' + esc(c.part) + (c.slides ? ' · diapos ' + esc(c.slides) : '') : ''}</a>` : '';
+  return `<div class="step-toolbar"><button type="button" class="back-btn" id="btn-back" ${canBack ? '' : 'disabled'}>${label}</button>${chip}</div>`;
+}
+function bindToolbar(){ const b = document.getElementById('btn-back'); if(b) b.addEventListener('click', goBack); }
+function refreshToolbar(){ const w = document.getElementById('toolbar-wrap'); if(!w) return; w.innerHTML = toolbarHTML(STEPS[state.currentStep]); bindToolbar(); }
+
+// ------------------------------------------------------------------ rendu d'une étape
+function renderMissionStep(){
+  const step = STEPS[state.currentStep];
+  document.getElementById('step-title').textContent = step.title;
+  renderStepDots();
+  const content = document.getElementById('step-content');
+  hintsShown = 0;
+  const head = step.place ? `<div class="scene-head"><span class="dot"></span>${esc(step.place)}</div>` : '';
+  const rel = `<div id="rel-wrap">${relStripHTML()}</div>`;
+  const tb = `<div id="toolbar-wrap">${toolbarHTML(step)}</div>`;
+
+  if(step.type === 'scene'){
+    content.innerHTML = tb + rel + head + `<div class="dlg">${dlgHTML(step.scene)}</div><button class="continue-btn" id="continue-btn">Continuer →</button>`;
+    document.getElementById('continue-btn').addEventListener('click', ()=> enterStep(step.next));
+  } else if(step.type === 'bilan'){
+    content.innerHTML = tb + `<div class="narration-box">Mission terminée. Rendez-vous dans l'onglet <strong>Bilan &amp; export</strong> pour consulter le résultat complet de votre cellule.</div>`;
+    unlockBilan();
+  } else {
+    content.innerHTML = tb + rel + head + `<div class="dlg">${dlgHTML(step.scene)}</div>` +
+      (step.briefing ? `<div class="briefing-box"><span class="who">LE CONTRÔLEUR — TRANSMISSION</span>${esc(step.briefing)}</div>` : '') +
+      `<p class="step-prompt">${esc(step.prompt)}</p>
+       <div id="q-wrap"></div>
+       <div id="reaction-wrap"></div>
+       <div id="hint-zone">
+         <button class="hint-btn" id="hint-btn">💡 Demander une piste au Contrôleur</button>
+         <div id="hint-list"></div>
+       </div>`;
+    (QUI[step.type] || QUI.choice)(step, document.getElementById('q-wrap'));
+    document.getElementById('hint-btn').addEventListener('click', ()=> showHint(step));
+  }
+  bindToolbar();
+  const m = document.getElementById('main'); if(m) m.scrollTop = 0;
+}
+
+function showHint(step){
+  if(hintsShown >= step.hints.length) return;
+  const div = document.createElement('div');
+  div.className = 'hint-card';
+  div.textContent = "Piste " + (hintsShown+1) + " — " + step.hints[hintsShown];
+  document.getElementById('hint-list').appendChild(div);
+  hintsShown++;
+  if(hintsShown >= step.hints.length){
+    document.getElementById('hint-btn').disabled = true;
+    document.getElementById('hint-btn').textContent = "Vous avez utilisé vos 2 pistes pour cette étape";
+  }
+}
+
+// ------------------------------------------------------------------ résolution commune d'une réponse
+function justifBoxHTML(step){
+  return `<div class="justif-box">
+    <div class="justif-title">Justifiez votre réponse par écrit</div>
+    <div class="justif-q">${esc(step.reflection || '')}</div>
+    <textarea id="justif-input" rows="4" aria-label="Justification de votre réponse" placeholder="Pourquoi cette réponse ? Sur quels éléments du dossier ou du cours vous appuyez-vous ? Que feriez-vous différemment ?"></textarea>
+    <div class="justif-hint">Cet encart nourrit votre dossier de restitution. Vous pourrez le compléter ou le corriger dans l'onglet Bilan avant d'exporter le PDF.</div>
+  </div>`;
+}
+function bindJustif(stepId){
+  const ta = document.getElementById('justif-input');
+  if(!ta) return;
+  ta.value = state.justifs[stepId] || '';
+  ta.addEventListener('input', ()=>{ state.justifs[stepId] = ta.value; markDirty(); });
+}
+function applyTrust(map){
+  const out = [];
+  Object.keys(map||{}).forEach(k=>{
+    if(!(k in state.trust)) return;
+    const before = state.trust[k], after = clamp(before + map[k], 0, 4);
+    state.trust[k] = after;
+    if(after !== before) out.push({who:k, delta:after-before});
+  });
+  return out;
+}
+function pickVerdict(o){
+  const vi = (o.verdictIf||[]).find(v=>condOk(v.if));
+  return vi ? {tone:vi.tone, text:vi.text} : o.verdict;
+}
+
+function commit(step, o, key, label, extra){
+  extra = extra || {};
+  const stepId = state.currentStep;
+  const verdict = pickVerdict(o);   // jugé AVANT les effets : on évalue ce que la cellule avait en main au moment de décider
+  const effects = Object.assign({}, o.effects || {});
+  Object.keys(extra.dyn || {}).forEach(k=>{ effects[k] = (effects[k] || 0) + extra.dyn[k]; });
+  applyEffects(effects);
+  if(o.hidden) state.hiddenNote = true;
+  (o.setFlags||[]).forEach(f=>{ state.flags[f] = true; });
+  state.choices[stepId] = key;
+  const deltas = applyTrust(o.trust);
+  const reaction = (o.reaction||[]).filter(l=>condOk(l.if)).map(l=>({who:l.who, text:fill(l.text)}));
+  const next = o.next || step.next;
+
+  state.pendingStep = next; markDirty();
+  state.attempts[stepId] = (state.attempts[stepId] || 0) + 1;
+  state.history.push({
+    stepId: stepId, stepTitle: step.title, optionLabel: label, detail: extra.detail || [],
+    effectsText: effectsToText(effects), verdict: verdict || null, reflection: step.reflection || null,
+    reaction: reaction, trustDeltas: deltas, attempt: state.attempts[stepId],
+  });
+  if(DECISION_STEPS.includes(stepId)){ state.decisionsDone++; updateProgress(); }
+  UI.answered = true;
+
+  const tags = deltas.map(d=>`<span class="trust-delta ${d.delta>0?'trust-up':'trust-down'}">${esc(CAST[d.who].name.split(' ')[0])} ${d.delta>0?'↑':'↓'}</span>`).join('');
+  document.getElementById('reaction-wrap').innerHTML =
+    `<div class="react-box"><div class="react-title">${extra.feedbackHTML ? 'Résultat et réactions dans la salle' : 'Réactions dans la salle'}</div>
+       ${extra.feedbackHTML ? `<div class="fb-box">${extra.feedbackHTML}</div>` : ''}
+       <div class="dlg">${dlgHTML(reaction)}</div>
+       <div class="react-meta"><div class="meta-label">Relations</div>${tags || '<span class="trust-delta trust-flat">inchangées</span>'}</div>
+       <div class="react-meta"><div class="meta-label">Effet(s) sur vos jauges</div>${effectsToHTML(effects)}</div>
+       ${MISSION.justif ? justifBoxHTML(step) : ''}
+       <button class="continue-btn" id="continue-after-choice">Continuer →</button>
+     </div>`;
+  bindJustif(stepId);
+  document.getElementById('rel-wrap').innerHTML = relStripHTML();
+  document.getElementById('hint-zone').style.display = 'none';
+  document.getElementById('continue-after-choice').addEventListener('click', ()=> enterStep(next));
+  refreshToolbar();
+  const rb = document.getElementById('reaction-wrap');
+  if(rb && rb.scrollIntoView) rb.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function lockQ(){
+  const w = document.getElementById('q-wrap'); if(!w) return;
+  w.classList.add('locked');
+  Array.from(w.querySelectorAll('button,select,input')).forEach(e=>{ e.disabled = true; });
+  Array.from(w.querySelectorAll('.rk-row')).forEach(e=>{ e.draggable = false; });
+}
+function submitBar(wrap, onSubmit){
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'continue-btn q-submit'; b.id = 'q-submit'; b.textContent = 'Valider ma réponse'; b.disabled = true;
+  b.addEventListener('click', ()=>{ b.disabled = true; onSubmit(); });
+  wrap.appendChild(b);
+  return b;
+}
+function submitAnswer(step, ans){
+  const r = EVAL[step.type](step, ans);
+  lockQ();
+  commit(step, step.outcomes[r.key], r.key, r.label, r);
+}
+
+// ------------------------------------------------------------------ formats de questions : interfaces
+const QUI = {};
+const EVAL = {};
+
+// QCM avec conséquences
+QUI.choice = function(step, wrap){
+  const ow = document.createElement('div'); ow.id = 'options-wrap';
+  const status = step.options.map(opt=>{
+    const cost = (opt.effects && opt.effects.tresorerie) ? opt.effects.tresorerie : 0;
+    return { opt, cost, affordable: (state.gauges.tresorerie + cost) >= 0, lockedByReq: !!(opt.requires && !condOk(opt.requires.cond)) };
+  });
+  // si toutes les options dépassent le budget, on ne bloque pas l'élève : elles restent ouvertes (découvert)
+  const overdraft = !status.some(s=>!s.lockedByReq && s.affordable) && status.some(s=>!s.lockedByReq);
+  if(overdraft){
+    const n = document.createElement('div'); n.className = 'od-note';
+    n.textContent = "Trésorerie épuisée : toutes les options dépassent votre budget. Elles restent ouvertes, mais votre trésorerie plafonne à 0 et la direction financière le remarquera.";
+    wrap.appendChild(n);
+  }
+  wrap.appendChild(ow);
+  status.forEach(s=>{
+    const opt = s.opt;
+    const b = document.createElement('button');
+    b.className = 'option';
+    const base = `<span class="opt-letter">${opt.letter}</span><span class="opt-text">${esc(opt.text)}</span>`;
+    if(s.lockedByReq){
+      b.classList.add('locked'); b.disabled = true;
+      b.innerHTML = base + `<div class="opt-locked-msg">🔒 ${esc(opt.requires.msg)}</div>`;
+    } else if(!s.affordable && !overdraft){
+      b.classList.add('locked'); b.disabled = true;
+      b.innerHTML = base + `<div class="opt-locked-msg">🔒 Budget insuffisant : cette option nécessite ${Math.abs(s.cost)} k€, il vous reste ${state.gauges.tresorerie} k€.</div>`;
+    } else {
+      b.innerHTML = base + (!s.affordable ? `<div class="opt-od-msg">Option à ${Math.abs(s.cost)} k€ : au-delà de votre trésorerie (${state.gauges.tresorerie} k€), vous serez à découvert.</div>` : '');
+      b.addEventListener('click', ()=> chooseOption(step, opt, b));
+    }
+    ow.appendChild(b);
+  });
+};
+function chooseOption(step, opt, btnEl){
+  Array.from(document.querySelectorAll('#options-wrap .option')).forEach(b=>{ b.disabled = true; b.style.opacity = '0.55'; });
+  btnEl.classList.add('selected'); btnEl.style.opacity = '1';
+  commit(step, opt, opt.letter, opt.letter + '. ' + opt.text, {});
+}
+
+function byThreshold(step, score){
+  const t = step.thresholds.slice().sort((a,b)=>b.min-a.min).find(t=>score >= t.min);
+  return t ? t.outcome : step.thresholds[step.thresholds.length-1].outcome;
+}
+function fbList(rows){ return `<ul class="fb-list">${rows.join('')}</ul>`; }
+
+// Classement : associer chaque situation à une catégorie
+QUI.classify = function(step, wrap){
+  const cats = step.categories, items = step.items, ans = {};
+  const useSel = cats.length > 4;
+  if(!useSel){
+    const lg = document.createElement('div'); lg.className = 'cls-legend';
+    lg.innerHTML = cats.map(c=>`<span><b>${esc(c.label)}</b>${c.desc ? ' : ' + esc(c.desc) : ''}</span>`).join('');
+    wrap.appendChild(lg);
+  }
+  const list = document.createElement('div'); list.className = 'cls-list';
+  items.forEach(it=>{
+    const row = document.createElement('div'); row.className = 'cls-row';
+    row.innerHTML = `<div class="cls-text">${esc(it.text)}</div>`;
+    const ctl = document.createElement('div'); ctl.className = 'cls-ctl';
+    if(useSel){
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', it.text);
+      sel.innerHTML = `<option value="">Choisir…</option>` + cats.map(c=>`<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+      sel.addEventListener('change', ()=>{ if(sel.value) ans[it.id] = sel.value; else delete ans[it.id]; check(); });
+      ctl.appendChild(sel);
+    } else {
+      cats.forEach(c=>{
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'seg'; b.textContent = c.label;
+        b.addEventListener('click', ()=>{ ans[it.id] = c.id; Array.from(ctl.children).forEach(x=>x.classList.remove('on')); b.classList.add('on'); check(); });
+        ctl.appendChild(b);
+      });
+    }
+    row.appendChild(ctl); list.appendChild(row);
+  });
+  wrap.appendChild(list);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, ans));
+  function check(){ sub.disabled = !items.every(it=>ans[it.id]); }
+};
+EVAL.classify = function(step, ans){
+  let score = 0; const rows = [], detail = [];
+  const catLabel = id => (step.categories.find(c=>c.id===id) || {}).label || id;
+  step.items.forEach(it=>{
+    const ok = ans[it.id] === it.answer; if(ok) score++;
+    rows.push(`<li class="${ok?'ok':'ko'}"><b>${ok?'Correct':'À revoir'}</b> — ${esc(it.text)}<br><span class="fb-sub">Votre réponse : ${esc(catLabel(ans[it.id]))}${ok ? '' : ' · Attendu : ' + esc(catLabel(it.answer))}. ${esc(it.why || '')}</span></li>`);
+    detail.push(`${it.text} -> ${catLabel(ans[it.id])} (${ok ? 'correct' : 'attendu : ' + catLabel(it.answer)})`);
+  });
+  return { key: byThreshold(step, score), label: `${score} sur ${step.items.length} éléments correctement classés`, detail,
+           feedbackHTML: `<div class="fb-title">Correction : ${score} / ${step.items.length}</div>` + fbList(rows) };
+};
+
+// Calcul : saisie de valeurs numériques (ou choix oui/non) avec tolérance
+QUI.calc = function(step, wrap){
+  const ans = {};
+  const box = document.createElement('div'); box.className = 'calc-box';
+  if(step.givens){
+    box.innerHTML = `<div class="calc-givens">${step.givens.map(g=>`<div class="giv"><span>${esc(g.label)}</span><b>${esc(g.value)}</b></div>`).join('')}</div>`;
+  }
+  step.fields.forEach(f=>{
+    const row = document.createElement('div'); row.className = 'calc-row';
+    row.innerHTML = `<label>${esc(f.label)}</label>`;
+    let inp;
+    if(f.kind === 'select'){
+      inp = document.createElement('select');
+      inp.innerHTML = `<option value="">Choisir…</option>` + f.options.map(o=>`<option>${esc(o)}</option>`).join('');
+      inp.addEventListener('change', ()=>{ ans[f.id] = inp.value; check(); });
+    } else {
+      inp = document.createElement('input'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.autocomplete = 'off';
+      inp.placeholder = f.unit || 'Votre résultat';
+      inp.addEventListener('input', ()=>{ ans[f.id] = inp.value.trim(); check(); });
+    }
+    inp.setAttribute('aria-label', f.label);
+    row.appendChild(inp);
+    if(f.unit && f.kind !== 'select'){ const u = document.createElement('span'); u.className = 'calc-unit'; u.textContent = f.unit; row.appendChild(u); }
+    box.appendChild(row);
+  });
+  wrap.appendChild(box);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, ans));
+  function check(){ sub.disabled = !step.fields.every(f=>ans[f.id]); }
+};
+EVAL.calc = function(step, ans){
+  let score = 0; const rows = [], detail = [];
+  step.fields.forEach(f=>{
+    const raw = ans[f.id]; let ok, shown, exp;
+    if(f.kind === 'select'){ ok = raw === f.answer; shown = raw; exp = f.answer; }
+    else {
+      const v = num(raw); ok = !isNaN(v) && Math.abs(v - f.answer) <= (f.tol || 0);
+      shown = isNaN(v) ? '—' : fmtN(v, 2) + (f.unit ? ' ' + f.unit : '');
+      exp = fmtN(f.answer, 2) + (f.unit ? ' ' + f.unit : '');
+    }
+    if(ok) score++;
+    rows.push(`<li class="${ok?'ok':'ko'}"><b>${ok?'Correct':'À revoir'}</b> — ${esc(f.label)}<br><span class="fb-sub">Votre réponse : ${esc(shown)}${ok ? '' : ' · Attendu : ' + esc(exp)}</span></li>`);
+    detail.push(`${f.label} : ${shown}${ok ? '' : ' (attendu : ' + exp + ')'}`);
+  });
+  return { key: byThreshold(step, score), label: `${score} sur ${step.fields.length} résultats exacts`, detail,
+           feedbackHTML: `<div class="fb-title">Correction : ${score} / ${step.fields.length}</div>` + fbList(rows) + (step.method ? `<div class="fb-method"><b>Méthode :</b> ${esc(step.method)}</div>` : '') };
+};
+
+// Repérage : désigner un élément sur un schéma de la ligne
+QUI.hotspot = function(step, wrap){
+  let sel = null;
+  const line = document.createElement('div'); line.className = 'hs-line';
+  step.nodes.forEach((n, i)=>{
+    const q = Math.min(n.queue || 0, 16);
+    const pile = Array.from({length: q}, ()=>'<i></i>').join('');
+    const card = document.createElement('button'); card.type = 'button'; card.className = 'hs-node';
+    card.innerHTML = `<div class="hs-name">${esc(n.label)}</div><div class="hs-cap">${esc(n.cap)}</div>` +
+      (n.queue === undefined ? '' : `<div class="hs-queue" title="${q} lots en attente"><span class="hs-qlabel">File d'attente</span><div class="hs-pile">${pile || '<em>vide</em>'}</div></div>`) +
+      `<div class="hs-note">${esc(n.note)}</div>`;
+    card.addEventListener('click', ()=>{
+      sel = n.id; Array.from(line.querySelectorAll('.hs-node')).forEach(x=>x.classList.remove('on')); card.classList.add('on'); sub.disabled = false;
+    });
+    line.appendChild(card);
+    if(i < step.nodes.length - 1 && !step.noArrows){ const ar = document.createElement('div'); ar.className = 'hs-arrow'; ar.textContent = '→'; line.appendChild(ar); }
+  });
+  wrap.appendChild(line);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, sel));
+};
+EVAL.hotspot = function(step, ans){
+  const n = step.nodes.find(x=>x.id===ans);
+  const key = step.outcomeByNode[ans];
+  const ok = ans === step.correct;
+  return { key, label: `Poste désigné : ${n.label}`, detail: [ok ? 'Poste désigné : ' + n.label + ' (correct)' : 'Poste désigné : ' + n.label + ' (attendu : ' + step.nodes.find(x=>x.id===step.correct).label + ')'],
+           feedbackHTML: `<div class="fb-title">${ok ? 'Bien repéré' : 'Ce n\'est pas le goulot'}</div><div class="fb-method">${esc(step.explain)}</div>` };
+};
+
+// Ordonnancement : réordonner des cartes (ordre simple, ou Gantt avec indicateurs en direct)
+function schedMetrics(order, jobs){
+  let t = 0, flow = 0, late = 0, nlate = 0, maxl = 0; const bars = [];
+  order.forEach(id=>{ const j = jobs[id]; const s = t; t += j.p; const l = Math.max(0, t - j.d); flow += t; late += l; if(l > 0) nlate++; maxl = Math.max(maxl, l); bars.push({id, s, e:t, l, d:j.d}); });
+  return {bars, total:t, avgFlow: flow/order.length, totalLate: late, nLate: nlate, maxLate: maxl};
+}
+function ganttHTML(order, step){
+  const jobs = {}; step.items.forEach(i=>{ jobs[i.id] = i; });
+  const m = schedMetrics(order, jobs);
+  const span = Math.max(m.total, ...step.items.map(i=>i.d));
+  const bars = m.bars.map(b=>`<div class="gt-bar ${b.l>0?'late':'ok'}" style="width:${(b.e-b.s)/span*100}%" title="${esc(jobs[b.id].title)} : ${b.s} h à ${b.e} h, échéance ${b.d} h"><b>${esc(jobs[b.id].short || b.id)}</b></div>`).join('');
+  const marks = m.bars.map(b=>`<div class="gt-mark" style="left:${b.d/span*100}%" title="Échéance ${esc(jobs[b.id].title)} : ${b.d} h"><span>${esc(jobs[b.id].short || b.id)}</span></div>`).join('');
+  return `<div class="gt-wrap"><div class="gt-marks">${marks}</div><div class="gt-row">${bars}</div>
+    <div class="gt-axis"><span>0 h</span><span>${fmtN(span/2,1)} h</span><span>${fmtN(span,1)} h</span></div>
+    <div class="gt-metrics">
+      <div><span>Délai moyen de passage</span><b>${fmtN(m.avgFlow,1)} h</b></div>
+      <div><span>Retard cumulé</span><b>${fmtN(m.totalLate,1)} h</b></div>
+      <div><span>Commandes en retard</span><b>${m.nLate} sur ${order.length}</b></div>
+      <div><span>Retard maximum</span><b>${fmtN(m.maxLate,1)} h</b></div>
+    </div></div>`;
+}
+QUI.rank = function(step, wrap){
+  let order = step.start.slice();
+  const items = {}; step.items.forEach(i=>{ items[i.id] = i; });
+  const box = document.createElement('div'); box.className = 'rk-box'; wrap.appendChild(box);
+  let live = null;
+  if(step.mode === 'gantt'){ live = document.createElement('div'); live.className = 'rk-live'; wrap.appendChild(live); }
+  const sub = submitBar(wrap, ()=> submitAnswer(step, order));
+  sub.disabled = false;
+  function move(from, to){ if(to < 0 || to >= order.length || from === to) return; const [x] = order.splice(from, 1); order.splice(to, 0, x); paint(); }
+  function paint(){
+    box.innerHTML = '';
+    order.forEach((id, idx)=>{
+      const it = items[id];
+      const row = document.createElement('div'); row.className = 'rk-row'; row.draggable = true; row.dataset.idx = idx; row.dataset.id = id;
+      row.innerHTML = `<span class="rk-n">${idx+1}</span><span class="rk-grip" aria-hidden="true">⋮⋮</span>
+        <div class="rk-text"><b>${it.short && it.p !== undefined ? '<span class="rk-letter">' + esc(it.short) + '</span>' : ''}${esc(it.title)}</b>${it.p !== undefined ? `<span class="rk-meta">${it.p} h de fabrication · échéance ${it.d} h</span>` : ''}${it.text ? `<br>${esc(it.text)}` : ''}</div>
+        <div class="rk-btns"><button type="button" data-d="-1" aria-label="Monter" ${idx===0?'disabled':''}>▲</button><button type="button" data-d="1" aria-label="Descendre" ${idx===order.length-1?'disabled':''}>▼</button></div>`;
+      Array.from(row.querySelectorAll('button')).forEach(b=> b.addEventListener('click', ()=> move(idx, idx + Number(b.dataset.d))));
+      row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', String(idx)); row.classList.add('drag'); });
+      row.addEventListener('dragend', ()=> row.classList.remove('drag'));
+      row.addEventListener('dragover', e=>{ e.preventDefault(); row.classList.add('over'); });
+      row.addEventListener('dragleave', ()=> row.classList.remove('over'));
+      row.addEventListener('drop', e=>{ e.preventDefault(); const from = Number(e.dataTransfer.getData('text/plain')); if(!isNaN(from)) move(from, idx); });
+      box.appendChild(row);
+    });
+    if(live) live.innerHTML = ganttHTML(order, step);
+  }
+  paint();
+  wrap.__order = ()=> order;
+};
+function evalGantt(step, ans){
+  const jobs = {}; step.items.forEach(i=>{ jobs[i.id] = i; });
+  const idxOf = id => step.start.indexOf(id);
+  const fifo = step.start.slice();
+  const spt = step.items.slice().sort((a,b)=>a.p-b.p || idxOf(a.id)-idxOf(b.id)).map(i=>i.id);
+  const edd = step.items.slice().sort((a,b)=>a.d-b.d || idxOf(a.id)-idxOf(b.id)).map(i=>i.id);
+  const same = (a,b)=> a.join() === b.join();
+  const m = schedMetrics(ans, jobs);
+  const kind = same(ans, edd) ? 'edd' : (same(ans, spt) ? 'spt' : (same(ans, fifo) ? 'fifo' : 'other'));
+  const rule = step.rules.find(r=> r.when === kind || (r.when === 'other' && kind === 'other' && (r.maxTotalLate === undefined || m.totalLate <= r.maxTotalLate)));
+  const kindLabel = { edd:'EDD (échéance la plus proche)', spt:'SPT (durée la plus courte)', fifo:'FIFO (ordre d\'arrivée)', other:'ordre personnalisé' }[kind];
+  const row = (name, o) => { const mm = schedMetrics(o, jobs); return `<tr><td>${name}</td><td>${fmtN(mm.avgFlow,1)} h</td><td>${fmtN(mm.totalLate,1)} h</td><td>${mm.nLate} sur ${o.length}</td><td>${fmtN(mm.maxLate,1)} h</td></tr>`; };
+  const short = id => jobs[id].short || id;
+  return { key: rule.outcome,
+    label: `Ordre choisi : ${ans.map(short).join(' > ')} (${kindLabel})`,
+    detail: [`Délai moyen ${fmtN(m.avgFlow,1)} h ; retard cumulé ${fmtN(m.totalLate,1)} h ; ${m.nLate} commande(s) en retard ; retard maximum ${fmtN(m.maxLate,1)} h`],
+    feedbackHTML: `<div class="fb-title">Votre ordonnancement : ${esc(kindLabel)}</div>
+      <table class="fb-table"><tr><th>Ordre</th><th>Délai moyen</th><th>Retard cumulé</th><th>En retard</th><th>Retard max</th></tr>
+      ${row('<b>Le vôtre</b> (' + ans.map(short).join('-') + ')', ans)}${row('FIFO (' + fifo.map(short).join('-') + ')', fifo)}${row('SPT (' + spt.map(short).join('-') + ')', spt)}${row('EDD (' + edd.map(short).join('-') + ')', edd)}</table>` };
+}
+EVAL.rank = function(step, ans){
+  if(step.mode === 'gantt') return evalGantt(step, ans);
+  let score = 0; const rows = [];
+  const nm = id => { const it = step.items.find(x=>x.id===id); return it.name || it.title; };
+  step.correctOrder.forEach((id, i)=>{ if(ans[i] === id) score++; });
+  step.correctOrder.forEach((id, i)=>{ const ok = ans[i] === id; rows.push(`<li class="${ok?'ok':'ko'}"><b>${i+1}.</b> ${esc(nm(id))}${ok ? '' : `<br><span class="fb-sub">Vous aviez placé ici : ${esc(nm(ans[i]))}</span>`}</li>`); });
+  return { key: byThreshold(step, score), label: `Ordre proposé : ${score} niveau(x) sur ${step.correctOrder.length} bien placé(s)`,
+           detail: ['Ordre proposé : ' + ans.map(nm).join(' > '), 'Ordre attendu : ' + step.correctOrder.map(nm).join(' > ')],
+           feedbackHTML: `<div class="fb-title">Ordre attendu : ${score} / ${step.correctOrder.length} bien placés</div>` + fbList(rows) };
+};
+
+// Allocation : répartir des tranches d'investissement, avec le débit de la ligne recalculé en direct
+QUI.alloc = function(step, wrap){
+  const maxUnits = Math.max(0, Math.min(step.units, Math.floor(state.gauges.tresorerie / step.unitCost)));
+  const U = {}; step.stations.forEach(s=>{ U[s.id] = 0; });
+  const info = document.createElement('div'); info.className = 'al-info'; wrap.appendChild(info);
+  const grid = document.createElement('div'); grid.className = 'al-grid'; wrap.appendChild(grid);
+  const live = document.createElement('div'); live.className = 'al-live'; wrap.appendChild(live);
+  const sub = submitBar(wrap, ()=> submitAnswer(step, Object.assign({}, U)));
+  sub.disabled = false;
+  const used = ()=> Object.values(U).reduce((a,b)=>a+b, 0);
+  function caps(){ const o = {}; step.stations.forEach(s=>{ o[s.id] = s.cap + step.gain * U[s.id]; }); return o; }
+  function paint(){
+    const c = caps(), debit = Math.min(...Object.values(c)), left = maxUnits - used();
+    info.innerHTML = `<span>Tranches disponibles : <b>${left}</b> / ${maxUnits}</span><span>Investi : <b>${used() * step.unitCost} k€</b></span><span>Objectif : <b>${step.target} pièces/h</b></span>`;
+    grid.innerHTML = '';
+    step.stations.forEach(s=>{
+      const cell = document.createElement('div'); cell.className = 'al-cell' + (c[s.id] === debit ? ' min' : '');
+      cell.innerHTML = `<div class="al-name">${esc(s.label)}</div><div class="al-cap">${c[s.id]} <small>pièces/h</small></div>
+        <div class="al-step"><button type="button" data-d="-1" aria-label="Retirer une tranche" ${U[s.id]===0?'disabled':''}>−</button><b>${U[s.id]}</b><button type="button" data-d="1" aria-label="Ajouter une tranche" ${left===0?'disabled':''}>+</button></div>`;
+      Array.from(cell.querySelectorAll('button')).forEach(b=> b.addEventListener('click', ()=>{ U[s.id] += Number(b.dataset.d); paint(); }));
+      grid.appendChild(cell);
+    });
+    const scale = Math.max(...step.stations.map(s=>s.cap + step.gain * step.units), step.target) * 1.05;
+    live.innerHTML = `<div class="al-bars">${step.stations.map(s=>`<div class="al-bar" title="${esc(s.label)}"><i class="${c[s.id]===debit?'min':''}" style="height:${c[s.id]/scale*100}%"></i><span>${esc(s.label)}</span></div>`).join('')}<div class="al-target" style="bottom:${step.target/scale*100}%"><span>Objectif ${step.target}</span></div></div>
+      <div class="al-debit ${debit >= step.target ? 'ok' : 'ko'}">Débit de la ligne : <b>${debit} pièces/h</b> <small>(le poste le plus lent fixe le débit de toute la ligne)</small></div>`;
+  }
+  paint();
+};
+EVAL.alloc = function(step, ans){
+  const c = {}; step.stations.forEach(s=>{ c[s.id] = s.cap + step.gain * (ans[s.id] || 0); });
+  const debit = Math.min(...Object.values(c));
+  const used = Object.values(ans).reduce((a,b)=>a+b, 0);
+  const vars = Object.assign({debit, used}, ans);
+  const rule = step.rules.find(r=> X(r.if, vars));
+  const dyn = {}; Object.keys(step.dynamicEffects || {}).forEach(k=>{ dyn[k] = X(step.dynamicEffects[k], vars); });
+  const rep = step.stations.map(s=>`${s.label} : ${ans[s.id] || 0} tranche(s)`).join(' ; ');
+  return { key: rule.outcome, dyn,
+    label: `Répartition (${used * step.unitCost} k€) : ${rep} ; débit de la ligne ${debit} pièces/h`,
+    detail: [`Objectif ${step.target} pièces/h ; débit obtenu ${debit} pièces/h ; ${used} tranche(s) investie(s)`],
+    feedbackHTML: `<div class="fb-title">Débit de la ligne : ${debit} pièces/h (objectif ${step.target})</div>
+      <table class="fb-table"><tr><th>Poste</th><th>Avant</th><th>Tranches</th><th>Après</th></tr>${step.stations.map(s=>`<tr><td>${esc(s.label)}</td><td>${s.cap}</td><td>${ans[s.id] || 0}</td><td>${c[s.id]}</td></tr>`).join('')}</table>
+      <div class="fb-method">Coût engagé : ${used * step.unitCost} k€. ${esc(step.explain || '')}</div>` };
+};
+
+// Réglage : curseurs avec indicateurs recalculés en direct
+function tuneCompute(step, vals){
+  const vars = Object.assign({}, vals); const out = [];
+  step.metrics.forEach(m=>{ const v = X(m.expr, vars); vars[m.id] = v; out.push({m, v, ok: m.okExpr ? !!X(m.okExpr, vars) : null}); });
+  return {vars, out};
+}
+QUI.tune = function(step, wrap){
+  const vals = {}; step.sliders.forEach(s=>{ vals[s.id] = s.value; });
+  const sl = document.createElement('div'); sl.className = 'tn-sliders'; wrap.appendChild(sl);
+  const live = document.createElement('div'); live.className = 'tn-live'; wrap.appendChild(live);
+  step.sliders.forEach(s=>{
+    const row = document.createElement('div'); row.className = 'tn-row';
+    row.innerHTML = `<label>${esc(s.label)}</label><div class="tn-ctl"><input type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}" aria-label="${esc(s.label)}"><b class="tn-val">${s.value} ${esc(s.unit||'')}</b></div>`;
+    const inp = row.querySelector('input'), val = row.querySelector('.tn-val');
+    inp.addEventListener('input', ()=>{ vals[s.id] = Number(inp.value); val.textContent = inp.value + ' ' + (s.unit||''); paint(); });
+    sl.appendChild(row);
+  });
+  const sub = submitBar(wrap, ()=> submitAnswer(step, Object.assign({}, vals)));
+  sub.disabled = false;
+  function paint(){
+    const r = tuneCompute(step, vals);
+    live.innerHTML = r.out.map(o=>{
+      const m = o.m, pct = m.bar ? Math.max(0, Math.min(100, o.v / m.bar * 100)) : null;
+      return `<div class="tn-metric ${o.ok===null?'':(o.ok?'ok':'ko')}"><div class="tn-mlabel">${esc(m.label)}</div><div class="tn-mval">${fmtN(o.v, m.digits === undefined ? 0 : m.digits)} <small>${esc(m.unit||'')}</small></div>${pct!==null ? `<div class="tn-mbar"><i style="width:${pct}%"></i></div>` : ''}${m.hint ? `<div class="tn-mhint">${esc(m.hint)}</div>` : ''}</div>`;
+    }).join('');
+  }
+  paint();
+};
+EVAL.tune = function(step, ans){
+  const r = tuneCompute(step, ans);
+  const rule = step.rules.find(x=> X(x.if, r.vars));
+  const fb = r.out.map(o=>`<tr><td>${esc(o.m.label)}</td><td>${fmtN(o.v, o.m.digits === undefined ? 0 : o.m.digits)} ${esc(o.m.unit||'')}</td></tr>`).join('');
+  const sliders = step.sliders.map(s=>`${s.label} : ${ans[s.id]} ${s.unit||''}`).join(' ; ');
+  return { key: rule.outcome, label: 'Réglage retenu : ' + sliders,
+    detail: r.out.map(o=>`${o.m.label} : ${fmtN(o.v, o.m.digits === undefined ? 0 : o.m.digits)} ${o.m.unit||''}`),
+    feedbackHTML: `<div class="fb-title">Résultat de votre réglage</div><table class="fb-table"><tr><th>Indicateur</th><th>Valeur</th></tr>${fb}</table>${step.explain ? `<div class="fb-method">${esc(step.explain)}</div>` : ''}` };
+};
+
+// ============================================================
+// BILAN
+// ============================================================
+function unlockBilan(){
+  document.getElementById('nav-bilan').disabled = false;
+  document.getElementById('bilan-locked').style.display = 'none';
+  document.getElementById('bilan-content').style.display = 'block';
+
+  const gwrap = document.getElementById('bilan-gauges');
+  gwrap.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const pct = clamp((val/g.max)*100, 2, 100);
+    const row = document.createElement('div');
+    row.className = 'bilan-gauge';
+    row.innerHTML = `<div class="top"><span>${g.label}</span><span>${fmtVal(g,val)}</span></div>
+      <div class="bilan-track"><div class="bilan-fill" style="width:${pct}%;background:${g.color}"></div></div>`;
+    gwrap.appendChild(row);
+  });
+
+  const hgrid = document.getElementById('handoff-grid');
+  hgrid.innerHTML = '';
+  GAUGE_META.forEach(g=>{
+    const val = state.gauges[g.key];
+    const item = document.createElement('div');
+    item.className = 'handoff-item';
+    item.innerHTML = `<div class="hi-label">${g.label}</div><div class="hi-val">${fmtVal(g,val)}</div>`;
+    hgrid.appendChild(item);
+  });
+  document.getElementById('handoff-team').textContent = state.team;
+
+  const table = document.getElementById('bilan-path');
+  table.innerHTML = `<tr><th style="width:22%;">Étape</th><th style="width:50%;">Décision de la cellule</th><th>Effet</th></tr>` +
+    state.history.map(h=>`<tr><td><strong>${h.stepTitle}</strong></td><td>${h.optionLabel}</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--steel);">${h.effectsText}</td></tr>`).join('');
+
+  const noteWrap = document.getElementById('bilan-hidden-note');
+  noteWrap.innerHTML = state.hiddenNote ? `<div class="note-hidden">🔒 ${esc(fill(MISSION.hiddenNote.html))}</div>` : '';
+
+  renderControllerAnalysis();
+  renderEpilogue();
+  renderPortfolioQuestions();
+}
+
+function renderEpilogue(){
+  document.getElementById('epilogue-lines').innerHTML = dlgHTML(MISSION.epilogue);
+  document.getElementById('epilogue-rel').innerHTML = relStripHTML();
+}
+
+function renderPortfolioQuestions(){
+  const wrap = document.getElementById('portfolio-questions');
+  const items = state.history.filter(h=>h.reflection);
+  if(!MISSION.justif){
+    wrap.innerHTML = items.map(h=>`
+      <div class="pq-item">
+        <div class="pq-step">${h.stepTitle}</div>
+        <div class="pq-text">${h.reflection}</div>
+      </div>
+    `).join('');
+    return;
+  }
+  document.getElementById('pb-title-el').textContent = '🎓 Vos justifications pour le dossier de restitution';
+  wrap.innerHTML = `<div class="pq-note">Rédigez ici la justification de chaque décision. Votre texte est enregistré dans le brouillon et repris tel quel dans l'export PDF : relisez-le avant de l'envoyer à votre formateur.</div>` +
+    items.map(h=>`
+      <div class="pq-item">
+        <div class="pq-step">${esc(h.stepTitle)}</div>
+        <div class="pq-text">${esc(h.reflection)}</div>
+        <textarea class="pq-answer" data-step="${esc(h.stepId)}" aria-label="Justification : ${esc(h.stepTitle)}" placeholder="Votre justification...">${esc(state.justifs[h.stepId] || '')}</textarea>
+      </div>`).join('');
+  Array.from(wrap.querySelectorAll('.pq-answer')).forEach(ta=>{
+    ta.addEventListener('input', ()=>{ state.justifs[ta.dataset.step] = ta.value; markDirty(); });
+  });
+}
+
+const TONE_ICON = { positive:"✓", mixed:"~", risky:"!" };
+const TONE_LABEL = { positive:"Choix pertinent", mixed:"Choix à double tranchant", risky:"Choix risqué" };
+
+function renderControllerAnalysis(){
+  const vwrap = document.getElementById('controller-verdicts');
+  vwrap.innerHTML = state.history.filter(h=>h.verdict).map(h=>`
+    <div class="verdict-row">
+      <div class="verdict-icon ${h.verdict.tone}">${TONE_ICON[h.verdict.tone]}</div>
+      <div class="verdict-body">
+        <div class="vb-step">${h.stepTitle.toUpperCase()} · ${TONE_LABEL[h.verdict.tone]}</div>
+        <div class="vb-text">${h.verdict.text}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const score = state.history.reduce((acc,h)=>{
+    if(!h.verdict) return acc;
+    if(h.verdict.tone==='positive') return acc+1;
+    if(h.verdict.tone==='risky') return acc-1;
+    return acc;
+  }, 0);
+
+  const th = MISSION.tier || {good:2, risky:-2};
+  const tier = score >= th.good ? 'good' : (score <= th.risky ? 'risky' : 'mixed');
+  const synth = document.getElementById('controller-synthesis');
+  synth.className = 'ca-synthesis tier-' + tier;
+  synth.textContent = fill(MISSION.synth[tier]);
+  state.controllerScore = score;
+  state.controllerTier = tier;
+}
+
+// ============================================================
+// EXPORTS
+// ============================================================
+document.getElementById('btn-drive').addEventListener('click', ()=>{
+  window.open(DRIVE_LINK, '_blank');
+});
+
+document.getElementById('btn-pdf').addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const INK = [20,33,61];
+  const ORANGE = [251,139,36];
+  const TEAL = [15,155,142];
+  const DANGER = [192,69,58];
+  const STEEL = [110,120,140];
+  const TONE_COLOR = { positive: TEAL, mixed: ORANGE, risky: DANGER };
+  let y = 20;
+
+  function ensureSpace(needed){
+    if(y + needed > 280){ doc.addPage(); y = 20; }
+  }
+
+  doc.setFillColor(...INK);
+  doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('CELLULE NOMAD — Bilan de mission', 14, 13);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.text('Mission ' + MISSION.n + ' — « ' + MISSION.title + ' » — Altiva Outdoor', 14, 20);
+  doc.setFontSize(8);
+  doc.setTextColor(...[251,139,36]);
+  doc.text('Pièce du dossier de restitution — examen final de campagne', 14, 25);
+
+  y = 38;
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('Cellule : ' + state.team, 14, y);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...STEEL);
+  doc.text('Export généré le ' + new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR') + (state.backCount ? '  -  Retours en arrière : ' + state.backCount : ''), 14, y+5);
+
+  y += 14;
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.8);
+  doc.line(14, y, 40, y);
+  y += 9;
+
+  // ---- CARNET DE BORD (boxed, prominent) ----
+  const boxTop = y;
+  const boxHeight = 34;
+  doc.setFillColor(...INK);
+  doc.roundedRect(14, boxTop, 182, boxHeight, 2, 2, 'F');
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.6);
+  doc.roundedRect(14, boxTop, 182, boxHeight, 2, 2, 'S');
+  doc.setTextColor(...ORANGE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10.5);
+  doc.text('CARNET DE BORD — à ressaisir au début de la Mission ' + (MISSION.n + 1), 19, boxTop + 8);
+
+  const colW = 182 / 5;
+  GAUGE_META.forEach((g,i)=>{
+    const val = state.gauges[g.key];
+    const cx = 14 + i*colW + colW/2;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(200,205,220);
+    doc.text(g.label.toUpperCase(), cx, boxTop + 17, {align:'center'});
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(13);
+    doc.setTextColor(255,255,255);
+    doc.text(fmtVal(g,val), cx, boxTop + 26, {align:'center'});
+  });
+  y = boxTop + boxHeight + 10;
+
+  // ---- DECISIONS ----
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Décisions prises', 14, y);
+  y += 7;
+
+  state.history.forEach((h)=>{
+    ensureSpace(22);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...INK);
+    doc.text(h.stepTitle, 14, y);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(50,50,50);
+    const lines = doc.splitTextToSize(pdfSafe(h.optionLabel), 180);
+    doc.text(lines, 16, y);
+    y += lines.length * 4.6 + 1;
+    if(h.detail && h.detail.length){
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.3);
+      doc.setTextColor(90,90,90);
+      h.detail.forEach(dl=>{
+        const dls = doc.splitTextToSize(pdfSafe(dl), 168);
+        ensureSpace(dls.length * 3.9 + 2);
+        doc.text(dls, 20, y);
+        y += dls.length * 3.9 + 0.8;
+      });
+      y += 1;
+    }
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...STEEL);
+    doc.text(h.effectsText, 16, y);
+    y += 5;
+    if(h.attempt && h.attempt > 1){
+      doc.setFont('helvetica','italic');
+      doc.setFontSize(8);
+      doc.setTextColor(...ORANGE);
+      doc.text('Réponse modifiée après retour en arrière (tentative ' + h.attempt + ').', 16, y);
+      y += 4.5;
+    }
+    if(h.reaction && h.reaction.length){
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.3);
+      doc.setTextColor(70,70,70);
+      h.reaction.forEach(l=>{
+        const who = (CAST[l.who] ? CAST[l.who].name + ' : ' : '');
+        const ls = doc.splitTextToSize(pdfSafe(who + l.text), 170);
+        ensureSpace(ls.length * 3.9 + 2);
+        doc.text(ls, 20, y);
+        y += ls.length * 3.9 + 1.2;
+      });
+    }
+    y += 4;
+  });
+
+  if(state.hiddenNote){
+    ensureSpace(22);
+    y += 3;
+    doc.setFillColor(250,235,230);
+    doc.rect(12, y-5, 186, 20, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(180,60,50);
+    doc.text(pdfSafe(MISSION.hiddenNote.pdfTitle), 15, y);
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    const noteLines = doc.splitTextToSize(pdfSafe(MISSION.hiddenNote.pdfText), 178);
+    doc.text(noteLines, 15, y+5);
+    y += 22;
+  }
+
+  // ---- RELATIONS + ÉPILOGUE ----
+  ensureSpace(24);
+  y += 3;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Relations en fin de mission', 14, y);
+  y += 6;
+  MISSION.relations.forEach(k=>{
+    const cc = CAST[k], v = state.trust[k];
+    ensureSpace(6);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(50,50,50);
+    doc.text(pdfSafe(cc.name + ' (' + cc.role + ') : ' + TRUST_LABELS[v] + ' (' + v + '/4)'), 16, y);
+    y += 5;
+  });
+  const epLines = (MISSION.epilogue || []).filter(l=>condOk(l.if));
+  if(epLines.length){
+    ensureSpace(14);
+    y += 3;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...INK);
+    doc.text('Epilogue', 14, y);
+    y += 6;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(70,70,70);
+    epLines.forEach(l=>{
+      const who = (CAST[l.who] ? CAST[l.who].name + ' : ' : '');
+      const ls = doc.splitTextToSize(pdfSafe(who + fill(l.text)), 172);
+      ensureSpace(ls.length * 4 + 2);
+      doc.text(ls, 16, y);
+      y += ls.length * 4 + 1.5;
+    });
+  }
+
+  // ---- QUESTIONS POUR LE DOSSIER DE RESTITUTION (examen final) ----
+  const reflectionEntries = state.history.filter(h=>h.reflection);
+  if(reflectionEntries.length){
+    ensureSpace(26);
+    y += 4;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(10,90,82);
+    doc.text(MISSION.justif ? 'Justifications de la cellule - dossier de restitution (examen final)' : 'Questions pour votre dossier de restitution (examen final)', 14, y);
+    y += 5;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8);
+    doc.setTextColor(...STEEL);
+    const introQ = doc.splitTextToSize(MISSION.justif ? 'Justifications rédigées par la cellule pour chaque décision. À conserver avec les exports des prochaines missions : elles serviront de base à votre présentation orale de fin de campagne.' : 'À conserver avec les exports des prochaines missions : ces questions vous aideront à construire votre présentation orale de fin de campagne.', 178);
+    doc.text(introQ, 14, y);
+    y += introQ.length * 3.8 + 4;
+
+    const pdfParas = (t, w)=> String(t).split(/\r?\n/).flatMap(p=> p.trim() ? doc.splitTextToSize(pdfSafe(p), w) : ['']);
+    reflectionEntries.forEach(h=>{
+      ensureSpace(MISSION.justif ? 30 : 18);
+      doc.setFillColor(234,246,244);
+      const qLines = doc.splitTextToSize(pdfSafe(h.reflection), 172);
+      const boxH = 6 + qLines.length * 4.3;
+      doc.roundedRect(14, y-4, 182, boxH, 1.5, 1.5, 'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(15,155,142);
+      doc.text(h.stepTitle.toUpperCase(), 18, y);
+      doc.setFont('helvetica','italic');
+      doc.setFontSize(9);
+      doc.setTextColor(40,60,58);
+      doc.text(qLines, 18, y+5);
+      y += boxH + 4;
+      if(MISSION.justif){
+        const raw = (state.justifs[h.stepId] || '').trim();
+        doc.setFont('helvetica', raw ? 'normal' : 'italic');
+        doc.setFontSize(9.3);
+        if(raw) doc.setTextColor(40,40,40); else doc.setTextColor(150,150,150);
+        const ans = raw ? pdfParas(raw, 168) : ['Justification non renseignee.'];
+        ans.forEach(ln=>{ ensureSpace(5); doc.text(ln, 20, y); y += 4.5; });
+        y += 4;
+      }
+    });
+    y += 2;
+  }
+
+  // ---- ANALYSE DU CONTRÔLEUR ----
+  ensureSpace(20);
+  y += 4;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...INK);
+  doc.text('Analyse du Contrôleur', 14, y);
+  y += 7;
+
+  state.history.forEach(h=>{
+    if(!h.verdict) return;
+    ensureSpace(16);
+    const c = TONE_COLOR[h.verdict.tone] || STEEL;
+    doc.setFillColor(...c);
+    doc.circle(16, y-1.5, 1.6, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...c);
+    doc.text(h.stepTitle, 20, y);
+    y += 4.2;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(50,50,50);
+    const vLines = doc.splitTextToSize(h.verdict.text, 176);
+    doc.text(vLines, 20, y);
+    y += vLines.length * 4.4 + 3;
+  });
+
+  if(state.controllerTier){
+    ensureSpace(24);
+    y += 2;
+    const tierColor = state.controllerTier === 'good' ? TEAL : (state.controllerTier === 'risky' ? DANGER : ORANGE);
+    doc.setDrawColor(...tierColor);
+    doc.setLineWidth(0.8);
+    doc.line(14, y-2, 14, y+18);
+    const synthText = document.getElementById('controller-synthesis').textContent;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.setTextColor(70,70,70);
+    const sLines = doc.splitTextToSize(synthText, 172);
+    doc.text(sLines, 19, y+2);
+    y += sLines.length * 4.4 + 8;
+  }
+
+  // ---- CONSIGNE ----
+  ensureSpace(14);
+  y += 2;
+  doc.setFillColor(255,247,238);
+  doc.roundedRect(14, y-5, 182, 12, 2, 2, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(150,90,20);
+  doc.text('Consigne : envoyez ce PDF à votre formateur après chaque mission.', 18, y+2);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...STEEL);
+  doc.text('Document généré automatiquement par le terminal Cellule NOMAD — usage pédagogique, débriefing en classe.', 14, 290);
+
+  doc.save('Bilan_Mission' + MISSION.n + '_' + draftSlug(state.team) + '.pdf');
+  UI.dirty = false; updateDraftStatus();
+});
+
+// ============================================================
+// BROUILLONS — sauvegarde / restauration manuelle (fichier .json)
+// ============================================================
+const MISSION_ID = MISSION.id;
+const UI = { dirty:false, lastSave:null };
+
+function toast(msg){
+  Array.from(document.querySelectorAll('.toast')).forEach(x=>x.remove());
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role','status'); t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ if(t.parentNode) t.parentNode.removeChild(t); }, 3600);
+}
+function draftSlug(s){ return String(s||'cellule').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,30) || 'cellule'; }
+function draftStamp(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes()); }
+
+function updateDraftStatus(){
+  const el = document.getElementById('draft-status'); if(!el) return;
+  if(UI.dirty){ el.className='dirty'; el.textContent='Modifications non enregistrées'; }
+  else if(UI.lastSave){ el.className=''; el.textContent='Brouillon enregistré à '+UI.lastSave; }
+  else { el.className=''; el.textContent='Aucun brouillon enregistré'; }
+}
+function markDirty(){ UI.dirty = true; updateDraftStatus(); }
+
+function saveDraft(){
+  if(!state.team){ toast("Saisissez d'abord le nom de votre cellule."); return; }
+  const stack = state.navStack.slice();
+  if(state.pendingStep){ stack.push(snapshot(state.pendingStep)); }
+  const draftState = {
+    team: state.team,
+    gauges: state.gauges,
+    history: state.history,
+    hiddenNote: state.hiddenNote,
+    flags: state.flags || {},
+    choices: state.choices || {},
+    justifs: state.justifs || {},
+    trust: state.trust || {},
+    // si un choix vient d'être fait mais pas encore "validé" par Continuer, on reprend à l'étape suivante
+    currentStep: state.pendingStep || state.currentStep,
+    decisionsDone: state.decisionsDone,
+    attempts: state.attempts || {},
+    backCount: state.backCount || 0,
+    navStack: stack,
+  };
+  const data = JSON.stringify({ app:'nomad', mission:MISSION_ID, savedAt:new Date().toISOString(), state:draftState });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+  a.download = 'brouillon_'+MISSION_ID+'_'+draftSlug(state.team)+'_'+draftStamp()+'.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  const d = new Date();
+  UI.lastSave = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  UI.dirty = false; updateDraftStatus();
+  toast('Brouillon téléchargé. Conservez ce fichier pour reprendre plus tard.');
+}
+
+function isValidDraft(o){
+  if(!o || o.app!=='nomad' || o.mission!==MISSION_ID || !o.state) return false;
+  const s = o.state;
+  if(!s.team || !s.gauges || !Array.isArray(s.history) || !STEPS[s.currentStep]) return false;
+  return ['tresorerie','service','cout','resilience','rse'].every(k=>typeof s.gauges[k]==='number' && isFinite(s.gauges[k]));
+}
+
+function showPanel(name){
+  Array.from(document.querySelectorAll('.navitem')).forEach(b=>b.classList.toggle('active', b.dataset.panel===name));
+  Array.from(document.querySelectorAll('.panel')).forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+  const m = document.getElementById('main'); if(m) m.scrollTop = 0;
+}
+
+function applyDraft(o){
+  const s = o.state;
+  state.team = String(s.team).slice(0,40);
+  state.gauges = { tresorerie:s.gauges.tresorerie, service:s.gauges.service, cout:s.gauges.cout, resilience:s.gauges.resilience, rse:s.gauges.rse };
+  state.history = s.history;
+  state.hiddenNote = !!s.hiddenNote;
+  state.flags = s.flags || {};
+  state.choices = s.choices || {};
+  state.justifs = (s.justifs && typeof s.justifs === 'object') ? s.justifs : {};
+  state.trust = Object.assign({}, MISSION.trustInit, s.trust || {});
+  state.currentStep = s.currentStep;
+  state.decisionsDone = s.decisionsDone || 0;
+  state.pendingStep = null;
+  state.attempts = (s.attempts && typeof s.attempts === 'object') ? s.attempts : {};
+  state.backCount = s.backCount || 0;
+  state.navStack = (Array.isArray(s.navStack) && s.navStack.length) ? s.navStack : [snapshot()];
+  UI.answered = false;
+
+  document.getElementById('boot').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('team-tag').textContent = "CELLULE — " + state.team.toUpperCase();
+  document.getElementById('brief-team-name').textContent = state.team;
+  document.getElementById('bilan-team-name').textContent = "— " + state.team;
+  document.getElementById('bilan-locked').style.display = 'block';
+  document.getElementById('bilan-content').style.display = 'none';
+  document.getElementById('nav-bilan').disabled = true;
+
+  renderGauges(); updateProgress(); renderMissionStep();
+  showPanel(STEPS[state.currentStep].type==='bilan' ? 'bilan' : 'mission');
+  UI.dirty = false; UI.lastSave = null; updateDraftStatus();
+  toast('Brouillon restauré.');
+}
+
+function restoreDraftFile(file){
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const o = JSON.parse(r.result);
+      if(!isValidDraft(o)) throw new Error('format');
+      applyDraft(o);
+    }catch(e){
+      toast("Ce fichier n'est pas un brouillon valide de la Mission "+MISSION_ID.slice(1)+".");
+    }
+  };
+  r.onerror = ()=>toast('Lecture du fichier impossible.');
+  r.readAsText(file);
+}
+
+function pickDraft(){
+  if(UI.dirty && state.team && !confirm("Des modifications ne sont pas enregistrées. Restaurer un brouillon va les remplacer. Continuer ?")) return;
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = ()=>{ if(inp.files[0]) restoreDraftFile(inp.files[0]); };
+  inp.click();
+}
+
+document.getElementById('btn-save-draft').addEventListener('click', saveDraft);
+document.getElementById('btn-restore-draft').addEventListener('click', pickDraft);
+document.getElementById('boot-restore').addEventListener('click', pickDraft);
+window.addEventListener('beforeunload', (e)=>{ if(UI.dirty && state.team){ e.preventDefault(); e.returnValue=''; } });
+</script>
+<style>#sidebar{padding-top:2.8rem}</style>
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>
+</body>
+</html>
