@@ -104,7 +104,7 @@
         carte.appendChild(el("p", null, x.description));
         carte.appendChild(el("span", "cat", jeu.categorie));
         var a = el("a", "jouer", x.bouton || (x.type === "mission" ? "Jouer" : "Ouvrir"));
-        a.href = x.url || x.fichier;
+        a.href = x.url || BASE + jeu.id + "/" + x.fichier;
         a.target = "_blank"; // chaque mission ou ressource s'ouvre dans un nouvel onglet
         if (x.url) a.rel = "noopener";
         a.setAttribute("aria-label", a.textContent + " : " + x.titre);

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Jeux pédagogiques</title>
+<!-- Page de secours servie par GitHub Pages pour toute adresse introuvable.
+     Si l'adresse est celle d'un jeu du catalogue (page pas encore en ligne), le jeu est affiché quand même.
+     Sinon : « publication en cours » pour une personne connectée (nouvel essai automatique), ou « page introuvable ». -->
+<script>
+  var parties = location.pathname.split("/").filter(Boolean);
+  var BASE = /\.github\.io$/.test(location.hostname) && parties.length ? "/" + parties.shift() + "/" : "/";
+  document.write('<link rel="stylesheet" href="' + BASE + 'commun/site.css">');
+</script>
+</head>
+<body>
+<main class="wrap" id="contenu"></main>
+<script>
+  document.write('<script src="' + BASE + 'donnees/catalogue.js"><\/script>');
+</script>
+<script>
+(function () {
+  var connecte = false;
+  try { connecte = !!(sessionStorage.getItem("jp-session") || localStorage.getItem("jp-session")); } catch (e) {}
+  var cat = window.CATALOGUE || { jeux: [] };
+  if (connecte) { try { var l = JSON.parse(sessionStorage.getItem("jp-catalogue") || "null"); if (l && l.version > cat.version) cat = l; } catch (e) {} }
+  var id = parties[0], estPageJeu = parties.length === 1 || (parties.length === 2 && parties[1] === "index.html");
+  var jeu = cat.jeux.filter(function (j) { return j.id === id; })[0];
+  if (jeu && estPageJeu) {
+    document.body.setAttribute("data-page", "jeu");
+    document.body.setAttribute("data-jeu", id);
+    var s = document.createElement("script"); s.src = BASE + "commun/site.js"; document.body.appendChild(s);
+    return;
+  }
+  var main = document.getElementById("contenu");
+  var h = document.createElement("h1"), p = document.createElement("p"), a = document.createElement("a");
+  p.className = "intro"; a.className = "btn principal"; a.href = BASE + "index.html"; a.textContent = "Retour à l’accueil";
+  if (connecte && jeu) {
+    h.textContent = "Publication en cours…";
+    p.textContent = "Ce fichier vient d’être publié et sera en ligne d’ici 1 à 2 minutes. La page se recharge toute seule.";
+    setTimeout(function () { location.reload(); }, 20000);
+  } else {
+    h.textContent = "Page introuvable";
+    p.textContent = "Cette page n’existe pas ou a été déplacée.";
+  }
+  main.appendChild(h); main.appendChild(p); main.appendChild(a);
+})();
+</script>
+</body>
+</html>

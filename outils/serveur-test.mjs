@@ -63,7 +63,10 @@ createServer(async (req, res) => {
     }
     let p = sur(decodeURIComponent(url.pathname));
     if (existsSync(p) && statSync(p).isDirectory()) p = join(p, 'index.html');
-    if (!existsSync(p)) { res.writeHead(404); return res.end('404'); }
+    if (!existsSync(p)) { // comme GitHub Pages : page 404.html du site
+      res.writeHead(404, { 'Content-Type': TYPES['.html'] });
+      return res.end(existsSync(join(RACINE, '404.html')) ? readFileSync(join(RACINE, '404.html')) : '404');
+    }
     res.writeHead(200, { 'Content-Type': TYPES[extname(p)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
     res.end(readFileSync(p));
   } catch (e) { res.writeHead(500); res.end(String(e)); }

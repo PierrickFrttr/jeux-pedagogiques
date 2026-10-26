@@ -30,6 +30,7 @@ Chaque modification est publiée sur GitHub et visible par tous **1 à 2 minutes
 ```
 index.html                 accueil (affiché à partir de donnees/catalogue.js)
 <jeu>/index.html           page d'un jeu (même gabarit pour tous les jeux)
+404.html                   page de secours : affiche un jeu pas encore en ligne, ou « publication en cours »
 <jeu>/jeux/                fichiers HTML des missions
 <jeu>/ressources/          ressources publiques (PDF…)
 donnees/catalogue.js       contenu du site : jeux, missions, ressources (modifié par l'espace formateur)
