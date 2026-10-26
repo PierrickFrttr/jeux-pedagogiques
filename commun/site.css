@@ -30,11 +30,26 @@ h1,h2,h3{font-family:var(--titre);line-height:1.15;letter-spacing:-.01em;margin:
 /* ---------- Cadre ---------- */
 .wrap{max-width:1120px;margin:0 auto;padding:0 1.25rem 3rem}
 .wrap.etroit{max-width:880px}
-.entete{display:flex;align-items:center;justify-content:space-between;gap:1rem;max-width:1120px;margin:0 auto;padding:1.1rem 1.25rem}
-.marque{display:inline-flex;align-items:center;gap:.6rem;font:700 1.05rem/1 var(--titre);text-decoration:none}
-.marque .logo{width:26px;height:auto}
-.entete .lien-discret{font-size:.95rem;color:var(--gris);text-decoration:none;padding:.4rem .2rem}
-.entete .lien-discret:hover{color:var(--encre);text-decoration:underline;text-underline-offset:3px}
+/* En-tête : bleu nuit du logo, liseré aux couleurs du dé en bas (comme le pied de page), reste visible au défilement */
+.entete{position:sticky;top:0;z-index:40;background:rgba(16,26,48,.96);color:#fff;-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px)}
+.entete::after{content:"";display:block;height:4px;background:linear-gradient(90deg,#2bb3c0 0 25%,#f0a23c 25% 50%,#2a6f9e 50% 75%,#e2783a 75%)}
+.entete-interieur{display:flex;align-items:center;justify-content:space-between;gap:1rem;max-width:1120px;margin:0 auto;padding:.8rem 1.25rem}
+.marque{display:inline-flex;align-items:center;gap:.7rem;font:800 1.3rem/1 var(--titre);letter-spacing:-.02em;color:#fff;text-decoration:none}
+.marque .logo{width:34px;height:auto;transition:transform .2s}
+.marque:hover .logo{transform:rotate(-8deg) scale(1.06)}
+.nav-principale{display:flex;align-items:center;gap:.35rem}
+.nav-lien{position:relative;font-weight:700;font-size:.98rem;color:#c9d2e4;text-decoration:none;padding:.55rem .85rem;border-radius:999px}
+.nav-lien:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav-lien[aria-current="page"]{color:#fff}
+.nav-lien[aria-current="page"]::after{content:"";position:absolute;left:.85rem;right:.85rem;bottom:.2rem;height:2px;border-radius:2px;background:#f0a23c}
+.nav-bouton{margin-left:.5rem;font-weight:700;font-size:.95rem;color:#101a30;background:#f0a23c;text-decoration:none;padding:.6rem 1.1rem;border-radius:999px;transition:background .15s}
+.nav-bouton:hover{background:#ffbb5c}
+.entete :focus-visible{outline-color:#7fd8e0}
+.marque span,.nav-bouton{white-space:nowrap}
+@media (max-width:640px){.nav-lien{display:none}.entete-interieur{gap:.6rem}.marque{gap:.5rem;font-size:1.02rem}.marque .logo{width:28px}.nav-bouton{margin:0;padding:.5rem .8rem;font-size:.85rem}}
+@media (prefers-color-scheme:dark){.entete{background:rgba(10,17,32,.94);border-bottom:1px solid var(--filet)}}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+[id]{scroll-margin-top:6rem}
 
 /* ---------- Accueil ---------- */
 .hero{display:flex;align-items:center;gap:2.25rem;padding:2.5rem 0 2.25rem;max-width:58rem}
@@ -133,7 +148,7 @@ h1,h2,h3{font-family:var(--titre);line-height:1.15;letter-spacing:-.01em;margin:
 @media (prefers-color-scheme:dark){.pied{background:#0a1120;border-top:1px solid var(--filet)}}
 
 /* ---------- Mode formateur ---------- */
-.barre-admin{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;padding:.55rem 1.25rem;background:var(--edition);color:#2b1d00;font-size:.95rem}
+.barre-admin{position:relative;z-index:50;display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;padding:.55rem 1.25rem;background:var(--edition);color:#2b1d00;font-size:.95rem}
 .barre-admin .qui strong{font-weight:700}
 .barre-admin nav{display:flex;flex-wrap:wrap;gap:.5rem}
 .barre-admin a,.barre-admin button{font:700 .88rem/1 var(--texte);color:#2b1d00;background:rgba(255,255,255,.55);border:0;border-radius:999px;padding:.5rem .9rem;text-decoration:none;cursor:pointer}
@@ -210,3 +225,4 @@ table.comptes td .btn{padding:.4rem .8rem;font-size:.85rem;margin:.15rem .3rem .
 .etat-compte{display:inline-block;font-size:.85rem;font-weight:700;padding:.15rem .6rem;border-radius:999px;background:var(--action-doux)}
 .etat-compte.provisoire{background:var(--edition-doux);color:var(--edition-encre)}
 @media (max-width:600px){table.comptes thead{display:none}table.comptes td{display:block;border:0;padding:.2rem 0}table.comptes tr{display:block;border-bottom:1px solid var(--filet);padding:.7rem 0}}
+body > .entete + main.wrap{padding-top:1.5rem}

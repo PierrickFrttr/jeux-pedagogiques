@@ -45,12 +45,19 @@
     var m = /^\s*mission\s*(\d+)\s*[·:–-]\s*(.+)$/i.exec(titre || "");
     return m ? { num: m[1], titre: m[2] } : { num: String(rang), titre: titre };
   }
+  // En-tête bleu nuit (même famille que le pied de page) : marque, navigation, accès formateur
   function entete() {
-    var h = el("header", "entete");
+    var h = el("header", "entete"), int = el("div", "entete-interieur");
     var m = lien("", BASE + "index.html", "marque");
-    m.appendChild(logo("logo", 26)); m.appendChild(document.createTextNode(catalogue().site.titre));
-    h.appendChild(m);
-    h.appendChild(lien("Espace formateur", BASE + "formateur/index.html", "lien-discret"));
+    m.appendChild(logo("logo", 34)); m.appendChild(el("span", null, catalogue().site.titre));
+    int.appendChild(m);
+    var nav = el("nav", "nav-principale"); nav.setAttribute("aria-label", "Navigation principale");
+    var jeux = lien("Les jeux", BASE + "index.html#jeux", "nav-lien");
+    if (page === "accueil") jeux.setAttribute("aria-current", "page");
+    nav.appendChild(jeux);
+    nav.appendChild(lien("Contact", "#contact", "nav-lien"));
+    nav.appendChild(lien("Espace formateur", BASE + "formateur/index.html", "nav-bouton"));
+    int.appendChild(nav); h.appendChild(int);
     return h;
   }
   function logo(cls, largeur) {
@@ -81,7 +88,7 @@
     });
     nav.appendChild(ul); int.appendChild(nav);
 
-    var contact = el("div", "pied-col");
+    var contact = el("div", "pied-col"); contact.id = "contact";
     contact.appendChild(el("h2", null, "Contact"));
     contact.insertAdjacentHTML("beforeend", '<ul>' +
       '<li><a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a></li>' +
@@ -119,7 +126,7 @@
     hero.appendChild(logo("logo-hero", 150)); hero.appendChild(txt);
     main.appendChild(hero);
     zoneAdmin(main);
-    var ul = el("ul", "grille jeux");
+    var ul = el("ul", "grille jeux"); ul.id = "jeux";
     ul.style.marginTop = "1.5rem";
     cat.jeux.forEach(function (j, i) {
       if (!visible(j)) return;
@@ -234,7 +241,8 @@
     var bas = document.getElementById("bas");
     if (!bas) { bas = el("div"); bas.id = "bas"; main.parentNode.insertBefore(bas, main.nextSibling); }
     haut.innerHTML = ""; main.innerHTML = ""; bas.innerHTML = "";
-    haut.appendChild(entete());
+    var ancien = document.querySelector("body > header.entete"); if (ancien) ancien.remove();
+    main.parentNode.insertBefore(entete(), haut); // directement dans <body> pour rester collé en haut au défilement
     var cat = catalogue();
     if (page === "accueil") rendreAccueil(haut, main, cat); else rendreJeu(haut, main, cat);
     pied(bas, cat);
