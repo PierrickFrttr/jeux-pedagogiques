@@ -1,0 +1,104 @@
+/* Styles communs à toutes les pages (accueil, pages de jeu, espace formateur) */
+:root{
+  --bg:#f4f2ec; --card:#ffffff; --ink:#1d292f; --muted:#4a5a63; --line:#d6d1c4;
+  --accent:#1d4f63; --accent-ink:#ffffff; --focus:#d9822b; --err:#a8322d; --ok:#2f7d4f;
+  --admin:#fff4dc; --admin-line:#e3c27a;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#1d292f; --card:#243139; --ink:#ece8dc; --muted:#b9b4a8; --line:#3a4d59;
+         --accent:#ece8dc; --accent-ink:#1d292f; --err:#f08a80; --ok:#7fd19b;
+         --admin:#3a3222; --admin-line:#8a6d2f; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+[hidden]{display:none!important}
+.wrap{max-width:1200px;margin:0 auto;padding:2.5rem 1rem 3rem}
+.wrap.etroit{max-width:1000px}
+.retour{display:inline-block;margin-bottom:1rem;color:var(--ink);text-underline-offset:3px;padding:.3rem 0}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.2;margin:0 0 .5rem}
+.intro{color:var(--muted);max-width:65ch;margin:0 0 1.75rem;white-space:pre-line}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.recherche{display:block;width:100%;max-width:640px;font:inherit;padding:.75rem 1rem;margin-bottom:1.5rem;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+
+/* Grilles de cartes */
+.grille{list-style:none;margin:0;padding:0;display:grid;gap:1.25rem;grid-template-columns:1fr}
+@media (min-width:640px){.grille{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:900px){.grille{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:1200px){.grille{grid-template-columns:repeat(4,1fr)}}
+.grille.jeux{gap:1.5rem}
+@media (min-width:720px){.grille.jeux{grid-template-columns:repeat(2,1fr)}}
+.carte{position:relative;display:flex;flex-direction:column;gap:.6rem;height:100%;padding:1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.carte:hover{border-color:var(--muted)}
+.grille.jeux .carte{gap:.7rem;padding:1.8rem;border-top:6px solid var(--c);border-radius:16px}
+.grille.jeux .carte:hover{border-top-color:var(--c)}
+.pastille{width:3.5rem;height:3.5rem;border-radius:50%;display:grid;place-items:center;font-size:1.8rem}
+.grille.jeux .pastille{width:4.2rem;height:4.2rem;font-size:2.2rem}
+.carte h2{font-size:1.2rem;line-height:1.3;margin:.2rem 0 0}
+.grille.jeux .carte h2{font-size:1.4rem}
+.carte p{margin:0;color:var(--muted);flex:1}
+.cat{font-size:.85rem;color:var(--muted)}
+.grille.jeux .cat{font-size:.9rem;font-weight:600}
+.jouer{display:block;text-align:center;margin-top:.4rem;padding:.8rem 1rem;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
+.jouer::after{content:"";position:absolute;inset:0;border-radius:14px} /* toute la carte est cliquable */
+.vide{color:var(--muted)}
+
+/* Pied de page */
+.pied{border-top:1px solid var(--line);margin-top:3rem;padding-top:1.5rem;color:var(--muted);font-size:.95rem;display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;align-items:center}
+.pied strong{color:var(--ink)}
+.pied a{color:var(--ink);text-underline-offset:3px;padding:.3rem 0}
+
+/* ---------- Mode formateur ---------- */
+.barre-admin{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;padding:.6rem 1rem;background:var(--admin);border-bottom:2px solid var(--admin-line);font-size:.95rem}
+.barre-admin .qui strong{font-weight:700}
+.barre-admin nav{display:flex;flex-wrap:wrap;gap:.5rem}
+.barre-admin a,.barre-admin button{font:inherit;font-size:.9rem;color:var(--ink);background:var(--card);border:1px solid var(--admin-line);border-radius:8px;padding:.35rem .8rem;text-decoration:none;cursor:pointer}
+.actions-admin{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 1.5rem;padding:1rem;background:var(--admin);border:1px dashed var(--admin-line);border-radius:12px}
+.btn{font:inherit;font-weight:600;padding:.6rem 1rem;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+.btn.principal{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--err);border-color:var(--err)}
+.btn:disabled{opacity:.6;cursor:wait}
+.outils-carte{position:relative;z-index:2;display:flex;gap:.3rem;justify-content:flex-end;margin:-.6rem -.6rem 0 0}
+.outils-carte button{font:inherit;font-size:.85rem;min-width:2.2rem;padding:.25rem .5rem;border:1px solid var(--admin-line);background:var(--admin);color:var(--ink);border-radius:7px;cursor:pointer}
+.outils-carte button:disabled{opacity:.35;cursor:default}
+.badge{display:inline-block;font-size:.75rem;font-weight:700;padding:.1rem .5rem;border-radius:999px;background:var(--admin);border:1px solid var(--admin-line);color:var(--ink)}
+
+/* Documents formateur */
+.zone-formateur{margin-top:2.5rem;padding:1.5rem;background:var(--admin);border:1px dashed var(--admin-line);border-radius:14px}
+.zone-formateur>h2{margin:0 0 .3rem;font-size:1.35rem}
+.zone-formateur>.aide{margin:0 0 1rem;color:var(--muted)}
+.docs h3{font-size:1.05rem;margin:1.2rem 0 .6rem}
+.docs ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+.docs li{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.7rem 1rem}
+.docs li small{display:block;color:var(--muted);font-size:.85rem}
+.docs li .gestes{display:flex;gap:.4rem;flex-wrap:wrap}
+.docs li .gestes .btn{padding:.4rem .8rem;font-size:.9rem}
+
+/* Boîtes de dialogue */
+dialog.fenetre{max-width:620px;width:calc(100% - 2rem);max-height:calc(100vh - 2rem);overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:1.5rem}
+dialog.fenetre::backdrop{background:rgba(0,0,0,.5)}
+dialog.fenetre h2{margin:0 0 .5rem;font-size:1.3rem}
+.champ{margin-top:.9rem}
+.champ>label,.champ>.etiquette{display:block;font-weight:600;margin-bottom:.3rem}
+.champ input:not([type=radio]):not([type=checkbox]),.champ textarea,.champ select,.formulaire input:not([type=radio]):not([type=checkbox]){width:100%;font:inherit;padding:.6rem .8rem;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.champ input[type=color]{height:2.9rem;padding:.2rem;max-width:8rem}
+.champ .choix{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
+.champ .choix label{font-weight:400;display:flex;gap:.4rem;align-items:center;cursor:pointer}
+.champ .aide,.formulaire .aide{font-size:.9rem;color:var(--muted);margin:.3rem 0 0}
+.duo{display:flex;gap:1rem;flex-wrap:wrap}.duo>.champ{flex:1 1 140px}
+.pied-fenetre{display:flex;gap:.75rem;justify-content:flex-end;flex-wrap:wrap;margin-top:1.4rem}
+.etat{margin:1rem 0 0;font-weight:600;min-height:1.4em;white-space:pre-line}
+.etat.err{color:var(--err)}.etat.ok{color:var(--ok)}
+.etat:empty{display:none}
+
+/* Espace formateur (connexion, compte, comptes) */
+.boite{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem;margin-bottom:1.5rem}
+.boite>h2{margin:0 0 .6rem;font-size:1.25rem}
+.formulaire{max-width:460px}
+.formulaire label{display:block;font-weight:600;margin:.9rem 0 .3rem}
+.formulaire .case{display:flex;gap:.5rem;align-items:center;font-weight:400}
+.formulaire .btn{margin-top:1.1rem}
+table.comptes{width:100%;border-collapse:collapse;margin-bottom:1rem}
+table.comptes th,table.comptes td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--line);vertical-align:middle}
+table.comptes td .btn{padding:.35rem .7rem;font-size:.85rem;margin:.15rem .3rem .15rem 0}
+@media (max-width:600px){table.comptes thead{display:none}table.comptes td{display:block;border:0;padding:.2rem 0}table.comptes tr{display:block;border-bottom:1px solid var(--line);padding:.6rem 0}}

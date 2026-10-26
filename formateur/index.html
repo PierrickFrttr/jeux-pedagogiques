@@ -5,130 +5,371 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Espace formateur – Jeux pédagogiques</title>
-<style>
-:root{
-  --bg:#f4f2ec; --card:#ffffff; --ink:#1d292f; --muted:#4a5a63; --line:#d6d1c4;
-  --accent:#1d4f63; --accent-ink:#ffffff; --focus:#d9822b; --err:#a8322d;
-  color-scheme:light dark;
-}
-@media (prefers-color-scheme:dark){
-  :root{ --bg:#1d292f; --card:#243139; --ink:#ece8dc; --muted:#b9b4a8; --line:#3a4d59;
-         --accent:#ece8dc; --accent-ink:#1d292f; --err:#f08a80; }
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:860px;margin:0 auto;padding:2.5rem 1rem 3rem}
-.retour{color:var(--ink);text-underline-offset:3px}
-h1{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.2;margin:1rem 0 .5rem}
-.intro{color:var(--muted);margin:0 0 1.5rem}
-:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.boite{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem}
-label{display:block;font-weight:600;margin-bottom:.4rem}
-.ligne{display:flex;flex-wrap:wrap;gap:.75rem}
-input{flex:1 1 240px;font:inherit;padding:.75rem 1rem;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
-button{font:inherit;font-weight:700;padding:.75rem 1.2rem;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
-button:disabled{opacity:.6;cursor:wait}
-.msg{margin:.75rem 0 0;min-height:1.5em}
-.msg.err{color:var(--err);font-weight:600}
-h2.jeu{font-size:1.5rem;margin:2.5rem 0 0;padding-top:1.5rem;border-top:2px solid var(--line)}
-h3{font-size:1.15rem;margin:1.5rem 0 .75rem}
-ul{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
-li{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem}
-li span small{display:block;color:var(--muted);font-size:.85rem}
-li button{padding:.55rem 1rem}
-</style>
+<link rel="stylesheet" href="../commun/site.css">
 </head>
 <body>
-<main class="wrap">
+<main class="wrap etroit" id="contenu">
   <a class="retour" href="../index.html">← Tous les jeux</a>
   <h1>Espace formateur</h1>
-  <p class="intro">Cours, guides d’animation, corrigés et brouillons des jeux Étude de marché et Supply chain.</p>
 
-  <form class="boite" id="form">
-    <label for="mdp">Mot de passe</label>
-    <div class="ligne">
-      <input id="mdp" type="password" autocomplete="current-password" required>
-      <button id="ok" type="submit">Ouvrir</button>
-    </div>
-    <p class="msg" id="msg" role="status"></p>
-  </form>
+  <!-- 1. Première mise en service : création du compte admin -->
+  <section class="boite" id="initialisation" hidden>
+    <h2>Mise en service de l’espace admin</h2>
+    <p class="aide">À faire une seule fois. Vous créez le compte administrateur ; ensuite, vous créerez les accès formateurs depuis cette page.</p>
+    <form class="formulaire" id="f-init">
+      <label for="i-id">Identifiant admin</label><input id="i-id" required autocomplete="username" pattern="[A-Za-z0-9._\-]{3,40}">
+      <p class="aide">3 à 40 caractères : lettres, chiffres, point, tiret.</p>
+      <label for="i-mdp">Mot de passe</label><input id="i-mdp" type="password" required minlength="12" autocomplete="new-password">
+      <label for="i-mdp2">Confirmez le mot de passe</label><input id="i-mdp2" type="password" required minlength="12" autocomplete="new-password">
+      <p class="aide">12 caractères minimum. Le fichier des comptes est public mais chiffré : un mot de passe long le protège.</p>
+      <label for="i-cle">Clé GitHub de publication</label><input id="i-cle" type="password" required autocomplete="off">
+      <p class="aide">Fine-grained token limité au dépôt jeux-pedagogiques, droit « Contents : Read and write ». Elle sera chiffrée, jamais affichée.</p>
+      <div id="bloc-ancien">
+        <label for="i-ancien">Mot de passe actuel des documents formateur</label><input id="i-ancien" type="password" autocomplete="off">
+        <p class="aide">Celui que vous utilisiez jusqu’ici pour ouvrir l’espace formateur. Il permet de reprendre les documents existants.</p>
+      </div>
+      <button class="btn principal" type="submit">Créer le compte admin</button>
+      <p class="etat" id="e-init" role="status"></p>
+    </form>
+  </section>
 
-  <div id="liste" hidden></div>
+  <!-- 2. Connexion -->
+  <section class="boite" id="connexion" hidden>
+    <h2>Connexion</h2>
+    <form class="formulaire" id="f-connexion">
+      <label for="c-id">Identifiant</label><input id="c-id" required autocomplete="username">
+      <label for="c-mdp">Mot de passe</label><input id="c-mdp" type="password" required autocomplete="current-password">
+      <label class="case"><input id="c-rester" type="checkbox"> Rester connecté sur cet ordinateur</label>
+      <button class="btn principal" type="submit" id="c-ok">Se connecter</button>
+      <p class="etat" id="e-connexion" role="status"></p>
+    </form>
+  </section>
+
+  <!-- 3. Mot de passe provisoire à changer -->
+  <section class="boite" id="premier" hidden>
+    <h2>Choisissez votre mot de passe</h2>
+    <p class="aide">Votre accès a été créé avec un mot de passe provisoire. Choisissez le vôtre pour continuer.</p>
+    <form class="formulaire" id="f-premier">
+      <label for="p-mdp">Nouveau mot de passe</label><input id="p-mdp" type="password" required minlength="12" autocomplete="new-password">
+      <label for="p-mdp2">Confirmez</label><input id="p-mdp2" type="password" required minlength="12" autocomplete="new-password">
+      <p class="aide">12 caractères minimum, par exemple 3 ou 4 mots.</p>
+      <button class="btn principal" type="submit">Enregistrer</button>
+      <p class="etat" id="e-premier" role="status"></p>
+    </form>
+  </section>
+
+  <!-- 4. Tableau de bord -->
+  <div id="tableau" hidden>
+    <section class="boite">
+      <h2 id="bonjour">Bonjour</h2>
+      <p>Pour ajouter ou modifier un jeu, une mission, une ressource ou un cours, ouvrez le site : les boutons d’édition apparaissent sur chaque page tant que vous êtes connecté.</p>
+      <p id="liens-jeux" style="display:flex;flex-wrap:wrap;gap:.6rem"></p>
+      <p><button class="btn" type="button" id="b-mdp">Changer mon mot de passe</button> <button class="btn" type="button" id="b-sortir">Se déconnecter</button></p>
+    </section>
+
+    <section class="boite" id="admin" hidden>
+      <h2>Comptes</h2>
+      <table class="comptes"><thead><tr><th>Identifiant</th><th>Rôle</th><th>État</th><th>Actions</th></tr></thead><tbody id="t-comptes"></tbody></table>
+      <button class="btn principal" type="button" id="b-creer">+ Créer un accès</button>
+      <h2 style="margin-top:2rem">Clé GitHub</h2>
+      <p class="aide">Si la publication échoue (« clé refusée »), la clé a expiré : créez-en une nouvelle sur GitHub et remplacez-la ici.</p>
+      <button class="btn" type="button" id="b-cle">Remplacer la clé GitHub</button>
+      <h2 style="margin-top:2rem">Sécurité</h2>
+      <p class="aide">Supprimer un compte retire l’accès à cette page, mais une personne qui aurait conservé une session ouverte pourrait encore publier. En cas de doute, révoquez toutes les sessions : chaque autre compte reçoit un nouveau mot de passe provisoire. Remplacez aussi la clé GitHub.</p>
+      <button class="btn danger" type="button" id="b-revoquer">Révoquer toutes les sessions</button>
+    </section>
+
+    <section class="boite">
+      <h2>Documents formateur</h2>
+      <p class="aide">Pour ajouter, renommer ou supprimer un document, utilisez la partie « Documents formateur » de la page du jeu.</p>
+      <div class="docs" id="docs"><p class="aide">Chargement…</p></div>
+    </section>
+  </div>
 </main>
 
+<script src="../donnees/catalogue.js"></script>
+<script src="../donnees/comptes.js"></script>
+<script src="../commun/noyau.js"></script>
+<script src="../commun/fenetre.js"></script>
 <script>
-/* Les fichiers sont chiffrés (AES-256-GCM, clé dérivée du mot de passe par PBKDF2-SHA256).
-   Ils sont produits par outils/chiffrer.mjs ; ce fichier ne contient aucun secret. */
-var ITERATIONS = 600000;
-var cle = null, fichiers = [];
+(function () {
+  var N = window.NOYAU;
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, t) { var e = document.createElement(tag); if (cls) e.className = cls; if (t != null) e.textContent = t; return e; }
+  function etat(id, msg, genre) { var e = $(id); e.className = "etat" + (genre ? " " + genre : ""); e.textContent = msg; }
+  function montrer(id) { ["initialisation", "connexion", "premier", "tableau"].forEach(function (x) { $(x).hidden = x !== id; }); }
+  function catalogue() { return N.catalogueActuel(); }
+  var ID_OK = /^[A-Za-z0-9._-]{3,40}$/;
+  function verifierMdp(a, b) {
+    if (a.length < 12) throw new Error("Le mot de passe doit faire au moins 12 caractères.");
+    if (a !== b) throw new Error("Les deux mots de passe sont différents.");
+  }
+  function compteActuel() { var s = N.session(); return s && N.trouver(N.comptes(), s.id); }
 
-function charger(nom) {
-  return fetch("donnees/" + nom, { cache: "no-store" }).then(function (r) {
-    if (!r.ok) throw new Error("Fichier introuvable : " + nom);
-    return r.arrayBuffer();
-  });
-}
-function dechiffrer(octets) { // octets = IV (12) + contenu chiffré + étiquette
-  return crypto.subtle.decrypt({ name: "AES-GCM", iv: octets.slice(0, 12) }, cle, octets.slice(12));
-}
-function taille(n) { return n > 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + " Mo" : Math.ceil(n / 1e3) + " ko"; }
+  // ---------- Démarrage ----------
+  function demarrer() {
+    var c = N.comptes();
+    if (!c || !c.comptes || !c.comptes.length) return initialisation();
+    var s = N.session(), compte = compteActuel();
+    if (!s || !compte) { N.deconnecter(); montrer("connexion"); return; }
+    N.coffre().then(function () { compte.provisoire ? montrer("premier") : tableau(); })
+      .catch(function () { N.deconnecter(); montrer("connexion"); etat("e-connexion", "Session expirée : reconnectez-vous.", "err"); });
+  }
 
-document.getElementById("form").addEventListener("submit", function (e) {
-  e.preventDefault();
-  var msg = document.getElementById("msg"), btn = document.getElementById("ok");
-  msg.className = "msg"; msg.textContent = "Vérification…"; btn.disabled = true;
-  var mdp = new TextEncoder().encode(document.getElementById("mdp").value);
-  charger("manifeste.bin").then(function (buf) {
-    var octets = new Uint8Array(buf);
-    return crypto.subtle.importKey("raw", mdp, "PBKDF2", false, ["deriveKey"]).then(function (base) {
-      return crypto.subtle.deriveKey({ name: "PBKDF2", salt: octets.slice(0, 16), iterations: ITERATIONS, hash: "SHA-256" },
-        base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
-    }).then(function (k) {
-      cle = k;
-      return dechiffrer(octets.slice(16)).catch(function () { throw new Error("Mot de passe incorrect."); });
+  // ---------- 1. Mise en service ----------
+  var manifesteExistant = null;
+  var ANCIENNE_CLE = "jeux-pedagogiques-cle-github"; // clé gardée par l'ancien bouton « Ajouter une mission »
+  function initialisation() {
+    montrer("initialisation");
+    try { var k = localStorage.getItem(ANCIENNE_CLE); if (k) { $("i-cle").value = k; $("i-cle").nextElementSibling.textContent += " Préremplie avec la clé déjà enregistrée dans ce navigateur."; } } catch (e) {}
+    fetch("donnees/manifeste.bin", { cache: "no-store" }).then(function (r) { return r.ok ? r.arrayBuffer() : null; })
+      .then(function (b) { manifesteExistant = b && new Uint8Array(b); $("bloc-ancien").hidden = !manifesteExistant; $("i-ancien").required = !!manifesteExistant; })
+      .catch(function () { $("bloc-ancien").hidden = true; });
+  }
+  $("f-init").onsubmit = function (e) {
+    e.preventDefault();
+    var id = $("i-id").value.trim(), mdp = $("i-mdp").value, cle = $("i-cle").value.trim(), btn = e.target.querySelector("button");
+    var ms = N.aleatoire(32), documents;
+    Promise.resolve().then(function () {
+      if (!ID_OK.test(id)) throw new Error("Identifiant : 3 à 40 caractères (lettres, chiffres, point, tiret).");
+      verifierMdp(mdp, $("i-mdp2").value);
+      btn.disabled = true; etat("e-init", "Vérification de l’ancien mot de passe des documents…");
+      if (!manifesteExistant) { documents = N.aleatoire(32); return; }
+      return N.deriverBrut($("i-ancien").value, manifesteExistant.slice(0, 16)).then(function (brut) {
+        documents = brut;
+        return N.cleBrute(brut).then(function (k) { return N.dechiffrer(k, manifesteExistant.slice(16)); })
+          .catch(function () { throw new Error("Mot de passe actuel des documents incorrect."); });
+      });
+    }).then(function () {
+      etat("e-init", "Vérification de la clé GitHub…");
+      return N.lire(cle, "donnees/comptes.js").catch(function (err) { throw new Error("Clé GitHub refusée : " + err.message); });
+    }).then(function (o) {
+      var existant = o ? N.lireDonnees(N.texte(o), "COMPTES") : null;
+      if (existant && existant.comptes && existant.comptes.length) throw new Error("L’espace admin est déjà initialisé. Rechargez la page.");
+      etat("e-init", "Chiffrement et publication…");
+      return Promise.all([N.fermerCoffre(ms, cle, N.versB64(documents)), N.fermerEnveloppe(ms, mdp)]);
+    }).then(function (r) {
+      var comptes = { version: 1, coffre: r[0], comptes: [{ id: id, role: "admin", sel: r[1].sel, enveloppe: r[1].enveloppe, cree: new Date().toISOString().slice(0, 10) }] };
+      return N.envoyer(cle, [{ chemin: "donnees/comptes.js", texte: N.ecrireDonnees("COMPTES", comptes) }], "Mise en service de l’espace admin")
+        .then(function () { sessionStorage.setItem("jp-comptes", JSON.stringify(comptes)); window.COMPTES = comptes; });
+    }).then(function () {
+      return N.connecter(id, mdp, false);
+    }).then(function () {
+      try { localStorage.removeItem(ANCIENNE_CLE); } catch (x) {} // la clé est désormais chiffrée dans le coffre
+      e.target.reset(); tableau();
+    }).catch(function (err) { etat("e-init", err.message, "err"); btn.disabled = false; });
+  };
+
+  // ---------- 2. Connexion ----------
+  $("f-connexion").onsubmit = function (e) {
+    e.preventDefault();
+    var btn = $("c-ok"); btn.disabled = true; etat("e-connexion", "Vérification…");
+    N.connecter($("c-id").value, $("c-mdp").value, $("c-rester").checked).then(function (r) {
+      $("c-mdp").value = ""; etat("e-connexion", "");
+      r.provisoire ? montrer("premier") : tableau();
+    }).catch(function (err) { etat("e-connexion", err.message, "err"); }).then(function () { btn.disabled = false; });
+  };
+
+  // ---------- Changement de mot de passe ----------
+  function changerMdp(nouveau) {
+    var s = N.session();
+    return N.coffre().then(function (cf) { return N.fermerEnveloppe(cf.ms, nouveau); }).then(function (env) {
+      return N.modifierComptes(function (c) {
+        var x = N.trouver(c, s.id); if (!x) throw new Error("Compte introuvable.");
+        x.sel = env.sel; x.enveloppe = env.enveloppe; delete x.provisoire;
+      }, "Mot de passe modifié (" + s.id + ")");
     });
-  }).then(function (clair) {
-    fichiers = JSON.parse(new TextDecoder().decode(clair));
-    afficher();
-    document.getElementById("form").hidden = true;
-    try { sessionStorage.setItem("formateur-connecte", "1"); } catch (e) {} // affiche « Ajouter une mission » sur les pages de jeu
-  }).catch(function (err) {
-    cle = null; msg.className = "msg err"; msg.textContent = err.message; btn.disabled = false;
-  });
-});
+  }
+  $("f-premier").onsubmit = function (e) {
+    e.preventDefault();
+    var btn = e.target.querySelector("button");
+    Promise.resolve().then(function () { verifierMdp($("p-mdp").value, $("p-mdp2").value); btn.disabled = true; etat("e-premier", "Enregistrement…"); return changerMdp($("p-mdp").value); })
+      .then(function () { e.target.reset(); etat("e-premier", ""); tableau(); })
+      .catch(function (err) { etat("e-premier", err.message, "err"); }).then(function () { btn.disabled = false; });
+  };
+  $("b-mdp").onclick = function () {
+    N.formulaire({
+      titre: "Changer mon mot de passe",
+      champs: [
+        { nom: "actuel", type: "mdp", label: "Mot de passe actuel", requis: true },
+        { nom: "nouveau", type: "mdp", label: "Nouveau mot de passe", requis: true, aide: "12 caractères minimum." },
+        { nom: "nouveau2", type: "mdp", label: "Confirmez", requis: true }
+      ],
+      valider: function (v) {
+        verifierMdp(v.nouveau, v.nouveau2);
+        return N.ouvrirEnveloppe(compteActuel(), v.actuel).then(function () { return changerMdp(v.nouveau); })
+          .then(function () { return "Mot de passe modifié."; });
+      }
+    });
+  };
+  $("b-sortir").onclick = function () { N.deconnecter(); location.reload(); };
 
-function afficher() {
-  var liste = document.getElementById("liste"), jeu = null, section = null, ul;
-  fichiers.forEach(function (f) {
-    if (f.jeu !== jeu) {
-      jeu = f.jeu; section = null;
-      var hj = document.createElement("h2"); hj.className = "jeu"; hj.textContent = jeu; liste.appendChild(hj);
-    }
-    if (f.section !== section) {
-      section = f.section;
-      var h = document.createElement("h3"); h.textContent = section; liste.appendChild(h);
-      ul = document.createElement("ul"); liste.appendChild(ul);
-    }
-    var li = document.createElement("li");
-    li.innerHTML = '<span><strong></strong><small></small></span><button type="button">Télécharger</button>';
-    li.querySelector("strong").textContent = f.libelle;
-    li.querySelector("small").textContent = f.nom + " · " + taille(f.taille);
-    var b = li.querySelector("button");
-    b.setAttribute("aria-label", "Télécharger " + f.nom);
-    b.onclick = function () {
-      b.disabled = true; b.textContent = "Préparation…";
-      charger(f.id + ".bin").then(function (buf) { return dechiffrer(new Uint8Array(buf)); }).then(function (clair) {
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(new Blob([clair], { type: f.type }));
-        a.download = f.nom; document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(function () { URL.revokeObjectURL(a.href); }, 10000);
-        b.textContent = "Télécharger";
-      }).catch(function () { b.textContent = "Erreur, réessayer"; }).then(function () { b.disabled = false; });
-    };
-    ul.appendChild(li);
-  });
-  liste.hidden = false;
-}
+  // ---------- 4. Tableau de bord ----------
+  function tableau() {
+    montrer("tableau");
+    var s = N.session();
+    $("bonjour").textContent = "Bonjour " + s.id + (s.role === "admin" ? " (admin)" : " (formateur)");
+    var lj = $("liens-jeux"); lj.innerHTML = "";
+    var a0 = el("a", "btn principal", "Accueil du site"); a0.href = "../index.html"; lj.appendChild(a0);
+    catalogue().jeux.forEach(function (j) { var a = el("a", "btn", j.emoji + " " + j.titre); a.href = "../" + j.id + "/index.html"; lj.appendChild(a); });
+    $("admin").hidden = s.role !== "admin";
+    if (s.role === "admin") listeComptes();
+    documents();
+  }
+
+  function documents() {
+    var z = $("docs");
+    N.coffre().then(function (cf) { return N.lireManifeste(cf).then(function (m) { return { cf: cf, entrees: m.entrees }; }); }).then(function (r) {
+      z.innerHTML = "";
+      if (!r.entrees.length) { z.appendChild(el("p", "aide", "Aucun document.")); return; }
+      var titres = {}; catalogue().jeux.forEach(function (j) { titres[j.id] = j.titre; });
+      var groupes = {};
+      r.entrees.forEach(function (e) { var j = titres[e.jeuId] || e.jeu || "Autres"; (groupes[j] = groupes[j] || []).push(e); });
+      Object.keys(groupes).forEach(function (j) {
+        var hj = el("h3", null, j); hj.style.fontSize = "1.2rem"; z.appendChild(hj);
+        var section = null, ul;
+        groupes[j].forEach(function (e) {
+          if (e.section !== section) { section = e.section; var h = el("p", null, section); h.style.fontWeight = "700"; h.style.margin = ".8rem 0 .4rem"; z.appendChild(h); ul = el("ul"); z.appendChild(ul); }
+          var li = el("li"), info = el("span");
+          info.appendChild(el("strong", null, e.libelle));
+          info.appendChild(el("small", null, e.lien || e.nom + " · " + N.taille(e.taille)));
+          var g = el("span", "gestes");
+          if (e.lien) { var a = el("a", "btn", "Ouvrir"); a.href = e.lien; a.target = "_blank"; a.rel = "noopener"; g.appendChild(a); }
+          else {
+            var b = el("button", "btn", "Télécharger"); b.type = "button";
+            b.onclick = function () {
+              b.disabled = true; b.textContent = "Préparation…";
+              N.telechargerDocument(r.cf, e).then(function (blob) { N.telecharger(blob, e.nom); b.textContent = "Télécharger"; })
+                .catch(function () { b.textContent = "Erreur, réessayer"; }).then(function () { b.disabled = false; });
+            };
+            g.appendChild(b);
+          }
+          li.appendChild(info); li.appendChild(g); ul.appendChild(li);
+        });
+      });
+    }).catch(function (err) { z.innerHTML = ""; z.appendChild(el("p", "aide", "Documents indisponibles : " + err.message)); });
+  }
+
+  // ---------- Administration des comptes ----------
+  function listeComptes() {
+    var t = $("t-comptes"), s = N.session(); t.innerHTML = "";
+    N.comptes().comptes.forEach(function (c) {
+      var tr = el("tr");
+      var td1 = el("td"); td1.appendChild(el("strong", null, c.id)); if (c.id === s.id) td1.appendChild(document.createTextNode(" (vous)"));
+      tr.appendChild(td1);
+      tr.appendChild(el("td", null, c.role === "admin" ? "Admin" : "Formateur"));
+      tr.appendChild(el("td", null, c.provisoire ? "Mot de passe provisoire" : "Actif"));
+      var td = el("td");
+      if (c.id !== s.id) {
+        var r = el("button", "btn", "Nouveau mot de passe"); r.type = "button"; r.onclick = function () { reinitialiser(c); }; td.appendChild(r);
+        var d = el("button", "btn danger", "Supprimer"); d.type = "button"; d.onclick = function () { supprimer(c); }; td.appendChild(d);
+      }
+      tr.appendChild(td); t.appendChild(tr);
+    });
+  }
+  function messageProvisoire(id, mdp) {
+    return { message: "Transmettez ces informations à la personne (elle choisira son mot de passe à la première connexion) :\nIdentifiant : " + id + "\nMot de passe provisoire : " + mdp + "\nAdresse : " + location.href.replace(/[?#].*$/, ""), garderOuvert: true };
+  }
+  $("b-creer").onclick = function () {
+    N.formulaire({
+      titre: "Créer un accès",
+      champs: [
+        { nom: "id", type: "texte", label: "Identifiant", requis: true, aide: "Ex. prenom.nom (3 à 40 caractères : lettres, chiffres, point, tiret)." },
+        { nom: "role", type: "choix", label: "Rôle", options: [["formateur", "Formateur : gère les jeux, missions, ressources et documents"], ["admin", "Admin : tout cela + gestion des comptes"]], valeur: "formateur" },
+        { nom: "mdp", type: "texte", label: "Mot de passe provisoire", valeur: N.mdpProvisoire(), requis: true, aide: "Généré automatiquement. La personne le changera à sa première connexion." }
+      ],
+      bouton: "Créer l’accès",
+      valider: function (v) {
+        if (!ID_OK.test(v.id)) throw new Error("Identifiant : 3 à 40 caractères (lettres, chiffres, point, tiret).");
+        if (v.mdp.length < 12) throw new Error("Mot de passe provisoire : 12 caractères minimum.");
+        return N.coffre().then(function (cf) { return N.fermerEnveloppe(cf.ms, v.mdp); }).then(function (env) {
+          return N.modifierComptes(function (c) {
+            if (N.trouver(c, v.id)) throw new Error("Cet identifiant existe déjà.");
+            c.comptes.push({ id: v.id, role: v.role, sel: env.sel, enveloppe: env.enveloppe, provisoire: true, cree: new Date().toISOString().slice(0, 10) });
+          }, "Nouvel accès " + v.role + " : " + v.id);
+        }).then(function () { listeComptes(); return messageProvisoire(v.id, v.mdp); });
+      }
+    });
+  };
+  function reinitialiser(compte) {
+    var mdp = N.mdpProvisoire();
+    N.formulaire({
+      titre: "Nouveau mot de passe pour " + compte.id,
+      intro: "Un mot de passe provisoire va remplacer l’actuel. La personne devra en choisir un nouveau à sa prochaine connexion.",
+      champs: [], bouton: "Générer",
+      valider: function () {
+        return N.coffre().then(function (cf) { return N.fermerEnveloppe(cf.ms, mdp); }).then(function (env) {
+          return N.modifierComptes(function (c) {
+            var x = N.trouver(c, compte.id); if (!x) throw new Error("Compte introuvable.");
+            x.sel = env.sel; x.enveloppe = env.enveloppe; x.provisoire = true;
+          }, "Mot de passe réinitialisé : " + compte.id);
+        }).then(function () { listeComptes(); return messageProvisoire(compte.id, mdp); });
+      }
+    });
+  }
+  function supprimer(compte) {
+    N.confirmer("Supprimer l’accès de " + compte.id + " ?", "La personne ne pourra plus se connecter.", "Supprimer", function () {
+      return N.modifierComptes(function (c) {
+        c.comptes = c.comptes.filter(function (x) { return x.id.toLowerCase() !== compte.id.toLowerCase(); });
+        if (!c.comptes.some(function (x) { return x.role === "admin"; })) throw new Error("Il doit rester au moins un admin.");
+      }, "Accès supprimé : " + compte.id).then(function () { listeComptes(); return "Accès supprimé."; });
+    });
+  }
+  $("b-cle").onclick = function () {
+    N.formulaire({
+      titre: "Remplacer la clé GitHub",
+      champs: [{ nom: "cle", type: "mdp", label: "Nouvelle clé GitHub", requis: true, aide: "Fine-grained token, dépôt jeux-pedagogiques, « Contents : Read and write »." }],
+      valider: function (v) {
+        return N.lire(v.cle, "donnees/comptes.js").catch(function (err) { throw new Error("Clé refusée : " + err.message); }).then(function () {
+          return N.coffre();
+        }).then(function (cf) {
+          return N.fermerCoffre(cf.ms, v.cle, cf.documentsBrut).then(function (coffre) {
+            return N.modifierComptes(function (c) { c.coffre = coffre; }, "Clé GitHub remplacée");
+          });
+        }).then(function () { return "Clé remplacée. Vous pouvez supprimer l’ancienne sur GitHub."; });
+      }
+    });
+  };
+  $("b-revoquer").onclick = function () {
+    N.formulaire({
+      titre: "Révoquer toutes les sessions ?",
+      intro: "Toutes les personnes connectées sont déconnectées. Chaque autre compte reçoit un nouveau mot de passe provisoire, affiché à la fin : transmettez-les. Votre mot de passe ne change pas.",
+      champs: [{ nom: "mdp", type: "mdp", label: "Votre mot de passe (confirmation)", requis: true }],
+      bouton: "Révoquer", danger: true, attente: "Révocation en cours…",
+      valider: function (v) {
+        var s = N.session(), ms = N.aleatoire(32), provisoires = [];
+        return N.ouvrirEnveloppe(compteActuel(), v.mdp).then(function () { return N.coffre(); }).then(function (cf) {
+          return N.fermerCoffre(ms, cf.github, cf.documentsBrut).then(function (coffre) {
+            var autres = N.comptes().comptes.filter(function (x) { return x.id !== s.id; });
+            return Promise.all(autres.map(function (x) {
+              var p = N.mdpProvisoire(); provisoires.push([x.id, p]);
+              return N.fermerEnveloppe(ms, p).then(function (env) { return [x.id, env]; });
+            })).then(function (envs) {
+              return N.fermerEnveloppe(ms, v.mdp).then(function (moi) {
+                return N.modifierComptes(function (c) {
+                  c.coffre = coffre;
+                  c.comptes.forEach(function (x) {
+                    if (x.id === s.id) { x.sel = moi.sel; x.enveloppe = moi.enveloppe; return; }
+                    var e = envs.filter(function (y) { return y[0] === x.id; })[0];
+                    if (e) { x.sel = e[1].sel; x.enveloppe = e[1].enveloppe; x.provisoire = true; }
+                    else { x.revoque = true; }
+                  });
+                  c.comptes = c.comptes.filter(function (x) { return !x.revoque; });
+                }, "Révocation de toutes les sessions");
+              });
+            });
+          });
+        }).then(function () {
+          s.ms = N.versB64(ms); N.garderSession(s, false); N.oublierCoffre(); listeComptes();
+          var lignes = provisoires.map(function (p) { return p[0] + " : " + p[1]; }).join("\n");
+          return { message: "Sessions révoquées. Pensez à remplacer la clé GitHub.\n" + (lignes ? "Nouveaux mots de passe provisoires :\n" + lignes : ""), garderOuvert: true };
+        });
+      }
+    });
+  };
+
+  demarrer();
+})();
 </script>
 </body>
 </html>
