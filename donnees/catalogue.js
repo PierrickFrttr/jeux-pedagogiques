@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 14,
+  "version": 15,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -120,7 +120,7 @@ window.CATALOGUE = {
           "fichier": "jeux/realiser-son-etude-de-marche.html",
           "titre": "Réaliser son étude de marché",
           "description": "Vérifiez, chiffres et enquête à l’appui, que votre projet a un marché : objectifs, taille du marché, clients, concurrents et environnement, jusqu’à un verdict et un plan d’action exportables en Word.",
-          "emoji": "🎯",
+          "emoji": "📚",
           "couleur": "#ec5158"
         },
         {
