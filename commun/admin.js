@@ -19,7 +19,7 @@
     // ---------- Barre « mode formateur » ----------
     var barre = el("div", "barre-admin");
     var qui = el("span", "qui");
-    qui.appendChild(document.createTextNode("Mode formateur · "));
+    qui.appendChild(document.createTextNode("Mode édition, connecté en tant que "));
     qui.appendChild(el("strong", null, s.id));
     qui.appendChild(document.createTextNode(" "));
     qui.appendChild(el("span", "badge", s.role === "admin" ? "Admin" : "Formateur"));
@@ -57,14 +57,14 @@
     }
 
     // ---------- Petits boutons sur chaque carte ----------
-    SITE.decorer = function (carte, genre, i, n) {
+    SITE.decorer = function (carte, genre, i, n, bornes) {
       if (sessionKo) return;
       var o = el("div", "outils-carte");
       var haut = el("button", null, "↑"), bas = el("button", null, "↓"), modif = el("button", null, "✎"), suppr = el("button", null, "🗑");
       [haut, bas, modif, suppr].forEach(function (b) { b.type = "button"; o.appendChild(b); });
       haut.title = "Monter"; bas.title = "Descendre"; modif.title = "Modifier"; suppr.title = "Supprimer";
       haut.setAttribute("aria-label", "Monter"); bas.setAttribute("aria-label", "Descendre"); modif.setAttribute("aria-label", "Modifier"); suppr.setAttribute("aria-label", "Supprimer");
-      haut.disabled = i === 0; bas.disabled = i === n - 1;
+      haut.disabled = bornes ? bornes.premier : i === 0; bas.disabled = bornes ? bornes.dernier : i === n - 1;
       carte.insertBefore(o, carte.firstChild);
       if (genre === "jeu") {
         var j = catalogue().jeux[i];

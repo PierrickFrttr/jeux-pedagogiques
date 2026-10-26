@@ -35,7 +35,7 @@
   }
   var main = document.getElementById("contenu");
   var h = document.createElement("h1"), p = document.createElement("p"), a = document.createElement("a");
-  p.className = "intro"; a.className = "btn principal"; a.href = BASE + "index.html"; a.textContent = "Retour à l’accueil";
+  h.className = "titre-page"; p.className = "aide"; main.style.paddingTop = "3rem"; a.className = "btn principal"; a.href = BASE + "index.html"; a.textContent = "Retour à l’accueil";
   if (connecte && jeu) {
     h.textContent = "Publication en cours…";
     p.textContent = "Ce fichier vient d’être publié et sera en ligne d’ici 1 à 2 minutes. La page se recharge toute seule.";

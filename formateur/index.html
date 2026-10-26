@@ -6,11 +6,15 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Espace formateur – Jeux pédagogiques</title>
 <link rel="stylesheet" href="../commun/site.css">
+<link id="polices" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" media="print" onload="this.media='all'">
 </head>
 <body>
-<main class="wrap etroit" id="contenu">
-  <a class="retour" href="../index.html">← Tous les jeux</a>
-  <h1>Espace formateur</h1>
+<header class="entete">
+  <a class="marque" href="../index.html"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Jeux pédagogiques</a>
+  <a class="lien-discret" href="../index.html">Retour au site</a>
+</header>
+<main class="wrap" id="contenu">
+  <h1 class="titre-page">Espace formateur</h1>
 
   <!-- 1. Première mise en service : création du compte admin -->
   <section class="boite" id="initialisation" hidden>
@@ -63,7 +67,7 @@
     <section class="boite">
       <h2 id="bonjour">Bonjour</h2>
       <p>Pour ajouter ou modifier un jeu, une mission, une ressource ou un cours, ouvrez le site : les boutons d’édition apparaissent sur chaque page tant que vous êtes connecté.</p>
-      <p id="liens-jeux" style="display:flex;flex-wrap:wrap;gap:.6rem"></p>
+      <p id="liens-jeux" class="raccourcis"></p>
       <p><button class="btn" type="button" id="b-mdp">Changer mon mot de passe</button> <button class="btn" type="button" id="b-sortir">Se déconnecter</button></p>
     </section>
 
@@ -258,7 +262,7 @@
       var td1 = el("td"); td1.appendChild(el("strong", null, c.id)); if (c.id === s.id) td1.appendChild(document.createTextNode(" (vous)"));
       tr.appendChild(td1);
       tr.appendChild(el("td", null, c.role === "admin" ? "Admin" : "Formateur"));
-      tr.appendChild(el("td", null, c.provisoire ? "Mot de passe provisoire" : "Actif"));
+      var te = el("td"); te.appendChild(el("span", "etat-compte" + (c.provisoire ? " provisoire" : ""), c.provisoire ? "Mot de passe provisoire" : "Actif")); tr.appendChild(te);
       var td = el("td");
       if (c.id !== s.id) {
         var r = el("button", "btn", "Nouveau mot de passe"); r.type = "button"; r.onclick = function () { reinitialiser(c); }; td.appendChild(r);

@@ -28,101 +28,166 @@
     if (texte != null) e.textContent = texte;
     return e;
   }
-  function pastille(emoji, couleur) {
-    var p = el("div", "pastille", emoji || "🎯");
-    p.setAttribute("aria-hidden", "true");
-    p.style.background = couleur + "33"; p.style.border = "2px solid " + couleur;
-    return p;
-  }
   function nbMissions(jeu) {
     var n = jeu.elements.filter(function (x) { return x.type === "mission"; }).length;
     return n + (n > 1 ? " missions" : " mission");
   }
+  function lien(texte, href, cls) { var a = el("a", cls, texte); a.href = href; return a; }
+  // « Mission 3 · Le bras de fer » → numéro 3 + « Le bras de fer »
+  function decouper(titre, rang) {
+    var m = /^\s*mission\s*(\d+)\s*[·:–-]\s*(.+)$/i.exec(titre || "");
+    return m ? { num: m[1], titre: m[2] } : { num: String(rang), titre: titre };
+  }
+  function entete() {
+    var h = el("header", "entete");
+    var m = lien("", BASE + "index.html", "marque");
+    var logo = el("span", "logo"); logo.setAttribute("aria-hidden", "true");
+    for (var i = 0; i < 4; i++) logo.appendChild(el("i"));
+    m.appendChild(logo); m.appendChild(document.createTextNode(catalogue().site.titre));
+    h.appendChild(m);
+    h.appendChild(lien("Espace formateur", BASE + "formateur/index.html", "lien-discret"));
+    return h;
+  }
   function pied(main) {
     var f = el("footer", "pied");
-    f.innerHTML = '<span><strong>Pierrick Frottier</strong> · Formateur indépendant</span>' +
+    f.innerHTML = '<span><strong>Pierrick Frottier</strong>, formateur indépendant</span>' +
       '<a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>' +
       '<a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>';
-    var a = el("a", null, "Espace formateur"); a.href = BASE + "formateur/index.html";
-    f.appendChild(a);
+    f.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
     main.appendChild(f);
   }
+  function zoneAdmin(parent) { var z = el("div"); z.id = "zone-admin"; parent.appendChild(z); }
 
-  var SITE = window.SITE = { BASE: BASE, page: page, jeuId: jeuId, session: session, catalogue: catalogue, el: el, pastille: pastille, nbMissions: nbMissions, sansAccents: sansAccents, decorer: null };
+  // Polices chargées sans bloquer l'affichage (le texte apparaît tout de suite, puis prend sa police)
+  if (!document.getElementById("polices")) {
+    var lp = document.createElement("link"); lp.id = "polices"; lp.rel = "stylesheet";
+    lp.href = "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap";
+    document.head.appendChild(lp);
+  }
+  var SITE = window.SITE = { BASE: BASE, page: page, jeuId: jeuId, session: session, catalogue: catalogue, el: el, nbMissions: nbMissions, sansAccents: sansAccents, decorer: null };
 
-  // Accueil : une carte par jeu
-  function rendreAccueil(main, cat) {
+  // Accueil : une « boîte » par jeu
+  function rendreAccueil(haut, main, cat) {
     document.title = cat.site.titre + " – Pierrick Frottier";
-    main.appendChild(el("h1", null, cat.site.titre));
-    main.appendChild(el("p", "intro", cat.site.intro));
-    var zone = el("div"); zone.id = "zone-admin"; main.appendChild(zone);
+    var hero = el("section", "hero");
+    hero.appendChild(el("h1", null, cat.site.titre));
+    hero.appendChild(el("p", null, cat.site.intro));
+    main.appendChild(hero);
+    zoneAdmin(main);
     var ul = el("ul", "grille jeux");
+    ul.style.marginTop = "1.5rem";
     cat.jeux.forEach(function (j, i) {
-      var li = el("li"), carte = el("article", "carte");
+      var li = el("li"), carte = el("article", "couverture");
       carte.style.setProperty("--c", j.couleur);
-      carte.appendChild(pastille(j.emoji, j.couleur));
-      carte.appendChild(el("h2", null, j.titre));
-      carte.appendChild(el("p", null, j.resume));
-      carte.appendChild(el("span", "cat", nbMissions(j)));
-      var a = el("a", "jouer", "Voir les missions");
-      a.href = BASE + j.id + "/index.html";
+      var couv = el("div", "couv");
+      var em = el("span", "gros-emoji", j.emoji || "🎲"); em.setAttribute("aria-hidden", "true");
+      couv.appendChild(em); couv.appendChild(el("span", "compte", nbMissions(j)));
+      var corps = el("div", "corps");
+      corps.appendChild(el("h2", null, j.titre));
+      corps.appendChild(el("p", null, j.resume));
+      var a = lien("Voir les missions", BASE + j.id + "/index.html", "jouer");
       a.setAttribute("aria-label", "Voir les missions : " + j.titre);
-      carte.appendChild(a);
+      corps.appendChild(a);
+      carte.appendChild(couv); carte.appendChild(corps);
       li.appendChild(carte); ul.appendChild(li);
       if (SITE.decorer) SITE.decorer(carte, "jeu", i, cat.jeux.length);
     });
     main.appendChild(ul);
   }
 
-  // Page d'un jeu : missions et ressources publiques, avec recherche
-  function rendreJeu(main, cat) {
+  // Page d'un jeu : bandeau aux couleurs du jeu, parcours des missions, ressources
+  function rendreJeu(haut, main, cat) {
     var jeu = cat.jeux.filter(function (j) { return j.id === jeuId; })[0];
-    var retour = el("a", "retour", "← Tous les jeux"); retour.href = BASE + "index.html";
-    main.appendChild(retour);
-    if (!jeu) { main.appendChild(el("h1", null, "Jeu introuvable")); main.appendChild(el("p", "intro", "Ce jeu n’existe plus.")); return; }
+    if (!jeu) {
+      main.appendChild(el("h1", "titre-page", "Jeu introuvable"));
+      main.appendChild(el("p", "aide", "Ce jeu n’existe plus."));
+      main.appendChild(lien("Retour à l’accueil", BASE + "index.html", "btn principal"));
+      return;
+    }
     document.title = jeu.titrePage || jeu.titre;
-    main.appendChild(el("h1", null, jeu.titrePage || jeu.titre));
-    main.appendChild(el("p", "intro", jeu.intro));
-    var zone = el("div"); zone.id = "zone-admin"; main.appendChild(zone);
-    var recherche = el("input", "recherche");
-    recherche.type = "search"; recherche.placeholder = "Rechercher une mission…";
-    recherche.setAttribute("aria-label", "Rechercher une mission");
-    main.appendChild(recherche);
-    var ul = el("ul", "grille"), vide = el("p", "vide", "Aucune mission ne correspond à votre recherche.");
-    main.appendChild(ul); main.appendChild(vide);
-    var zf = el("div"); zf.id = "zone-formateur"; main.appendChild(zf);
+    var missions = [], ressources = [];
+    jeu.elements.forEach(function (x, i) { (x.type === "mission" ? missions : ressources).push({ x: x, i: i }); });
 
+    var b = el("section", "bandeau"); b.style.setProperty("--c", jeu.couleur);
+    var int = el("div", "interieur");
+    var med = el("div", "medaillon", jeu.emoji || "🎲"); med.setAttribute("aria-hidden", "true");
+    var txt = el("div");
+    int.appendChild(lien("← Tous les jeux", BASE + "index.html", "fil"));
+    txt.appendChild(el("h1", null, jeu.titrePage || jeu.titre));
+    txt.appendChild(el("p", "intro", jeu.intro));
+    var ch = el("div", "chiffres");
+    ch.appendChild(el("span", null, nbMissions(jeu)));
+    if (ressources.length) ch.appendChild(el("span", null, ressources.length + (ressources.length > 1 ? " ressources" : " ressource")));
+    txt.appendChild(ch);
+    int.appendChild(med); int.appendChild(txt); b.appendChild(int);
+    haut.appendChild(b);
+    main.style.setProperty("--c", jeu.couleur);
+    zoneAdmin(main);
+
+    var tete = el("div", "section-titre");
+    tete.appendChild(el("h2", null, "Missions"));
+    var recherche = null;
+    if (missions.length > 5) {
+      recherche = el("input", "recherche");
+      recherche.type = "search"; recherche.placeholder = "Rechercher une mission";
+      recherche.setAttribute("aria-label", "Rechercher une mission");
+      tete.appendChild(recherche);
+    }
+    main.appendChild(tete);
+    var ol = el("ol", "parcours"); main.appendChild(ol);
+    var vide = el("p", "vide"); main.appendChild(vide);
+
+    function carteMission(m, rang) {
+      var d = decouper(m.x.titre, rang);
+      var li = el("li"), c = el("article", "etape");
+      var num = el("span", "num", d.num); num.setAttribute("aria-hidden", "true");
+      var em = el("span", "emoji", m.x.emoji || "🎯"); em.setAttribute("aria-hidden", "true");
+      var t = el("div"); t.appendChild(el("h3", null, d.titre)); t.appendChild(el("p", null, m.x.description));
+      var a = lien(m.x.bouton || "Jouer", m.x.url || BASE + jeu.id + "/" + m.x.fichier, "jouer");
+      a.target = "_blank"; // chaque mission s'ouvre dans un nouvel onglet
+      a.setAttribute("aria-label", "Jouer : " + m.x.titre);
+      c.appendChild(num); c.appendChild(em); c.appendChild(t); c.appendChild(a);
+      li.appendChild(c); ol.appendChild(li);
+      if (SITE.decorer) SITE.decorer(c, "element", m.i, jeu.elements.length, { premier: rang === 1, dernier: rang === missions.length });
+    }
     function afficher() {
-      var q = sansAccents(recherche.value.trim()), n = 0;
-      ul.innerHTML = "";
-      jeu.elements.forEach(function (x, i) {
-        if (sansAccents(x.titre + " " + x.description + " " + jeu.categorie).indexOf(q) < 0) return;
-        n++;
-        var li = el("li"), carte = el("article", "carte");
-        carte.appendChild(pastille(x.emoji, x.couleur));
-        carte.appendChild(el("h2", null, x.titre));
-        carte.appendChild(el("p", null, x.description));
-        carte.appendChild(el("span", "cat", jeu.categorie));
-        var a = el("a", "jouer", x.bouton || (x.type === "mission" ? "Jouer" : "Ouvrir"));
-        a.href = x.url || BASE + jeu.id + "/" + x.fichier;
-        a.target = "_blank"; // chaque mission ou ressource s'ouvre dans un nouvel onglet
-        if (x.url) a.rel = "noopener";
-        a.setAttribute("aria-label", a.textContent + " : " + x.titre);
-        carte.appendChild(a);
-        li.appendChild(carte); ul.appendChild(li);
-        if (SITE.decorer) SITE.decorer(carte, "element", i, jeu.elements.length);
+      var q = recherche ? sansAccents(recherche.value.trim()) : "", n = 0;
+      ol.innerHTML = "";
+      missions.forEach(function (m, k) {
+        if (q && sansAccents(m.x.titre + " " + m.x.description).indexOf(q) < 0) return;
+        n++; carteMission(m, k + 1);
       });
       vide.hidden = n > 0;
+      vide.textContent = missions.length ? "Aucune mission ne correspond à « " + (recherche ? recherche.value : "") + " »." : "Les missions de ce jeu arrivent bientôt.";
     }
-    recherche.addEventListener("input", afficher);
+    if (recherche) recherche.addEventListener("input", afficher);
     afficher();
+
+    if (ressources.length) {
+      var t2 = el("div", "section-titre"); t2.appendChild(el("h2", null, "Ressources")); main.appendChild(t2);
+      var ul = el("ul", "grille"); main.appendChild(ul);
+      ressources.forEach(function (r, k) {
+        var li = el("li"), c = el("article", "ressource");
+        var em = el("span", "emoji", r.x.emoji || "📄"); em.setAttribute("aria-hidden", "true");
+        c.appendChild(em); c.appendChild(el("h3", null, r.x.titre)); c.appendChild(el("p", null, r.x.description));
+        var a = lien(r.x.bouton || "Ouvrir", r.x.url || BASE + jeu.id + "/" + r.x.fichier, "jouer");
+        a.target = "_blank"; if (r.x.url) a.rel = "noopener";
+        a.setAttribute("aria-label", a.textContent + " : " + r.x.titre);
+        c.appendChild(a); li.appendChild(c); ul.appendChild(li);
+        if (SITE.decorer) SITE.decorer(c, "element", r.i, jeu.elements.length, { premier: k === 0, dernier: k === ressources.length - 1 });
+      });
+    }
+    var zf = el("div"); zf.id = "zone-formateur"; main.appendChild(zf);
   }
 
   SITE.rendre = function () {
     var main = document.getElementById("contenu");
-    main.innerHTML = "";
+    var haut = document.getElementById("haut");
+    if (!haut) { haut = el("div"); haut.id = "haut"; main.parentNode.insertBefore(haut, main); }
+    haut.innerHTML = ""; main.innerHTML = "";
+    haut.appendChild(entete());
     var cat = catalogue();
-    if (page === "accueil") rendreAccueil(main, cat); else rendreJeu(main, cat);
+    if (page === "accueil") rendreAccueil(haut, main, cat); else rendreJeu(haut, main, cat);
     pied(main);
     if (SITE.apresRendu) SITE.apresRendu();
   };
