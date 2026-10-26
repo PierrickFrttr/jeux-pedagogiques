@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 6,
+  "version": 7,
   "site": {
     "titre": "Jeux pédagogiques",
     "intro": "Des jeux de rôle en équipe pour mettre en pratique le marketing et la supply chain. Choisissez votre jeu, puis la mission du jour."
@@ -124,18 +124,6 @@ window.CATALOGUE = {
           "couleur": "#f2ec36"
         }
       ]
-    },
-    {
-      "id": "gtrh",
-      "titre": "gtrh",
-      "titrePage": "gtrh",
-      "resume": "fhnfh",
-      "intro": "njfhjr",
-      "categorie": "hyhr",
-      "emoji": "🎲",
-      "couleur": "#1d4f63",
-      "retourCss": "",
-      "elements": []
     }
   ]
 };
