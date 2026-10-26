@@ -128,10 +128,11 @@
         titre: "Modifier l’accueil",
         champs: [
           { nom: "titre", type: "texte", label: "Titre", valeur: c.titre, requis: true },
-          { nom: "intro", type: "zone", label: "Phrase d’introduction", valeur: c.intro, requis: true }
+          { nom: "intro", type: "zone", label: "Phrase d’introduction", valeur: c.intro, requis: true },
+          { nom: "slogan", type: "texte", label: "Slogan (pied de page)", valeur: c.slogan || "Apprendre l’entreprise en la jouant.", requis: true }
         ],
         valider: function (v) {
-          return N.modifierCatalogue(function (cat) { cat.site.titre = v.titre; cat.site.intro = v.intro; }, "Accueil modifié")
+          return N.modifierCatalogue(function (cat) { cat.site.titre = v.titre; cat.site.intro = v.intro; cat.site.slogan = v.slogan; }, "Accueil modifié")
             .then(function () { rafraichir(); return publie("Accueil mis à jour"); });
         }
       });

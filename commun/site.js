@@ -58,15 +58,47 @@
     img.width = largeur; img.height = Math.round(largeur * 256 / 205);
     return img;
   }
-  function pied(main) {
-    var f = el("footer", "pied");
-    f.appendChild(logo("logo-pied", 34));
-    f.insertAdjacentHTML("beforeend", '<span><strong>Pierrick Frottier</strong>, formateur indépendant</span>' +
-      '<a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>' +
-      '<a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a>' +
-      '<a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>');
-    f.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
-    main.appendChild(f);
+  var SLOGAN = "Apprendre l’entreprise en la jouant.";
+  // Pied de page pleine largeur : marque et slogan, liste des jeux, contact, puis mentions
+  function pied(bas, cat) {
+    var f = el("footer", "pied"), int = el("div", "pied-interieur");
+    var marque = el("div", "pied-marque");
+    var nom = lien("", BASE + "index.html", "pied-nom");
+    nom.appendChild(logo("logo-pied", 48)); nom.appendChild(el("span", null, cat.site.titre));
+    marque.appendChild(nom);
+    marque.appendChild(el("p", "slogan", cat.site.slogan || SLOGAN));
+    marque.appendChild(el("p", "pied-texte", "Des jeux de rôle en missions pour apprendre le marketing, la logistique et la création d’entreprise à partir de situations réelles."));
+    int.appendChild(marque);
+
+    var nav = el("nav", "pied-col"); nav.setAttribute("aria-label", "Les jeux");
+    nav.appendChild(el("h2", null, "Les jeux"));
+    var ul = el("ul");
+    cat.jeux.forEach(function (j) {
+      if (!visible(j)) return;
+      var li = el("li"), a = lien(j.titre, BASE + j.id + "/index.html");
+      if (page === "jeu" && j.id === jeuId) a.setAttribute("aria-current", "page");
+      li.appendChild(a); ul.appendChild(li);
+    });
+    nav.appendChild(ul); int.appendChild(nav);
+
+    var contact = el("div", "pied-col");
+    contact.appendChild(el("h2", null, "Contact"));
+    contact.insertAdjacentHTML("beforeend", '<ul>' +
+      '<li><a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a></li>' +
+      '<li><a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a></li>' +
+      '<li><a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a></li></ul>');
+    int.appendChild(contact);
+    f.appendChild(int);
+
+    var mentions = el("div", "pied-mentions");
+    var credit = el("p");
+    credit.appendChild(document.createTextNode("© " + new Date().getFullYear() + " " + cat.site.titre + ". Créé par "));
+    var auteur = lien("Pierrick Frottier", "https://pierrickfrottier.fr"); auteur.target = "_blank"; auteur.rel = "noopener";
+    credit.appendChild(auteur); credit.appendChild(document.createTextNode(", formateur indépendant."));
+    mentions.appendChild(credit);
+    mentions.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
+    f.appendChild(mentions);
+    bas.appendChild(f);
   }
   function zoneAdmin(parent) { var z = el("div"); z.id = "zone-admin"; parent.appendChild(z); }
 
@@ -199,11 +231,13 @@
     var main = document.getElementById("contenu");
     var haut = document.getElementById("haut");
     if (!haut) { haut = el("div"); haut.id = "haut"; main.parentNode.insertBefore(haut, main); }
-    haut.innerHTML = ""; main.innerHTML = "";
+    var bas = document.getElementById("bas");
+    if (!bas) { bas = el("div"); bas.id = "bas"; main.parentNode.insertBefore(bas, main.nextSibling); }
+    haut.innerHTML = ""; main.innerHTML = ""; bas.innerHTML = "";
     haut.appendChild(entete());
     var cat = catalogue();
     if (page === "accueil") rendreAccueil(haut, main, cat); else rendreJeu(haut, main, cat);
-    pied(main);
+    pied(bas, cat);
     if (SITE.apresRendu) SITE.apresRendu();
   };
 
