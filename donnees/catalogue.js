@@ -1,8 +1,8 @@
 window.CATALOGUE = {
-  "version": 9,
+  "version": 10,
   "site": {
-    "titre": "Jeux pédagogiques",
-    "intro": "Des jeux de rôle en équipe pour mettre en pratique le marketing et la supply chain. Choisissez votre jeu, puis la mission du jour."
+    "titre": "Entreprise en Jeu",
+    "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
   },
   "jeux": [
     {
