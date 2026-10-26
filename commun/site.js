@@ -63,6 +63,7 @@
     f.appendChild(logo("logo-pied", 34));
     f.insertAdjacentHTML("beforeend", '<span><strong>Pierrick Frottier</strong>, formateur indépendant</span>' +
       '<a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>' +
+      '<a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a>' +
       '<a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>');
     f.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
     main.appendChild(f);
