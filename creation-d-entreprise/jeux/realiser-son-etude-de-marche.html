@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Création d’entreprise – Mission étude de marché</title>
+<style>:root{
+  --pine:#1F4D45; --pine-2:#2B6A5F; --ochre:#C9861A; --ochre-soft:#F6E7CB; --lav:#6E64A8; --lav-soft:#E9E6F5;
+  --paper:#F4F6F3; --surface:#FFFFFF; --mist:#E3EAE6; --line:#CBD6D1; --ink:#1C2321; --muted:#5D6A65;
+  --ok:#2E7D4F; --ok-soft:#DDEFE3; --warn:#B3261E; --warn-soft:#F8E1DE;
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --pine:#7CC3B3; --pine-2:#9BD4C6; --ochre:#E6B05A; --ochre-soft:#3A2F1C; --lav:#B3AAE6; --lav-soft:#2C2940;
+    --paper:#141917; --surface:#1C2320; --mist:#25302C; --line:#38463F; --ink:#E7EDEA; --muted:#9FB0A9;
+    --ok:#7BC99A; --ok-soft:#1E3327; --warn:#F09A90; --warn-soft:#3B2220;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--pine)}
+:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;margin:0}
+.hidden{display:none!important}
+
+/* ---------- boutons ---------- */
+.btn{display:inline-flex;align-items:center;gap:.45em;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.55em 1em;cursor:pointer;font-weight:600;font-size:.94rem;text-decoration:none}
+.btn:hover{border-color:var(--pine)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.btn.primary:hover{background:var(--pine-2)}
+.btn.ochre{background:var(--ochre);border-color:var(--ochre);color:#1C2321}
+.btn.ghost{background:transparent;border-color:transparent;padding:.4em .6em}
+.btn.ghost:hover{background:var(--mist)}
+.btn.small{font-size:.84rem;padding:.35em .7em}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---------- écran d'accueil ---------- */
+#boot{min-height:calc(100% - 110px);display:grid;place-items:center;padding:2rem 1.2rem}
+.boot-card{max-width:720px;width:100%}
+.boot-ridge{width:100%;height:auto;display:block;margin-bottom:1.6rem;color:var(--pine)}
+.boot-kicker{margin:0 0 .3rem;font-weight:600;color:var(--ochre);letter-spacing:.02em}
+.boot-card h1{font-size:clamp(2rem,5vw,3.1rem);color:var(--pine);letter-spacing:-.01em}
+.boot-card .lede{font-size:1.15rem;color:var(--muted);max-width:60ch;margin:1rem 0 1.6rem}
+.boot-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;margin:0 0 2rem;padding:0;list-style:none;counter-reset:b}
+.boot-steps li{border-top:3px solid var(--line);padding-top:.5rem;font-size:.86rem;color:var(--muted)}
+.boot-steps li strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1rem}
+.boot-actions{display:flex;flex-wrap:wrap;gap:.7rem}
+.boot-note{font-size:.85rem;color:var(--muted);margin-top:1.4rem}
+@media (max-width:640px){.boot-steps{grid-template-columns:1fr 1fr}}
+
+/* ---------- coque de l'application ---------- */
+#app{display:grid;grid-template-columns:300px 1fr;min-height:100%}
+#side{background:var(--surface);border-right:1px solid var(--line);padding:1.2rem 1rem 2rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+#main{padding:2rem clamp(1rem,3vw,2.6rem) 4rem;min-width:0}
+.topbar{display:none}
+
+.proj-name{font-family:var(--serif);font-size:1.25rem;color:var(--pine);font-weight:700;line-height:1.2;word-break:break-word}
+.proj-sub{font-size:.8rem;color:var(--muted);margin-top:.15rem}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:1rem 0 .6rem}
+.score{background:var(--paper);border-radius:10px;padding:.55rem .7rem}
+.score b{display:block;font-size:1.45rem;font-family:var(--serif);line-height:1}
+.score span{font-size:.75rem;color:var(--muted)}
+.score .bar{height:5px;background:var(--mist);border-radius:3px;margin-top:.4rem;overflow:hidden}
+.score .bar i{display:block;height:100%;background:var(--pine);border-radius:3px;transition:width .4s}
+.score.coh .bar i{background:var(--lav)}
+.badge-strip{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:1rem}
+.badge-strip .b{border:0;padding:0;cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.85rem;background:var(--lav-soft);filter:grayscale(1);opacity:.35}
+.badge-strip .b.on{filter:none;opacity:1;box-shadow:0 0 0 2px var(--lav)}
+.badge-strip small{margin-left:.3rem;color:var(--muted);font-size:.78rem}
+
+/* sentier */
+.trail{list-style:none;margin:0 0 1.2rem;padding:0}
+.trail .ch{margin-top:.9rem}
+.trail .ch-title{font-family:var(--serif);font-weight:700;font-size:.95rem;display:flex;justify-content:space-between;gap:.5rem;align-items:baseline}
+.trail .ch-title small{font-family:var(--sans);font-weight:400;color:var(--muted);font-size:.74rem;white-space:nowrap}
+.trail ol{list-style:none;margin:.35rem 0 0;padding:0;position:relative}
+.trail ol::before{content:"";position:absolute;left:9px;top:10px;bottom:10px;width:2px;background:var(--mist)}
+.trail li button{position:relative;display:flex;gap:.6rem;align-items:center;width:100%;text-align:left;border:0;background:none;padding:.32rem .4rem .32rem 0;border-radius:6px;cursor:pointer;font-size:.88rem;color:var(--ink)}
+.trail li button:hover{background:var(--paper)}
+.trail li button.cur{background:var(--ochre-soft);font-weight:600}
+.dot{flex:0 0 20px;height:20px;border-radius:50%;border:2px solid var(--line);background:var(--surface);position:relative;z-index:1;display:grid;place-items:center;font-size:.6rem;color:var(--surface)}
+.dot.part{border-color:var(--ochre);background:conic-gradient(var(--ochre) var(--p),var(--surface) 0)}
+.dot.done{border-color:var(--pine);background:var(--pine)}
+.dot.done::after{content:"✓";font-weight:700}
+.trail .bilan-link button{font-weight:700}
+
+.side-block{border-top:1px solid var(--line);padding-top:.9rem;margin-top:.9rem}
+.side-block h3{font-family:var(--sans);font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.5rem}
+.side-block .btn{width:100%;justify-content:center;margin-bottom:.45rem}
+.save-status{font-size:.78rem;color:var(--muted);margin:.2rem 0 .5rem}
+.save-status.dirty{color:var(--warn)}
+
+/* ---------- étape ---------- */
+.step-head{max-width:1180px;margin-bottom:1.4rem}
+.step-kicker{font-size:.88rem;color:var(--muted);display:flex;gap:1rem;flex-wrap:wrap}
+.step-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--pine);margin:.25rem 0 .7rem}
+.step-progress{height:6px;background:var(--mist);border-radius:3px;max-width:420px;overflow:hidden}
+.step-progress i{display:block;height:100%;background:var(--ochre);transition:width .3s}
+.produce{margin-top:1rem;background:var(--surface);border-left:4px solid var(--ochre);padding:.8rem 1rem;border-radius:0 8px 8px 0;max-width:80ch}
+.produce strong{display:block;font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.15rem}
+
+.step-grid>*{min-width:0}
+.step-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:2rem;max-width:1180px;align-items:start}
+.coach{position:sticky;top:1rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.coach-tabs{display:flex;border-bottom:1px solid var(--line)}
+.coach-tabs button{flex:1;border:0;background:none;padding:.7rem .3rem;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.coach-tabs button.on{color:var(--pine);border-bottom-color:var(--pine)}
+.coach-body{padding:1rem 1.1rem;max-height:calc(100vh - 7rem);overflow-y:auto;font-size:.92rem}
+.coach-body details{border-bottom:1px solid var(--mist);padding:.5rem 0}
+.coach-body details:last-child{border-bottom:0}
+.coach-body summary{cursor:pointer;font-weight:700;font-family:var(--serif);font-size:1rem;color:var(--pine)}
+.coach-body p,.coach-body ul,.coach-body ol{margin:.5rem 0}
+.coach-body ul,.coach-body ol{padding-left:1.2rem}
+.coach-body li{margin:.2rem 0}
+table.mini{border-collapse:collapse;width:100%;font-size:.84rem;margin:.5rem 0}
+table.mini th,table.mini td{border:1px solid var(--line);padding:.3rem .4rem;text-align:left;vertical-align:top}
+table.mini th{background:var(--mist)}
+.tips li{margin-bottom:.6rem}
+.tool{padding:.5rem 0;border-bottom:1px solid var(--mist)}
+.tool:last-child{border-bottom:0}
+.tool b{display:block}
+.tool span{color:var(--muted);font-size:.86rem}
+
+.example{background:var(--lav-soft);border-radius:10px;padding:.2rem 1rem;margin-bottom:1.4rem}
+.example summary{cursor:pointer;padding:.6rem 0;font-weight:600;color:var(--lav)}
+.example .ex-body{padding-bottom:.8rem;font-size:.92rem}
+.example .ex-f{margin:.5rem 0}
+.example .ex-f b{display:block;font-size:.8rem;color:var(--muted)}
+.example .ex-f p{margin:.1rem 0;white-space:pre-line}
+
+/* ---------- champs ---------- */
+.field{margin-bottom:1.5rem}
+.field-top{display:flex;justify-content:space-between;align-items:flex-end;gap:.8rem;margin-bottom:.35rem}
+.field label,.field .lbl{font-weight:650;font-size:.98rem}
+.hint-btn{border:1px solid var(--lav);color:var(--lav);background:transparent;border-radius:999px;padding:.15rem .7rem;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.hint-btn:hover{background:var(--lav-soft)}
+.hint-btn[disabled]{opacity:.5;cursor:default}
+.hints{margin:.4rem 0 .5rem;padding:0;list-style:none}
+.hints li{background:var(--lav-soft);border-radius:8px;padding:.45rem .7rem;font-size:.88rem;margin-bottom:.3rem}
+.hints li b{color:var(--lav);margin-right:.3rem}
+input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.6rem .7rem;line-height:1.45}
+textarea{resize:vertical;min-height:2.6rem}
+input:focus,textarea:focus,select:focus{border-color:var(--pine);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pine) 22%,transparent)}
+.counter{font-size:.82rem;color:var(--muted);margin-top:.3rem}
+.counter.ok{color:var(--ok)}
+.counter.warn{color:var(--warn)}
+
+.radios{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.5rem}
+.radios label{display:flex;gap:.55rem;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:.6rem .7rem;cursor:pointer;font-weight:600}
+.radios label small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.radios label:has(input:checked){border-color:var(--pine);background:var(--ok-soft)}
+.radios input{margin-top:.25rem;accent-color:var(--pine)}
+
+.checks{display:grid;gap:.9rem}
+.checks fieldset{border:0;margin:0;padding:0}
+.checks legend{font-size:.84rem;color:var(--muted);font-weight:600;margin-bottom:.35rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chips label{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.35rem .8rem;font-size:.88rem;cursor:pointer;display:inline-flex;gap:.4rem;align-items:center}
+.chips label:has(input:checked){background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips label:has(input:focus-visible){outline:3px solid var(--ochre)}
+.focus-msg{font-size:.86rem;margin-top:.5rem;padding:.45rem .7rem;border-radius:8px}
+.focus-msg.ok{background:var(--ok-soft);color:var(--ok)}
+.focus-msg.warn{background:var(--warn-soft);color:var(--warn)}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table.grid{border-collapse:collapse;width:100%;min-width:620px}
+table.grid th{background:var(--mist);text-align:left;font-size:.8rem;font-weight:650;padding:.5rem .55rem;border-bottom:1px solid var(--line)}
+table.grid td{border-top:1px solid var(--mist);padding:.35rem;vertical-align:top}
+table.grid td.rowlab{font-weight:650;font-size:.88rem;padding:.6rem .55rem;background:var(--paper);width:1%;white-space:nowrap}
+table.grid textarea,table.grid input,table.grid select{border-color:transparent;background:transparent;padding:.4rem .45rem;font-size:.9rem;min-height:2.3rem}
+table.grid textarea:hover,table.grid input:hover,table.grid select:hover{border-color:var(--line)}
+table.grid textarea:focus,table.grid input:focus,table.grid select:focus{background:var(--surface);border-color:var(--pine)}
+table.grid td.del{width:1%}
+.del-btn{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.3rem .5rem;border-radius:6px}
+.del-btn:hover{color:var(--warn);background:var(--warn-soft)}
+.add-row{margin-top:.5rem}
+.empty-note{padding:1rem;color:var(--muted);font-size:.9rem}
+
+.preview{background:var(--surface);border:1px dashed var(--pine);border-radius:10px;padding:1rem 1.1rem;font-family:var(--serif);font-size:1.12rem;line-height:1.5}
+.preview.empty{font-family:var(--sans);font-size:.92rem;color:var(--muted);border-color:var(--line)}
+
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem}
+.calc>div{display:flex;flex-direction:column;justify-content:flex-end}
+.calc label{font-size:.84rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-out{margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.7rem .8rem}
+.kpi b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--pine);line-height:1.1}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.kpi.big{border-color:var(--ochre);background:var(--ochre-soft)}
+.kpi.neg b{color:var(--warn)}
+.calc-msg{margin-top:.7rem;font-size:.9rem;padding:.55rem .8rem;border-radius:8px;background:var(--paper)}
+.calc-msg.warn{background:var(--warn-soft);color:var(--warn)}
+.calc-msg.ok{background:var(--ok-soft);color:var(--ok)}
+
+.step-nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);flex-wrap:wrap}
+
+/* ---------- bilan ---------- */
+.bilan{max-width:1000px}
+.bilan h2{font-size:clamp(1.8rem,3.6vw,2.5rem);color:var(--pine);margin:.3rem 0 1rem}
+.big-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.big-score{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem}
+.big-score b{font-family:var(--serif);font-size:2.8rem;line-height:1;color:var(--pine)}
+.big-score.coh b{color:var(--lav)}
+.big-score p{margin:.4rem 0 0;color:var(--muted);font-size:.9rem}
+.bilan h3{font-size:1.35rem;margin:2rem 0 .8rem}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem}
+.badge{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem .7rem;text-align:center}
+.badge .ic{width:54px;height:54px;border-radius:50%;margin:0 auto .5rem;display:grid;place-items:center;font-size:1.6rem;background:var(--lav-soft);border:2px dashed var(--line);filter:grayscale(1);opacity:.45}
+.badge.on .ic{filter:none;opacity:1;border:2px solid var(--lav)}
+.badge b{display:block;font-size:.92rem}
+.badge small{color:var(--muted);font-size:.78rem}
+.chap-bars{display:grid;gap:.5rem}
+.chap-bar{display:grid;grid-template-columns:minmax(0,1fr) 3.5rem;gap:.8rem;align-items:center;font-size:.92rem}
+.chap-bar .bar{height:8px;background:var(--mist);border-radius:4px;overflow:hidden;grid-column:1/-1}
+.chap-bar .bar i{display:block;height:100%;background:var(--pine)}
+.checks-list{list-style:none;padding:0;margin:0;display:grid;gap:.45rem}
+.checks-list li{display:grid;grid-template-columns:26px 1fr auto;gap:.6rem;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem}
+.checks-list .st{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700}
+.checks-list .ok .st{background:var(--ok-soft);color:var(--ok)}
+.checks-list .ko .st{background:var(--warn-soft);color:var(--warn)}
+.checks-list p{margin:.15rem 0 0;font-size:.85rem;color:var(--muted)}
+.export-box{margin-top:2rem;background:var(--pine);color:var(--surface);border-radius:14px;padding:1.4rem 1.5rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.export-box h3{margin:0;font-size:1.3rem;color:inherit}
+.export-box p{margin:.3rem 0 0;opacity:.85;font-size:.92rem;max-width:56ch}
+
+/* ---------- pied de page ---------- */
+.main-col{min-width:0;display:flex;flex-direction:column}
+.main-col #main{flex:1}
+.site-foot{border-top:1px solid var(--line);padding:1.2rem clamp(1rem,3vw,2.6rem) 1.6rem;display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:space-between;align-items:center;font-size:.88rem;color:var(--muted)}
+.sf-who strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1rem}
+.sf-links{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.sf-links a{color:var(--pine);text-decoration:none;font-weight:600}
+.sf-links a:hover{text-decoration:underline}
+.sf-links a.sf-course{background:var(--ochre);color:#1C2321;padding:.4em .9em;border-radius:8px}
+.sf-links a.sf-course:hover{text-decoration:none;filter:brightness(1.05)}
+#bootFoot .site-foot{max-width:720px;margin:0 auto}
+#boot:not(.hidden) ~ #bootFoot{display:block}
+#boot.hidden ~ #bootFoot{display:none}
+
+#tip{position:fixed;z-index:60;max-width:260px;background:var(--ink);color:var(--paper);font-size:.84rem;line-height:1.4;padding:.5rem .7rem;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
+.badge{cursor:help}
+
+#leave{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.45);display:grid;place-items:center;padding:1rem}
+#leave.hidden{display:none}
+.leave-card{background:var(--surface);border-radius:14px;padding:1.5rem 1.6rem;max-width:460px;border-top:5px solid var(--ochre);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.leave-card h2{font-size:1.35rem;color:var(--pine);margin-bottom:.6rem}
+.leave-card p{margin:0 0 1.2rem;color:var(--muted)}
+.leave-actions{display:flex;flex-wrap:wrap;gap:.6rem}
+
+/* ---------- mission étude de marché ---------- */
+.formula{font-family:var(--serif);font-size:1.02rem;background:var(--pine);color:var(--surface);padding:.7rem .9rem;border-radius:8px;margin:.6rem 0;line-height:1.4}
+table.grid td.rowlab.wrap{white-space:normal;min-width:9rem;max-width:14rem}
+.map-wrap{display:grid;grid-template-columns:1fr;gap:1rem}
+.map-ctrl{display:contents}
+.map-axes{order:1}.map-view{order:2;max-width:480px;width:100%;justify-self:center}.map-help{order:3}.map-ctrl .tbl-wrap,.map-ctrl .empty-note{order:4}
+.map-axes{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:.5rem;margin-bottom:.6rem}
+.map-axes label{font-size:.8rem;font-weight:600;display:block;margin-bottom:.15rem}
+.map-help{font-size:.84rem;color:var(--muted);margin:.4rem 0}
+table.map-tab{min-width:0}
+table.map-tab tr.me td.rowlab{color:var(--ochre)}
+table.map-tab small{display:block;font-weight:400;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--pine)}
+input[type=range].unset{opacity:.4}
+.mapsvg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.mp-bg{fill:var(--paper)}
+.mp-axis{stroke:var(--line);stroke-width:1.5}
+.mp-title{font:700 13px var(--sans);fill:var(--pine)}
+.mp-end{font:11px var(--sans);fill:var(--muted)}
+.mp-dot{fill:var(--pine);stroke:var(--surface);stroke-width:2}
+.mp-me{fill:var(--ochre);stroke:var(--surface);stroke-width:2}
+.mp-lab{font:600 11px var(--sans);fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:3px}
+.mp-lab.me{fill:var(--ochre);font-weight:700}
+.next-box{margin-top:1rem;border:2px dashed var(--ochre);border-radius:14px;padding:1.1rem 1.3rem}
+.next-box h3{margin:0 0 .3rem;font-size:1.15rem;color:var(--ochre)}
+.next-box p{margin:0;color:var(--muted)}
+@media (max-width:640px){.map-axes{grid-template-columns:1fr 1fr}.map-axes>div:nth-child(3n+1){grid-column:1/-1}}
+
+.add-row{display:flex;flex-wrap:wrap;gap:.5rem}
+th.th-custom div{display:flex;gap:.2rem;align-items:center}
+.th-in{border:1px dashed var(--pine)!important;background:var(--surface)!important;padding:.25rem .4rem!important;font-size:.8rem!important;font-weight:650;min-width:7rem}
+.th-custom .del-btn{font-size:1rem;padding:.1rem .35rem}
+table.grid td.rowlab textarea{font-weight:650}
+.tip-i{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;border:1px solid currentColor;font:700 10px/1 var(--serif);font-style:italic;opacity:.7;margin-left:.15rem}
+.chips label[data-tip],legend.has-tip{cursor:help}
+
+table.grid td{min-width:8.5rem}
+table.grid td.del,table.map-tab td{min-width:0}
+table.grid td:has(select){min-width:7.5rem}
+.th-in{min-width:8rem}
+
+/* ---------- toasts ---------- */
+#toasts{position:fixed;bottom:1rem;right:1rem;display:grid;gap:.5rem;z-index:50;max-width:min(380px,calc(100vw - 2rem))}
+.toast{background:var(--ink);color:var(--paper);padding:.75rem 1rem;border-radius:10px;font-size:.92rem;box-shadow:0 6px 24px rgba(0,0,0,.25);animation:tin .25s ease-out}
+.toast.badge-toast{background:var(--lav);color:#fff}
+.toast.err{background:var(--warn);color:#fff}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .step-grid{grid-template-columns:1fr}
+  .coach{position:static;order:-1}
+  .coach-body{max-height:360px}
+}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr}
+  #side{position:fixed;inset:0 auto 0 0;width:min(320px,88vw);z-index:40;transform:translateX(-102%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  #side.open{transform:none}
+  .topbar{display:flex;align-items:center;gap:.6rem;position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line);padding:.55rem .8rem}
+  .topbar .t{font-family:var(--serif);font-weight:700;color:var(--pine);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+  #main{padding-top:1.2rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{#side,.topbar,.coach,.step-nav,#toasts{display:none!important}#app{display:block}}
+</style>
+</head>
+<body>
+<section id="boot">
+  <div class="boot-card">
+    <svg class="boot-ridge" viewBox="0 0 720 140" aria-hidden="true">
+      <path d="M0 120 L70 78 L110 96 L190 34 L250 82 L300 60 L380 104 L450 40 L520 88 L585 58 L640 92 L720 70 L720 140 L0 140 Z" fill="currentColor" opacity=".10"/>
+      <path d="M0 120 L70 78 L110 96 L190 34 L250 82 L300 60 L380 104 L450 40 L520 88 L585 58 L640 92 L720 70" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30 132 C150 128 170 110 260 112 S420 126 470 100 S600 76 690 52" fill="none" stroke="#C9861A" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <g fill="#C9861A"><circle cx="30" cy="132" r="6"/><circle cx="168" cy="117" r="5"/><circle cx="330" cy="117" r="5"/><circle cx="470" cy="100" r="5"/><circle cx="590" cy="74" r="5"/></g>
+      <g transform="translate(690 52)"><line x1="0" y1="0" x2="0" y2="-34" stroke="currentColor" stroke-width="2.5"/><path d="M0 -34 L22 -27 L0 -20 Z" fill="#C9861A"/></g>
+    </svg>
+    <p class="boot-kicker">Jeu Création d’entreprise</p>
+    <h1>Réalisez votre étude de marché</h1>
+    <p class="lede">Un parcours en six chapitres pour vérifier, chiffres et témoignages à l’appui, que votre projet a un marché. À chaque étape : ce qu’il faut produire, la méthode, des astuces, des outils et un exemple complet. À la fin, votre dossier d’étude s’exporte en document Word.</p>
+    <ol class="boot-steps">
+      <li><strong>Cadrer</strong>Objectif SMART, questions, hypothèses</li>
+      <li><strong>Marché</strong>Chiffres, zone, taille, segments</li>
+      <li><strong>Demande</strong>Enquête, résultats, persona</li>
+      <li><strong>Concurrence</strong>Benchmark, carte, Porter</li>
+      <li><strong>Environnement</strong>PESTEL, implantation</li>
+      <li><strong>Décision</strong>SWOT, axes, verdict, plan</li>
+    </ol>
+    <div class="boot-actions">
+      <button type="button" class="btn primary" id="bStart">Commencer mon projet</button>
+      <button type="button" class="btn" id="bRestore">Reprendre un brouillon (.json)</button>
+      <button type="button" class="btn ghost" id="bExample">Découvrir l’exemple complet</button>
+    </div>
+    <p class="boot-note"><a href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener">Consulter le cours complet (diaporama et ressources)</a></p>
+    <p class="boot-note">Rien n’est enregistré automatiquement. Utilisez « Enregistrer un brouillon » pour sauvegarder votre travail dans un fichier, puis « Reprendre un brouillon » pour continuer plus tard, sur cet ordinateur ou un autre.</p>
+  </div>
+</section>
+<div id="bootFoot"><footer class="site-foot">
+  <div class="sf-who"><strong>Pierrick Frottier</strong><span>Formateur indépendant en marketing, digital et création d’entreprise</span></div>
+  <div class="sf-links">
+    <a href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener" class="sf-course">Ouvrir le cours complet</a>
+    <a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a>
+    <a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="tel:+33631795936">06 31 79 59 36</a>
+    <a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>
+  </div>
+</footer></div>
+<div id="shell" class="hidden">
+  <div class="topbar"><button type="button" class="btn ghost" id="menuBtn" aria-label="Ouvrir le sommaire">☰ Sommaire</button><span class="t" id="topt"></span></div>
+  <div id="app">
+    <nav id="side" aria-label="Sommaire du parcours"></nav>
+    <div class="main-col"><main id="main"></main><footer class="site-foot">
+  <div class="sf-who"><strong>Pierrick Frottier</strong><span>Formateur indépendant en marketing, digital et création d’entreprise</span></div>
+  <div class="sf-links">
+    <a href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener" class="sf-course">Ouvrir le cours complet</a>
+    <a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a>
+    <a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="tel:+33631795936">06 31 79 59 36</a>
+    <a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>
+  </div>
+</footer></div>
+  </div>
+  <div id="scrim" class="hidden"></div>
+</div>
+<div id="toasts" role="status" aria-live="polite"></div>
+<div id="tip" role="tooltip" hidden></div>
+<div id="leave" class="hidden" role="dialog" aria-modal="true" aria-labelledby="leaveT">
+  <div class="leave-card">
+    <h2 id="leaveT">Avant de partir, enregistrez votre brouillon</h2>
+    <p>Rien n’est sauvegardé automatiquement. Si vous fermez cette page maintenant, les modifications faites depuis votre dernier brouillon seront perdues.</p>
+    <div class="leave-actions">
+      <button type="button" class="btn primary" id="leaveSave">Enregistrer mon brouillon</button>
+      <button type="button" class="btn" id="leaveStay">Continuer sans enregistrer</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<script>/* ==========================================================
+   MISSION « RÉALISER SON ÉTUDE DE MARCHÉ »
+   Jeu Création d'entreprise – fil rouge : La Roulotte Gourmande (fictif)
+   ========================================================== */
+
+const APP = {
+  id: 'etude-marche',
+  docTitle: 'Étude de marché',
+  docSub: 'Dossier d’étude de marché',
+  slugPrefix: 'etude_marche',
+  nextMission: { title: 'Mission suivante : l’offre commerciale', text: 'Votre étude est faite : cible, concurrents, tendances. La mission « Stratégie commerciale » vous aide à transformer ces résultats en offre, prix, argumentaire, communication et plan d’action.' }
+};
+
+const CHAPTERS = [
+  { id: 'c0', n: 0, title: 'Point de départ', time: '15 min' },
+  { id: 'c1', n: 1, title: 'Cadrer l’étude', time: '45 min' },
+  { id: 'c2', n: 2, title: 'Comprendre le marché', time: '1 h' },
+  { id: 'c3', n: 3, title: 'Étudier la demande', time: '1 h 30' },
+  { id: 'c4', n: 4, title: 'Analyser la concurrence', time: '1 h 30' },
+  { id: 'c5', n: 5, title: 'Analyser l’environnement', time: '45 min' },
+  { id: 'c6', n: 6, title: 'Synthèse et décision', time: '1 h' }
+];
+
+/* ---------- utilitaires numériques (évalués à l'exécution) ---------- */
+const N = v => { if (v == null || String(v).trim() === '') return NaN; return parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); };
+const F = (n, d = 0) => isNaN(n) ? '–' : n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+/* ---------- calcul de la taille du marché ---------- */
+function calcMarche(c) {
+  c = c || {};
+  const pop = N(c.pop), taux = N(c.taux), freq = N(c.freq), pan = N(c.panier), part = N(c.part);
+  const r = { valid: false };
+  if ([pop, taux, freq, pan].some(isNaN) || pop <= 0 || taux <= 0 || freq <= 0 || pan <= 0) return r;
+  r.valid = true;
+  r.clients = pop * taux / 100;
+  r.volume = r.clients * freq;
+  r.marche = r.volume * pan;
+  if (!isNaN(part) && part > 0) {
+    r.part = part;
+    r.mesClients = r.clients * part / 100;
+    r.ca = r.marche * part / 100;
+    r.achatsMois = r.volume * part / 100 / 12;
+  }
+  return r;
+}
+/* ---------- calcul de fiabilité de l'échantillon ---------- */
+function calcEchant(c) {
+  c = c || {};
+  const n = N(c.n), Np = N(c.N);
+  const r = { valid: false };
+  if (isNaN(n) || n <= 0) return r;
+  r.valid = true; r.n = n;
+  const fpc = (!isNaN(Np) && Np > n) ? Math.sqrt((Np - n) / (Np - 1)) : 1;
+  r.marge = 1.96 * Math.sqrt(0.25 / n) * fpc * 100;
+  const n0 = 1.96 * 1.96 * 0.25 / (0.05 * 0.05);
+  r.besoin = Math.ceil((!isNaN(Np) && Np > 0) ? n0 / (1 + (n0 - 1) / Np) : n0);
+  r.N = Np;
+  return r;
+}
+
+const STEPS = [
+/* ================================================== C0 */
+{
+  id: 's0', chap: 'c0', title: 'Mon projet en bref', time: '15 min',
+  produce: 'Une fiche d’identité de votre projet. Elle ouvre votre dossier d’étude et donne le contexte à toutes les étapes suivantes.',
+  theory: [
+    { t: 'Qu’est-ce qu’une étude de marché ?', b: `<p>L’étude de marché consiste à <strong>collecter, analyser et interpréter</strong> des informations sur un marché pour orienter les décisions stratégiques d’une entreprise. Elle apporte une approche structurée pour comprendre son environnement commercial et économique.</p><p><strong>En clair :</strong> c’est vérifier, chiffres et témoignages à l’appui, qu’il existe assez de clients prêts à acheter votre offre, à votre prix, malgré vos concurrents.</p>` },
+    { t: 'Pourquoi elle est essentielle', b: `<ul><li><strong>Valider une idée</strong> avant d’engager des investissements importants.</li><li><strong>Identifier vos clients</strong>, leurs attentes et leurs habitudes d’achat.</li><li><strong>Évaluer la concurrence</strong> et repérer des occasions de vous différencier.</li><li><strong>Anticiper les tendances</strong> de votre secteur.</li><li><strong>Réduire les risques</strong> en décidant sur des données fiables.</li><li><strong>Convaincre</strong> banquiers, financeurs et partenaires avec une démarche factuelle.</li></ul><p><strong>Exemple :</strong> un comité de prêt d’honneur demande presque toujours « comment savez-vous que les clients viendront ? ». L’étude de marché est votre réponse.</p>` },
+    { t: 'Les grandes étapes', b: `<ol><li>Définir les objectifs et le périmètre de l’étude.</li><li>Comprendre le marché global et ses tendances.</li><li>Étudier la demande : qui sont mes clients et que veulent-ils ?</li><li>Analyser la concurrence : forces et faiblesses des acteurs en place.</li><li>Examiner l’environnement externe (PESTEL).</li><li>Synthétiser et formuler des recommandations.</li></ol><p>Ce parcours suit exactement ces étapes. Vous pouvez les faire dans l’ordre ou sauter, revenir, modifier à tout moment.</p>` }
+  ],
+  tips: [
+    'Une étude de marché n’est pas une formalité pour le banquier : c’est vous qu’elle protège d’un mauvais investissement.',
+    'Restez ouvert : une étude qui ne fait que confirmer ce que vous pensiez déjà a souvent été mal menée.',
+    'Enregistrez un brouillon à la fin de chaque séance : c’est votre seule sauvegarde.'
+  ],
+  tools: [
+    { n: 'Bpifrance Création', u: 'https://bpifrance-creation.fr', d: 'Fiches pratiques et dossiers sectoriels gratuits.' },
+    { n: 'Annuaire des entreprises', u: 'https://annuaire-entreprises.data.gouv.fr', d: 'Base officielle et gratuite des entreprises françaises.' }
+  ],
+  fields: [
+    { id: 'p_nom', type: 'text', label: 'Nom de l’entreprise ou du projet', ph: 'Ex. La Roulotte Gourmande',
+      hints: ['Un nom provisoire suffit.', 'Vérifiez qu’il n’est pas déjà pris : annuaire des entreprises, INPI, réseaux sociaux.'] },
+    { id: 'p_porteur', type: 'text', label: 'Porteur ou porteuse de projet', ph: 'Prénom Nom',
+      hints: ['Indiquez tous les associés s’il y en a plusieurs.'] },
+    { id: 'p_activite', type: 'area', rows: 3, label: 'Votre activité en deux ou trois phrases', ph: 'Que vendez-vous, sous quelle forme, à qui ?',
+      hints: ['Commencez par un verbe : « Je propose… », « Je fabrique… », « J’accompagne… ».', 'Structure : « Je propose [quoi] à [qui] sous forme de [comment], sur [quelle zone]. »'] },
+    { id: 'p_zone', type: 'text', label: 'Zone géographique envisagée', ph: 'Ex. Manosque et 30 km autour',
+      hints: ['Vous la préciserez au chapitre 2 avec la zone de chalandise.'] },
+    { id: 'p_stade', type: 'select', label: 'Où en êtes-vous ?', options: ['Idée en cours de validation', 'Projet en construction, pas encore lancé', 'Lancé depuis moins d’un an', 'Lancé depuis plus d’un an'],
+      hints: ['Ce choix donne du contexte au lecteur de votre dossier.'] }
+  ]
+},
+
+/* ================================================== C1 */
+{
+  id: 's1', chap: 'c1', title: 'Mon cadre et mon objectif SMART', time: '25 min',
+  produce: 'Vos envies et vos limites de porteur de projet, puis un objectif SMART pour votre projet.',
+  theory: [
+    { t: 'Faire le point avant de foncer', b: `<p>Avant d’étudier un marché, faites le point sur vous. Qu’est-ce qui vous motive vraiment ? Qu’est-ce que vous ne voulez surtout pas ? Ce cadre est ce que vous êtes prêt à faire et à ne pas faire.</p><p><strong>Exemple :</strong> envies : travailler en extérieur, être en contact avec les clients, vivre de mon activité en deux ans. Limites : pas de travail le dimanche, pas plus de 30 minutes de trajet, pas d’emprunt au-delà de 40 000 €.</p><p>Ces limites comptent pour votre étude : un marché très porteur mais incompatible avec votre cadre n’est pas <em>votre</em> marché.</p>` },
+    { t: 'La méthode SMART', b: `<p>La méthode SMART qualifie et quantifie un objectif :</p><ul><li><strong>Spécifique :</strong> des mots précis sur ce que vous voulez vraiment. On doit pouvoir répondre par oui ou non à « l’ai-je atteint ? ».</li><li><strong>Mesurable :</strong> par quel chiffre suivre ma progression ? Ce sont vos indicateurs clés (KPI).</li><li><strong>Atteignable :</strong> la liste des étapes et des actions pour y arriver.</li><li><strong>Réaliste :</strong> la barre est-elle bien placée ? De quelles ressources ai-je besoin (humaines, financières, matérielles) ?</li><li><strong>Temporel :</strong> une échéance claire.</li></ul>` },
+    { t: 'Exemple appliqué à la création', b: `<table class="mini"><tr><th>Critère</th><th>Exemple</th></tr><tr><td>Spécifique</td><td>Ouvrir mon food truck sur la zone d’activités de Manosque</td></tr><tr><td>Mesurable</td><td>Premier jour de vente réalisé, 25 repas par jour en moyenne</td></tr><tr><td>Atteignable</td><td>Étude de marché, prêt d’honneur, achat du camion, emplacement, formation hygiène</td></tr><tr><td>Réaliste</td><td>8 ans d’expérience en cuisine, apport de 12 000 €, accompagnement Initiative</td></tr><tr><td>Temporel</td><td>Lancement le 1<sup>er</sup> mars</td></tr></table><p>Puis <strong>priorisez</strong> : par quelle action commencer ? Astuce : commencez par la plus difficile, quand votre énergie est intacte.</p>` }
+  ],
+  tips: [
+    'Écrivez vos limites noir sur blanc : elles vous éviteront de vous laisser emporter par un marché qui ne vous convient pas.',
+    'Un objectif sans date reste un souhait.',
+    'Et si vous ratez l’objectif ? Demandez-vous : ai-je été trop ambitieux, que m’a-t-il manqué, qu’ai-je bien fait ? Puis ajustez.'
+  ],
+  tools: [
+    { n: 'Google Sheets ou Excel', d: 'Suivre votre indicateur semaine après semaine.' },
+    { n: 'Rétroplanning ou diagramme de Gantt', d: 'Placer les étapes de « Atteignable » dans le temps.' }
+  ],
+  fields: [
+    { id: 'ob_envies', type: 'area', rows: 3, label: 'Mes envies', ph: 'Ce que vous voulez vivre avec ce projet',
+      hints: ['Rythme de travail, type de clients, revenus, lieu, autonomie, équipe.', 'Formulez au positif : « je veux… ».'] },
+    { id: 'ob_limites', type: 'area', rows: 3, label: 'Mes limites', ph: 'Ce que vous refusez',
+      hints: ['Distance, horaires, montant d’emprunt, secteurs, tâches que vous ne voulez pas faire.'] },
+    { id: 'ob_smart', type: 'table', label: 'Mon objectif SMART pour le projet', fixedRows: ['Spécifique', 'Mesurable', 'Atteignable', 'Réaliste (ressources)', 'Temporel'],
+      cols: [{ k: 'f', l: 'Critère' }, { k: 'txt', l: 'Pour mon projet' }],
+      hints: ['Spécifique : une phrase à laquelle on peut répondre par oui ou non.', 'Atteignable : listez trois à six étapes clés.', 'Réaliste : ressources humaines (compétences), financières (€) et matérielles (outils).'] },
+    { id: 'ob_first', type: 'text', label: 'Ma première action', ph: 'Ce que je fais dès cette semaine',
+      hints: ['Une action concrète, datée, faisable en moins d’une journée.'] }
+  ]
+},
+{
+  id: 's2', chap: 'c1', title: 'Les questions de mon étude', time: '20 min',
+  produce: 'La décision que votre étude doit éclairer, les questions précises auxquelles elle doit répondre et les hypothèses que vous allez vérifier.',
+  theory: [
+    { t: 'Fixer les objectifs de l’étude', b: `<p>Une étude utile part d’une <strong>décision à prendre</strong> : me lancer ou non, où m’installer, quelle cible viser, à quel prix vendre. Chaque question de l’étude doit aider à cette décision.</p><p><strong>Exemple :</strong> « Y a-t-il assez de salariés prêts à payer 14 € pour un déjeuner chaud sur la zone pour faire vivre un food truck ? »</p>` },
+    { t: 'Données quantitatives et qualitatives', b: `<ul><li><strong>Quantitatives :</strong> des chiffres. Combien de clients potentiels ? Quel budget ? Quelle fréquence ?</li><li><strong>Qualitatives :</strong> des motivations, des freins, des perceptions. Pourquoi choisissent-ils ? Qu’est-ce qui les agace ?</li></ul><p>Une bonne étude mélange les deux : les chiffres disent <em>combien</em>, le qualitatif dit <em>pourquoi</em>.</p>` },
+    { t: 'Formuler des hypothèses', b: `<p>Une hypothèse est une affirmation que vous croyez vraie mais que vous n’avez pas encore prouvée. Les écrire avant l’enquête vous oblige à les vérifier honnêtement.</p><p><strong>Exemple :</strong> « Les salariés de la zone sont prêts à payer 14 € pour un plat chaud fait maison. » À la fin de l’étude, elle sera confirmée, nuancée ou infirmée.</p>` }
+  ],
+  tips: [
+    'Cinq à huit questions suffisent. Au-delà, vous vous dispersez.',
+    'Pour chaque question, demandez-vous : « si j’avais la réponse, qu’est-ce que je déciderais différemment ? ». Si rien, supprimez-la.',
+    'Vos hypothèses les plus risquées sont celles sur le prix et sur le nombre de clients : vérifiez-les en priorité.'
+  ],
+  tools: [
+    { n: 'Carte mentale (papier, Miro, Xmind)', d: 'Lister toutes vos questions avant de les trier.' }
+  ],
+  fields: [
+    { id: 'et_decision', type: 'area', rows: 3, label: 'La décision que mon étude doit éclairer', ph: 'Ex. me lancer ou non, sur quelle zone, pour quelle cible',
+      hints: ['Une ou deux décisions maximum.', 'Formule : « À la fin de l’étude, je saurai si… ».'] },
+    { id: 'et_questions', type: 'table', label: 'Les questions auxquelles l’étude doit répondre', minRows: 4, addLabel: 'Ajouter une question',
+      cols: [{ k: 'q', l: 'Question' }, { k: 'type', l: 'Type d’information', type: 'select', options: ['', 'Quantitative', 'Qualitative'] }, { k: 'src', l: 'Où ou comment je trouve la réponse' }],
+      hints: ['Couvrez les quatre blocs : marché, demande, concurrence, environnement.', 'Exemples de sources : INSEE, questionnaire, entretiens, observation, client mystère, avis Google.'] },
+    { id: 'et_hyp', type: 'table', label: 'Mes hypothèses à vérifier', minRows: 3, addLabel: 'Ajouter une hypothèse',
+      cols: [{ k: 'h', l: 'Hypothèse' }, { k: 'comment', l: 'Comment je vais la vérifier' }],
+      hints: ['Une hypothèse sur le prix, une sur le volume de clients, une sur la concurrence.', 'Vous indiquerez le résultat de chacune au chapitre 6.'] }
+  ]
+},
+
+/* ================================================== C2 */
+{
+  id: 's3', chap: 'c2', title: 'Chiffres clés et tendances', time: '20 min',
+  produce: 'La définition de votre marché, des chiffres clés sourcés et les grandes tendances du secteur.',
+  theory: [
+    { t: 'Décrire le marché global', b: `<p>Commencez large : le secteur en France, ses chiffres et ses tendances. Puis resserrez sur votre zone et votre segment.</p><p><strong>Exemple (modèle de dossier) :</strong> en restauration, un repas sur cinq est pris hors domicile ; le temps moyen du repas baisse ; les consommateurs veulent connaître l’origine des produits tout en surveillant leur budget.</p>` },
+    { t: 'Toujours citer ses sources', b: `<p>Un chiffre sans source et sans date n’a aucune valeur pour un financeur. Notez systématiquement : la donnée, sa valeur, la source et l’année.</p><p>Privilégiez les sources officielles (INSEE, ministères, fédérations professionnelles) et les études récentes (moins de trois ans).</p>` },
+    { t: 'Les facteurs clés de succès', b: `<p>Les facteurs clés de succès (FCS) sont ce qu’il faut absolument maîtriser pour réussir sur ce marché.</p><p><strong>Exemple :</strong> pour la restauration rapide, l’emplacement, la rapidité de service, la régularité de la qualité et la maîtrise du coût matière.</p>` }
+  ],
+  tips: [
+    'Tapez « chiffres clés [votre secteur] [année] » et privilégiez les sites de fédérations professionnelles.',
+    'Les dossiers sectoriels de Bpifrance Création et des CCI sont gratuits et à jour.',
+    'Si un chiffre n’existe pas pour votre zone, utilisez le chiffre national et appliquez-le à la population locale, en l’indiquant clairement.'
+  ],
+  tools: [
+    { n: 'INSEE', u: 'https://www.insee.fr', d: 'Statistiques officielles : population, économie, entreprises.' },
+    { n: 'Bpifrance Création', u: 'https://bpifrance-creation.fr', d: 'Dossiers sectoriels : chiffres, réglementation, tendances.' },
+    { n: 'Xerfi', u: 'https://www.xerfi.com', d: 'Études sectorielles (synthèses gratuites, études complètes payantes).' },
+    { n: 'Statista', u: 'https://fr.statista.com', d: 'Statistiques sur de nombreux secteurs.' },
+    { n: 'Eurostat', u: 'https://ec.europa.eu/eurostat', d: 'Données européennes pour comparer.' },
+    { n: 'CCI France', u: 'https://www.cci.fr', d: 'Études et conseils sur les marchés locaux.' }
+  ],
+  fields: [
+    { id: 'ma_def', type: 'area', rows: 3, label: 'Mon marché en une phrase', ph: 'Quel besoin, pour quelle clientèle, sur quelle zone ?',
+      hints: ['Formule : « Le marché de [besoin] pour [clientèle] sur [zone]. »', 'Si vous visez particuliers et entreprises, citez les deux.'] },
+    { id: 'ma_chiffres', type: 'table', label: 'Chiffres clés du marché', minRows: 4, addLabel: 'Ajouter un chiffre',
+      cols: [{ k: 'd', l: 'Donnée' }, { k: 'v', l: 'Valeur' }, { k: 'src', l: 'Source' }, { k: 'an', l: 'Année' }],
+      hints: ['Au moins trois chiffres sourcés : taille du secteur, évolution, dépense moyenne.', 'Ajoutez un chiffre local : population, nombre d’entreprises de la zone.'] },
+    { id: 'ma_tend', type: 'table', label: 'Les grandes tendances', minRows: 3, addLabel: 'Ajouter une tendance',
+      cols: [{ k: 't', l: 'Tendance' }, { k: 'imp', l: 'Ce que ça change pour mon projet' }, { k: 'src', l: 'Source' }],
+      hints: ['Trois tendances maximum, chacune avec ce qu’elle change pour vous.', 'Colonne Source : nom de l’organisme ou du site, et l’année.'] },
+    { id: 'ma_fcs', type: 'area', rows: 3, label: 'Les facteurs clés de succès du marché', ph: 'Ce qu’il faut absolument maîtriser',
+      hints: ['Regardez ce que font tous les acteurs qui durent dans le secteur.'] }
+  ]
+},
+{
+  id: 's4', chap: 'c2', title: 'Zone de chalandise et taille du marché', time: '25 min',
+  produce: 'La zone d’où viendront vos clients et une estimation chiffrée du marché, de votre part possible et de votre chiffre d’affaires potentiel.',
+  theory: [
+    { t: 'La zone de chalandise', b: `<p>C’est la zone d’où viendront la plupart de vos clients : la zone d’attractivité de votre point de vente ou de votre activité. On la définit en temps de trajet ou en kilomètres.</p><p><strong>Exemple :</strong> un boulanger attire dans un rayon de 5 minutes à pied ; un garage dans un rayon de 15 minutes en voiture ; une boutique en ligne, la France entière.</p>` },
+    { t: 'Estimer la taille du marché', b: `<div class="formula">Marché (€ par an) = Population de la zone × Taux de consommateurs × Fréquence d’achat × Dépense par achat</div><table class="mini"><tr><th>Terme</th><th>Sens</th><th>Unité</th></tr><tr><td>Population</td><td>Personnes, ménages ou entreprises de la zone correspondant à votre cible</td><td>nombre</td></tr><tr><td>Taux</td><td>Part de cette population qui achète ce type de produit</td><td>%</td></tr><tr><td>Fréquence</td><td>Nombre d’achats par client et par an</td><td>achats par an</td></tr><tr><td>Dépense</td><td>Montant moyen d’un achat</td><td>€</td></tr></table><p><strong>Exemple :</strong> 10 000 habitants × 30 % × 4 achats par an × 25 € = <strong>300 000 € par an</strong>.</p>` },
+    { t: 'Votre part de marché potentielle', b: `<div class="formula">Mon CA potentiel = Marché × Part de marché visée</div><p>Avec 5 % de part de marché sur 300 000 €, le chiffre d’affaires potentiel est de <strong>15 000 € par an</strong>.</p><p>Un nouvel entrant dépasse rarement quelques pourcents la première année. Au-delà de 15 %, il faut une très bonne raison : absence de concurrent, offre unique, zone très petite.</p>` }
+  ],
+  tips: [
+    'Utilisez des hypothèses prudentes : un financeur fait davantage confiance à une estimation basse et justifiée qu’à un chiffre flatteur.',
+    'Le taux et la fréquence viendront idéalement de votre questionnaire (chapitre 3). Mettez une estimation maintenant, corrigez-la ensuite.',
+    'Notez la source de chaque chiffre dans le champ « hypothèses ».'
+  ],
+  tools: [
+    { n: 'INSEE, statistiques locales', u: 'https://statistiques-locales.insee.fr', d: 'Population, âge, revenus par commune ou quartier.' },
+    { n: 'Observatoire des territoires', u: 'https://www.observatoire-des-territoires.gouv.fr', d: 'Carte interactive pour segmenter la population.' },
+    { n: 'Géoportail ou Google Maps', d: 'Tracer votre zone et mesurer les temps de trajet.' }
+  ],
+  fields: [
+    { id: 'zo_zone', type: 'area', rows: 3, label: 'Ma zone de chalandise', ph: 'Communes, quartiers, rayon en minutes ou en kilomètres',
+      hints: ['Décrivez-la en temps de trajet : c’est ainsi que raisonnent vos clients.', 'Précisez les communes ou les zones incluses.'] },
+    { id: 'zo_type', type: 'select', label: 'Type de zone', options: ['Proximité immédiate (quartier, zone d’activités)', 'Ville et alentours', 'Département ou région', 'France entière', 'International'],
+      hints: ['Plus la zone est large, plus la concurrence à étudier est nombreuse.'] },
+    { id: 'zo_calc', type: 'calc', label: 'Calculateur de taille du marché', req: ['pop', 'taux', 'freq', 'panier'],
+      inputs: [
+        { k: 'pop', l: 'Population cible de la zone', ph: 'Ex. 4500' },
+        { k: 'taux', l: 'Part qui achète ce produit (%)', ph: 'Ex. 60' },
+        { k: 'freq', l: 'Achats par client et par an', ph: 'Ex. 40' },
+        { k: 'panier', l: 'Dépense moyenne par achat (€)', ph: 'Ex. 13' },
+        { k: 'part', l: 'Part de marché visée (%)', ph: 'Ex. 8' }
+      ],
+      compute: calcMarche,
+      render: (r, c) => {
+        if (!r.valid) return `<div class="calc-msg">Renseignez population, part d’acheteurs, fréquence et dépense moyenne pour estimer votre marché.</div>`;
+        let h = `<div class="calc-out">
+          <div class="kpi"><b>${F(r.clients)}</b><span>Clients potentiels sur la zone</span></div>
+          <div class="kpi"><b>${F(r.volume)}</b><span>Achats par an sur le marché</span></div>
+          <div class="kpi big"><b>${F(r.marche)} €</b><span>Taille du marché par an</span></div>
+          ${r.ca != null ? `<div class="kpi"><b>${F(r.mesClients)}</b><span>Mes clients avec ${F(r.part, 1)} % de part</span></div>
+          <div class="kpi big"><b>${F(r.ca)} €</b><span>Mon CA potentiel par an</span></div>
+          <div class="kpi"><b>${F(r.achatsMois)}</b><span>Ventes par mois</span></div>` : ''}
+        </div>`;
+        if (r.part > 15) h += `<div class="calc-msg warn">${F(r.part, 1)} % de part de marché, c’est ambitieux pour un nouvel entrant. Justifiez-le ou revoyez-le à la baisse.</div>`;
+        else if (r.ca != null) h += `<div class="calc-msg ok">Part de marché crédible pour un nouvel entrant. Comparez ce CA potentiel au seuil de rentabilité que vous calculerez dans la mission « Stratégie commerciale ».</div>`;
+        return h;
+      },
+      docRows: (c, r) => [
+        ['Population cible de la zone', F(N(c.pop))], ['Part qui achète ce produit', isNaN(N(c.taux)) ? '' : F(N(c.taux), 1) + ' %'],
+        ['Achats par client et par an', F(N(c.freq), 1)], ['Dépense moyenne par achat', isNaN(N(c.panier)) ? '' : F(N(c.panier), 2) + ' €'],
+        ['Clients potentiels', r.valid ? F(r.clients) : ''], ['Taille du marché par an', r.valid ? F(r.marche) + ' €' : ''],
+        ['Part de marché visée', r.part ? F(r.part, 1) + ' %' : ''], ['Mes clients potentiels', r.ca != null ? F(r.mesClients) : ''],
+        ['Mon chiffre d’affaires potentiel par an', r.ca != null ? F(r.ca) + ' €' : ''], ['Ventes par mois', r.ca != null ? F(r.achatsMois) : '']
+      ],
+      hints: ['Population : seulement la partie de la population qui correspond à votre cible (ex. les salariés, pas tous les habitants).', 'Taux et fréquence : reprenez les réponses de votre questionnaire dès que vous les avez.', 'Commencez avec une part de marché prudente, entre 2 et 10 %.'] },
+    { id: 'zo_hyp', type: 'area', rows: 3, label: 'Mes hypothèses et leurs sources', ph: 'D’où viennent les chiffres du calculateur ?',
+      hints: ['Une ligne par chiffre : « Population : 4 500 salariés, source… ».'] }
+  ]
+},
+{
+  id: 's5', chap: 'c2', title: 'Segmenter le marché', time: '15 min',
+  produce: 'Les principaux segments de votre marché et le segment que vous choisissez de viser en priorité.',
+  theory: [
+    { t: 'Qu’est-ce que segmenter ?', b: `<p>La segmentation identifie des <strong>sous-ensembles homogènes</strong> de clients au sein d’un marché plus large. Elle permet d’adapter l’offre aux attentes de chaque groupe.</p><p><strong>Exemple (modèle de dossier) :</strong> la restauration se découpe en consommation du midi pour les actifs (service à table, self, restauration rapide) et en consommation de loisir le soir et le week-end (restauration à thème, traditionnelle, gastronomique). On peut aussi segmenter par niveau de prix.</p>` },
+    { t: 'Les quatre familles de critères', b: `<ul><li><strong>Démographique :</strong> âge, sexe, revenu, niveau d’études, situation familiale.</li><li><strong>Géographique :</strong> pays, région, zone urbaine ou rurale.</li><li><strong>Comportementale :</strong> habitudes et fréquence d’achat, fidélité, sensibilité au prix.</li><li><strong>Psychographique :</strong> mode de vie, valeurs, centres d’intérêt.</li></ul>` },
+    { t: 'Un bon segment est…', b: `<ul><li><strong>Mesurable :</strong> on peut estimer sa taille.</li><li><strong>Accessible :</strong> on sait comment le toucher.</li><li><strong>Différenciable :</strong> ses attentes sont distinctes des autres segments.</li><li><strong>Exploitable :</strong> assez grand et rentable pour vos moyens.</li></ul><p>Actualisez votre segmentation régulièrement : les comportements évoluent.</p>` }
+  ],
+  tips: [
+    'Choisir un segment, c’est renoncer aux autres pour un temps. C’est ce qui vous rend visible.',
+    'Le meilleur segment n’est pas forcément le plus grand : c’est celui où vous avez un vrai avantage.',
+    'Notez la taille estimée de chaque segment, même approximative.'
+  ],
+  tools: [
+    { n: 'Observatoire des territoires', u: 'https://www.observatoire-des-territoires.gouv.fr', d: 'Croiser âge, revenus et lieux de vie.' },
+    { n: 'INSEE, statistiques locales', u: 'https://statistiques-locales.insee.fr', d: 'Chiffrer chaque segment sur votre zone.' }
+  ],
+  fields: [
+    { id: 'sg_tab', type: 'table', label: 'Les segments de mon marché', minRows: 3, addLabel: 'Ajouter un segment',
+      cols: [{ k: 'seg', l: 'Segment' }, { k: 'crit', l: 'Critères qui le définissent' }, { k: 'taille', l: 'Taille estimée' }, { k: 'att', l: 'Besoins spécifiques' }, { k: 'attr', l: 'Attractivité pour moi', type: 'select', options: ['', 'Forte', 'Moyenne', 'Faible'] }, { k: 'src', l: 'Source' }],
+      hints: ['Deux à cinq segments.', 'Colonne Source : d’où vient la taille estimée (INSEE, CCI, enquête…).', 'Attractivité : croisez la taille du segment et votre capacité à le servir mieux que les autres.'] },
+    { id: 'sg_choix', type: 'text', label: 'Mon segment prioritaire', ph: 'Le segment que je vise en premier',
+      hints: ['Reprenez le nom exact d’un segment du tableau.'] },
+    { id: 'sg_justif', type: 'area', rows: 3, label: 'Pourquoi ce segment ?', ph: 'Mesurable, accessible, différenciable, exploitable',
+      hints: ['Passez les quatre critères en revue en une phrase chacun.'] }
+  ]
+},
+
+/* ================================================== C3 */
+{
+  id: 's6', chap: 'c3', title: 'Mes méthodes de collecte', time: '20 min',
+  produce: 'Le choix de vos méthodes d’enquête, quantitatives et qualitatives, et l’organisation de la collecte.',
+  theory: [
+    { t: 'Méthodes quantitatives', b: `<p>Elles donnent des <strong>données chiffrées et mesurables</strong> :</p><ul><li>sondages en ligne et questionnaires structurés (Google Forms, Typeform, SurveyMonkey) ;</li><li>panels de consommateurs, qui suivent les comportements dans le temps ;</li><li>études sectorielles (Xerfi, Nielsen…).</li></ul>` },
+    { t: 'Méthodes qualitatives', b: `<p>Elles font comprendre les <strong>motivations et les freins</strong> :</p><ul><li>entretiens semi-directifs : une conversation guidée par quelques thèmes ;</li><li>focus groups : un petit groupe réagit à une idée ou à un produit ;</li><li>observation sur le terrain : regarder ce que les gens font vraiment, pas ce qu’ils disent faire.</li></ul><p><strong>Exemple :</strong> compter les clients d’un concurrent entre 12 h et 13 h 30 sur trois jours vaut mieux que de deviner sa fréquentation.</p>` },
+    { t: 'Échantillon et quotas', b: `<p>L’<strong>échantillon</strong> est le groupe de personnes interrogées. Il doit ressembler à votre cible.</p><p>La <strong>méthode des quotas</strong> consiste à reproduire dans l’échantillon les proportions de la population (ex. 60 % de femmes si votre cible compte 60 % de femmes).</p><p>Évitez de n’interroger que vos proches : ils sont bienveillants, donc peu fiables.</p>` }
+  ],
+  tips: [
+    'Combinez au moins une méthode quantitative et une qualitative.',
+    'Allez là où est votre cible : sortie de bureaux, marchés, salles d’attente, groupes Facebook locaux.',
+    'Prévoyez une petite contrepartie pour remercier les répondants : un café, un tirage au sort, un bon de réduction au lancement.'
+  ],
+  tools: [
+    { n: 'Google Forms', u: 'https://forms.google.com', d: 'Questionnaire en ligne gratuit, résultats en graphiques.' },
+    { n: 'Typeform', u: 'https://www.typeform.com', d: 'Questionnaires agréables à remplir sur mobile.' },
+    { n: 'SurveyMonkey', u: 'https://www.surveymonkey.com', d: 'Sondages professionnels.' },
+    { n: 'YouGov', u: 'https://fr.yougov.com', d: 'Panels consommateurs pour des études quantitatives.' }
+  ],
+  fields: [
+    { id: 'me_sel', type: 'checks', label: 'Mes méthodes', groups: [
+      { g: 'Quantitatives', d: 'Des méthodes qui produisent des chiffres mesurables : combien de clients, à quelle fréquence, pour quel budget.', items: [
+        { v: 'Questionnaire en ligne', d: 'Les mêmes questions envoyées par un lien (Google Forms, Typeform…) pour obtenir des réponses chiffrées auprès de beaucoup de personnes.' },
+        { v: 'Questionnaire en face à face', d: 'Le même questionnaire posé de vive voix sur le terrain : plus long à mener, mais il touche des personnes peu présentes en ligne.' },
+        { v: 'Comptage et observation chiffrée', d: 'Compter sur place ce qui se passe réellement (passants, clients d’un concurrent, temps d’attente) à des moments définis.' },
+        { v: 'Études sectorielles et données publiques', d: 'Exploiter des chiffres déjà publiés (INSEE, fédérations, CCI, Xerfi) sans avoir à les collecter vous-même.' }] },
+      { g: 'Qualitatives', d: 'Des méthodes qui expliquent le pourquoi : motivations, freins et perceptions, auprès d’un petit nombre de personnes.', items: [
+        { v: 'Entretiens individuels', d: 'Une conversation guidée de 20 à 45 minutes avec une personne de la cible pour comprendre en profondeur ses motivations et ses freins.' },
+        { v: 'Focus group', d: 'Un groupe de 6 à 10 personnes de la cible qui échange, animé par vous, autour d’une idée, d’un produit ou d’un prix.' },
+        { v: 'Observation sur le terrain', d: 'Regarder sans intervenir comment les clients se comportent vraiment : ce qu’ils regardent, où ils hésitent, ce qu’ils achètent.' },
+        { v: 'Client mystère', d: 'Se présenter comme un client chez un concurrent pour évaluer son accueil, ses prix, ses délais et sa qualité de service.' },
+        { v: 'Analyse des avis en ligne', d: 'Lire et classer les avis laissés sur Google, Trustpilot ou les réseaux pour repérer ce que les clients apprécient ou reprochent.' }] }],
+      hints: ['Survolez chaque méthode pour voir sa définition.', 'Au moins une méthode de chaque famille.', 'Le client mystère et les avis en ligne sont rapides et gratuits pour étudier la concurrence.'] },
+    { id: 'me_plan', type: 'linked', label: 'Organisation de chaque méthode', source: 'me_sel', empty: 'Cochez vos méthodes ci-dessus : elles apparaîtront ici.',
+      cols: [{ k: 'obj', l: 'Ce que je veux apprendre' }, { k: 'qui', l: 'Qui et combien' }, { k: 'quand', l: 'Où et quand' }],
+      hints: ['Qui et combien : « 100 salariés de la zone », « 5 responsables RH ».', 'Où et quand : lieu précis et dates.'] },
+    { id: 'me_echant', type: 'area', rows: 3, label: 'Mon échantillon', ph: 'Taille visée, quotas, mode de diffusion',
+      hints: ['Visez au moins 30 réponses pour un premier aperçu, idéalement 100 ou plus.', 'Précisez vos quotas : âge, sexe, lieu, type d’entreprise.'] }
+  ]
+},
+{
+  id: 's7', chap: 'c3', title: 'Mon questionnaire', time: '30 min',
+  produce: 'Un questionnaire d’au moins huit questions, varié, testé avant diffusion.',
+  theory: [
+    { t: 'Structurer un questionnaire', b: `<ol><li><strong>Introduction :</strong> qui vous êtes, pourquoi ce questionnaire, combien de temps il prend.</li><li><strong>Question filtre :</strong> la personne fait-elle partie de votre cible ?</li><li><strong>Habitudes actuelles :</strong> ce qu’elle fait aujourd’hui.</li><li><strong>Attentes et freins.</strong></li><li><strong>Réaction à votre idée et prix.</strong></li><li><strong>Profil :</strong> âge, situation, commune, à la fin.</li></ol><p>Allez du général au particulier, et gardez les questions personnelles pour la fin.</p>` },
+    { t: 'Les types de questions', b: `<ul><li><strong>Fermée à choix unique :</strong> « Déjeunez-vous hors de votre lieu de travail ? Oui / Non ».</li><li><strong>Fermée à choix multiples :</strong> « Qu’est-ce qui compte le plus ? (trois réponses maximum) ».</li><li><strong>Échelle :</strong> « De 1 à 5, quelle importance accordez-vous au fait maison ? ».</li><li><strong>Numérique :</strong> « Combien dépensez-vous en moyenne pour un déjeuner ? ».</li><li><strong>Ouverte :</strong> « Qu’est-ce qui vous manque aujourd’hui ? ». Riche mais longue à analyser : deux maximum.</li></ul>` },
+    { t: 'Les erreurs à éviter', b: `<ul><li>La question orientée : « N’aimeriez-vous pas un délicieux plat fait maison ? ».</li><li>La double question : « Trouvez-vous l’offre bonne et pas chère ? ».</li><li>Le jargon et les abréviations.</li><li>Les questionnaires trop longs : au-delà de 5 minutes, les abandons explosent.</li><li>Oublier le <strong>test pilote</strong> : faites-le remplir à trois ou cinq personnes avant de le diffuser.</li></ul>` }
+  ],
+  tips: [
+    'Pour le prix, demandez plutôt « à partir de quel prix trouveriez-vous cela trop cher ? » que « combien seriez-vous prêt à payer ? ».',
+    'Chaque question doit servir une question de votre étude (étape 3). Sinon, supprimez-la.',
+    'Ajoutez à la fin : « Accepteriez-vous d’être recontacté ? ». Vous constituez votre premier fichier de prospects.'
+  ],
+  tools: [
+    { n: 'Google Forms', u: 'https://forms.google.com', d: 'Logique de sections pour la question filtre.' },
+    { n: 'Tally', u: 'https://tally.so', d: 'Formulaires gratuits et illimités.' },
+    { n: 'CNIL', u: 'https://www.cnil.fr', d: 'Règles RGPD si vous collectez des coordonnées.' }
+  ],
+  fields: [
+    { id: 'qu_intro', type: 'area', rows: 3, label: 'Texte d’introduction du questionnaire', ph: 'Bonjour, je prépare la création de…',
+      hints: ['Qui vous êtes, l’objectif, la durée (« 3 minutes »), l’anonymat.'] },
+    { id: 'qu_tab', type: 'table', label: 'Mes questions', minRows: 8, addLabel: 'Ajouter une question',
+      cols: [{ k: 'q', l: 'Question' }, { k: 'type', l: 'Type', type: 'select', options: ['', 'Fermée à choix unique', 'Fermée à choix multiples', 'Échelle de notation', 'Numérique', 'Ouverte'] }, { k: 'rep', l: 'Réponses proposées' }, { k: 'obj', l: 'Ce qu’elle m’apprend' }],
+      hints: ['Commencez par une question filtre.', 'Variez les types : au moins deux types différents.', 'Gardez l’âge et la commune pour la fin.'] },
+    { id: 'qu_test', type: 'area', rows: 2, label: 'Mon test pilote', ph: 'Testé auprès de qui ? Qu’ai-je corrigé ?',
+      hints: ['Trois à cinq personnes de la cible, chronométrez le temps de réponse.'] }
+  ]
+},
+{
+  id: 's8', chap: 'c3', title: 'Les résultats de mon enquête', time: '25 min',
+  produce: 'La fiabilité de votre échantillon, les informations clés collectées et vos principaux enseignements.',
+  theory: [
+    { t: 'La marge d’erreur', b: `<p>Un questionnaire ne donne pas la vérité exacte : il donne une estimation avec une marge d’erreur.</p><div class="formula">Marge d’erreur ≈ 1,96 × √( p × (1 − p) ÷ n )</div><table class="mini"><tr><th>Terme</th><th>Sens</th><th>Unité</th></tr><tr><td>n</td><td>Nombre de répondants</td><td>personnes</td></tr><tr><td>p</td><td>Proportion observée ; on prend 0,5 (le cas le plus prudent)</td><td>sans unité</td></tr><tr><td>1,96</td><td>Coefficient pour un niveau de confiance de 95 %</td><td>sans unité</td></tr></table><p><strong>Exemple :</strong> avec 100 répondants, la marge est d’environ ± 9,8 points : si 60 % disent « oui », la vraie proportion est entre 50 et 70 %. Avec 400 répondants, elle tombe à ± 4,9 points. Il faut environ 385 répondants pour ± 5 points.</p>` },
+    { t: 'Dépouiller et analyser', b: `<ol><li><strong>Nettoyez :</strong> retirez les réponses hors cible (question filtre) et incohérentes.</li><li><strong>Comptez :</strong> pourcentages pour les questions fermées, moyennes pour les numériques.</li><li><strong>Croisez :</strong> les réponses varient-elles selon l’âge, le lieu, la fréquence ?</li><li><strong>Regroupez</strong> les réponses ouvertes par thèmes.</li></ol><p><strong>Exemple (modèle de dossier) :</strong> sur 250 personnes interrogées, 137 déclarent fréquenter des restaurants à thème : c’est sur ces 137 qu’on analyse les attentes.</p>` },
+    { t: 'Les informations à faire ressortir', b: `<p>Profil, lieu de vie, qui influence et qui décide, sources d’information, critères de choix, moment et fréquence, budget, attentes par ordre d’importance, freins, intention d’achat.</p><p>Ce sont ces informations qui construiront votre persona à l’étape suivante.</p>` }
+  ],
+  tips: [
+    'Moins de 30 répondants : parlez de « tendances observées », pas de résultats.',
+    'Méfiez-vous des intentions d’achat : entre « je viendrais sûrement » et acheter vraiment, il y a un écart important. Divisez-les par deux par prudence.',
+    'Notez ce qui vous a surpris : c’est souvent l’enseignement le plus utile.'
+  ],
+  tools: [
+    { n: 'Google Sheets ou Excel', d: 'Tableaux croisés dynamiques pour croiser les réponses.' },
+    { n: 'Onglet « Réponses » de Google Forms', d: 'Graphiques automatiques par question.' }
+  ],
+  fields: [
+    { id: 're_calc', type: 'calc', label: 'Fiabilité de mon échantillon', req: ['n'],
+      inputs: [
+        { k: 'n', l: 'Nombre de répondants exploitables', ph: 'Ex. 112' },
+        { k: 'N', l: 'Taille de la population cible (facultatif)', ph: 'Ex. 4500' }
+      ],
+      compute: calcEchant,
+      render: (r) => {
+        if (!r.valid) return `<div class="calc-msg">Indiquez le nombre de répondants pour connaître la précision de vos résultats.</div>`;
+        const lvl = r.n < 30 ? 'warn' : 'ok';
+        const msg = r.n < 30 ? 'Moins de 30 répondants : parlez de tendances, pas de résultats chiffrés.' : r.n < 100 ? 'Échantillon exploitable, mais restez prudent sur les petits écarts.' : 'Échantillon solide pour une étude de création d’entreprise.';
+        return `<div class="calc-out">
+          <div class="kpi big"><b>± ${F(r.marge, 1)} pts</b><span>Marge d’erreur (confiance 95 %)</span></div>
+          <div class="kpi"><b>${F(r.besoin)}</b><span>Répondants nécessaires pour ± 5 points</span></div>
+        </div><div class="calc-msg ${lvl}">${msg} Si 60 % répondent « oui », la vraie valeur se situe entre ${F(Math.max(0, 60 - r.marge), 0)} % et ${F(Math.min(100, 60 + r.marge), 0)} %.</div>`;
+      },
+      docRows: (c, r) => [
+        ['Répondants exploitables', F(N(c.n))], ['Population cible', isNaN(N(c.N)) ? 'Non renseignée' : F(N(c.N))],
+        ['Marge d’erreur (confiance 95 %)', r.valid ? '± ' + F(r.marge, 1) + ' points' : ''],
+        ['Répondants nécessaires pour ± 5 points', r.valid ? F(r.besoin) : '']
+      ],
+      hints: ['Ne comptez que les réponses de personnes qui font partie de votre cible.', 'La population cible est celle du calculateur de taille de marché (étape 5).'] },
+    { id: 're_tab', type: 'table', need: 7, label: 'Ce que j’ai appris', fixedRows: ['Profil (âge, situation)', 'Lieu de vie ou de travail', 'Qui influence le choix', 'Qui décide et qui paie', 'Sources d’information', 'Critères de choix', 'Moment et fréquence d’achat', 'Budget', 'Attentes (par ordre d’importance)', 'Freins exprimés', 'Intention d’achat'],
+      cols: [{ k: 'f', l: 'Élément' }, { k: 'info', l: 'Information collectée (avec chiffres)' }],
+      hints: ['Mettez des chiffres : « 64 % déjeunent hors de leur bureau au moins une fois par semaine ».', 'Au moins sept lignes renseignées.'] },
+    { id: 're_insights', type: 'area', rows: 4, label: 'Mes trois enseignements majeurs', ph: '1. … 2. … 3. …',
+      hints: ['Un enseignement = un fait + ce qu’il change pour votre projet.'] },
+    { id: 're_surprise', type: 'area', rows: 2, label: 'Ce qui m’a surpris ou contredit', ph: 'Ce que je n’attendais pas',
+      hints: ['Comparez avec vos hypothèses de l’étape 3.'] }
+  ]
+},
+{
+  id: 's9', chap: 'c3', title: 'Ma cible et mon persona', time: '15 min',
+  produce: 'Un persona fondé sur les données de votre enquête : profil, besoins, freins, motivations et canaux d’information.',
+  theory: [
+    { t: 'Du résultat d’enquête au persona', b: `<p>Le persona est un client type fictif, construit à partir de vos données réelles. Il donne un visage à votre segment prioritaire et servira à toutes vos décisions : offre, prix, communication.</p><p><strong>Exemple (modèle de dossier) :</strong> « Devenez spécialiste d’une clientèle précise. » Le persona est l’outil de cette spécialisation.</p>` },
+    { t: 'Ce qu’il doit contenir', b: `<ul><li>Un prénom, un âge, une situation.</li><li>Son quotidien et le moment où votre offre intervient.</li><li>Ses besoins et attentes.</li><li>Ses freins et ce qui l’agace aujourd’hui.</li><li>Son critère de choix décisif.</li><li>Où il s’informe et qui l’influence.</li></ul><p>Chaque élément doit pouvoir être relié à une donnée de l’enquête : c’est ce qui distingue un persona d’un portrait imaginé.</p>` }
+  ],
+  tips: [
+    'Utilisez les mots exacts des répondants : ils serviront tels quels dans votre communication.',
+    'Un persona principal suffit pour démarrer.',
+    'Ce persona sera repris dans la mission « Stratégie commerciale ».'
+  ],
+  tools: [
+    { n: 'AnswerThePublic', u: 'https://answerthepublic.com', d: 'Les questions que votre cible tape dans Google.' },
+    { n: 'Groupes Facebook locaux et forums', d: 'Les besoins exprimés spontanément.' }
+  ],
+  fields: [
+    { id: 'pe_nom', type: 'text', label: 'Persona : prénom, âge, métier', ph: 'Ex. Claire, 38 ans, chargée de clientèle',
+      hints: ['Prenez l’âge et la situation les plus fréquents dans vos réponses.'] },
+    { id: 'pe_profil', type: 'area', rows: 3, label: 'Son profil et son quotidien', ph: 'Situation, mode de vie, contraintes',
+      hints: ['Décrivez le moment précis où votre offre intervient dans sa journée.'] },
+    { id: 'pe_besoins', type: 'area', rows: 3, label: 'Ses besoins et attentes', ph: 'Ce qu’il cherche à obtenir',
+      hints: ['Reprenez les attentes classées en tête dans votre enquête.'] },
+    { id: 'pe_freins', type: 'area', rows: 3, label: 'Ses freins', ph: 'Ce qui l’empêche d’acheter',
+      hints: ['Reprenez les freins exprimés à l’étape précédente.'] },
+    { id: 'pe_motiv', type: 'area', rows: 2, label: 'Son critère de choix décisif', ph: 'Ce qui le fait choisir',
+      hints: ['Prix, rapidité, qualité, proximité, valeurs ?'] },
+    { id: 'pe_canaux', type: 'area', rows: 2, label: 'Où il s’informe et qui l’influence', ph: 'Réseaux, médias, lieux, personnes',
+      hints: ['Reprenez la ligne « Sources d’information » de vos résultats.'] },
+    { id: 'pe_preuve', type: 'area', rows: 2, label: 'Les données qui fondent ce persona', ph: 'Quels résultats de l’enquête ?',
+      hints: ['Ex. « 58 % des répondants ont entre 30 et 45 ans, 71 % citent la rapidité comme premier critère. »'] }
+  ]
+},
+
+/* ================================================== C4 */
+{
+  id: 's10', chap: 'c4', title: 'Repérer mes concurrents', time: '20 min',
+  produce: 'La liste de vos concurrents directs et indirects, avec leurs informations clés.',
+  theory: [
+    { t: 'Concurrence directe et indirecte', b: `<ul><li><strong>Directe :</strong> les entreprises qui proposent des produits ou services similaires sur le même marché cible.</li><li><strong>Indirecte :</strong> les solutions alternatives qui répondent au même besoin par d’autres moyens.</li></ul><p><strong>Exemple :</strong> pour une boulangerie, les autres boulangeries sont directes ; le rayon pain du supermarché et le terminal de cuisson de la station-service sont indirects.</p>` },
+    { t: 'Où trouver l’information', b: `<ul><li><strong>Google et Google Maps :</strong> repérer les implantations, lire les avis.</li><li><strong>Réseaux sociaux :</strong> offres, prix, communication, réactions des clients.</li><li><strong>Societe.com et Pappers :</strong> ancienneté, chiffre d’affaires, effectif.</li><li><strong>Trustpilot et fiches Google :</strong> ce que les clients apprécient ou reprochent.</li><li><strong>Le terrain :</strong> client mystère, observation, discussion avec les fournisseurs.</li></ul>` }
+  ],
+  tips: [
+    'Ne dites jamais « je n’ai pas de concurrent » : s’il n’y en a aucun, il n’y a peut-être pas de marché.',
+    'Pensez à ce que fait votre client aujourd’hui à la place de vous acheter : c’est votre premier concurrent indirect.',
+    'Notez la date de vos relevés de prix : ils évoluent.'
+  ],
+  tools: [
+    { n: 'Google Maps', u: 'https://maps.google.com', d: 'Implantations, horaires, avis.' },
+    { n: 'Pappers', u: 'https://www.pappers.fr', d: 'Comptes publiés, ancienneté, dirigeants.' },
+    { n: 'Societe.com', u: 'https://www.societe.com', d: 'Données juridiques et financières.' },
+    { n: 'Infogreffe', u: 'https://www.infogreffe.fr', d: 'Carte et statistiques des entreprises.' },
+    { n: 'SimilarWeb', u: 'https://www.similarweb.com', d: 'Trafic estimé des sites concurrents.' },
+    { n: 'Trustpilot', u: 'https://fr.trustpilot.com', d: 'Avis consommateurs.' }
+  ],
+  fields: [
+    { id: 'cc_list', type: 'table', label: 'Mes concurrents', minRows: 3, addLabel: 'Ajouter un concurrent', addCols: true, addColLabel: 'Ajouter un critère (colonne)',
+      cols: [{ k: 'nom', l: 'Concurrent' }, { k: 'type', l: 'Type', type: 'select', options: ['', 'Direct', 'Indirect'] }, { k: 'lieu', l: 'Localisation' }, { k: 'anc', l: 'Ancienneté et taille' }, { k: 'prix', l: 'Prix pratiqués' }, { k: 'avis', l: 'Réputation et avis' }, { k: 'src', l: 'Source' }],
+      hints: ['Au moins trois concurrents, dont un direct et un indirect.', 'Ajoutez vos propres critères en colonne (ex. livraison, labels, effectif) avec « Ajouter un critère ».', 'Colonne Source : Google Maps, Pappers, client mystère, site…', 'Les trois premiers de la liste seront comparés dans le benchmark et placés sur la carte.', 'Réputation : note Google et nombre d’avis.'] },
+    { id: 'cc_src', type: 'area', rows: 2, label: 'Mes sources et méthodes', ph: 'Client mystère, avis, sites, observation…',
+      hints: ['Précisez la méthode et la date de vos relevés.'] }
+  ]
+},
+{
+  id: 's11', chap: 'c4', title: 'Benchmark', time: '30 min',
+  produce: 'Une comparaison critère par critère entre vos trois principaux concurrents et votre projet.',
+  theory: [
+    { t: 'Le benchmarking', b: `<p>Le benchmarking évalue les pratiques des acteurs du secteur pour identifier leurs forces et faiblesses, et trouver vos axes de différenciation.</p><p><strong>Exemple (cours) :</strong> un artisan qui veut ouvrir une boulangerie compare les boulangeries existantes : type de produits, prix de la baguette (1,10 € chez A, 1,50 € chez B), qualité perçue, service, horaires, canaux de vente, communication. Il se positionne en traditionnel plus une gamme bio, à 1,20 €, ouvert de 6 h à 20 h avec click & collect.</p>` },
+    { t: 'Les critères à comparer', b: `<p>Offre, prix, qualité perçue, service client, horaires et disponibilité, canaux de vente, communication, avis clients. Ajoutez les critères propres à votre secteur.</p><p>La colonne « Mon projet » est la plus importante : elle montre où vous serez meilleur, équivalent ou moins bien.</p>` }
+  ],
+  tips: [
+    'Ne cherchez pas à être meilleur partout : choisissez deux ou trois critères où vous serez nettement supérieur.',
+    'Un critère où tous les concurrents sont faibles est une opportunité.',
+    'Les noms des colonnes reprennent vos trois premiers concurrents de l’étape précédente.'
+  ],
+  tools: [
+    { n: 'Client mystère', d: 'Commander, appeler, demander un devis chez chaque concurrent.' },
+    { n: 'Avis Google des concurrents', d: 'Lire en priorité les avis à 2 et 3 étoiles.' }
+  ],
+  fields: [
+    { id: 'bm_tab', type: 'table', need: 6, addRows: true, addRowLabel: 'Ajouter un critère (ligne)', label: 'Mon benchmark', fixedRows: ['Offre et produits', 'Prix moyen', 'Qualité perçue', 'Service client', 'Horaires et disponibilité', 'Canaux de vente', 'Communication', 'Avis clients (note et volume)'],
+      cols: [{ k: 'f', l: 'Critère' },
+        { k: 'c1', l: 'Concurrent 1', lab: v => ((v.cc_list || [])[0] || {}).nom || 'Concurrent 1' },
+        { k: 'c2', l: 'Concurrent 2', lab: v => ((v.cc_list || [])[1] || {}).nom || 'Concurrent 2' },
+        { k: 'c3', l: 'Concurrent 3', lab: v => ((v.cc_list || [])[2] || {}).nom || 'Concurrent 3' },
+        { k: 'moi', l: 'Mon projet', lab: v => v.p_nom ? v.p_nom + ' (moi)' : 'Mon projet' }, { k: 'src', l: 'Source' }],
+      hints: ['Remplissez d’abord la colonne de votre projet.', 'Ajoutez les critères propres à votre secteur avec « Ajouter un critère » (ex. garanties, délais, labels).', 'Colonne Source : client mystère, site, avis, relevé du…', 'Soyez factuel : prix relevés, horaires réels, note Google exacte.'] },
+    { id: 'bm_ecarts', type: 'area', rows: 4, label: 'Mes axes de différenciation', ph: 'Où je serai nettement meilleur',
+      hints: ['Deux ou trois critères, chacun avec la preuve que vous ferez mieux.'] }
+  ]
+},
+{
+  id: 's12', chap: 'c4', title: 'Carte de positionnement', time: '20 min',
+  produce: 'Une carte qui place vos concurrents et votre projet sur deux critères décisifs pour vos clients, et la lecture que vous en faites.',
+  theory: [
+    { t: 'La cartographie concurrentielle', b: `<p>C’est une représentation graphique qui visualise le positionnement des acteurs selon deux critères importants pour les clients. Elle fait apparaître les <strong>zones encombrées</strong> et les <strong>espaces libres</strong>.</p>` },
+    { t: 'Bien choisir ses deux axes', b: `<p>Choisissez deux critères :</p><ul><li><strong>importants</strong> pour vos clients (voir les critères de choix de votre enquête) ;</li><li><strong>indépendants</strong> l’un de l’autre (prix et qualité sont souvent liés : préférez par exemple prix et rapidité, ou prix et caractère local) ;</li><li>sur lesquels les concurrents <strong>se distinguent</strong>.</li></ul><p><strong>Exemple :</strong> pour la restauration du midi, « prix » et « fait maison ».</p>` }
+  ],
+  tips: [
+    'Une case vide n’est une opportunité que si des clients la veulent. Vérifiez avec votre enquête.',
+    'Testez plusieurs couples d’axes : chacun raconte une histoire différente.',
+    'Les acteurs proviennent de votre liste de concurrents (étape 11).'
+  ],
+  tools: [
+    { n: 'Canva ou PowerPoint', d: 'Refaire la carte proprement pour un dossier ou un pitch.' }
+  ],
+  fields: [
+    { id: 'cp_map', type: 'map', label: 'Ma carte de positionnement', source: 'cc_list',
+      hints: ['Axe horizontal : souvent le prix, du moins cher au plus cher.', 'Axe vertical : votre critère de différenciation principal.', 'Placez-vous là où vous serez vraiment, pas là où vous aimeriez être.'] },
+    { id: 'cp_lecture', type: 'area', rows: 3, label: 'Ce que montre la carte', ph: 'Zones encombrées, espaces libres, ma place',
+      hints: ['Formule : « La zone [x] est occupée par… L’espace [y] est libre, et l’enquête montre que… »'] }
+  ]
+},
+{
+  id: 's13', chap: 'c4', title: 'Les cinq forces de Porter', time: '20 min',
+  produce: 'L’analyse des cinq forces qui pèsent sur votre marché et votre conclusion sur son attractivité.',
+  theory: [
+    { t: 'Le modèle de Porter', b: `<p>Il évalue l’attractivité d’un marché à travers cinq forces qui influencent la rentabilité :</p><ul><li><strong>Intensité de la concurrence :</strong> plus la rivalité est forte, plus les marges sont réduites.</li><li><strong>Menace des nouveaux entrants :</strong> barrières à l’entrée (coûts d’installation, brevets, réglementation).</li><li><strong>Pouvoir des fournisseurs :</strong> votre dépendance à eux pour les prix et la disponibilité.</li><li><strong>Pouvoir des clients :</strong> leur capacité à imposer prix et conditions.</li><li><strong>Menace des substituts :</strong> d’autres produits qui pourraient remplacer votre offre.</li></ul>` },
+    { t: 'Exemple : un supermarché bio', b: `<table class="mini"><tr><th>Force</th><th>Analyse</th></tr><tr><td>Concurrence</td><td>Acteurs établis (Biocoop, Naturalia) et grandes enseignes avec des gammes bio.</td></tr><tr><td>Nouveaux entrants</td><td>Investissements élevés en logistique et en sourcing, mais l’e-commerce facilite l’entrée.</td></tr><tr><td>Fournisseurs</td><td>Petits producteurs, mais la demande croissante leur permet d’imposer des conditions.</td></tr><tr><td>Clients</td><td>Informés et exigeants sur la qualité et le prix.</td></tr><tr><td>Substituts</td><td>Circuits courts, marchés de producteurs, coopératives.</td></tr></table>` }
+  ],
+  tips: [
+    'Quatre ou cinq forces « fortes » : marché difficile. Il faudra une différenciation très nette.',
+    'Le pouvoir des fournisseurs est souvent oublié par les créateurs : qui fixe vos prix d’achat ?',
+    'Concluez toujours : le marché est-il attractif pour vous ?'
+  ],
+  tools: [
+    { n: 'Dossiers sectoriels Bpifrance Création', u: 'https://bpifrance-creation.fr', d: 'Barrières à l’entrée et réglementation du secteur.' }
+  ],
+  fields: [
+    { id: 'pt_tab', type: 'table', label: 'Mes cinq forces', fixedRows: ['Intensité de la concurrence', 'Menace des nouveaux entrants', 'Pouvoir des fournisseurs', 'Pouvoir des clients', 'Menace des substituts'],
+      cols: [{ k: 'f', l: 'Force' }, { k: 'ana', l: 'Analyse' }, { k: 'int', l: 'Intensité', type: 'select', options: ['', 'Faible', 'Moyenne', 'Forte'] }, { k: 'src', l: 'Source' }],
+      hints: ['Reprenez votre liste de concurrents pour la première ligne.', 'Colonne Source : benchmark, dossier sectoriel, échanges avec des fournisseurs…', 'Pour les substituts, pensez aux concurrents indirects.'] },
+    { id: 'pt_concl', type: 'area', rows: 3, label: 'Le marché est-il attractif pour moi ?', ph: 'Ma conclusion',
+      hints: ['Comptez les forces fortes et dites comment vous comptez y faire face.'] }
+  ]
+},
+
+/* ================================================== C5 */
+{
+  id: 's14', chap: 'c5', title: 'L’analyse PESTEL', time: '25 min',
+  produce: 'Les six familles de facteurs externes, leur impact et leur force sur votre projet, et votre dispositif de veille.',
+  theory: [
+    { t: 'Les six familles', b: `<ul><li><strong>Politique :</strong> fiscalité, stabilité, politique commerciale, aides publiques.</li><li><strong>Économique :</strong> inflation, taux d’intérêt, croissance, pouvoir d’achat.</li><li><strong>Socioculturel :</strong> comportements, valeurs, habitudes de consommation.</li><li><strong>Technologique :</strong> innovations, plateformes, automatisation, intelligence artificielle.</li><li><strong>Écologique :</strong> lois environnementales, attentes de durabilité.</li><li><strong>Légal :</strong> droit du travail, protection du consommateur, normes.</li></ul>` },
+    { t: 'Exemple : une boulangerie', b: `<table class="mini"><tr><th>Facteur</th><th>Analyse</th></tr><tr><td>Politique</td><td>Réglementation sanitaire stricte ; aides au maintien des commerces de proximité.</td></tr><tr><td>Économique</td><td>Hausse du prix de la farine et du beurre ; pouvoir d’achat fluctuant.</td></tr><tr><td>Socioculturel</td><td>Demande pour le bio, le sans gluten, le fait maison et le local.</td></tr><tr><td>Technologique</td><td>Commande en ligne et click & collect.</td></tr><tr><td>Écologique</td><td>Emballages, gaspillage, circuits courts.</td></tr><tr><td>Légal</td><td>Étiquetage, affichage des allergènes, normes européennes.</td></tr></table>` },
+    { t: 'De l’analyse à la décision', b: `<p>Le PESTEL n’est utile que s’il débouche sur des opportunités et des menaces. Chacune de vos lignes alimentera la colonne « externe » de votre SWOT au chapitre 6.</p>` }
+  ],
+  tips: [
+    'Ne remplissez pas pour remplir : un facteur sans impact sur votre projet se note « Neutre ».',
+    'Cherchez les règles propres à votre métier : diplômes obligatoires, autorisations, normes.',
+    'Mettez en place une veille automatique pour ne rien rater.'
+  ],
+  tools: [
+    { n: 'Google Alerts', u: 'https://www.google.fr/alerts', d: 'Veille automatique sur un mot-clé.' },
+    { n: 'Bpifrance Le Lab', u: 'https://lelab.bpifrance.fr', d: 'Études sur les PME et leurs tendances.' },
+    { n: 'Ministère de l’Économie', u: 'https://www.economie.gouv.fr/entreprises', d: 'Réglementation et aides pour les entreprises.' },
+    { n: 'Banque mondiale', u: 'https://donnees.banquemondiale.org', d: 'Données économiques internationales.' },
+    { n: 'Légifrance', u: 'https://www.legifrance.gouv.fr', d: 'Textes de loi de votre secteur.' }
+  ],
+  fields: [
+    { id: 'pl_tab', type: 'table', label: 'Mon PESTEL', fixedRows: ['Politique', 'Économique', 'Socioculturel', 'Technologique', 'Écologique', 'Légal'],
+      cols: [{ k: 'f', l: 'Facteur' }, { k: 'desc', l: 'Ce que j’observe' }, { k: 'imp', l: 'Impact', type: 'select', options: ['', 'Opportunité', 'Menace', 'Neutre'] }, { k: 'force', l: 'Force', type: 'select', options: ['', 'Faible', 'Moyenne', 'Forte'] }, { k: 'src', l: 'Source' }],
+      hints: ['Les six lignes, même brièvement : c’est attendu dans un dossier de financement.', 'Colonne Source : Légifrance, INSEE, ministère, presse spécialisée, mairie… avec l’année.', 'Pour chaque ligne : un fait observé, puis son effet sur votre projet.'] },
+    { id: 'pl_veille', type: 'area', rows: 2, label: 'Ma veille', ph: 'Outils, sujets suivis, fréquence',
+      hints: ['Exemple : « Google Alerts sur “food truck Manosque” et “réglementation restauration ambulante”, lecture le lundi. »'] }
+  ]
+},
+{
+  id: 's15', chap: 'c5', title: 'Étude d’implantation', time: '20 min',
+  produce: 'L’évaluation de votre zone ou de votre emplacement sur cinq familles de critères.',
+  theory: [
+    { t: 'Pourquoi une étude d’implantation', b: `<p>Pour un commerce, l’emplacement fait une grande partie du succès. L’étude d’implantation complète l’étude de marché en évaluant la zone et le local.</p><p>Pas de local ? Adaptez : pour un service à domicile, évaluez votre zone d’intervention ; pour un vendeur ambulant, vos emplacements ; pour une activité en ligne, vos plateformes.</p>` },
+    { t: 'Les cinq familles de critères', b: `<ol><li><strong>Population de la zone :</strong> nombre, habitudes d’achat, adéquation avec la cible, évolution.</li><li><strong>Passage :</strong> flux, habitudes de déplacement, saisonnalité.</li><li><strong>Attractivité :</strong> commerces voisins, centres d’animation (mairie, écoles, tourisme), dynamisme, projets d’urbanisme.</li><li><strong>Concurrents sur la zone :</strong> qualité de leurs emplacements, notoriété, services.</li><li><strong>Emplacement :</strong> visibilité, surface, accès, stationnement, coût (loyer, droit au bail, travaux).</li></ol>` }
+  ],
+  tips: [
+    'Comptez les passants à différentes heures et différents jours : c’est la donnée la plus parlante.',
+    'Renseignez-vous à la mairie sur les projets d’urbanisme : un chantier de deux ans peut ruiner un emplacement.',
+    'Faites parler les commerçants voisins.'
+  ],
+  tools: [
+    { n: 'Géoportail', u: 'https://www.geoportail.gouv.fr', d: 'Cartes, cadastre et projets d’aménagement.' },
+    { n: 'Mairie et service urbanisme', d: 'Projets de travaux, règles d’occupation du domaine public.' }
+  ],
+  fields: [
+    { id: 'im_tab', type: 'table', label: 'Évaluation de mon implantation', fixedRows: ['Population de la zone', 'Passage et flux', 'Attractivité de la zone', 'Concurrents sur la zone', 'Caractéristiques de l’emplacement'],
+      cols: [{ k: 'f', l: 'Critère' }, { k: 'ev', l: 'Évaluation', type: 'select', options: ['', 'Très favorable', 'Favorable', 'Défavorable', 'Très défavorable'] }, { k: 'com', l: 'Commentaires' }, { k: 'src', l: 'Source' }],
+      hints: ['Commentez chaque évaluation avec un fait observé.', 'Colonne Source : comptage, mairie, Géoportail, échanges avec les commerçants…', 'Sans local, adaptez la dernière ligne à vos conditions d’exercice.'] },
+    { id: 'im_concl', type: 'area', rows: 2, label: 'Ma conclusion sur l’implantation', ph: 'L’emplacement ou la zone convient-il ?',
+      hints: ['Une phrase de verdict, puis la principale réserve.'] }
+  ]
+},
+
+/* ================================================== C6 */
+{
+  id: 's16', chap: 'c6', title: 'Mon SWOT', time: '15 min',
+  produce: 'Une matrice SWOT (ou MOFF) qui rassemble tout ce que vous avez appris.',
+  theory: [
+    { t: 'La matrice SWOT', b: `<p>Le SWOT (ou MOFF en français) classe les enjeux en quatre catégories :</p><ul><li><strong>Forces</strong> et <strong>Faiblesses</strong> : internes, elles parlent de vous et de votre projet.</li><li><strong>Opportunités</strong> et <strong>Menaces</strong> : externes, elles viennent du marché, de la concurrence et de l’environnement.</li></ul><p>Il permet de comprendre rapidement les enjeux du marché et la place que vous y occupez.</p>` },
+    { t: 'Exemple : une chaîne de restauration rapide', b: `<table class="mini"><tr><th></th><th>Exemples</th></tr><tr><td>Forces</td><td>Notoriété, processus standardisés, large réseau, adaptation rapide aux tendances.</td></tr><tr><td>Faiblesses</td><td>Dépendance aux matières premières, image peu saine, pression sur les marges.</td></tr><tr><td>Opportunités</td><td>Essor du « fast good », offres végétariennes, livraison en ligne.</td></tr><tr><td>Menaces</td><td>Réglementations santé et environnement, nouveaux acteurs, sensibilité écologique.</td></tr></table>` }
+  ],
+  tips: [
+    'Opportunités et menaces : reprenez votre PESTEL et vos cinq forces.',
+    'Forces et faiblesses : reprenez votre benchmark (colonne de votre projet).',
+    'Trois à cinq éléments par case, les plus importants en premier.'
+  ],
+  tools: [
+    { n: 'Tableau à quatre cases (papier, Miro, Canva)', d: 'Le faire en atelier avec des post-its.' }
+  ],
+  fields: [
+    { id: 'sw_tab', type: 'table', label: 'Ma matrice SWOT', fixedRows: ['Forces (interne)', 'Faiblesses (interne)', 'Opportunités (externe)', 'Menaces (externe)'],
+      cols: [{ k: 'f', l: 'Catégorie' }, { k: 'txt', l: 'Éléments (un par ligne)', type: 'area' }],
+      hints: ['Une force n’en est une que si le client la perçoit.', 'Ne confondez pas : « hausse des prix des matières premières » est une menace, pas une faiblesse.'] }
+  ]
+},
+{
+  id: 's17', chap: 'c6', title: 'Mes axes stratégiques', time: '20 min',
+  produce: 'Quatre axes stratégiques issus du croisement de votre SWOT et l’axe que vous jugez prioritaire.',
+  theory: [
+    { t: 'Du constat à l’action', b: `<p>Le SWOT doit déboucher sur des leviers d’action concrets : consolider les forces, réduire les faiblesses, saisir les opportunités, gérer les menaces de façon proactive.</p><p>La méthode la plus simple consiste à croiser les cases :</p><ul><li><strong>Forces × Opportunités :</strong> exploiter. Comment utiliser mes atouts pour saisir les occasions ?</li><li><strong>Faiblesses × Opportunités :</strong> corriger. Quelle faiblesse m’empêche de saisir une occasion ?</li><li><strong>Forces × Menaces :</strong> se protéger. Comment mes atouts me défendent-ils ?</li><li><strong>Faiblesses × Menaces :</strong> éviter. Quel risque dois-je absolument neutraliser ?</li></ul><p><strong>Exemple :</strong> force « réseau de producteurs locaux » × opportunité « envie de manger local » → mettre les producteurs au cœur de l’offre et de la communication.</p>` }
+  ],
+  tips: [
+    'Chaque axe doit citer au moins un élément de votre SWOT.',
+    'Un axe est une direction, pas encore une action : les actions viennent à l’étape suivante.',
+    'Choisissez un axe prioritaire : on ne fait pas tout en même temps.'
+  ],
+  tools: [],
+  fields: [
+    { id: 'ax_tab', type: 'table', label: 'Mes axes stratégiques', fixedRows: ['Forces × Opportunités : exploiter', 'Faiblesses × Opportunités : corriger', 'Forces × Menaces : se protéger', 'Faiblesses × Menaces : éviter'],
+      cols: [{ k: 'f', l: 'Croisement' }, { k: 'txt', l: 'Mon axe' }],
+      hints: ['Formule : « Je m’appuie sur [force] pour [opportunité]. »', 'Commencez par Forces × Opportunités, souvent la plus évidente.'] },
+    { id: 'ax_prio', type: 'area', rows: 2, label: 'Mon axe prioritaire', ph: 'Celui par lequel je commence, et pourquoi',
+      hints: ['Le plus impactant ou le plus urgent.'] }
+  ]
+},
+{
+  id: 's18', chap: 'c6', title: 'Conclusion et plan d’action', time: '25 min',
+  produce: 'Le résultat de vos hypothèses, votre verdict sur le projet, votre conclusion et un plan d’action daté.',
+  theory: [
+    { t: 'Conclure une étude de marché', b: `<p>La conclusion répond à la décision posée au départ (étape 3). Elle s’appuie sur les faits, reconnaît les limites de l’étude et indique ce qu’il reste à vérifier.</p><p>Un « non » ou un « pas encore » n’est pas un échec : c’est de l’argent et des mois de travail économisés, ou un projet à réorienter.</p>` },
+    { t: 'Le plan d’action', b: `<p>Un plan d’action efficace repose sur :</p><ul><li>des <strong>objectifs précis et mesurables</strong> (ex. : 25 repas par jour au troisième mois) ;</li><li>les <strong>ressources nécessaires</strong> : humaines, financières, matérielles ;</li><li>un <strong>calendrier avec des jalons</strong> ;</li><li>des <strong>indicateurs</strong> pour mesurer l’efficacité et ajuster.</li></ul><p>C’est le lien avec la suite : offre commerciale, puis business plan.</p>` }
+  ],
+  tips: [
+    'Soyez honnête sur les hypothèses infirmées : un financeur apprécie la lucidité.',
+    'Trois à six actions suffisent, avec une date chacune.',
+    'Gardez ce dossier : il nourrira directement votre business plan.'
+  ],
+  tools: [
+    { n: 'Votre chargé d’accompagnement Initiative', d: 'Faire relire votre conclusion avant le comité.' },
+    { n: 'Rétroplanning ou Trello', d: 'Suivre l’avancement des actions.' }
+  ],
+  fields: [
+    { id: 'co_hyp', type: 'linked', label: 'Résultat de mes hypothèses', source: 'et_hyp', sourceKey: 'h', empty: 'Ajoutez vos hypothèses à l’étape « Les questions de mon étude » : elles apparaîtront ici.',
+      cols: [{ k: 'res', l: 'Résultat', type: 'select', options: ['', 'Confirmée', 'Nuancée', 'Infirmée', 'Pas encore vérifiée'] }, { k: 'preuve', l: 'Ce qui le montre' }],
+      hints: ['Citez le chiffre ou l’observation qui tranche.', '« Nuancée » : vraie pour une partie de la cible seulement.'] },
+    { id: 'co_verdict', type: 'radio', label: 'Mon verdict', options: [
+      { v: 'Je me lance', d: 'Le marché est porteur et ma place est claire' },
+      { v: 'Je me lance avec ajustements', d: 'Porteur, à condition de corriger quelques points' },
+      { v: 'J’approfondis', d: 'Des questions clés restent sans réponse' },
+      { v: 'Je réoriente le projet', d: 'Le marché ne permet pas le projet en l’état' }],
+      hints: ['Relisez vos hypothèses et votre SWOT avant de trancher.'] },
+    { id: 'co_concl', type: 'area', rows: 5, label: 'Ma conclusion', ph: 'Réponse à la décision de départ, arguments clés, limites de l’étude',
+      hints: ['Trois paragraphes : ce que dit le marché, ma place, ce qu’il reste à vérifier.'] },
+    { id: 'co_plan', type: 'table', label: 'Mon plan d’action', minRows: 3, addLabel: 'Ajouter une action',
+      cols: [{ k: 'act', l: 'Action' }, { k: 'obj', l: 'Objectif mesurable' }, { k: 'res', l: 'Ressources' }, { k: 'ech', l: 'Échéance' }, { k: 'ind', l: 'Indicateur' }],
+      hints: ['Reprenez votre axe prioritaire et vos hypothèses non vérifiées.', 'Chaque action a une échéance et un indicateur : vérifié par le score de cohérence.'] }
+  ]
+}
+];
+
+/* ---------- contrôles de cohérence ---------- */
+const filledV = v => v != null && String(v).trim() !== '';
+const rowsOf = (s, id) => Array.isArray(s.values[id]) ? s.values[id] : [];
+const CHECKS = [
+  { id: 'smart', step: 's1', label: 'Objectif SMART complet', test: s => rowsOf(s, 'ob_smart').length === 5 && rowsOf(s, 'ob_smart').every(r => r && filledV(r.txt)), advice: 'Renseignez les cinq lettres de votre objectif SMART.' },
+  { id: 'quest', step: 's2', label: 'Au moins trois questions d’étude avec leur source', test: s => rowsOf(s, 'et_questions').filter(r => filledV(r.q) && filledV(r.type) && filledV(r.src)).length >= 3, advice: 'Formulez trois questions, avec leur type et leur source.' },
+  { id: 'hyp', step: 's2', label: 'Au moins deux hypothèses à vérifier', test: s => rowsOf(s, 'et_hyp').filter(r => filledV(r.h)).length >= 2, advice: 'Écrivez au moins deux hypothèses, dont une sur le prix ou le volume de clients.' },
+  { id: 'chiffres', step: 's3', label: 'Au moins trois chiffres clés sourcés', test: s => rowsOf(s, 'ma_chiffres').filter(r => filledV(r.v) && filledV(r.src)).length >= 3, advice: 'Ajoutez trois chiffres avec leur source.' },
+  { id: 'taille', step: 's4', label: 'Taille du marché estimée', test: s => calcMarche(s.values.zo_calc).valid, advice: 'Renseignez le calculateur de taille du marché.' },
+  { id: 'part', step: 's4', label: 'Part de marché visée crédible (15 % ou moins)', test: s => { const r = calcMarche(s.values.zo_calc); return r.valid && r.part > 0 && r.part <= 15; }, advice: 'Indiquez une part de marché, idéalement entre 2 et 10 % pour un nouvel entrant.' },
+  { id: 'seg', step: 's5', label: 'Au moins deux segments et un segment prioritaire', test: s => rowsOf(s, 'sg_tab').filter(r => filledV(r.seg)).length >= 2 && filledV(s.values.sg_choix), advice: 'Décrivez au moins deux segments et choisissez-en un.' },
+  { id: 'mix', step: 's6', label: 'Méthodes quantitatives et qualitatives combinées', test: s => { const sel = s.values.me_sel || []; const q = STEPS.find(x => x.id === 's6').fields[0].groups.map(g => g.items.map(i => i.v)); return sel.some(v => q[0].includes(v)) && sel.some(v => q[1].includes(v)); }, advice: 'Cochez au moins une méthode de chaque famille.' },
+  { id: 'quest8', step: 's7', label: 'Questionnaire d’au moins huit questions variées', test: s => { const r = rowsOf(s, 'qu_tab').filter(x => filledV(x.q)); return r.length >= 8 && new Set(r.map(x => x.type).filter(Boolean)).size >= 2; }, advice: 'Rédigez huit questions avec au moins deux types différents.' },
+  { id: 'n30', step: 's8', label: 'Au moins 30 répondants exploitables', test: s => { const r = calcEchant(s.values.re_calc); return r.valid && r.n >= 30; }, advice: 'Poursuivez la collecte jusqu’à 30 réponses au minimum.' },
+  { id: 'persona', step: 's9', label: 'Persona complet et fondé sur des données', test: s => ['pe_nom', 'pe_besoins', 'pe_freins', 'pe_canaux', 'pe_preuve'].every(k => filledV(s.values[k])), advice: 'Complétez le persona, y compris « Les données qui fondent ce persona ».' },
+  { id: 'conc', step: 's10', label: 'Au moins trois concurrents, directs et indirects', test: s => { const r = rowsOf(s, 'cc_list').filter(x => filledV(x.nom)); return r.length >= 3 && r.some(x => x.type === 'Direct') && r.some(x => x.type === 'Indirect'); }, advice: 'Listez trois concurrents dont au moins un direct et un indirect.' },
+  { id: 'bench', step: 's11', label: 'Benchmark renseigné pour votre projet (6 critères ou plus)', test: s => rowsOf(s, 'bm_tab').filter(r => r && filledV(r.moi)).length >= 6, advice: 'Remplissez la colonne de votre projet sur au moins six critères.' },
+  { id: 'carte', step: 's12', label: 'Carte de positionnement complète', test: s => mapComplete(s), advice: 'Nommez les deux axes et placez votre projet et au moins deux concurrents.' },
+  { id: 'porter', step: 's13', label: 'Cinq forces évaluées', test: s => rowsOf(s, 'pt_tab').length === 5 && rowsOf(s, 'pt_tab').every(r => r && filledV(r.int) && filledV(r.ana)), advice: 'Donnez une analyse et une intensité à chacune des cinq forces.' },
+  { id: 'pestel', step: 's14', label: 'PESTEL complet sur les six facteurs', test: s => rowsOf(s, 'pl_tab').length === 6 && rowsOf(s, 'pl_tab').every(r => r && filledV(r.desc) && filledV(r.imp)), advice: 'Renseignez les six facteurs avec leur impact.' },
+  { id: 'sources', step: 's14', label: 'Analyses sourcées (PESTEL, Porter, benchmark)', test: s => rowsOf(s, 'pl_tab').filter(r => r && filledV(r.src)).length >= 4 && rowsOf(s, 'pt_tab').filter(r => r && filledV(r.src)).length >= 3 && rowsOf(s, 'bm_tab').filter(r => r && filledV(r.src)).length >= 4, advice: 'Renseignez la colonne Source : au moins 4 lignes du PESTEL, 3 forces de Porter et 4 critères du benchmark.' },
+  { id: 'swot', step: 's16', label: 'SWOT rempli sur les quatre cases', test: s => rowsOf(s, 'sw_tab').length === 4 && rowsOf(s, 'sw_tab').every(r => r && filledV(r.txt)), advice: 'Complétez les quatre cases du SWOT.' },
+  { id: 'axes', step: 's17', label: 'Au moins trois axes stratégiques', test: s => rowsOf(s, 'ax_tab').filter(r => r && filledV(r.txt)).length >= 3, advice: 'Formulez au moins trois axes à partir du SWOT.' },
+  { id: 'hypres', step: 's18', label: 'Toutes les hypothèses ont un résultat', test: s => { const h = rowsOf(s, 'et_hyp').map(r => r.h).filter(filledV); const m = s.values.co_hyp || {}; return h.length > 0 && h.every(k => m[k] && filledV(m[k].res) && m[k].res !== 'Pas encore vérifiée'); }, advice: 'Indiquez si chaque hypothèse est confirmée, nuancée ou infirmée.' },
+  { id: 'plan', step: 's18', label: 'Verdict posé et au moins trois actions datées et mesurables', test: s => filledV(s.values.co_verdict) && rowsOf(s, 'co_plan').filter(r => filledV(r.act) && filledV(r.ech) && filledV(r.ind)).length >= 3, advice: 'Choisissez un verdict et donnez une échéance et un indicateur à trois actions.' }
+];
+
+function mapActors(v) {
+  const list = (v.cc_list || []).filter(r => r && filledV(r.nom)).map(r => r.nom);
+  return list.concat(['__moi']);
+}
+function mapComplete(s) {
+  const m = s.values.cp_map || {}; const pts = m.pts || {};
+  if (!filledV(m.ax) || !filledV(m.ay) || !pts.__moi) return false;
+  return Object.keys(pts).filter(k => k !== '__moi' && (s.values.cc_list || []).some(r => r && r.nom === k)).length >= 2;
+}
+
+/* ---------- badges ---------- */
+const BADGES = [
+  { id: 'start', icon: '🌱', name: 'Premier pas', how: 'Remplissez tous les champs de l’étape « Mon projet en bref ».', test: s => L.chapterCompletion('c0', s) >= 1 },
+  { id: 'smart', icon: '🎯', name: 'Cap fixé', how: 'Renseignez les cinq lettres de votre objectif SMART à l’étape « Mon cadre et mon objectif SMART ».', test: s => CHECKS.find(c => c.id === 'smart').test(s) },
+  { id: 'c2', icon: '🔭', name: 'Explorateur', how: 'Complétez au moins 80 % du chapitre 2 : chiffres clés, zone, taille du marché et segmentation.', test: s => L.chapterCompletion('c2', s) >= 0.8 },
+  { id: 'taille', icon: '📏', name: 'Arpenteur', how: 'Estimez la taille de votre marché avec le calculateur et une part de marché de 15 % ou moins.', test: s => CHECKS.find(c => c.id === 'part').test(s) },
+  { id: 'c3', icon: '🎙️', name: 'Enquêteur', how: 'Complétez au moins 80 % du chapitre 3 : méthodes, questionnaire, résultats et persona.', test: s => L.chapterCompletion('c3', s) >= 0.8 },
+  { id: 'n100', icon: '📊', name: 'Échantillon solide', how: 'Réunissez au moins 100 répondants exploitables, soit une marge d’erreur d’environ ± 10 points.', test: s => { const r = calcEchant(s.values.re_calc); return r.valid && r.n >= 100; } },
+  { id: 'c4', icon: '🕵️', name: 'Veilleur', how: 'Complétez au moins 80 % du chapitre 4 : concurrents, benchmark, carte et forces de Porter.', test: s => L.chapterCompletion('c4', s) >= 0.8 },
+  { id: 'carte', icon: '🗺️', name: 'Cartographe', how: 'Nommez les deux axes de la carte et placez votre projet et au moins deux concurrents.', test: s => mapComplete(s) },
+  { id: 'c5', icon: '🌦️', name: 'Vigie', how: 'Complétez au moins 80 % du chapitre 5 : PESTEL, veille et étude d’implantation.', test: s => L.chapterCompletion('c5', s) >= 0.8 },
+  { id: 'hyp', icon: '🔬', name: 'Esprit scientifique', how: 'Donnez un résultat (confirmée, nuancée ou infirmée) à chacune de vos hypothèses.', test: s => CHECKS.find(c => c.id === 'hypres').test(s) },
+  { id: 'coh', icon: '🧩', name: 'Analyste cohérent', how: 'Validez au moins 17 des 21 critères du contrôle de cohérence affiché dans le bilan.', test: s => L.coherence(s).score >= 0.8 },
+  { id: 'full', icon: '🏁', name: 'Étude complète', how: 'Remplissez au moins 90 % de l’ensemble des champs du parcours.', test: s => L.overall(s) >= 0.9 }
+];
+
+/* ---------- page de synthèse du document Word ---------- */
+function docSynthesis(s, D) {
+  const v = s.values, b = [];
+  b.push(D.H1('Synthèse de l’étude'));
+  b.push(D.H2('Verdict'));
+  b.push(v.co_verdict ? D.para(D.run(v.co_verdict, { b: true, sz: 26, color: D.C.ochre }), { border: D.C.pine }) : D.empty());
+  if (D.filled(v.co_concl)) b.push(D.P(v.co_concl));
+  b.push(D.H2('Le marché en chiffres'));
+  const r = calcMarche(v.zo_calc);
+  b.push(D.table(['Repère', 'Valeur'], [
+    ['Marché', v.ma_def || ''], ['Zone de chalandise', v.zo_zone || ''],
+    ['Taille du marché estimée', r.valid ? F(r.marche) + ' € par an' : ''],
+    ['Chiffre d’affaires potentiel', r.ca != null ? `${F(r.ca)} € par an (${F(r.part, 1)} % de part de marché)` : ''],
+    ['Segment prioritaire', v.sg_choix || ''], ['Persona', v.pe_nom || '']
+  ], [2, 4]));
+  const e = calcEchant(v.re_calc);
+  if (e.valid) b.push(D.P(`Enquête : ${F(e.n)} répondants exploitables, marge d’erreur d’environ ± ${F(e.marge, 1)} points.`, { i: true, color: D.C.grey }));
+  b.push(D.H2('Concurrence et différenciation'));
+  const cc = (v.cc_list || []).filter(x => D.filled(x.nom));
+  b.push(cc.length ? D.P('Concurrents analysés : ' + cc.map(x => x.nom + (x.type ? ' (' + x.type.toLowerCase() + ')' : '')).join(', ') + '.') : D.empty());
+  if (D.filled(v.bm_ecarts)) b.push(D.P(v.bm_ecarts));
+  b.push(D.H2('Plan d’action'));
+  const pl = (v.co_plan || []).filter(x => D.filled(x.act));
+  b.push(pl.length ? D.table(['Action', 'Échéance', 'Indicateur'], pl.map(x => [x.act, x.ech, x.ind]), [4, 1.5, 2.5]) : D.empty());
+  return b.join('');
+}
+
+/* ---------- exemple fil rouge : La Roulotte Gourmande (fictif) ---------- */
+const EXAMPLE = {
+  p_nom: 'La Roulotte Gourmande',
+  p_porteur: 'Inès Roux',
+  p_activite: 'Je propose une cuisine provençale de saison, faite maison avec des produits de producteurs locaux, servie depuis un food truck. Le midi dans les zones d’activités, et en prestation traiteur pour les événements d’entreprise.',
+  p_zone: 'Manosque et 30 km autour',
+  p_stade: 'Idée en cours de validation',
+  ob_envies: 'Travailler à mon compte en cuisine, au contact des clients, avec des produits que je choisis. Vivre de mon activité en deux ans avec 2 000 € nets par mois.',
+  ob_limites: 'Pas de service le soir ni le week-end sauf événements. Pas plus de 30 minutes de trajet depuis Manosque. Pas d’emprunt au-delà de 45 000 €.',
+  ob_smart: [
+    { f: 'Spécifique', txt: 'Ouvrir La Roulotte Gourmande sur les zones d’activités de Manosque.' },
+    { f: 'Mesurable', txt: 'Premier service réalisé, puis 25 repas par jour en moyenne au troisième mois.' },
+    { f: 'Atteignable', txt: 'Étude de marché, prêt d’honneur et prêt bancaire, achat du camion, autorisations d’emplacement, formation hygiène, lancement.' },
+    { f: 'Réaliste (ressources)', txt: '8 ans en cuisine, apport de 12 000 €, accompagnement Initiative, réseau de producteurs.' },
+    { f: 'Temporel', txt: 'Premier service le 2 mars.' }
+  ],
+  ob_first: 'Mettre en ligne mon questionnaire et le diffuser dans deux entreprises de la zone Saint-Joseph cette semaine.',
+  et_decision: 'À la fin de l’étude, je saurai si les zones d’activités de Manosque comptent assez de salariés prêts à acheter un déjeuner provençal fait maison à 13-14 € pour faire vivre un food truck, et sur quels emplacements m’installer.',
+  et_questions: [
+    { q: 'Combien de salariés travaillent dans les zones d’activités de Manosque ?', type: 'Quantitative', src: 'CCI, mairie, comptage des parkings' },
+    { q: 'Où et comment déjeunent-ils aujourd’hui, et pour quel budget ?', type: 'Quantitative', src: 'Questionnaire' },
+    { q: 'Qu’est-ce qui compte le plus pour eux dans le choix du déjeuner ?', type: 'Qualitative', src: 'Questionnaire et entretiens' },
+    { q: 'Quels concurrents servent déjà ces salariés, à quel prix ?', type: 'Quantitative', src: 'Client mystère, avis Google' },
+    { q: 'Les entreprises de la zone organisent-elles des événements avec traiteur ?', type: 'Qualitative', src: 'Entretiens avec des responsables RH' }
+  ],
+  et_hyp: [
+    { h: 'Les salariés sont prêts à payer 13 à 14 € pour un plat chaud fait maison.', comment: 'Question sur le prix jugé trop cher dans le questionnaire.' },
+    { h: 'Au moins 20 repas par jour sont possibles sur un emplacement.', comment: 'Comptage chez un concurrent et intentions d’achat.' },
+    { h: 'Le local et le fait maison sont des critères de choix importants.', comment: 'Question à échelle dans le questionnaire.' }
+  ],
+  ma_def: 'Le marché du déjeuner hors domicile des salariés des zones d’activités de Manosque, et celui de la restauration événementielle des entreprises du secteur.',
+  ma_chiffres: [
+    { d: 'Repas pris hors domicile en France', v: 'Environ 1 sur 5', src: 'Modèle de dossier, données sectorielles (à actualiser)', an: 'À préciser' },
+    { d: 'Ticket moyen en restauration', v: '13,70 €', src: 'Modèle de dossier, données sectorielles (à actualiser)', an: 'À préciser' },
+    { d: 'Salariés des zones d’activités de Manosque', v: '4 500 (estimation fictive)', src: 'Exemple pédagogique', an: '–' },
+    { d: 'Food trucks réguliers sur ces zones', v: '2', src: 'Observation terrain (exemple)', an: '–' }
+  ],
+  ma_tend: [
+    { t: 'Progression de la restauration du midi et du snacking, temps de repas en baisse', imp: 'Il faut servir vite : la précommande devient un atout', src: 'Modèle de dossier, données sectorielles (à actualiser)' },
+    { t: 'Demande de transparence sur l’origine des produits', imp: 'Afficher mes producteurs locaux', src: 'Modèle de dossier ; Bpifrance Création, dossier restauration' },
+    { t: 'Budget déjeuner sous tension, consommateurs qui comparent et lisent les avis', imp: 'Rester sous 15 € et soigner les avis Google', src: 'Modèle de dossier ; questionnaire (à venir)' }
+  ],
+  ma_fcs: 'Emplacement et régularité de présence, rapidité de service, qualité constante, maîtrise du coût matière.',
+  zo_zone: 'Zones d’activités Saint-Joseph et Chanteprunier à Manosque, et la zone de Sainte-Tulle : 5 à 10 minutes à pied des entreprises, sans prendre la voiture.',
+  zo_type: 'Proximité immédiate (quartier, zone d’activités)',
+  zo_calc: { pop: '4500', taux: '60', freq: '40', panier: '13', part: '8' },
+  zo_hyp: 'Population : 4 500 salariés (chiffre fictif pour l’exemple ; à obtenir auprès de la CCI). Taux de 60 % et fréquence de 40 achats par an : résultats du questionnaire (déjeuner acheté au moins une fois par semaine sur 45 semaines, arrondi). Dépense : 13 €, réponses au questionnaire. Part de 8 % : deux food trucks existants et peu d’offre chaude.',
+  sg_tab: [
+    { seg: 'Salariés des zones d’activités (midi)', crit: 'Actifs, 25-55 ans, sans cantine, pause de 45 min', taille: '≈ 2 700 acheteurs', att: 'Rapidité, plat chaud, prix maîtrisé', attr: 'Forte', src: 'Enquête et estimation CCI (exemple)' },
+    { seg: 'Entreprises pour leurs événements', crit: 'PME de plus de 20 salariés, RH ou direction', taille: '≈ 60 entreprises', att: 'Prestation clé en main, image soignée', attr: 'Moyenne', src: 'CCI, annuaire des entreprises (exemple)' },
+    { seg: 'Particuliers le week-end (marchés, fêtes)', crit: 'Familles et touristes, loisirs', taille: 'Variable, saisonnier', att: 'Convivialité, découverte', attr: 'Faible', src: 'Office de tourisme (exemple)' }
+  ],
+  sg_choix: 'Salariés des zones d’activités (midi)',
+  sg_justif: 'Mesurable (nombre de salariés connu par la CCI), accessible (présence physique quotidienne), différenciable (ils veulent un plat chaud, l’offre actuelle est froide ou grasse), exploitable (volume régulier toute l’année, compatible avec mes limites horaires).',
+  me_sel: ['Questionnaire en ligne', 'Comptage et observation chiffrée', 'Entretiens individuels', 'Client mystère'],
+  me_plan: {
+    'Questionnaire en ligne': { obj: 'Habitudes, budget, critères de choix, intention d’achat', qui: '100 salariés de la zone ou plus', quand: 'Lien diffusé par 6 entreprises, 2 semaines en octobre' },
+    'Comptage et observation chiffrée': { obj: 'Fréquentation réelle des concurrents', qui: '2 food trucks et la boulangerie', quand: '12 h - 13 h 30, trois jours différents' },
+    'Entretiens individuels': { obj: 'Besoins des entreprises pour leurs événements', qui: '5 responsables RH ou assistantes de direction', quand: 'Rendez-vous de 20 minutes en novembre' },
+    'Client mystère': { obj: 'Prix, attente, qualité des concurrents', qui: 'Les 3 concurrents principaux', quand: 'Une commande chez chacun' }
+  },
+  me_echant: 'Objectif : 120 réponses. Quotas : au moins 40 % de répondants de la zone Saint-Joseph et 30 % de Chanteprunier, toutes tranches d’âge. Diffusion par l’intranet de 6 entreprises partenaires et un QR code affiché dans les halls.',
+  qu_intro: 'Bonjour, je m’appelle Inès et je prépare l’ouverture d’un food truck de cuisine provençale sur votre zone d’activités. Ce questionnaire anonyme prend 3 minutes. Merci pour votre aide !',
+  qu_tab: [
+    { q: 'Travaillez-vous dans une zone d’activités de Manosque ou de Sainte-Tulle ?', type: 'Fermée à choix unique', rep: 'Oui / Non (fin du questionnaire)', obj: 'Filtrer la cible' },
+    { q: 'Combien de fois par semaine achetez-vous votre déjeuner ?', type: 'Numérique', rep: '0 à 5', obj: 'Fréquence d’achat' },
+    { q: 'Où achetez-vous le plus souvent votre déjeuner ?', type: 'Fermée à choix unique', rep: 'Boulangerie, food truck, restaurant, supermarché, autre', obj: 'Concurrence réelle' },
+    { q: 'Combien dépensez-vous en moyenne pour un déjeuner acheté ?', type: 'Numérique', rep: 'En euros', obj: 'Panier moyen' },
+    { q: 'Qu’est-ce qui compte le plus dans votre choix ? (3 réponses)', type: 'Fermée à choix multiples', rep: 'Prix, rapidité, goût, plat chaud, fait maison, local, proximité', obj: 'Critères de choix' },
+    { q: 'De 1 à 5, quelle importance accordez-vous aux produits locaux ?', type: 'Échelle de notation', rep: '1 à 5', obj: 'Vérifier l’hypothèse 3' },
+    { q: 'À partir de quel prix trouveriez-vous un plat chaud fait maison trop cher ?', type: 'Numérique', rep: 'En euros', obj: 'Vérifier l’hypothèse 1' },
+    { q: 'Si un food truck provençal venait sur votre zone, viendriez-vous ?', type: 'Fermée à choix unique', rep: 'Sûrement, probablement, peut-être, non', obj: 'Intention d’achat' },
+    { q: 'Qu’est-ce qui vous manque aujourd’hui pour le déjeuner ?', type: 'Ouverte', rep: 'Texte libre', obj: 'Freins et attentes' },
+    { q: 'Votre âge et votre zone de travail', type: 'Fermée à choix unique', rep: 'Tranches d’âge, zones', obj: 'Profil et quotas' }
+  ],
+  qu_test: 'Testé auprès de 4 salariés de la zone : 3 min 20 en moyenne. Question sur le prix reformulée (elle était orientée), ajout de la réponse « supermarché ».',
+  re_calc: { n: '112', N: '4500' },
+  re_tab: [
+    { f: 'Profil (âge, situation)', info: '58 % ont entre 30 et 45 ans ; 62 % de femmes ; employés et techniciens.' },
+    { f: 'Lieu de vie ou de travail', info: '47 % Saint-Joseph, 35 % Chanteprunier, 18 % Sainte-Tulle.' },
+    { f: 'Qui influence le choix', info: 'Les collègues (on déjeune en groupe) dans 66 % des cas.' },
+    { f: 'Qui décide et qui paie', info: 'Chacun paie son repas ; 41 % ont des titres-restaurant.' },
+    { f: 'Sources d’information', info: 'Bouche-à-oreille entre collègues, Instagram, Google Maps, groupe Facebook local.' },
+    { f: 'Critères de choix', info: '1. Rapidité (71 %), 2. Plat chaud (54 %), 3. Prix (49 %), 4. Fait maison (38 %).' },
+    { f: 'Moment et fréquence d’achat', info: 'Entre 12 h et 13 h ; 1,2 fois par semaine en moyenne.' },
+    { f: 'Budget', info: '11,80 € en moyenne ; trop cher au-delà de 15 € pour 64 % des répondants.' },
+    { f: 'Attentes (par ordre d’importance)', info: 'Ne pas attendre, manger chaud, changer de la boulangerie, manger équilibré.' },
+    { f: 'Freins exprimés', info: 'Peur de la file d’attente (44 %), météo, prix au-dessus de 15 €.' },
+    { f: 'Intention d’achat', info: '31 % « sûrement », 36 % « probablement ».' }
+  ],
+  re_insights: '1. La rapidité passe avant le prix : la précommande est indispensable.\n2. 14 € reste sous le seuil de prix jugé trop cher pour près de deux répondants sur trois.\n3. Le bouche-à-oreille entre collègues est le premier canal : il faut conquérir des groupes, pas des individus.',
+  re_surprise: 'Le local compte moins que prévu comme critère de choix (note moyenne 3,4 sur 5) : c’est un plus, pas l’argument principal.',
+  pe_nom: 'Claire, 38 ans, chargée de clientèle',
+  pe_profil: 'Travaille dans une PME de la zone Saint-Joseph, deux enfants, journées chargées. Pas de cantine : elle mange souvent un sandwich devant son ordinateur.',
+  pe_besoins: 'Manger un vrai repas chaud, rapidement, sans prendre la voiture. Faire une vraie pause avec ses collègues.',
+  pe_freins: 'Peur de faire la queue et de perdre sa pause. Prix au-dessus de 15 €. Ne connaît pas bien la cuisine provençale.',
+  pe_motiv: 'La rapidité, puis le plaisir d’un plat chaud.',
+  pe_canaux: 'Ses collègues, Instagram le soir, Google Maps quand elle cherche où manger, le groupe Facebook « Manosque Bons Plans ».',
+  pe_preuve: '58 % des répondants ont 30 à 45 ans, 62 % de femmes, 71 % citent la rapidité en premier, 66 % déjeunent avec des collègues, 44 % craignent l’attente.',
+  cc_list: [
+    { nom: 'Food truck burgers', xliv: 'Non', type: 'Direct', lieu: 'Zone Saint-Joseph, mardi et jeudi', anc: '4 ans, 1 personne', prix: 'Menu 14 €', avis: '4,2 sur 5 (86 avis)', src: 'Client mystère, Google Maps (octobre)' },
+    { nom: 'Boulangerie de la zone', xliv: 'Commande la veille par téléphone', type: 'Indirect', lieu: 'Zone Chanteprunier', anc: '12 ans, 6 salariés', prix: 'Formule sandwich 8,50 €', avis: '4,4 sur 5 (210 avis)', src: 'Client mystère, Pappers, Google Maps' },
+    { nom: 'Traiteur événementiel', xliv: 'Sur devis uniquement', type: 'Direct', lieu: 'Manosque centre', anc: '9 ans, 8 salariés', prix: 'Buffet dès 25 € par personne', avis: '4,6 sur 5 (54 avis)', src: 'Site internet, Pappers, avis Google' },
+    { nom: 'Rayon traiteur du supermarché', xliv: 'Drive', type: 'Indirect', lieu: 'Entrée de zone', anc: '–', prix: 'Plats préparés 5 à 8 €', avis: 'Non applicable', src: 'Visite en magasin' }
+  ],
+  cc_list__cols: [{ k: 'xliv', l: 'Précommande ou livraison' }],
+  cc_src: 'Client mystère chez les trois premiers (octobre), comptage de fréquentation sur trois midis, lecture des avis Google, sites et pages Instagram.',
+  bm_tab: [
+    { f: 'Offre et produits', c1: 'Burgers, frites, toute l’année', c2: 'Sandwichs, quiches, pâtisseries', c3: 'Buffets froids et chauds, minimum 40 personnes', moi: 'Plat provençal de saison, menu chaque semaine, traiteur dès 20 personnes', src: 'Client mystère et sites' },
+    { f: 'Prix moyen', c1: '14 €', c2: '8,50 €', c3: '25 € par personne', moi: '14 € la formule, 24 € par personne en événement', src: 'Relevé de prix (octobre)' },
+    { f: 'Qualité perçue', c1: 'Bonne mais grasse', c2: 'Bonne, mais froide', c3: 'Très bonne', moi: 'Fait maison, produits locaux', src: 'Avis Google et dégustation' },
+    { f: 'Service client', c1: 'Rapide, 8 min d’attente à 12 h 15', c2: 'File de 10 min à 12 h 15', c3: 'Sur devis, réponse en 48 h', moi: 'Précommande par SMS, retrait en 2 min', src: 'Chronométrage à 12 h 15' },
+    { f: 'Horaires et disponibilité', c1: '2 jours par semaine', c2: '6 h - 19 h', c3: 'Sur réservation', moi: '4 jours par semaine, 11 h 30 - 14 h', src: 'Google Maps et observation' },
+    { f: 'Canaux de vente', c1: 'Sur place', c2: 'Boutique', c3: 'Téléphone, e-mail', moi: 'Sur place, SMS, devis en ligne', src: 'Sites et observation' },
+    { f: 'Communication', c1: 'Instagram actif', c2: 'Bouche-à-oreille', c3: 'Site internet', moi: 'Instagram, fiche Google, partenariats d’entreprises', src: 'Instagram, sites' },
+    { f: 'Avis clients (note et volume)', c1: '4,2 (86)', c2: '4,4 (210)', c3: '4,6 (54)', moi: 'À construire : objectif 50 avis en 6 mois', src: 'Google Maps (octobre)' },
+    { f: 'Produits locaux', c1: 'Non', c2: 'Farine locale', c3: 'Partiellement', moi: '6 producteurs à moins de 40 km', src: 'Échanges et sites' }
+  ],
+  bm_ecarts: '1. Rapidité : précommande et retrait en 2 minutes, contre 8 à 10 minutes d’attente chez les concurrents.\n2. Plat chaud fait maison à un prix aligné sur le burger.\n3. Traiteur accessible dès 20 personnes, là où le traiteur établi en exige 40.',
+  cp_map: { ax: 'Prix', axLo: 'Bon marché', axHi: 'Cher', ay: 'Fait maison et frais', ayLo: 'Industriel', ayHi: 'Fait maison', pts: { 'Food truck burgers': { x: 6, y: 4 }, 'Boulangerie de la zone': { x: 3, y: 6 }, 'Traiteur événementiel': { x: 9, y: 8 }, 'Rayon traiteur du supermarché': { x: 1, y: 1 }, '__moi': { x: 6, y: 9 } } },
+  cp_lecture: 'Le bas du marché est occupé par le supermarché et la boulangerie, le haut de gamme par le traiteur. Il n’existe aucune offre fait maison à prix moyen pour le déjeuner : c’est la place de La Roulotte Gourmande, et l’enquête confirme que 54 % veulent un plat chaud.',
+  pt_tab: [
+    { f: 'Intensité de la concurrence', ana: 'Deux food trucks et une boulangerie se partagent le midi, sans offre chaude fait maison.', int: 'Moyenne', src: 'Benchmark et comptage' },
+    { f: 'Menace des nouveaux entrants', ana: 'Investissement modéré (camion d’occasion), mais emplacements limités et attribués par la mairie.', int: 'Moyenne', src: 'Mairie, annonces de camions d’occasion' },
+    { f: 'Pouvoir des fournisseurs', ana: 'Producteurs locaux nombreux, prix saisonniers ; grossiste en secours.', int: 'Faible', src: 'Échanges avec 4 producteurs' },
+    { f: 'Pouvoir des clients', ana: 'Clients sensibles au prix et qui comparent, mais peu d’alternatives chaudes.', int: 'Moyenne', src: 'Questionnaire (budget, critères)' },
+    { f: 'Menace des substituts', ana: 'Gamelle préparée à la maison, plats du supermarché, livraison.', int: 'Forte', src: 'Questionnaire (lieux de déjeuner)' }
+  ],
+  pt_concl: 'Marché moyennement attractif : la vraie concurrence est la gamelle et le supermarché. Il faut convaincre par la rapidité et le plaisir d’un plat chaud, avec un prix qui reste sous 15 €.',
+  pl_tab: [
+    { f: 'Politique', desc: 'Emplacements attribués par la mairie sur dossier, pour un an.', imp: 'Menace', force: 'Forte', src: 'Mairie de Manosque, service commerce' },
+    { f: 'Économique', desc: 'Hausse des matières premières, budgets déjeuner serrés ; 41 % de titres-restaurant.', imp: 'Menace', force: 'Moyenne', src: 'Questionnaire ; presse économique (à préciser)' },
+    { f: 'Socioculturel', desc: 'Envie de manger local et de faire une vraie pause ; repas en groupe entre collègues.', imp: 'Opportunité', force: 'Forte', src: 'Questionnaire' },
+    { f: 'Technologique', desc: 'Précommande en ligne et paiement sans contact entrés dans les habitudes.', imp: 'Opportunité', force: 'Moyenne', src: 'Questionnaire ; habitudes observées' },
+    { f: 'Écologique', desc: 'Fin progressive des emballages à usage unique, attentes de circuits courts.', imp: 'Neutre', force: 'Moyenne', src: 'Légifrance, loi AGEC (à vérifier)' },
+    { f: 'Légal', desc: 'Normes d’hygiène HACCP, affichage des allergènes, déclaration de commerce ambulant.', imp: 'Neutre', force: 'Moyenne', src: 'Légifrance, DDPP' }
+  ],
+  pl_veille: 'Google Alerts sur « food truck Manosque » et « restauration ambulante réglementation », lecture le lundi. Point trimestriel avec la mairie sur les emplacements.',
+  im_tab: [
+    { f: 'Population de la zone', ev: 'Très favorable', com: '4 500 salariés, sans restaurant d’entreprise dans la plupart des PME.', src: 'CCI (exemple) et enquête' },
+    { f: 'Passage et flux', ev: 'Favorable', com: 'Flux concentré entre 12 h et 13 h 30 ; activité réduite en août.', src: 'Comptage sur trois midis' },
+    { f: 'Attractivité de la zone', ev: 'Favorable', com: 'Zone en extension, deux nouvelles entreprises prévues l’an prochain.', src: 'Mairie, service urbanisme' },
+    { f: 'Concurrents sur la zone', ev: 'Favorable', com: 'Food truck burgers deux jours sur cinq seulement ; boulangerie saturée à 12 h 15.', src: 'Benchmark et comptage' },
+    { f: 'Caractéristiques de l’emplacement', ev: 'Défavorable', com: 'Emplacements à obtenir en mairie ; parking de la zone Saint-Joseph visé, sans abri en cas de pluie.', src: 'Mairie et visite des parkings' }
+  ],
+  im_concl: 'Zone favorable. La réserve principale est l’obtention d’un emplacement en mairie : prévoir deux emplacements candidats et un accord avec une entreprise pour s’installer sur son parking.',
+  sw_tab: [
+    { f: 'Forces (interne)', txt: '8 ans en cuisine\nRéseau de producteurs locaux\nPrécommande et rapidité\nPrêt d’honneur en cours' },
+    { f: 'Faiblesses (interne)', txt: 'Aucune notoriété\nCapacité de 60 couverts par service\nSeule en cuisine' },
+    { f: 'Opportunités (externe)', txt: 'Pas d’offre chaude fait maison à prix moyen\nRepas en groupe entre collègues\nPrécommande entrée dans les habitudes\nZone en extension' },
+    { f: 'Menaces (externe)', txt: 'Attribution des emplacements\nHausse des matières premières\nSubstituts (gamelle, supermarché)\nMétéo' }
+  ],
+  ax_tab: [
+    { f: 'Forces × Opportunités : exploiter', txt: 'S’appuyer sur la rapidité de la précommande pour conquérir les groupes de collègues.' },
+    { f: 'Faiblesses × Opportunités : corriger', txt: 'Combler l’absence de notoriété par des dégustations dans les entreprises et un partenariat avec l’association de la zone.' },
+    { f: 'Forces × Menaces : se protéger', txt: 'Utiliser le réseau de producteurs pour lisser les hausses de prix (menu de saison, achats groupés).' },
+    { f: 'Faiblesses × Menaces : éviter', txt: 'Ne pas dépendre d’un seul emplacement : deux zones et un accord avec une entreprise.' }
+  ],
+  ax_prio: 'Conquérir les groupes de collègues grâce à la précommande : c’est le premier critère de choix et le premier canal de bouche-à-oreille.',
+  co_hyp: {
+    'Les salariés sont prêts à payer 13 à 14 € pour un plat chaud fait maison.': { res: 'Confirmée', preuve: '64 % trouvent un plat trop cher seulement au-delà de 15 €.' },
+    'Au moins 20 repas par jour sont possibles sur un emplacement.': { res: 'Nuancée', preuve: 'Le food truck burgers sert environ 35 repas, mais 2 jours sur 5 ; à vérifier sur 4 jours.' },
+    'Le local et le fait maison sont des critères de choix importants.': { res: 'Nuancée', preuve: 'Fait maison cité par 38 %, local noté 3,4 sur 5 : un plus, pas l’argument principal.' }
+  },
+  co_verdict: 'Je me lance avec ajustements',
+  co_concl: 'Le marché existe : environ 2 700 salariés achètent leur déjeuner, sans offre chaude fait maison à prix moyen. Le CA potentiel estimé, d’environ 112 000 € par an avec 8 % de part de marché, est à comparer au seuil de rentabilité.\n\nLa Roulotte Gourmande se place sur la rapidité et le plat chaud fait maison, à 14 €. Le local devient un argument secondaire.\n\nIl reste à sécuriser les emplacements et à vérifier le volume quotidien sur quatre jours par une semaine de test.',
+  co_plan: [
+    { act: 'Déposer deux dossiers d’emplacement en mairie', obj: '2 emplacements obtenus', res: 'Dossier, assurance, 1 jour', ech: '15 décembre', ind: 'Autorisations reçues' },
+    { act: 'Signer un accord de stationnement avec une entreprise de la zone', obj: '1 parking privé disponible', res: 'Rendez-vous avec la direction', ech: '31 janvier', ind: 'Accord signé' },
+    { act: 'Organiser une semaine de test avec un camion loué', obj: '20 repas par jour en moyenne', res: '1 200 € de location et de matières', ech: 'Février', ind: 'Repas vendus par jour' },
+    { act: 'Construire l’offre et les prix (mission Stratégie commerciale)', obj: 'Offre et seuil de rentabilité validés', res: 'Atelier Initiative', ech: '15 janvier', ind: 'Dossier terminé' }
+  ]
+};
+
+;
+/* ==========================================================
+   LOGIQUE GÉNÉRIQUE : complétude, cohérence, badges
+   ========================================================== */
+const L = (() => {
+  const FIELDS = {};
+  STEPS.forEach(st => st.fields.forEach(f => { FIELDS[f.id] = Object.assign({ step: st.id }, f); }));
+  const isFilled = v => v !== undefined && v !== null && String(v).trim() !== '';
+
+  function tableRows(f, s) {
+    let rows = s.values[f.id];
+    if (!Array.isArray(rows)) rows = [];
+    if (f.fixedRows) {
+      const base = f.fixedRows.map((lab, i) => Object.assign({}, rows[i] || {}, { f: lab }));
+      return f.addRows ? base.concat(rows.slice(f.fixedRows.length).map(r => Object.assign({ __extra: true }, r))) : base;
+    }
+    return rows;
+  }
+  const customCols = (f, s) => f.addCols && Array.isArray(s.values[f.id + '__cols']) ? s.values[f.id + '__cols'] : [];
+  const tableCols = (f, s) => f.cols.concat(customCols(f, s).map(c => ({ k: c.k, l: c.l, custom: true })));
+  const dataCols = f => f.cols.filter(c => !(f.fixedRows && c.k === 'f'));
+  const colLabel = (c, v) => typeof c.lab === 'function' ? c.lab(v) : c.l;
+
+  function linkedKeys(f, s) {
+    const src = FIELDS[f.source], v = s.values[f.source];
+    if (!src) return [];
+    if (src.type === 'checks') return Array.isArray(v) ? v.slice() : [];
+    if (src.type === 'table') return (Array.isArray(v) ? v : []).map(r => r && r[f.sourceKey]).filter(isFilled).map(x => String(x).trim());
+    return [];
+  }
+  function linkedRows(f, s) {
+    const map = s.values[f.id] || {};
+    return linkedKeys(f, s).map(k => Object.assign({ __k: k }, map[k] || {}));
+  }
+
+  function mapActors(f, s) {
+    const src = (s.values[f.source] || []).filter(r => r && isFilled(r.nom)).map(r => String(r.nom).trim());
+    return [...new Set(src)];
+  }
+  function mapCompletion(f, s) {
+    const m = s.values[f.id] || {}, pts = m.pts || {};
+    const others = mapActors(f, s).filter(a => pts[a]).length;
+    return ([isFilled(m.ax), isFilled(m.ay), !!pts.__moi].filter(Boolean).length + Math.min(others, 2) / 2) / 4;
+  }
+
+  function fieldCompletion(f, s) {
+    const v = s.values[f.id];
+    switch (f.type) {
+      case 'preview': return null;
+      case 'checks': return (Array.isArray(v) && v.length) ? 1 : 0;
+      case 'calc': { const c = v || {}; const req = f.req || f.inputs.map(i => i.k); return req.filter(k => isFilled(c[k])).length / req.length; }
+      case 'map': return mapCompletion(f, s);
+      case 'linked': {
+        const rows = linkedRows(f, s); if (!rows.length) return 0;
+        let sc = 0; rows.forEach(r => { sc += f.cols.filter(c => isFilled(r[c.k])).length / f.cols.length; });
+        return sc / rows.length;
+      }
+      case 'table': {
+        const rows = tableRows(f, s), cols = dataCols(f);
+        const need = f.need || (f.fixedRows ? f.fixedRows.length : (f.minRows || 1));
+        let sc = 0; rows.forEach(r => { sc += cols.filter(c => isFilled(r[c.k])).length / cols.length; });
+        return Math.min(1, sc / need);
+      }
+      default: return isFilled(v) ? 1 : 0;
+    }
+  }
+  function stepCompletion(st, s) {
+    const vals = st.fields.map(f => fieldCompletion(f, s)).filter(x => x !== null);
+    return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  }
+  function chapterCompletion(cid, s) {
+    const sts = STEPS.filter(st => st.chap === cid);
+    return sts.reduce((a, st) => a + stepCompletion(st, s), 0) / sts.length;
+  }
+  function overall(s) {
+    let n = 0, t = 0;
+    STEPS.forEach(st => st.fields.forEach(f => { const c = fieldCompletion(f, s); if (c !== null) { n++; t += c; } }));
+    return n ? t / n : 0;
+  }
+  function coherence(s) {
+    const res = CHECKS.map(c => { let ok = false; try { ok = !!c.test(s); } catch (e) { ok = false; } return { c, ok }; });
+    return { res, score: res.filter(r => r.ok).length / res.length };
+  }
+  const earnedBadges = s => BADGES.filter(b => { try { return b.test(s); } catch (e) { return false; } }).map(b => b.id);
+  return { FIELDS, isFilled, tableRows, tableCols, customCols, dataCols, colLabel, linkedKeys, linkedRows, mapActors, fieldCompletion, stepCompletion, chapterCompletion, overall, coherence, earnedBadges, BADGES, CHECKS };
+})();
+
+;
+/* ==========================================================
+   EXPORT WORD (.docx) sans bibliothèque externe
+   ========================================================== */
+
+const DOCX = (() => {
+  const C = { pine: '1F4D45', ochre: 'C9861A', ink: '1C2321', grey: '6B7470', light: 'EAF1EE', line: 'B9C8C2' };
+
+  const x = s => String(s == null ? '' : s)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  function run(text, o = {}) {
+    let rpr = '';
+    if (o.b) rpr += '<w:b/>';
+    if (o.i) rpr += '<w:i/>';
+    if (o.color) rpr += `<w:color w:val="${o.color}"/>`;
+    if (o.sz) rpr += `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`;
+    const parts = String(text == null ? '' : text).split(/\r?\n/);
+    const body = parts.map((p, i) => (i ? '<w:br/>' : '') + `<w:t xml:space="preserve">${x(p)}</w:t>`).join('');
+    return `<w:r>${rpr ? `<w:rPr>${rpr}</w:rPr>` : ''}${body}</w:r>`;
+  }
+  function para(runs, o = {}) {
+    let ppr = '';
+    if (o.style) ppr += `<w:pStyle w:val="${o.style}"/>`;
+    if (o.keep) ppr += '<w:keepNext/>';
+    if (o.pageBreak) ppr += '<w:pageBreakBefore/>';
+    if (o.border) ppr += `<w:pBdr><w:left w:val="single" w:sz="24" w:space="8" w:color="${o.border}"/></w:pBdr>`;
+    if (o.shade) ppr += `<w:shd w:val="clear" w:color="auto" w:fill="${o.shade}"/>`;
+    if (o.after != null || o.before != null) ppr += `<w:spacing${o.before != null ? ` w:before="${o.before}"` : ''}${o.after != null ? ` w:after="${o.after}"` : ''}/>`;
+    if (o.border) ppr += '<w:ind w:left="200"/>';
+    if (o.align) ppr += `<w:jc w:val="${o.align}"/>`;
+    return `<w:p>${ppr ? `<w:pPr>${ppr}</w:pPr>` : ''}${Array.isArray(runs) ? runs.join('') : runs}</w:p>`;
+  }
+  const filled = v => v != null && String(v).trim() !== '';
+  const P = (t, o) => para(run(t, o), o);
+  const H1 = (t, pb = true) => para(run(t), { style: 'Heading1', pageBreak: pb });
+  const H2 = t => para(run(t), { style: 'Heading2', keep: true });
+  const H3 = t => para(run(t), { style: 'Heading3', keep: true });
+  const empty = () => P('À compléter', { i: true, color: C.grey });
+  const textOrEmpty = v => filled(v) ? P(v) : empty();
+
+  function table(headers, rows, widths) {
+    const total = 9638;
+    if (!widths) widths = headers.map(() => Math.floor(total / headers.length));
+    const sum = widths.reduce((a, b) => a + b, 0);
+    widths = widths.map(w => Math.round(w / sum * total));
+    const cell = (content, w, head) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${head ? `<w:shd w:val="clear" w:color="auto" w:fill="${C.pine}"/>` : ''}<w:tcMar><w:top w:w="60" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/></w:tcMar></w:tcPr>${para(run(content, head ? { b: true, color: 'FFFFFF', sz: 19 } : { sz: 19, color: filled(content) ? null : C.grey, i: !filled(content) }), { after: 0 })}</w:tc>`;
+    const grid = `<w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>`;
+    const b = `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="4" w:space="0" w:color="${C.line}"/>`).join('')}</w:tblBorders>`;
+    const hr = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${headers.map((h, i) => cell(h, widths[i], true)).join('')}</w:tr>`;
+    const br = rows.map(r => `<w:tr><w:trPr><w:cantSplit/></w:trPr>${r.map((c, i) => cell(filled(c) ? c : '–', widths[i], false)).join('')}</w:tr>`).join('');
+    return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/>${b}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr>${grid}${hr}${br}</w:tbl>` + para('', { after: 120 });
+  }
+
+  /* ---------- rendu générique d'un champ ---------- */
+  function renderField(f, s) {
+    const v = s.values[f.id];
+    const out = [];
+    switch (f.type) {
+      case 'preview': return '';
+      case 'text': case 'area': case 'select': case 'radio':
+        out.push(H3(f.label), textOrEmpty(v)); break;
+      case 'checks':
+        out.push(H3(f.label), (v && v.length) ? P(v.join(', ')) : empty()); break;
+      case 'linked': {
+        const rows = L.linkedRows(f, s);
+        out.push(H3(f.label));
+        if (!rows.length) out.push(empty());
+        else out.push(table([''].concat(f.cols.map(c => c.l)), rows.map(r => [r.__k].concat(f.cols.map(c => r[c.k]))), [2.2].concat(f.cols.map(() => 2))));
+        break;
+      }
+      case 'table': {
+        let rows = L.tableRows(f, s);
+        if (!f.fixedRows) rows = rows.filter(r => L.tableCols(f, s).some(c => filled(r[c.k])));
+        out.push(H3(f.label));
+        if (!rows.length) { out.push(empty()); break; }
+        const cs = L.tableCols(f, s);
+        rows = rows.filter(r => !r.__extra || cs.some(c => filled(r[c.k])));
+        const headers = cs.map(c => L.colLabel(c, s.values) || '');
+        const widths = cs.map((c, i) => (f.fixedRows && i === 0) ? 1.4 : (c.type === 'select' || c.type === 'number' ? 1.2 : c.k === 'src' ? 1.6 : 2.2));
+        out.push(table(headers, rows.map(r => cs.map(c => r[c.k])), widths));
+        break;
+      }
+      case 'calc': {
+        const c = v || {}, r = f.compute(c);
+        out.push(H3(f.label));
+        out.push(table(['Élément', 'Valeur'], f.docRows(c, r), [3, 2]));
+        break;
+      }
+      case 'map': {
+        const m = v || {}, pts = m.pts || {};
+        out.push(H3(f.label));
+        if (!filled(m.ax) && !filled(m.ay)) { out.push(empty()); break; }
+        out.push(P(`Axe horizontal : ${m.ax || '?'} (de « ${m.axLo || 'faible'} » à « ${m.axHi || 'fort'} »). Axe vertical : ${m.ay || '?'} (de « ${m.ayLo || 'faible'} » à « ${m.ayHi || 'fort'} »). Positions notées de 0 à 10.`));
+        const names = L.mapActors(f, s).filter(a => pts[a]);
+        const rows = names.map(a => [a, String(pts[a].x), String(pts[a].y)]);
+        if (pts.__moi) rows.push([(s.values.p_nom || 'Mon projet') + ' (moi)', String(pts.__moi.x), String(pts.__moi.y)]);
+        out.push(rows.length ? table(['Acteur', m.ax || 'Axe horizontal', m.ay || 'Axe vertical'], rows, [3, 1.5, 1.5]) : empty());
+        out.push(mapGrid(m, names.map(a => ({ n: a, x: pts[a].x, y: pts[a].y })).concat(pts.__moi ? [{ n: (s.values.p_nom || 'Moi') + ' ★', x: pts.__moi.x, y: pts.__moi.y }] : [])));
+        break;
+      }
+    }
+    return out.join('');
+  }
+
+  /* carte en grille 11 × 11 (tableau Word) */
+  function mapGrid(m, actors) {
+    if (!actors.length) return '';
+    const cellW = 800, size = 11;
+    const cells = {};
+    actors.forEach((a, i) => { const k = Math.round(a.x) + ',' + Math.round(a.y); (cells[k] = cells[k] || []).push(a.n); });
+    let rows = '';
+    for (let y = 10; y >= 0; y--) {
+      let r = '';
+      for (let x = 0; x <= 10; x++) {
+        const names = cells[x + ',' + y] || [];
+        const txt = names.join('\n');
+        const isMe = names.some(n => n.endsWith('★'));
+        const fill = isMe ? C.ochre : names.length ? C.pine : (x === 5 || y === 5 ? 'F1F4F2' : 'FFFFFF');
+        r += `<w:tc><w:tcPr><w:tcW w:w="${cellW}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${fill}"/></w:tcPr>${para(run(txt, { sz: 12, b: true, color: names.length ? 'FFFFFF' : null }), { after: 0 })}</w:tc>`;
+      }
+      rows += `<w:tr><w:trPr><w:trHeight w:val="380"/><w:cantSplit/></w:trPr>${r}</w:tr>`;
+    }
+    const b = `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="2" w:space="0" w:color="DDE5E1"/>`).join('')}</w:tblBorders>`;
+    const grid = `<w:tblGrid>${Array.from({ length: size }, () => `<w:gridCol w:w="${cellW}"/>`).join('')}</w:tblGrid>`;
+    return P(`↑ ${m.ay || 'Axe vertical'} (${m.ayHi || 'fort'})`, { b: true, sz: 18, color: C.pine, after: 40 }) +
+      `<w:tbl><w:tblPr><w:tblW w:w="${cellW * size}" w:type="dxa"/><w:jc w:val="center"/>${b}<w:tblLayout w:type="fixed"/></w:tblPr>${grid}${rows}</w:tbl>` +
+      P(`${m.axLo || 'faible'} ← ${m.ax || 'Axe horizontal'} → ${m.axHi || 'fort'}   |   bas de la carte : ${m.ayLo || 'faible'}`, { sz: 18, color: C.pine, align: 'center', before: 60 });
+  }
+
+  /* ---------- document ---------- */
+  function documentXml(s) {
+    const v = s.values, b = [];
+    const nom = filled(v.p_nom) ? v.p_nom : 'Mon projet';
+    const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Couverture
+    b.push(para('', { before: 2400 }));
+    b.push(P(APP.docSub, { style: 'Title' }));
+    b.push(P(nom, { sz: 40, b: true, color: C.ochre }));
+    if (filled(v.p_porteur)) b.push(P('Porté par ' + v.p_porteur, { sz: 24 }));
+    if (filled(v.p_activite)) b.push(para(run(v.p_activite, { i: true }), { before: 360, border: C.ochre }));
+    b.push(para('', { before: 1600 }));
+    b.push(P('Document généré le ' + date, { color: C.grey, sz: 20 }));
+    const co = L.coherence(s);
+    b.push(P(`Complétude ${Math.round(L.overall(s) * 100)} %   |   Cohérence ${Math.round(co.score * 100)} %`, { color: C.grey, sz: 20 }));
+    b.push(P('Jeu Création d’entreprise, mission « ' + APP.docTitle + ' »', { color: C.grey, sz: 20 }));
+
+    b.push(docSynthesis(s, { H1, H2, H3, P, para, run, table, empty, textOrEmpty, filled, C }));
+
+    // Chapitres
+    CHAPTERS.forEach(ch => {
+      b.push(H1(`${ch.n}. ${ch.title}`));
+      STEPS.filter(st => st.chap === ch.id).forEach(st => {
+        b.push(H2(st.title));
+        st.fields.forEach(f => b.push(renderField(f, s)));
+      });
+    });
+
+    // Annexe cohérence
+    b.push(H1('Annexe : contrôle de cohérence'));
+    b.push(P(`Score de cohérence : ${co.res.filter(x => x.ok).length} critères validés sur ${co.res.length}.`));
+    b.push(table(['Critère', 'Statut', 'Piste d’amélioration'], co.res.map(x => [x.c.label, x.ok ? 'Validé' : 'À reprendre', x.ok ? '' : x.c.advice]), [4, 1.4, 4]));
+    const earned = L.earnedBadges(s);
+    b.push(H2('Badges obtenus'));
+    b.push(earned.length ? P(L.BADGES.filter(bd => earned.includes(bd.id)).map(bd => bd.name).join(', ')) : P('Aucun badge pour le moment.', { i: true, color: C.grey }));
+
+    b.push(H2('Ressources et contact'));
+    b.push(para([run('Cours complet : ', { b: true }), run('https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link')]));
+    b.push(para([run('Pierrick Frottier', { b: true }), run(', formateur indépendant en marketing, digital et création d’entreprise\n06 31 79 59 36  |  pierrick.frottier.pro@gmail.com\npierrickfrottier.fr  |  linkedin.com/in/pierrick-frottier')]));
+
+    const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="454" w:gutter="0"/></w:sectPr>';
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${b.join('')}${sect}</w:body></w:document>`;
+  }
+
+  function footerXml(nom) {
+    const g = { sz: 16, color: C.grey };
+    const fld = (instr) => `<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:instrText xml:space="preserve"> ${instr} </w:instrText></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:t>1</w:t></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>`;
+    const p1 = `<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="6" w:color="${C.line}"/></w:pBdr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run('Pierrick Frottier', { sz: 16, b: true, color: C.pine })}${run(', formateur indépendant en marketing, digital et création d’entreprise', g)}</w:p>`;
+    const p2 = `<w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run('06 31 79 59 36  |  pierrick.frottier.pro@gmail.com  |  pierrickfrottier.fr  |  linkedin.com/in/pierrick-frottier', g)}</w:p>`;
+    const p3 = `<w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run(nom + '  |  page ', g)}${fld('PAGE')}${run(' sur ', g)}${fld('NUMPAGES')}</w:p>`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${p1}${p2}${p3}</w:ftr>`;
+  }
+
+  const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="21"/><w:szCs w:val="21"/><w:color w:val="${C.ink}"/><w:lang w:val="fr-FR"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>
+<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>
+<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:after="240"/></w:pPr><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="56"/><w:szCs w:val="56"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${C.ochre}"/></w:pBdr><w:spacing w:before="0" w:after="240"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="320" w:after="120"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="200" w:after="60"/><w:outlineLvl w:val="2"/></w:pPr><w:rPr><w:b/><w:color w:val="${C.ochre}"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:style>
+</w:styles>`;
+
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>';
+  const docRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>';
+  const core = title => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${x(title)}</dc:title><dc:creator>Parcours stratégie commerciale</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString().slice(0, 19)}Z</dcterms:created></cp:coreProperties>`;
+
+  /* ---------- ZIP (méthode « stored ») ---------- */
+  const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = d => { let c = 0xFFFFFFFF; for (let i = 0; i < d.length; i++) c = CRC[(c ^ d[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  function zip(files) {
+    const enc = new TextEncoder(), chunks = [], central = []; let off = 0;
+    files.forEach(f => {
+      const name = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+      const h = new DataView(new ArrayBuffer(30));
+      h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+      h.setUint16(10, 0, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true);
+      h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+      chunks.push(new Uint8Array(h.buffer), name, data);
+      const c = new DataView(new ArrayBuffer(46));
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+      c.setUint16(10, 0, true); c.setUint16(12, 0, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true);
+      c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true);
+      c.setUint32(42, off, true);
+      central.push(new Uint8Array(c.buffer), name);
+      off += 30 + name.length + data.length;
+    });
+    const cSize = central.reduce((a, u) => a + u.length, 0);
+    const e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true);
+    e.setUint32(12, cSize, true); e.setUint32(16, off, true);
+    const all = chunks.concat(central, [new Uint8Array(e.buffer)]);
+    const out = new Uint8Array(all.reduce((a, u) => a + u.length, 0)); let p = 0;
+    all.forEach(u => { out.set(u, p); p += u.length; });
+    return out;
+  }
+
+  function build(s) {
+    const nom = (s.values.p_nom || 'Mon projet').trim() || 'Mon projet';
+    return zip([
+      { name: '[Content_Types].xml', data: contentTypes },
+      { name: '_rels/.rels', data: rootRels },
+      { name: 'docProps/core.xml', data: core(APP.docTitle + ' – ' + nom) },
+      { name: 'word/_rels/document.xml.rels', data: docRels },
+      { name: 'word/document.xml', data: documentXml(s) },
+      { name: 'word/styles.xml', data: stylesXml },
+      { name: 'word/footer1.xml', data: footerXml(nom) }
+    ]);
+  }
+  return { build };
+})();
+
+;
+/* ==========================================================
+   APPLICATION
+   ========================================================== */
+(() => {
+  const APP_ID = APP.id;
+  let S = { values: {}, cur: 's0' };
+  let dirty = false, lastSaved = null, coachTab = 'theory';
+  const hintLvl = {};
+  let earned = new Set();
+
+  const $ = sel => document.querySelector(sel);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const chapterOf = id => CHAPTERS.find(c => c.id === id);
+  const stepIndex = id => STEPS.findIndex(s => s.id === id);
+  const pct = x => Math.round(x * 100);
+  const slug = t => (String(t || 'projet').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'projet').slice(0, 40);
+  const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; };
+
+  function toast(msg, cls = '') {
+    const t = document.createElement('div'); t.className = 'toast ' + cls; t.textContent = msg;
+    $('#toasts').appendChild(t); setTimeout(() => t.remove(), cls === 'badge-toast' ? 4200 : 3200);
+  }
+  function download(name, data, type) {
+    const blob = data instanceof Blob ? data : new Blob([data], { type });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }
+  const hasData = () => Object.keys(S.values).some(k => { const v = S.values[k]; return Array.isArray(v) ? v.length : (v && typeof v === 'object' ? Object.keys(v).length : L.isFilled(v)); });
+
+  /* ---------------- rendu des champs ---------------- */
+  function hintsHtml(f) {
+    if (!f.hints || !f.hints.length) return '';
+    const n = hintLvl[f.id] || 0;
+    const list = f.hints.slice(0, n).map((h, i) => `<li><b>Indice ${i + 1}</b>${esc(h)}</li>`).join('');
+    return `<ul class="hints" id="h_${f.id}">${list}</ul>`;
+  }
+  function hintBtn(f) {
+    if (!f.hints || !f.hints.length) return '';
+    const n = hintLvl[f.id] || 0, max = f.hints.length;
+    return `<button type="button" class="hint-btn" data-hint="${f.id}" ${n >= max ? 'disabled' : ''}>${n >= max ? 'Tous les indices affichés' : `Indice ${n + 1}/${max}`}</button>`;
+  }
+  function fieldWrap(f, inner, forId) {
+    const lab = forId ? `<label for="${forId}">${esc(f.label)}</label>` : `<span class="lbl">${esc(f.label)}</span>`;
+    return `<div class="field" data-field="${f.id}"><div class="field-top">${lab}${hintBtn(f)}</div>${hintsHtml(f)}${inner}</div>`;
+  }
+  function cellInput(attrs, col, val) {
+    const v = val == null ? '' : val;
+    if (col.type === 'select') return `<select ${attrs} aria-label="${esc(col.l)}">${col.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+    if (col.type === 'number') return `<input type="number" step="any" min="0" ${attrs} value="${esc(v)}" aria-label="${esc(col.l)}">`;
+    return `<textarea rows="${col.type === 'area' ? 3 : 1}" ${attrs} aria-label="${esc(col.l || 'Valeur')}">${esc(v)}</textarea>`;
+  }
+  function renderTable(f) {
+    const fixed = !!f.fixedRows, nFix = fixed ? f.fixedRows.length : 0;
+    let rows = L.tableRows(f, S);
+    if (!fixed) { const min = f.minRows || 1; while (rows.length < min) rows = rows.concat([{}]); }
+    const cols = L.tableCols(f, S);
+    const canDel = !fixed || f.addRows;
+    const th = c => c.custom
+      ? `<th class="th-custom"><div><input type="text" class="th-in" data-colname="${f.id}" data-ck="${c.k}" value="${esc(c.l || '')}" placeholder="Nouveau critère" aria-label="Nom du critère ajouté"><button type="button" class="del-btn" data-delcol="${f.id}" data-ck="${c.k}" title="Supprimer ce critère" aria-label="Supprimer ce critère">×</button></div></th>`
+      : `<th>${esc(L.colLabel(c, S.values))}</th>`;
+    const head = `<tr>${cols.map(th).join('')}${canDel ? '<th aria-label="Supprimer"></th>' : ''}</tr>`;
+    const body = rows.map((r, i) => {
+      const extra = fixed && i >= nFix;
+      const cells = cols.map(c => {
+        if (fixed && c.k === 'f') return extra
+          ? `<td class="rowlab"><textarea rows="1" data-t="${f.id}" data-r="${i}" data-c="f" placeholder="Nouveau critère" aria-label="Nom du critère ajouté">${esc(r.f || '')}</textarea></td>`
+          : `<td class="rowlab">${esc(r.f)}</td>`;
+        return `<td>${cellInput(`data-t="${f.id}" data-r="${i}" data-c="${c.k}"`, c, r[c.k])}</td>`;
+      }).join('');
+      const del = canDel ? `<td class="del">${(!fixed || extra) ? `<button type="button" class="del-btn" data-delrow="${f.id}" data-r="${i}" title="Supprimer la ligne" aria-label="Supprimer la ligne ${i + 1}">×</button>` : ''}</td>` : '';
+      return `<tr>${cells}${del}</tr>`;
+    }).join('');
+    let btns = '';
+    if (!fixed) btns += `<button type="button" class="btn small" data-addrow="${f.id}">+ ${esc(f.addLabel || 'Ajouter une ligne')}</button>`;
+    if (fixed && f.addRows) btns += `<button type="button" class="btn small" data-addrow="${f.id}">+ ${esc(f.addRowLabel || 'Ajouter un critère')}</button>`;
+    if (f.addCols) btns += `<button type="button" class="btn small" data-addcol="${f.id}">+ ${esc(f.addColLabel || 'Ajouter un critère (colonne)')}</button>`;
+    return fieldWrap(f, `<div class="tbl-wrap"><table class="grid">${head}${body}</table></div>${btns ? `<div class="add-row">${btns}</div>` : ''}`);
+  }
+  function renderLinked(f) {
+    const rows = L.linkedRows(f, S);
+    if (!rows.length) return fieldWrap(f, `<div class="tbl-wrap"><p class="empty-note">${esc(f.empty || 'Rien à afficher pour le moment.')}</p></div>`);
+    const head = `<tr><th></th>${f.cols.map(c => `<th>${esc(c.l)}</th>`).join('')}</tr>`;
+    const body = rows.map(r => `<tr><td class="rowlab wrap">${esc(r.__k)}</td>${f.cols.map(c => `<td>${cellInput(`data-ln="${f.id}" data-key="${esc(r.__k)}" data-c="${c.k}"`, c, r[c.k])}</td>`).join('')}</tr>`).join('');
+    return fieldWrap(f, `<div class="tbl-wrap"><table class="grid">${head}${body}</table></div>`);
+  }
+  const itemV = i => typeof i === 'string' ? i : i.v;
+  function renderChecks(f) {
+    const sel = S.values[f.id] || [];
+    const groups = f.groups.map(g => `<fieldset><legend${g.d ? ` class="has-tip" tabindex="0" data-tip="${esc(g.d)}"` : ''}>${esc(g.g)}${g.d ? ' <span class="tip-i" aria-hidden="true">i</span>' : ''}</legend><div class="chips">${g.items.map(i => { const v = itemV(i), d = typeof i === 'string' ? '' : (i.d || ''); return `<label${d ? ` data-tip="${esc(d)}"` : ''}><input type="checkbox" data-chk="${f.id}" value="${esc(v)}" ${sel.includes(v) ? 'checked' : ''}>${esc(v)}${d ? ' <span class="tip-i" aria-hidden="true">i</span>' : ''}</label>`; }).join('')}</div></fieldset>`).join('');
+    return fieldWrap(f, `<div class="checks">${groups}</div>`);
+  }
+  function renderCalc(f) {
+    const c = S.values[f.id] || {};
+    const inp = i => `<div><label for="calc_${f.id}_${i.k}">${esc(i.l)}</label><input type="number" step="any" min="0" id="calc_${f.id}_${i.k}" data-calc="${f.id}" data-k="${i.k}" value="${esc(c[i.k] || '')}" placeholder="${esc(i.ph || '')}"></div>`;
+    return fieldWrap(f, `<div class="calc">${f.inputs.map(inp).join('')}</div><div id="calcout_${f.id}">${f.render(f.compute(c), c)}</div>`);
+  }
+
+  /* ---------- carte de positionnement ---------- */
+  function mapSvg(f) {
+    const m = S.values[f.id] || {}, pts = m.pts || {};
+    const W = 440, H = 440, pad = 46, sx = x => pad + x / 10 * (W - 2 * pad), sy = y => H - pad - y / 10 * (H - 2 * pad);
+    const actors = L.mapActors(f, S).filter(a => pts[a]).map(a => ({ n: a, x: pts[a].x, y: pts[a].y, me: false }));
+    if (pts.__moi) actors.push({ n: S.values.p_nom || 'Mon projet', x: pts.__moi.x, y: pts.__moi.y, me: true });
+    const dots = actors.map(a => `<g><circle cx="${sx(a.x)}" cy="${sy(a.y)}" r="${a.me ? 10 : 8}" class="${a.me ? 'mp-me' : 'mp-dot'}"/><text x="${sx(a.x) + (a.x >= 8 ? 6 : a.x <= 2 ? -6 : 0)}" y="${sy(a.y) - 14}" text-anchor="${a.x >= 8 ? 'end' : a.x <= 2 ? 'start' : 'middle'}" class="mp-lab${a.me ? ' me' : ''}">${esc(a.n.length > 24 ? a.n.slice(0, 23) + '…' : a.n)}</text></g>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="mapsvg" role="img" aria-label="Carte de positionnement">
+      <rect x="${pad}" y="${pad}" width="${W - 2 * pad}" height="${H - 2 * pad}" class="mp-bg"/>
+      <line x1="${W / 2}" y1="${pad}" x2="${W / 2}" y2="${H - pad}" class="mp-axis"/><line x1="${pad}" y1="${H / 2}" x2="${W - pad}" y2="${H / 2}" class="mp-axis"/>
+      <text x="${W / 2}" y="${H - 12}" text-anchor="middle" class="mp-title">${esc(m.ax || 'Axe horizontal')}</text>
+      <text x="${pad}" y="${H - pad + 16}" class="mp-end">${esc(m.axLo || '')}</text><text x="${W - pad}" y="${H - pad + 16}" text-anchor="end" class="mp-end">${esc(m.axHi || '')}</text>
+      <text transform="translate(16 ${H / 2}) rotate(-90)" text-anchor="middle" class="mp-title">${esc(m.ay || 'Axe vertical')}</text>
+      <text transform="translate(32 ${H - pad}) rotate(-90)" class="mp-end">${esc(m.ayLo || '')}</text><text transform="translate(32 ${pad}) rotate(-90)" text-anchor="end" class="mp-end">${esc(m.ayHi || '')}</text>
+      ${dots}</svg>`;
+  }
+  function renderMap(f) {
+    const m = S.values[f.id] || {}, pts = m.pts || {};
+    const ax = (k, l, ph) => `<div><label for="map_${k}">${l}</label><input type="text" id="map_${k}" data-map="${f.id}" data-k="${k}" value="${esc(m[k] || '')}" placeholder="${ph}"></div>`;
+    const actors = L.mapActors(f, S).map(a => ({ k: a, n: a })).concat([{ k: '__moi', n: (S.values.p_nom || 'Mon projet') + ' (moi)', me: true }]);
+    const slider = (a, d) => { const p = pts[a.k]; return `<input type="range" min="0" max="10" step="1" value="${p ? p[d] : 5}" data-mapp="${f.id}" data-a="${esc(a.k)}" data-d="${d}" aria-label="${esc(a.n)} : ${d === 'x' ? 'axe horizontal' : 'axe vertical'}" class="${p ? '' : 'unset'}">`; };
+    const rows = actors.map(a => `<tr class="${a.me ? 'me' : ''}"><td class="rowlab wrap">${esc(a.n)}${pts[a.k] ? '' : ' <small>non placé</small>'}</td><td>${slider(a, 'x')}</td><td>${slider(a, 'y')}</td></tr>`).join('');
+    const none = L.mapActors(f, S).length ? '' : `<p class="empty-note">Ajoutez vos concurrents à l’étape « Repérer mes concurrents » : ils apparaîtront ici.</p>`;
+    return fieldWrap(f, `<div class="map-wrap">
+      <div class="map-ctrl">
+        <div class="map-axes">${ax('ax', 'Axe horizontal', 'Ex. Prix')}${ax('axLo', 'à gauche', 'Ex. Bon marché')}${ax('axHi', 'à droite', 'Ex. Cher')}
+        ${ax('ay', 'Axe vertical', 'Ex. Fait maison')}${ax('ayLo', 'en bas', 'Ex. Industriel')}${ax('ayHi', 'en haut', 'Ex. Fait maison')}</div>
+        ${none}<p class="map-help">Déplacez les curseurs pour placer chaque acteur (0 à 10).</p>
+        <div class="tbl-wrap"><table class="grid map-tab"><tr><th>Acteur</th><th>Horizontal</th><th>Vertical</th></tr>${rows}</table></div>
+      </div>
+      <div class="map-view" id="mapview_${f.id}">${mapSvg(f)}</div>
+    </div>`);
+  }
+
+  function renderField(f) {
+    const v = S.values[f.id];
+    const id = 'f_' + f.id;
+    switch (f.type) {
+      case 'text': return fieldWrap(f, `<input type="text" id="${id}" data-f="${f.id}" value="${esc(v || '')}" placeholder="${esc(f.ph || '')}">`, id);
+      case 'area': return fieldWrap(f, `<textarea id="${id}" data-f="${f.id}" rows="${f.rows || 3}" placeholder="${esc(f.ph || '')}">${esc(v || '')}</textarea>`, id);
+      case 'select': return fieldWrap(f, `<select id="${id}" data-f="${f.id}"><option value="">Choisir…</option>${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`, id);
+      case 'radio': return fieldWrap(f, `<div class="radios" role="radiogroup">${f.options.map(o => `<label><input type="radio" name="${f.id}" data-f="${f.id}" value="${esc(o.v)}" ${o.v === v ? 'checked' : ''}><span>${esc(o.v)}<small>${esc(o.d)}</small></span></label>`).join('')}</div>`);
+      case 'table': return renderTable(f);
+      case 'checks': return renderChecks(f);
+      case 'linked': return renderLinked(f);
+      case 'calc': return renderCalc(f);
+      case 'map': return renderMap(f);
+      case 'preview': return `<div class="field"><span class="lbl">${esc(f.label)}</span><div class="preview" id="prev_${f.id}">${esc(f.render(S.values))}</div></div>`;
+    }
+    return '';
+  }
+
+  /* ---------------- exemple fil rouge ---------------- */
+  function exampleHtml(st) {
+    const EX = { values: EXAMPLE };
+    const mini = (heads, rows) => `<div class="tbl-wrap" style="background:transparent;border-color:transparent"><table class="mini"><tr>${heads.map(h => `<th>${esc(h)}</th>`).join('')}</tr>${rows.map(r => '<tr>' + r.map(c => `<td>${esc(c == null ? '' : c)}</td>`).join('') + '</tr>').join('')}</table></div>`;
+    const parts = st.fields.map(f => {
+      const v = EXAMPLE[f.id];
+      if (v == null) return '';
+      let body = '';
+      if (f.type === 'table') { const cs = L.tableCols(f, EX); body = mini(cs.map(c => L.colLabel(c, EXAMPLE)), L.tableRows(f, EX).filter(r => cs.some(c => c.k !== 'f' && r[c.k])).map(r => cs.map(c => r[c.k]))); }
+      else if (f.type === 'linked') body = mini([''].concat(f.cols.map(c => c.l)), L.linkedRows(f, EX).map(r => [r.__k].concat(f.cols.map(c => r[c.k]))));
+      else if (f.type === 'checks') body = `<p>${esc(v.join(', '))}</p>`;
+      else if (f.type === 'calc') body = mini(['Élément', 'Valeur'], f.docRows(v, f.compute(v)));
+      else if (f.type === 'map') { const pts = v.pts || {}; body = `<p>Axes : ${esc(v.ax)} (horizontal) et ${esc(v.ay)} (vertical).</p>` + mini(['Acteur', v.ax, v.ay], Object.keys(pts).map(k => [k === '__moi' ? EXAMPLE.p_nom + ' (moi)' : k, pts[k].x, pts[k].y])); }
+      else body = `<p>${esc(v)}</p>`;
+      return `<div class="ex-f"><b>${esc(f.label)}</b>${body}</div>`;
+    }).join('');
+    return `<details class="example"><summary>Voir l’exemple : La Roulotte Gourmande (entreprise fictive)</summary><div class="ex-body">${parts}</div></details>`;
+  }
+
+  /* ---------------- panneau méthode ---------------- */
+  function coachHtml(st) {
+    const tabs = [['theory', 'Comprendre'], ['tips', 'Astuces'], ['tools', 'Outils']];
+    let body = '';
+    if (coachTab === 'theory') body = st.theory.map((t, i) => `<details ${i === 0 ? 'open' : ''}><summary>${esc(t.t)}</summary>${t.b}</details>`).join('');
+    if (coachTab === 'tips') body = `<ul class="tips">${st.tips.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
+    if (coachTab === 'tools') body = st.tools.map(t => `<div class="tool"><b>${t.u ? `<a href="${t.u}" target="_blank" rel="noopener">${esc(t.n)}</a>` : esc(t.n)}</b><span>${esc(t.d)}</span></div>`).join('');
+    return `<aside class="coach" aria-label="Méthode"><div class="coach-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" aria-selected="${coachTab === k}" class="${coachTab === k ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div><div class="coach-body">${body}</div></aside>`;
+  }
+
+  /* ---------------- étape ---------------- */
+  function renderStep(st) {
+    const i = stepIndex(st.id), ch = chapterOf(st.chap);
+    const prev = STEPS[i - 1], next = STEPS[i + 1];
+    const comp = L.stepCompletion(st, S);
+    $('#main').innerHTML = `
+      <header class="step-head">
+        <div class="step-kicker"><span>Chapitre ${ch.n}, ${esc(ch.title)}</span><span>Étape ${i + 1} sur ${STEPS.length}</span><span>Durée indicative : ${esc(st.time)}</span></div>
+        <h2>${esc(st.title)}</h2>
+        <div class="step-progress" title="Complétude de l’étape"><i id="stepbar" style="width:${pct(comp)}%"></i></div>
+        <div class="produce"><strong>Ce que vous allez produire</strong>${esc(st.produce)}</div>
+      </header>
+      <div class="step-grid">
+        <section>
+          ${exampleHtml(st)}
+          ${st.fields.map(renderField).join('')}
+          <nav class="step-nav">
+            ${prev ? `<button type="button" class="btn" data-go="${prev.id}">← ${esc(prev.title)}</button>` : '<span></span>'}
+            ${next ? `<button type="button" class="btn primary" data-go="${next.id}">${esc(next.title)} →</button>` : `<button type="button" class="btn primary" data-go="bilan">Voir mon bilan et exporter</button>`}
+          </nav>
+        </section>
+        ${coachHtml(st)}
+      </div>`;
+    autosizeAll();
+  }
+
+  /* ---------------- bilan ---------------- */
+  function renderBilan() {
+    const co = L.coherence(S), ov = L.overall(S), ear = L.earnedBadges(S);
+    $('#main').innerHTML = `<div class="bilan">
+      <div class="step-kicker"><span>Fin du parcours</span></div>
+      <h2>Mon bilan</h2>
+      <div class="big-scores">
+        <div class="big-score"><b>${pct(ov)} %</b><p>Complétude : part des champs remplis dans tout le parcours.</p></div>
+        <div class="big-score coh"><b>${pct(co.score)} %</b><p>Cohérence : ${co.res.filter(r => r.ok).length} critères validés sur ${co.res.length}. Vos choix se répondent-ils d’une étape à l’autre ?</p></div>
+        <div class="big-score"><b>${ear.length}/${L.BADGES.length}</b><p>Badges obtenus.</p></div>
+      </div>
+      <h3>Avancement par chapitre</h3>
+      <div class="chap-bars">${CHAPTERS.map(c => { const p = pct(L.chapterCompletion(c.id, S)); return `<div class="chap-bar"><span>${c.n}. ${esc(c.title)}</span><b>${p} %</b><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('')}</div>
+      <h3>Contrôle de cohérence</h3>
+      <ul class="checks-list">${co.res.map(r => `<li class="${r.ok ? 'ok' : 'ko'}"><span class="st">${r.ok ? '✓' : '!'}</span><div><strong>${esc(r.c.label)}</strong>${r.ok ? '' : `<p>${esc(r.c.advice)}</p>`}</div>${r.ok ? '' : `<button type="button" class="btn small" data-go="${r.c.step}">Reprendre</button>`}</li>`).join('')}</ul>
+      <h3>Badges</h3>
+      <div class="badges">${L.BADGES.map(b => `<div class="badge ${ear.includes(b.id) ? 'on' : ''}" tabindex="0" data-tip="${esc((ear.includes(b.id) ? 'Obtenu ! ' : 'Pour l’obtenir : ') + b.how)}"><div class="ic" aria-hidden="true">${b.icon}</div><b>${esc(b.name)}</b><small>${esc(b.cond)}</small></div>`).join('')}</div>
+      <div class="export-box"><div><h3>Mon dossier d’étude de marché en Word</h3><p>Synthèse et verdict, toutes vos étapes mises en forme, carte de positionnement, plan d’action et contrôle de cohérence. Les champs vides apparaissent « À compléter ».</p></div><button type="button" class="btn ochre" data-act="export">Télécharger le Word</button></div>
+      ${APP.nextMission ? `<div class="next-box"><h3>${esc(APP.nextMission.title)}</h3><p>${esc(APP.nextMission.text)}</p></div>` : ''}
+    </div>`;
+  }
+
+  /* ---------------- barre latérale ---------------- */
+  function renderSide() {
+    const ov = L.overall(S), co = L.coherence(S), ear = L.earnedBadges(S);
+    const trail = CHAPTERS.map(c => `<li class="ch"><div class="ch-title"><span>${c.n}. ${esc(c.title)}</span><small>${esc(c.time)}</small></div><ol>${STEPS.filter(s => s.chap === c.id).map(st => {
+      const p = L.stepCompletion(st, S); const cls = p >= 0.999 ? 'done' : p > 0 ? 'part' : '';
+      return `<li><button type="button" data-go="${st.id}" class="${S.cur === st.id ? 'cur' : ''}" ${S.cur === st.id ? 'aria-current="step"' : ''}><span class="dot ${cls}" style="--p:${pct(p)}%"></span>${esc(st.title)}</button></li>`;
+    }).join('')}</ol></li>`).join('');
+    const saved = dirty ? 'Modifications non enregistrées' : (lastSaved ? `Brouillon enregistré à ${lastSaved}` : 'Aucun brouillon enregistré');
+    $('#side').innerHTML = `
+      <div class="proj-name">${esc(S.values.p_nom || 'Mon projet')}</div>
+      <div class="proj-sub">${esc(S.values.p_porteur || APP.docTitle)}</div>
+      <div class="scores">
+        <div class="score"><b>${pct(ov)} %</b><span>Complétude</span><div class="bar"><i style="width:${pct(ov)}%"></i></div></div>
+        <div class="score coh"><b>${pct(co.score)} %</b><span>Cohérence</span><div class="bar"><i style="width:${pct(co.score)}%"></i></div></div>
+      </div>
+      <div class="badge-strip">${L.BADGES.map(b => `<button type="button" class="b ${ear.includes(b.id) ? 'on' : ''}" data-go="bilan" data-tip="${esc((ear.includes(b.id) ? 'Obtenu ! ' : '') + b.name + ' : ' + b.how)}" aria-label="${esc(b.name + ', ' + (ear.includes(b.id) ? 'obtenu' : 'à obtenir') + '. ' + b.how)}">${b.icon}</button>`).join('')}<small>${ear.length}/${L.BADGES.length}</small></div>
+      <ul class="trail">${trail}<li class="ch bilan-link"><ol><li><button type="button" data-go="bilan" class="${S.cur === 'bilan' ? 'cur' : ''}"><span class="dot ${co.score >= .8 ? 'done' : ''}"></span>Bilan et export Word</button></li></ol></li></ul>
+      <div class="side-block">
+        <h3>Brouillon</h3>
+        <div class="save-status ${dirty ? 'dirty' : ''}">${saved}</div>
+        <button type="button" class="btn" data-act="save">Enregistrer un brouillon</button>
+        <button type="button" class="btn" data-act="restore">Restaurer un brouillon</button>
+      </div>
+      <div class="side-block">
+        <button type="button" class="btn primary" data-act="export">Exporter en Word</button>
+        <a class="btn" href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener">Ouvrir le cours complet</a>
+        <button type="button" class="btn ghost small" data-act="new">Recommencer à zéro</button>
+      </div>`;
+    $('#topt').textContent = S.values.p_nom || APP.docTitle;
+  }
+
+  function render() {
+    renderSide();
+    if (S.cur === 'bilan') renderBilan(); else renderStep(STEPS.find(s => s.id === S.cur) || STEPS[0]);
+  }
+  function go(id) {
+    S.cur = id; closeSide(); render(); window.scrollTo(0, 0);
+    const h = $('#main h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+  }
+
+  /* ---------------- mises à jour légères ---------------- */
+  function refreshLive() {
+    const st = STEPS.find(s => s.id === S.cur);
+    if (st) { const b = $('#stepbar'); if (b) b.style.width = pct(L.stepCompletion(st, S)) + '%'; }
+    if (st) st.fields.forEach(f => {
+      if (f.type === 'calc') { const o = $('#calcout_' + f.id); if (o) o.innerHTML = f.render(f.compute(S.values[f.id] || {}), S.values[f.id] || {}); }
+      if (f.type === 'map') { const o = $('#mapview_' + f.id); if (o) o.innerHTML = mapSvg(f); }
+      if (f.type === 'preview') { const o = $('#prev_' + f.id); if (o) o.textContent = f.render(S.values); }
+    });
+    renderSide();
+    checkBadges();
+  }
+  function checkBadges(silent) {
+    const now = new Set(L.earnedBadges(S));
+    if (!silent) L.BADGES.forEach(b => { if (now.has(b.id) && !earned.has(b.id)) toast(`Badge obtenu : ${b.icon} ${b.name}`, 'badge-toast'); });
+    earned = now;
+  }
+  function markDirty() { dirty = true; }
+  function autosize(el) { if (el && el.tagName === 'TEXTAREA' && el.closest('table.grid')) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; } }
+  function autosizeAll() { document.querySelectorAll('table.grid textarea').forEach(autosize); }
+
+  function ensureRows(f) {
+    let rows = S.values[f.id];
+    if (!Array.isArray(rows)) rows = [];
+    if (f.fixedRows) {
+      const base = f.fixedRows.map((lab, i) => Object.assign({}, rows[i] || {}, { f: lab }));
+      rows = f.addRows ? base.concat(rows.slice(f.fixedRows.length)) : base;
+    }
+    S.values[f.id] = rows; return rows;
+  }
+
+  /* ---------------- événements ---------------- */
+  function onInput(e) {
+    const t = e.target;
+    if (e.type === 'input' && (t.type === 'checkbox' || t.type === 'radio')) return;
+    if (t.dataset.f) {
+      S.values[t.dataset.f] = t.value;
+    } else if (t.dataset.t) {
+      const f = L.FIELDS[t.dataset.t], rows = ensureRows(f), r = +t.dataset.r;
+      while (rows.length <= r) rows.push({});
+      rows[r][t.dataset.c] = t.value; autosize(t);
+    } else if (t.dataset.colname) {
+      const c = (S.values[t.dataset.colname + '__cols'] || []).find(x => x.k === t.dataset.ck); if (c) c.l = t.value;
+    } else if (t.dataset.ln) {
+      const m = S.values[t.dataset.ln] = S.values[t.dataset.ln] || {};
+      const k = t.dataset.key; m[k] = m[k] || {}; m[k][t.dataset.c] = t.value; autosize(t);
+    } else if (t.dataset.map) {
+      const m = S.values[t.dataset.map] = S.values[t.dataset.map] || {}; m[t.dataset.k] = t.value;
+    } else if (t.dataset.mapp) {
+      const m = S.values[t.dataset.mapp] = S.values[t.dataset.mapp] || {}; m.pts = m.pts || {};
+      const a = t.dataset.a, p = m.pts[a] = m.pts[a] || { x: 5, y: 5 }; p[t.dataset.d] = +t.value;
+      if (t.classList.contains('unset')) {
+        t.closest('tr').querySelectorAll('input[type=range]').forEach(r => r.classList.remove('unset'));
+        const sm = t.closest('tr').querySelector('small'); if (sm) sm.remove();
+      }
+    } else if (t.dataset.calc) {
+      const c = S.values[t.dataset.calc] = S.values[t.dataset.calc] || {}; c[t.dataset.k] = t.value;
+    } else if (t.dataset.chk) {
+      const id = t.dataset.chk, sel = new Set(S.values[id] || []);
+      t.checked ? sel.add(t.value) : sel.delete(t.value);
+      const order = []; L.FIELDS[id].groups.forEach(g => g.items.forEach(i => { const v = itemV(i); if (sel.has(v)) order.push(v); }));
+      S.values[id] = order;
+      markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y);
+      const again = document.querySelector(`[data-chk="${id}"][value="${CSS.escape(t.value)}"]`); if (again) again.focus({ preventScroll: true });
+      refreshLive(); return;
+    } else return;
+    markDirty(); refreshLive();
+  }
+
+  function onClick(e) {
+    const b = e.target.closest('button,[data-go]'); if (!b) return;
+    const d = b.dataset;
+    if (d.go) { go(d.go); return; }
+    if (d.tab) { coachTab = d.tab; const st = STEPS.find(s => s.id === S.cur); const c = document.querySelector('.coach'); c.outerHTML = coachHtml(st); return; }
+    if (d.hint) {
+      const f = L.FIELDS[d.hint]; hintLvl[f.id] = Math.min((hintLvl[f.id] || 0) + 1, f.hints.length);
+      const w = document.querySelector(`.field[data-field="${f.id}"]`);
+      w.querySelector('.hints').outerHTML = hintsHtml(f);
+      const nb = document.createElement('div'); nb.innerHTML = hintBtn(f); const nbtn = nb.firstChild;
+      b.replaceWith(nbtn); nbtn.focus(); return;
+    }
+    if (d.addrow) {
+      const f = L.FIELDS[d.addrow], rows = ensureRows(f);
+      if (!f.fixedRows) { const min = f.minRows || 1; while (rows.length < min) rows.push({}); }
+      rows.push(f.fixedRows ? { f: '' } : {}); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      const last = document.querySelectorAll(`[data-t="${f.id}"][data-r="${rows.length - 1}"]`)[0]; if (last) last.focus();
+      return;
+    }
+    if (d.addcol) {
+      const id = d.addcol, cc = S.values[id + '__cols'] = S.values[id + '__cols'] || [];
+      const k = 'x' + Date.now().toString(36); cc.push({ k, l: '' }); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      const inp = document.querySelector(`[data-colname="${id}"][data-ck="${k}"]`); if (inp) inp.focus();
+      return;
+    }
+    if (d.delcol) {
+      const id = d.delcol, k = d.ck, rows = Array.isArray(S.values[id]) ? S.values[id] : [];
+      if (rows.some(r => r && L.isFilled(r[k])) && !confirm('Supprimer ce critère et son contenu ?')) return;
+      S.values[id + '__cols'] = (S.values[id + '__cols'] || []).filter(c => c.k !== k);
+      rows.forEach(r => { if (r) delete r[k]; }); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      return;
+    }
+    if (d.delrow) {
+      const f = L.FIELDS[d.delrow], rows = ensureRows(f), r = +d.r;
+      const row = rows[r] || {};
+      if (L.tableCols(f, S).some(c => L.isFilled(row[c.k])) && !confirm('Supprimer cette ligne et son contenu ?')) return;
+      rows.splice(r, 1); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      return;
+    }
+    if (d.act === 'save') return saveDraft();
+    if (d.act === 'restore') return $('#fileIn').click();
+    if (d.act === 'export') return exportWord();
+    if (d.act === 'new') {
+      if (!confirm('Recommencer à zéro ? Tout le contenu non enregistré sera perdu. Pensez à enregistrer un brouillon avant.')) return;
+      S = { values: {}, cur: 's0' }; dirty = false; lastSaved = null; checkBadges(true); go('s0'); return;
+    }
+  }
+
+  /* ---------------- brouillon ---------------- */
+  function saveDraft() {
+    const data = { app: APP_ID, version: 1, savedAt: new Date().toISOString(), state: { values: S.values, cur: S.cur } };
+    download(`brouillon_${APP.slugPrefix}_${slug(S.values.p_nom)}_${stamp()}.json`, JSON.stringify(data, null, 2), 'application/json');
+    dirty = false; lastSaved = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    renderSide(); toast('Brouillon enregistré dans vos téléchargements.');
+  }
+  function migrate(v) {
+    if (typeof v.ma_tend === 'string') v.ma_tend = v.ma_tend.trim() ? [{ t: v.ma_tend }] : [];
+    return v;
+  }
+  function loadState(st, msg) {
+    st.values = migrate(st.values || {});
+    S = { values: st.values || {}, cur: st.cur && (st.cur === 'bilan' || stepIndex(st.cur) >= 0) ? st.cur : 's0' };
+    dirty = false; checkBadges(true); showApp(); render(); window.scrollTo(0, 0); if (msg) toast(msg);
+  }
+  function restoreFile(file) {
+    const rd = new FileReader();
+    rd.onload = () => {
+      let data;
+      try { data = JSON.parse(rd.result); } catch (e) { toast('Ce fichier n’est pas un brouillon lisible (JSON invalide).', 'err'); return; }
+      if (!data || data.app !== APP_ID || !data.state || typeof data.state.values !== 'object') { toast('Ce fichier n’est pas un brouillon de ce parcours.', 'err'); return; }
+      if (hasData() && dirty && !confirm('Remplacer votre travail en cours par ce brouillon ? Les modifications non enregistrées seront perdues.')) return;
+      lastSaved = data.savedAt ? new Date(data.savedAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : null;
+      loadState(data.state, 'Brouillon restauré : vous reprenez là où vous vous étiez arrêté.');
+    };
+    rd.readAsText(file);
+  }
+
+  /* ---------------- export Word ---------------- */
+  function exportWord() {
+    try {
+      const bytes = DOCX.build(S);
+      download(`${APP.slugPrefix}_${slug(S.values.p_nom)}_${stamp()}.docx`, new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
+      toast('Document Word téléchargé.' + (dirty ? ' Pensez aussi à enregistrer un brouillon pour pouvoir le modifier plus tard.' : ''));
+    } catch (e) { console.error(e); toast('L’export a échoué : ' + e.message, 'err'); }
+  }
+
+  /* ---------------- info-bulles ---------------- */
+  function showTip(el) {
+    const tip = $('#tip'); tip.textContent = el.dataset.tip; tip.hidden = false;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2; left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    let top = r.bottom + 8; if (top + th > window.innerHeight - 8) top = r.top - th - 8;
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  }
+  function hideTip() { $('#tip').hidden = true; }
+
+  /* ---------------- coque ---------------- */
+  function openSide() { $('#side').classList.add('open'); $('#scrim').classList.remove('hidden'); }
+  function closeSide() { $('#side').classList.remove('open'); $('#scrim').classList.add('hidden'); }
+  function showApp() { $('#boot').classList.add('hidden'); $('#shell').classList.remove('hidden'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if (f) restoreFile(f); e.target.value = ''; });
+    $('#bStart').addEventListener('click', () => { S = { values: {}, cur: 's0' }; checkBadges(true); showApp(); render(); });
+    $('#bRestore').addEventListener('click', () => $('#fileIn').click());
+    $('#bExample').addEventListener('click', () => { loadState({ values: JSON.parse(JSON.stringify(EXAMPLE)), cur: 's0' }, 'Exemple chargé : La Roulotte Gourmande. Vous pouvez le parcourir, le modifier et l’exporter.'); dirty = false; });
+    $('#main').addEventListener('input', onInput);
+    $('#main').addEventListener('change', e => { if (e.target.type === 'radio' || e.target.type === 'checkbox') onInput(e); });
+    document.addEventListener('click', e => { hideTip(); onClick(e); });
+    document.addEventListener('mouseover', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+    document.addEventListener('focusin', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+    document.addEventListener('scroll', hideTip, true);
+    $('#menuBtn').addEventListener('click', openSide);
+    $('#scrim').addEventListener('click', closeSide);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSide(); $('#leave').classList.add('hidden'); } });
+    window.addEventListener('beforeunload', e => {
+      if (!dirty) return;
+      const msg = 'Pensez à enregistrer votre brouillon avant de quitter : rien n’est sauvegardé automatiquement.';
+      e.preventDefault(); e.returnValue = msg; return msg;
+    });
+    // rappel quand la souris quitte la fenêtre vers le haut (onglets, bouton fermer)
+    let lastLeave = 0;
+    document.addEventListener('mouseout', e => {
+      if (!dirty || e.relatedTarget || e.clientY > 0 || $('#shell').classList.contains('hidden')) return;
+      if (Date.now() - lastLeave < 90000) return;
+      lastLeave = Date.now(); $('#leave').classList.remove('hidden'); $('#leaveSave').focus();
+    });
+    $('#leaveSave').addEventListener('click', () => { $('#leave').classList.add('hidden'); saveDraft(); });
+    $('#leaveStay').addEventListener('click', () => $('#leave').classList.add('hidden'));
+    $('#leave').addEventListener('click', e => { if (e.target.id === 'leave') $('#leave').classList.add('hidden'); });
+    // tout lien externe s'ouvre dans un nouvel onglet
+    const extLinks = root => root.querySelectorAll('a[href^="http"]').forEach(l => { l.target = '_blank'; l.rel = 'noopener noreferrer'; });
+    extLinks(document);
+    new MutationObserver(() => extLinks(document)).observe(document.body, { childList: true, subtree: true });
+  });
+
+  window.__app = { get state() { return S; }, get dirty() { return dirty; } };
+})();
+</script>
+<!-- Bouton retour vers l'accueil du jeu (ajouté par l'espace formateur) -->
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>
+</body>
+</html>
