@@ -28,8 +28,15 @@
     if (texte != null) e.textContent = texte;
     return e;
   }
+  // Jeux et éléments « masque: true » : invisibles pour les visiteurs, affichés en grisé pour une personne connectée
+  function visible(x) { return !x.masque || !!session(); }
+  function marquerMasque(carte, x) {
+    if (!x.masque) return;
+    carte.classList.add("masquee");
+    carte.appendChild(el("span", "etiquette-masque", "Masqué aux visiteurs"));
+  }
   function nbMissions(jeu) {
-    var n = jeu.elements.filter(function (x) { return x.type === "mission"; }).length;
+    var n = jeu.elements.filter(function (x) { return x.type === "mission" && visible(x); }).length;
     return n + (n > 1 ? " missions" : " mission");
   }
   function lien(texte, href, cls) { var a = el("a", cls, texte); a.href = href; return a; }
@@ -77,6 +84,7 @@
     var ul = el("ul", "grille jeux");
     ul.style.marginTop = "1.5rem";
     cat.jeux.forEach(function (j, i) {
+      if (!visible(j)) return;
       var li = el("li"), carte = el("article", "couverture");
       carte.style.setProperty("--c", j.couleur);
       var couv = el("div", "couv");
@@ -88,7 +96,7 @@
       var a = lien("Voir les missions", BASE + j.id + "/index.html", "jouer");
       a.setAttribute("aria-label", "Voir les missions : " + j.titre);
       corps.appendChild(a);
-      carte.appendChild(couv); carte.appendChild(corps);
+      carte.appendChild(couv); carte.appendChild(corps); marquerMasque(carte, j);
       li.appendChild(carte); ul.appendChild(li);
       if (SITE.decorer) SITE.decorer(carte, "jeu", i, cat.jeux.length);
     });
@@ -98,15 +106,15 @@
   // Page d'un jeu : bandeau aux couleurs du jeu, parcours des missions, ressources
   function rendreJeu(haut, main, cat) {
     var jeu = cat.jeux.filter(function (j) { return j.id === jeuId; })[0];
-    if (!jeu) {
-      main.appendChild(el("h1", "titre-page", "Jeu introuvable"));
-      main.appendChild(el("p", "aide", "Ce jeu n’existe plus."));
+    if (!jeu || !visible(jeu)) {
+      main.appendChild(el("h1", "titre-page", jeu ? "Jeu bientôt disponible" : "Jeu introuvable"));
+      main.appendChild(el("p", "aide", jeu ? "Ce jeu n’est pas encore ouvert. Revenez plus tard." : "Ce jeu n’existe plus."));
       main.appendChild(lien("Retour à l’accueil", BASE + "index.html", "btn principal"));
       return;
     }
     document.title = jeu.titrePage || jeu.titre;
     var missions = [], ressources = [];
-    jeu.elements.forEach(function (x, i) { (x.type === "mission" ? missions : ressources).push({ x: x, i: i }); });
+    jeu.elements.forEach(function (x, i) { if (visible(x)) (x.type === "mission" ? missions : ressources).push({ x: x, i: i }); });
 
     var b = el("section", "bandeau"); b.style.setProperty("--c", jeu.couleur);
     var int = el("div", "interieur");
@@ -118,6 +126,7 @@
     var ch = el("div", "chiffres");
     ch.appendChild(el("span", null, nbMissions(jeu)));
     if (ressources.length) ch.appendChild(el("span", null, ressources.length + (ressources.length > 1 ? " ressources" : " ressource")));
+    if (jeu.masque) ch.appendChild(el("span", "etiquette-masque", "Jeu masqué aux visiteurs"));
     txt.appendChild(ch);
     int.appendChild(med); int.appendChild(txt); b.appendChild(int);
     haut.appendChild(b);
@@ -146,7 +155,7 @@
       var a = lien(m.x.bouton || "Jouer", m.x.url || BASE + jeu.id + "/" + m.x.fichier, "jouer");
       a.target = "_blank"; // chaque mission s'ouvre dans un nouvel onglet
       a.setAttribute("aria-label", "Jouer : " + m.x.titre);
-      c.appendChild(num); c.appendChild(em); c.appendChild(t); c.appendChild(a);
+      c.appendChild(num); c.appendChild(em); c.appendChild(t); c.appendChild(a); marquerMasque(c, m.x);
       li.appendChild(c); ol.appendChild(li);
       if (SITE.decorer) SITE.decorer(c, "element", m.i, jeu.elements.length, { premier: rang === 1, dernier: rang === missions.length });
     }
@@ -173,7 +182,7 @@
         var a = lien(r.x.bouton || "Ouvrir", r.x.url || BASE + jeu.id + "/" + r.x.fichier, "jouer");
         a.target = "_blank"; if (r.x.url) a.rel = "noopener";
         a.setAttribute("aria-label", a.textContent + " : " + r.x.titre);
-        c.appendChild(a); li.appendChild(c); ul.appendChild(li);
+        c.appendChild(a); marquerMasque(c, r.x); li.appendChild(c); ul.appendChild(li);
         if (SITE.decorer) SITE.decorer(c, "element", r.i, jeu.elements.length, { premier: k === 0, dernier: k === ressources.length - 1 });
       });
     }

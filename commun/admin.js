@@ -47,7 +47,7 @@
     function bouton(texte, cls, action) { var b = el("button", "btn " + (cls || ""), texte); b.type = "button"; b.onclick = action; return b; }
     function extension(nom) { var m = /\.[a-z0-9]{1,6}$/i.exec(nom || ""); return m ? m[0].toLowerCase() : ""; }
     function lireOctets(fichier) { return fichier.arrayBuffer().then(function (b) { return new Uint8Array(b); }); }
-    function publie(m) { return (m || "Publié") + ". Visible par tous d’ici 1 à 2 minutes."; }
+    function publie(m) { return (m || "Publié") + ". En ligne d’ici 1 à 2 minutes."; }
     var EMOJI = { cote: true }, COULEUR = { cote: true };
     function champsVisuels(x, defEmoji) {
       return [
@@ -60,26 +60,44 @@
     SITE.decorer = function (carte, genre, i, n, bornes) {
       if (sessionKo) return;
       var o = el("div", "outils-carte");
+      var cible = genre === "jeu" ? catalogue().jeux[i] : jeuCourant(catalogue()).elements[i];
       var haut = el("button", null, "↑"), bas = el("button", null, "↓"), modif = el("button", null, "✎"), suppr = el("button", null, "🗑");
-      [haut, bas, modif, suppr].forEach(function (b) { b.type = "button"; o.appendChild(b); });
+      var oeil = el("button", null, cible.masque ? "👁" : "🙈");
+      [haut, bas, oeil, modif, suppr].forEach(function (b) { b.type = "button"; o.appendChild(b); });
       haut.title = "Monter"; bas.title = "Descendre"; modif.title = "Modifier"; suppr.title = "Supprimer";
-      haut.setAttribute("aria-label", "Monter"); bas.setAttribute("aria-label", "Descendre"); modif.setAttribute("aria-label", "Modifier"); suppr.setAttribute("aria-label", "Supprimer");
+      oeil.title = cible.masque ? "Rendre visible aux visiteurs" : "Masquer aux visiteurs";
+      [haut, bas, oeil, modif, suppr].forEach(function (b) { b.setAttribute("aria-label", b.title); });
       haut.disabled = bornes ? bornes.premier : i === 0; bas.disabled = bornes ? bornes.dernier : i === n - 1;
       carte.insertBefore(o, carte.firstChild);
       if (genre === "jeu") {
-        var j = catalogue().jeux[i];
+        var j = cible;
         haut.onclick = function () { deplacerJeu(j.id, -1, o); };
         bas.onclick = function () { deplacerJeu(j.id, 1, o); };
+        oeil.onclick = function () { basculer(function (cat) { return trouverJeu(cat, j.id); }, j, o); };
         modif.onclick = function () { formJeu(j); };
         suppr.onclick = function () { supprimerJeu(j); };
       } else {
-        var x = jeuCourant(catalogue()).elements[i];
+        var x = cible;
         haut.onclick = function () { deplacerElement(cle(x), -1, o); };
         bas.onclick = function () { deplacerElement(cle(x), 1, o); };
+        oeil.onclick = function () { basculer(function (cat) { var jj = trouverJeu(cat, SITE.jeuId); return jj.elements[trouverElement(jj, cle(x))]; }, x, o); };
         modif.onclick = function () { x.type === "mission" ? formMission(x) : formRessourcePublique(x); };
         suppr.onclick = function () { supprimerElement(x); };
       }
     };
+    // Masquer / rendre visible un jeu ou un élément pour les visiteurs
+    function basculer(trouver, x, o) {
+      patienter(o);
+      var masquer = !x.masque;
+      N.modifierCatalogue(function (cat) {
+        var c = trouver(cat);
+        if (masquer) c.masque = true; else delete c.masque;
+      }, (masquer ? "Masqué aux visiteurs : " : "Visible par les visiteurs : ") + x.titre).then(rafraichir, echec);
+    }
+    function champMasque(x) {
+      return { nom: "masque", type: "case", label: "Masquer aux visiteurs (seuls les formateurs le voient)", valeur: x ? x.masque : false };
+    }
+    function appliquerMasque(e, v) { if (v.masque) e.masque = true; else delete e.masque; }
     function patienter(o) { o.querySelectorAll("button").forEach(function (b) { b.disabled = true; }); }
     function echec(e) { alerte("Échec", e.message); rafraichir(); }
     function alerte(titre, message) { N.formulaire({ titre: titre, intro: message, champs: [], bouton: "OK", valider: function () { return ""; } }); }
@@ -134,12 +152,12 @@
           { nom: "resume", type: "zone", label: "Résumé (carte de l’accueil)", valeur: j && j.resume, requis: true },
           { nom: "intro", type: "zone", label: "Introduction (page du jeu)", valeur: j && j.intro, requis: true, lignes: 4 },
           { nom: "categorie", type: "texte", label: "Étiquette des cartes de mission", valeur: j && j.categorie, requis: true, aide: "Ex. « Supply chain »" }
-        ].concat(champsVisuels(j, "🎲"), j ? [{ nom: "retourCss", type: "texte", label: "Réglage du bouton retour (CSS, pour experts)", valeur: j.retourCss, aide: "Espace à réserver dans les missions pour le bouton « ← Tous les jeux ». Laissez tel quel si vous ne savez pas." }] : []),
+        ].concat(champsVisuels(j, "🎲"), [champMasque(j)], j ? [{ nom: "retourCss", type: "texte", label: "Réglage du bouton retour (CSS, pour experts)", valeur: j.retourCss, aide: "Espace à réserver dans les missions pour le bouton « ← Tous les jeux ». Laissez tel quel si vous ne savez pas." }] : []),
         valider: function (v) {
           var champs = { titre: v.titre, titrePage: v.titrePage || v.titre, resume: v.resume, intro: v.intro, categorie: v.categorie, emoji: v.emoji, couleur: v.couleur };
           if (j) {
             return N.modifierCatalogue(function (cat) {
-              var x = trouverJeu(cat, j.id); Object.assign(x, champs); x.retourCss = v.retourCss || "";
+              var x = trouverJeu(cat, j.id); Object.assign(x, champs); x.retourCss = v.retourCss || ""; appliquerMasque(x, v);
             }, "Jeu modifié : " + v.titre).then(function () { rafraichir(); return publie("Jeu mis à jour"); });
           }
           var id;
@@ -147,7 +165,7 @@
             id = N.slug(v.titre); var base = id, k = 2;
             var pris = cat.jeux.map(function (x) { return x.id; }).concat(["commun", "donnees", "formateur", "outils", "prive"]);
             while (pris.indexOf(id) >= 0) id = base + "-" + k++;
-            cat.jeux.push(Object.assign({ id: id }, champs, { retourCss: "", elements: [] }));
+            var nouveau = Object.assign({ id: id }, champs, { retourCss: "", elements: [] }); appliquerMasque(nouveau, v); cat.jeux.push(nouveau);
             return [{ chemin: id + "/index.html", texte: gabaritJeu(id) }];
           }, "Nouveau jeu : " + v.titre).then(function () { rafraichir(); return publie("Jeu créé (page " + id + "/)"); });
         }
@@ -207,7 +225,7 @@
             aide: "Le bouton « ← Tous les jeux » est ajouté automatiquement." },
           { nom: "titre", type: "texte", label: "Titre", valeur: x ? x.titre : "Mission " + n + " · ", requis: true },
           { nom: "description", type: "zone", label: "Description (une phrase)", valeur: x && x.description, requis: true }
-        ].concat(champsVisuels(x, "🎯")),
+        ].concat(champsVisuels(x, "🎯"), [champMasque(x)]),
         valider: function (v) {
           if (v.fichier && !/\.html?$/i.test(v.fichier.name)) throw new Error("Choisissez un fichier .html.");
           var lecture = v.fichier ? v.fichier.text().then(function (h) { return insererBoutonRetour(h, jeu); }) : Promise.resolve(null);
@@ -215,14 +233,15 @@
             return N.modifierCatalogue(function (cat) {
               var j = trouverJeu(cat, jeu.id), donnees = { titre: v.titre, description: v.description, emoji: v.emoji, couleur: v.couleur };
               if (x) {
-                var e = j.elements[trouverElement(j, cle(x))]; Object.assign(e, donnees);
+                var e = j.elements[trouverElement(j, cle(x))]; Object.assign(e, donnees); appliquerMasque(e, v);
                 return html ? [{ chemin: jeu.id + "/" + e.fichier, texte: html }] : [];
               }
               var nom = "jeux/" + N.slug(v.titre) + ".html", base = nom.slice(0, -5), k = 2;
               while (j.elements.map(cle).indexOf(nom) >= 0) nom = base + "-" + k++ + ".html";
               var derniere = -1;
               j.elements.forEach(function (e, i) { if (e.type === "mission") derniere = i; });
-              j.elements.splice(derniere + 1, 0, Object.assign({ type: "mission", fichier: nom }, donnees));
+              var e2 = Object.assign({ type: "mission", fichier: nom }, donnees); appliquerMasque(e2, v);
+              j.elements.splice(derniere + 1, 0, e2);
               return [{ chemin: jeu.id + "/" + nom, texte: html }];
             }, (x ? "Mission modifiée : " : "Nouvelle mission : ") + v.titre);
           }).then(function () { rafraichir(); return publie(x ? "Mission mise à jour" : "Mission publiée"); });
@@ -267,7 +286,8 @@
           { nom: "section", type: "texte", label: "Rubrique", valeur: "Supports de cours", requis: true, suggestions: sectionsConnues(), visibleSi: function (v) { return v.visibilite === "formateur"; } },
           { nom: "bouton", type: "texte", label: "Texte du bouton", valeur: "Ouvrir", requis: true, visibleSi: function (v) { return v.visibilite === "public"; } },
           Object.assign({ nom: "emoji", type: "emoji", label: "Emoji", valeur: "📄", requis: true, visibleSi: function (v) { return v.visibilite === "public"; } }, EMOJI),
-          Object.assign({ nom: "couleur", type: "couleur", label: "Couleur", valeur: "#5b6b9a", requis: true, visibleSi: function (v) { return v.visibilite === "public"; } }, COULEUR)
+          Object.assign({ nom: "couleur", type: "couleur", label: "Couleur", valeur: "#5b6b9a", requis: true, visibleSi: function (v) { return v.visibilite === "public"; } }, COULEUR),
+          Object.assign(champMasque(null), { visibleSi: function (v) { return v.visibilite === "public"; } })
         ],
         valider: function (v) {
           if (v.genre === "lien" && !/^https?:\/\//i.test(v.url)) throw new Error("L’adresse doit commencer par https://");
@@ -282,6 +302,7 @@
       return lecture.then(function (o) {
         return N.modifierCatalogue(function (cat) {
           var j = trouverJeu(cat, jeu.id), e = { type: "ressource", titre: v.titre, description: v.description, emoji: v.emoji, couleur: v.couleur, bouton: v.bouton || "Ouvrir" };
+          appliquerMasque(e, v);
           if (!o) { e.url = v.url; j.elements.push(e); return []; }
           var ext = extension(v.fichier.name), nom = "ressources/" + N.slug(v.titre) + ext, base = nom.slice(0, nom.length - ext.length), k = 2;
           while (j.elements.map(cle).indexOf(nom) >= 0) nom = base + "-" + k++ + ext;
@@ -298,14 +319,14 @@
           { nom: "titre", type: "texte", label: "Titre", valeur: x.titre, requis: true },
           { nom: "description", type: "zone", label: "Description", valeur: x.description, requis: true },
           { nom: "bouton", type: "texte", label: "Texte du bouton", valeur: x.bouton || "Ouvrir", requis: true }
-        ].concat(champsVisuels(x, "📄")),
+        ].concat(champsVisuels(x, "📄"), [champMasque(x)]),
         valider: function (v) {
           if (x.url && !/^https?:\/\//i.test(v.url)) throw new Error("L’adresse doit commencer par https://");
           var lecture = v.fichier ? lireOctets(v.fichier) : Promise.resolve(null);
           return lecture.then(function (o) {
             return N.modifierCatalogue(function (cat) {
               var j = trouverJeu(cat, SITE.jeuId), e = j.elements[trouverElement(j, cle(x))];
-              Object.assign(e, { titre: v.titre, description: v.description, bouton: v.bouton, emoji: v.emoji, couleur: v.couleur });
+              Object.assign(e, { titre: v.titre, description: v.description, bouton: v.bouton, emoji: v.emoji, couleur: v.couleur }); appliquerMasque(e, v);
               if (x.url) { e.url = v.url; return []; }
               if (!o) return [];
               var ext = extension(v.fichier.name);

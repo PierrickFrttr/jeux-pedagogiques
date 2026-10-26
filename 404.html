@@ -27,6 +27,7 @@
   if (connecte) { try { var l = JSON.parse(sessionStorage.getItem("jp-catalogue") || "null"); if (l && l.version > cat.version) cat = l; } catch (e) {} }
   var id = parties[0], estPageJeu = parties.length === 1 || (parties.length === 2 && parties[1] === "index.html");
   var jeu = cat.jeux.filter(function (j) { return j.id === id; })[0];
+  if (jeu && jeu.masque && !connecte) jeu = null; // jeu masqué : introuvable pour les visiteurs
   if (jeu && estPageJeu) {
     document.body.setAttribute("data-page", "jeu");
     document.body.setAttribute("data-jeu", id);

@@ -130,6 +130,13 @@ h1,h2,h3{font-family:var(--titre);line-height:1.15;letter-spacing:-.01em;margin:
 .outils-carte button:disabled{opacity:.3;cursor:default}
 .etape .outils-carte{top:-.9rem;right:1rem}
 .couverture .outils-carte{top:.8rem;right:.8rem}
+/* Éléments masqués aux visiteurs (vus seulement par les formateurs connectés) */
+.masquee{border:2px dashed var(--edition);box-shadow:none}
+.masquee>:not(.outils-carte):not(.etiquette-masque){opacity:.5}
+.masquee .etiquette-masque{position:absolute;z-index:2;top:-.75rem;left:1rem}
+.couverture.masquee .etiquette-masque{top:.8rem;left:.8rem}
+.etiquette-masque{font:700 .8rem/1 var(--texte);padding:.4rem .7rem;border-radius:999px;background:var(--edition);color:#2b1d00}
+.bandeau .chiffres .etiquette-masque{background:var(--edition);border-color:var(--edition)}
 
 /* Documents formateur */
 .zone-formateur{margin-top:3rem;padding:1.5rem;background:var(--edition-doux);border:2px dashed var(--edition);border-radius:20px}
