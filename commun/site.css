@@ -162,6 +162,7 @@ h1,h2,h3{font-family:var(--titre);line-height:1.15;letter-spacing:-.01em;margin:
 .outils-carte button:disabled{opacity:.3;cursor:default}
 .etape .outils-carte{top:-.9rem;right:1rem}
 .couverture .outils-carte{top:.8rem;right:.8rem}
+.outils-carte.verrou{padding:.45rem .8rem;font:700 .8rem/1 var(--texte);color:var(--gris);border-color:var(--filet-fort)}
 /* Éléments masqués aux visiteurs (vus seulement par les formateurs connectés) */
 .masquee{border:2px dashed var(--edition);box-shadow:none}
 .masquee>:not(.outils-carte):not(.etiquette-masque){opacity:.5}

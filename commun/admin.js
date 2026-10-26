@@ -56,11 +56,24 @@
       ];
     }
 
+    // ---------- Droits : l'admin peut tout faire, un formateur seulement ce qu'il a créé ----------
+    // (les éléments sans auteur, créés avant cette règle, sont réservés aux admins)
+    var ADMIN = s.role === "admin";
+    function peut(x) { return ADMIN || !!(x && x.auteur && x.auteur.toLowerCase() === s.id.toLowerCase()); }
+    function auteurDe(x) { return x.auteur || "un admin"; }
+    function verrou(x) {
+      var v = el("div", "outils-carte verrou", "🔒 Créé par " + auteurDe(x));
+      v.title = "Seul son auteur ou un admin peut le modifier.";
+      return v;
+    }
+
     // ---------- Petits boutons sur chaque carte ----------
     SITE.decorer = function (carte, genre, i, n, bornes) {
       if (sessionKo) return;
-      var o = el("div", "outils-carte");
       var cible = genre === "jeu" ? catalogue().jeux[i] : jeuCourant(catalogue()).elements[i];
+      if (!peut(cible)) { carte.insertBefore(verrou(cible), carte.firstChild); return; }
+      var o = el("div", "outils-carte");
+      if (cible.auteur) o.title = "Créé par " + cible.auteur;
       var haut = el("button", null, "↑"), bas = el("button", null, "↓"), modif = el("button", null, "✎"), suppr = el("button", null, "🗑");
       var oeil = el("button", null, cible.masque ? "👁" : "🙈");
       [haut, bas, oeil, modif, suppr].forEach(function (b) { b.type = "button"; o.appendChild(b); });
@@ -110,13 +123,14 @@
       z.className = "actions-admin";
       if (SITE.page === "accueil") {
         z.appendChild(bouton("+ Nouveau jeu", "principal", function () { formJeu(null); }));
-        z.appendChild(bouton("✎ Modifier l’accueil", "", formAccueil));
+        if (ADMIN) z.appendChild(bouton("✎ Modifier l’accueil", "", formAccueil));
       } else {
         var jeu = jeuCourant(catalogue());
         if (!jeu) return;
         z.appendChild(bouton("+ Mission", "principal", function () { formMission(null); }));
         z.appendChild(bouton("+ Ressource ou cours", "", function () { formRessource(); }));
-        z.appendChild(bouton("✎ Modifier le jeu", "", function () { formJeu(jeu); }));
+        if (peut(jeu)) z.appendChild(bouton("✎ Modifier le jeu", "", function () { formJeu(jeu); }));
+        else z.appendChild(el("span", "aide", "Jeu créé par " + auteurDe(jeu) + " : vous pouvez y ajouter des missions et ressources, et modifier celles que vous avez créées."));
         zoneDocuments(jeu);
       }
     };
@@ -166,7 +180,7 @@
             id = N.slug(v.titre); var base = id, k = 2;
             var pris = cat.jeux.map(function (x) { return x.id; }).concat(["commun", "donnees", "formateur", "outils", "prive"]);
             while (pris.indexOf(id) >= 0) id = base + "-" + k++;
-            var nouveau = Object.assign({ id: id }, champs, { retourCss: "", elements: [] }); appliquerMasque(nouveau, v); cat.jeux.push(nouveau);
+            var nouveau = Object.assign({ id: id }, champs, { auteur: s.id, retourCss: "", elements: [] }); appliquerMasque(nouveau, v); cat.jeux.push(nouveau);
             return [{ chemin: id + "/index.html", texte: gabaritJeu(id) }];
           }, "Nouveau jeu : " + v.titre).then(function () { rafraichir(); return publie("Jeu créé (page " + id + "/)"); });
         }
@@ -188,6 +202,7 @@
         bouton: "Supprimer définitivement", danger: true, attente: "Suppression en cours…",
         valider: function (v) {
           if (v.ok !== "SUPPRIMER") throw new Error("Tapez SUPPRIMER en majuscules pour confirmer.");
+          if (!ADMIN && j.elements.some(function (e) { return !peut(e); })) throw new Error("Ce jeu contient des missions ou ressources créées par d’autres personnes : seul un admin peut le supprimer.");
           return N.modifierCatalogue(function (cat, cf) {
             cat.jeux = cat.jeux.filter(function (x) { return x.id !== j.id; });
             return Promise.all([N.lister(cf.github, j.id + "/"), N.lireManifeste(cf)]).then(function (r) {
@@ -241,7 +256,7 @@
               while (j.elements.map(cle).indexOf(nom) >= 0) nom = base + "-" + k++ + ".html";
               var derniere = -1;
               j.elements.forEach(function (e, i) { if (e.type === "mission") derniere = i; });
-              var e2 = Object.assign({ type: "mission", fichier: nom }, donnees); appliquerMasque(e2, v);
+              var e2 = Object.assign({ type: "mission", fichier: nom, auteur: s.id }, donnees); appliquerMasque(e2, v);
               j.elements.splice(derniere + 1, 0, e2);
               return [{ chemin: jeu.id + "/" + nom, texte: html }];
             }, (x ? "Mission modifiée : " : "Nouvelle mission : ") + v.titre);
@@ -302,7 +317,7 @@
       var lecture = v.genre === "fichier" ? lireOctets(v.fichier) : Promise.resolve(null);
       return lecture.then(function (o) {
         return N.modifierCatalogue(function (cat) {
-          var j = trouverJeu(cat, jeu.id), e = { type: "ressource", titre: v.titre, description: v.description, emoji: v.emoji, couleur: v.couleur, bouton: v.bouton || "Ouvrir" };
+          var j = trouverJeu(cat, jeu.id), e = { type: "ressource", auteur: s.id, titre: v.titre, description: v.description, emoji: v.emoji, couleur: v.couleur, bouton: v.bouton || "Ouvrir" };
           appliquerMasque(e, v);
           if (!o) { e.url = v.url; j.elements.push(e); return []; }
           var ext = extension(v.fichier.name), nom = "ressources/" + N.slug(v.titre) + ext, base = nom.slice(0, nom.length - ext.length), k = 2;
@@ -347,7 +362,7 @@
       var lecture = v.genre === "fichier" ? lireOctets(v.fichier) : Promise.resolve(null);
       return lecture.then(function (o) {
         return N.modifierDocuments(function (entrees, cf) {
-          var e = { jeu: jeu.titre, jeuId: jeu.id, section: v.section, libelle: v.titre };
+          var e = { jeu: jeu.titre, jeuId: jeu.id, section: v.section, libelle: v.titre, auteur: s.id };
           if (!o) { e.lien = v.url; entrees.push(e); return []; }
           e.nom = v.fichier.name; e.id = Array.from(N.aleatoire(8)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
           e.taille = o.length; e.type = v.fichier.type || "application/octet-stream";
@@ -405,8 +420,10 @@
             N.telechargerDocument(r.cf, e).then(function (blob) { N.telecharger(blob, e.nom); b.textContent = "Télécharger"; })
               .catch(function (err) { b.textContent = "Erreur"; alerte("Téléchargement impossible", err.message); }).then(function () { b.disabled = false; });
           }));
-          g.appendChild(bouton("✎", "", function () { formDocument(e, jeu); }));
-          g.appendChild(bouton("🗑", "danger", function () { supprimerDocument(e, jeu); }));
+          if (peut(e)) {
+            g.appendChild(bouton("✎", "", function () { formDocument(e, jeu); }));
+            g.appendChild(bouton("🗑", "danger", function () { supprimerDocument(e, jeu); }));
+          } else g.appendChild(el("small", "par", "🔒 " + auteurDe(e)));
           li.appendChild(info); li.appendChild(g); ul.appendChild(li);
         });
       }).catch(function (err) { liste.innerHTML = ""; liste.appendChild(el("p", "aide", "Documents indisponibles : " + err.message)); });

@@ -8,8 +8,8 @@ https://pierrickfrttr.github.io/jeux-pedagogiques/
 | Rôle | Ce qu'il voit et fait |
 |---|---|
 | **Visiteur** (étudiant) | Les jeux, les missions et les ressources publiques. Aucune connexion. |
-| **Formateur** | Les mêmes pages, avec en plus des boutons pour ajouter, modifier, réordonner et supprimer des jeux, des missions, des ressources publiques et des documents formateur (chiffrés). |
-| **Admin** | Tout ce que fait un formateur, plus la gestion des comptes : créer un accès, donner un nouveau mot de passe, supprimer un accès, remplacer la clé GitHub, révoquer toutes les sessions. |
+| **Formateur** | Les mêmes pages, avec en plus des boutons pour ajouter des jeux, des missions, des ressources publiques et des documents formateur (chiffrés). Il ne peut modifier, réordonner, masquer ou supprimer que ce qu'il a créé lui-même (cadenas « Créé par … » sur le reste). |
+| **Admin** | Peut tout modifier, quel que soit l'auteur (y compris le titre de l'accueil et ce qui existait avant la règle des auteurs), plus la gestion des comptes : créer un accès, donner un nouveau mot de passe, supprimer un accès, remplacer la clé GitHub, révoquer toutes les sessions. |
 
 Connexion : lien **« Espace formateur »** en bas de chaque page (`formateur/`).
 Tant que vous êtes connecté, une barre jaune « Mode formateur » apparaît en haut et les boutons d'édition s'affichent.
