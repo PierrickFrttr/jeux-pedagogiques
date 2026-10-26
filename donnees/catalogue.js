@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 11,
+  "version": 12,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -22,8 +22,7 @@ window.CATALOGUE = {
           "fichier": "jeux/mission-1-brouillard-sur-le-port.html",
           "description": "Cadrez l’étude avec la cliente : demande, marché, problématique, méthodes et sources, avec un budget et un délai à tenir.",
           "emoji": "🧭",
-          "couleur": "#4f7a8c",
-          "masque": true
+          "couleur": "#4f7a8c"
         },
         {
           "type": "mission",
