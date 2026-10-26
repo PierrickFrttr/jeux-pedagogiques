@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 4,
+  "version": 5,
   "site": {
     "titre": "Jeux pédagogiques",
     "intro": "Des jeux de rôle en équipe pour mettre en pratique le marketing et la supply chain. Choisissez votre jeu, puis la mission du jour."
@@ -114,7 +114,16 @@ window.CATALOGUE = {
       "emoji": "🧠",
       "couleur": "#be95be",
       "retourCss": "",
-      "elements": []
+      "elements": [
+        {
+          "type": "mission",
+          "fichier": "jeux/creer-sa-strategie-commerciale.html",
+          "titre": "Créer sa stratégie commerciale",
+          "description": "Un parcours guidé en 5 chapitres pour bâtir pas à pas la stratégie commerciale de votre projet : marché, offre, communication, parcours client et indicateurs. À chaque étape, méthode, astuces, outils et exemple complet. À la fin, votre stratégie s'exporte en document Word.",
+          "emoji": "🎯",
+          "couleur": "#f2ec36"
+        }
+      ]
     }
   ]
 };

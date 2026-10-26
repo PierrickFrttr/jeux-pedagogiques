@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ma stratégie commerciale – parcours guidé</title>
+<style>:root{
+  --pine:#1F4D45; --pine-2:#2B6A5F; --ochre:#C9861A; --ochre-soft:#F6E7CB; --lav:#6E64A8; --lav-soft:#E9E6F5;
+  --paper:#F4F6F3; --surface:#FFFFFF; --mist:#E3EAE6; --line:#CBD6D1; --ink:#1C2321; --muted:#5D6A65;
+  --ok:#2E7D4F; --ok-soft:#DDEFE3; --warn:#B3261E; --warn-soft:#F8E1DE;
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --pine:#7CC3B3; --pine-2:#9BD4C6; --ochre:#E6B05A; --ochre-soft:#3A2F1C; --lav:#B3AAE6; --lav-soft:#2C2940;
+    --paper:#141917; --surface:#1C2320; --mist:#25302C; --line:#38463F; --ink:#E7EDEA; --muted:#9FB0A9;
+    --ok:#7BC99A; --ok-soft:#1E3327; --warn:#F09A90; --warn-soft:#3B2220;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--pine)}
+:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;margin:0}
+.hidden{display:none!important}
+
+/* ---------- boutons ---------- */
+.btn{display:inline-flex;align-items:center;gap:.45em;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.55em 1em;cursor:pointer;font-weight:600;font-size:.94rem;text-decoration:none}
+.btn:hover{border-color:var(--pine)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.btn.primary:hover{background:var(--pine-2)}
+.btn.ochre{background:var(--ochre);border-color:var(--ochre);color:#1C2321}
+.btn.ghost{background:transparent;border-color:transparent;padding:.4em .6em}
+.btn.ghost:hover{background:var(--mist)}
+.btn.small{font-size:.84rem;padding:.35em .7em}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---------- écran d'accueil ---------- */
+#boot{min-height:calc(100% - 110px);display:grid;place-items:center;padding:2rem 1.2rem}
+.boot-card{max-width:720px;width:100%}
+.boot-ridge{width:100%;height:auto;display:block;margin-bottom:1.6rem;color:var(--pine)}
+.boot-card h1{font-size:clamp(2rem,5vw,3.1rem);color:var(--pine);letter-spacing:-.01em}
+.boot-card .lede{font-size:1.15rem;color:var(--muted);max-width:60ch;margin:1rem 0 1.6rem}
+.boot-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin:0 0 2rem;padding:0;list-style:none;counter-reset:b}
+.boot-steps li{border-top:3px solid var(--line);padding-top:.5rem;font-size:.86rem;color:var(--muted)}
+.boot-steps li strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1rem}
+.boot-actions{display:flex;flex-wrap:wrap;gap:.7rem}
+.boot-note{font-size:.85rem;color:var(--muted);margin-top:1.4rem}
+@media (max-width:640px){.boot-steps{grid-template-columns:1fr 1fr}}
+
+/* ---------- coque de l'application ---------- */
+#app{display:grid;grid-template-columns:300px 1fr;min-height:100%}
+#side{background:var(--surface);border-right:1px solid var(--line);padding:1.2rem 1rem 2rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+#main{padding:2rem clamp(1rem,3vw,2.6rem) 4rem;min-width:0}
+.topbar{display:none}
+
+.proj-name{font-family:var(--serif);font-size:1.25rem;color:var(--pine);font-weight:700;line-height:1.2;word-break:break-word}
+.proj-sub{font-size:.8rem;color:var(--muted);margin-top:.15rem}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:1rem 0 .6rem}
+.score{background:var(--paper);border-radius:10px;padding:.55rem .7rem}
+.score b{display:block;font-size:1.45rem;font-family:var(--serif);line-height:1}
+.score span{font-size:.75rem;color:var(--muted)}
+.score .bar{height:5px;background:var(--mist);border-radius:3px;margin-top:.4rem;overflow:hidden}
+.score .bar i{display:block;height:100%;background:var(--pine);border-radius:3px;transition:width .4s}
+.score.coh .bar i{background:var(--lav)}
+.badge-strip{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:1rem}
+.badge-strip .b{border:0;padding:0;cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.85rem;background:var(--lav-soft);filter:grayscale(1);opacity:.35}
+.badge-strip .b.on{filter:none;opacity:1;box-shadow:0 0 0 2px var(--lav)}
+.badge-strip small{margin-left:.3rem;color:var(--muted);font-size:.78rem}
+
+/* sentier */
+.trail{list-style:none;margin:0 0 1.2rem;padding:0}
+.trail .ch{margin-top:.9rem}
+.trail .ch-title{font-family:var(--serif);font-weight:700;font-size:.95rem;display:flex;justify-content:space-between;gap:.5rem;align-items:baseline}
+.trail .ch-title small{font-family:var(--sans);font-weight:400;color:var(--muted);font-size:.74rem;white-space:nowrap}
+.trail ol{list-style:none;margin:.35rem 0 0;padding:0;position:relative}
+.trail ol::before{content:"";position:absolute;left:9px;top:10px;bottom:10px;width:2px;background:var(--mist)}
+.trail li button{position:relative;display:flex;gap:.6rem;align-items:center;width:100%;text-align:left;border:0;background:none;padding:.32rem .4rem .32rem 0;border-radius:6px;cursor:pointer;font-size:.88rem;color:var(--ink)}
+.trail li button:hover{background:var(--paper)}
+.trail li button.cur{background:var(--ochre-soft);font-weight:600}
+.dot{flex:0 0 20px;height:20px;border-radius:50%;border:2px solid var(--line);background:var(--surface);position:relative;z-index:1;display:grid;place-items:center;font-size:.6rem;color:var(--surface)}
+.dot.part{border-color:var(--ochre);background:conic-gradient(var(--ochre) var(--p),var(--surface) 0)}
+.dot.done{border-color:var(--pine);background:var(--pine)}
+.dot.done::after{content:"✓";font-weight:700}
+.trail .bilan-link button{font-weight:700}
+
+.side-block{border-top:1px solid var(--line);padding-top:.9rem;margin-top:.9rem}
+.side-block h3{font-family:var(--sans);font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.5rem}
+.side-block .btn{width:100%;justify-content:center;margin-bottom:.45rem}
+.save-status{font-size:.78rem;color:var(--muted);margin:.2rem 0 .5rem}
+.save-status.dirty{color:var(--warn)}
+
+/* ---------- étape ---------- */
+.step-head{max-width:1180px;margin-bottom:1.4rem}
+.step-kicker{font-size:.88rem;color:var(--muted);display:flex;gap:1rem;flex-wrap:wrap}
+.step-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--pine);margin:.25rem 0 .7rem}
+.step-progress{height:6px;background:var(--mist);border-radius:3px;max-width:420px;overflow:hidden}
+.step-progress i{display:block;height:100%;background:var(--ochre);transition:width .3s}
+.produce{margin-top:1rem;background:var(--surface);border-left:4px solid var(--ochre);padding:.8rem 1rem;border-radius:0 8px 8px 0;max-width:80ch}
+.produce strong{display:block;font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.15rem}
+
+.step-grid>*{min-width:0}
+.step-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:2rem;max-width:1180px;align-items:start}
+.coach{position:sticky;top:1rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.coach-tabs{display:flex;border-bottom:1px solid var(--line)}
+.coach-tabs button{flex:1;border:0;background:none;padding:.7rem .3rem;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.coach-tabs button.on{color:var(--pine);border-bottom-color:var(--pine)}
+.coach-body{padding:1rem 1.1rem;max-height:calc(100vh - 7rem);overflow-y:auto;font-size:.92rem}
+.coach-body details{border-bottom:1px solid var(--mist);padding:.5rem 0}
+.coach-body details:last-child{border-bottom:0}
+.coach-body summary{cursor:pointer;font-weight:700;font-family:var(--serif);font-size:1rem;color:var(--pine)}
+.coach-body p,.coach-body ul,.coach-body ol{margin:.5rem 0}
+.coach-body ul,.coach-body ol{padding-left:1.2rem}
+.coach-body li{margin:.2rem 0}
+table.mini{border-collapse:collapse;width:100%;font-size:.84rem;margin:.5rem 0}
+table.mini th,table.mini td{border:1px solid var(--line);padding:.3rem .4rem;text-align:left;vertical-align:top}
+table.mini th{background:var(--mist)}
+.tips li{margin-bottom:.6rem}
+.tool{padding:.5rem 0;border-bottom:1px solid var(--mist)}
+.tool:last-child{border-bottom:0}
+.tool b{display:block}
+.tool span{color:var(--muted);font-size:.86rem}
+
+.example{background:var(--lav-soft);border-radius:10px;padding:.2rem 1rem;margin-bottom:1.4rem}
+.example summary{cursor:pointer;padding:.6rem 0;font-weight:600;color:var(--lav)}
+.example .ex-body{padding-bottom:.8rem;font-size:.92rem}
+.example .ex-f{margin:.5rem 0}
+.example .ex-f b{display:block;font-size:.8rem;color:var(--muted)}
+.example .ex-f p{margin:.1rem 0;white-space:pre-line}
+
+/* ---------- champs ---------- */
+.field{margin-bottom:1.5rem}
+.field-top{display:flex;justify-content:space-between;align-items:flex-end;gap:.8rem;margin-bottom:.35rem}
+.field label,.field .lbl{font-weight:650;font-size:.98rem}
+.hint-btn{border:1px solid var(--lav);color:var(--lav);background:transparent;border-radius:999px;padding:.15rem .7rem;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.hint-btn:hover{background:var(--lav-soft)}
+.hint-btn[disabled]{opacity:.5;cursor:default}
+.hints{margin:.4rem 0 .5rem;padding:0;list-style:none}
+.hints li{background:var(--lav-soft);border-radius:8px;padding:.45rem .7rem;font-size:.88rem;margin-bottom:.3rem}
+.hints li b{color:var(--lav);margin-right:.3rem}
+input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.6rem .7rem;line-height:1.45}
+textarea{resize:vertical;min-height:2.6rem}
+input:focus,textarea:focus,select:focus{border-color:var(--pine);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pine) 22%,transparent)}
+.counter{font-size:.82rem;color:var(--muted);margin-top:.3rem}
+.counter.ok{color:var(--ok)}
+.counter.warn{color:var(--warn)}
+
+.radios{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.5rem}
+.radios label{display:flex;gap:.55rem;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:.6rem .7rem;cursor:pointer;font-weight:600}
+.radios label small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.radios label:has(input:checked){border-color:var(--pine);background:var(--ok-soft)}
+.radios input{margin-top:.25rem;accent-color:var(--pine)}
+
+.checks{display:grid;gap:.9rem}
+.checks fieldset{border:0;margin:0;padding:0}
+.checks legend{font-size:.84rem;color:var(--muted);font-weight:600;margin-bottom:.35rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chips label{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.35rem .8rem;font-size:.88rem;cursor:pointer;display:inline-flex;gap:.4rem;align-items:center}
+.chips label:has(input:checked){background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips label:has(input:focus-visible){outline:3px solid var(--ochre)}
+.focus-msg{font-size:.86rem;margin-top:.5rem;padding:.45rem .7rem;border-radius:8px}
+.focus-msg.ok{background:var(--ok-soft);color:var(--ok)}
+.focus-msg.warn{background:var(--warn-soft);color:var(--warn)}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table.grid{border-collapse:collapse;width:100%;min-width:620px}
+table.grid th{background:var(--mist);text-align:left;font-size:.8rem;font-weight:650;padding:.5rem .55rem;border-bottom:1px solid var(--line)}
+table.grid td{border-top:1px solid var(--mist);padding:.35rem;vertical-align:top}
+table.grid td.rowlab{font-weight:650;font-size:.88rem;padding:.6rem .55rem;background:var(--paper);width:1%;white-space:nowrap}
+table.grid textarea,table.grid input,table.grid select{border-color:transparent;background:transparent;padding:.4rem .45rem;font-size:.9rem;min-height:2.3rem}
+table.grid textarea:hover,table.grid input:hover,table.grid select:hover{border-color:var(--line)}
+table.grid textarea:focus,table.grid input:focus,table.grid select:focus{background:var(--surface);border-color:var(--pine)}
+table.grid td.del{width:1%}
+.del-btn{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.3rem .5rem;border-radius:6px}
+.del-btn:hover{color:var(--warn);background:var(--warn-soft)}
+.add-row{margin-top:.5rem}
+.empty-note{padding:1rem;color:var(--muted);font-size:.9rem}
+
+.preview{background:var(--surface);border:1px dashed var(--pine);border-radius:10px;padding:1rem 1.1rem;font-family:var(--serif);font-size:1.12rem;line-height:1.5}
+.preview.empty{font-family:var(--sans);font-size:.92rem;color:var(--muted);border-color:var(--line)}
+
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem}
+.calc>div{display:flex;flex-direction:column;justify-content:flex-end}
+.calc label{font-size:.84rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-out{margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.7rem .8rem}
+.kpi b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--pine);line-height:1.1}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.kpi.big{border-color:var(--ochre);background:var(--ochre-soft)}
+.kpi.neg b{color:var(--warn)}
+.calc-msg{margin-top:.7rem;font-size:.9rem;padding:.55rem .8rem;border-radius:8px;background:var(--paper)}
+.calc-msg.warn{background:var(--warn-soft);color:var(--warn)}
+.calc-msg.ok{background:var(--ok-soft);color:var(--ok)}
+
+.step-nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);flex-wrap:wrap}
+
+/* ---------- bilan ---------- */
+.bilan{max-width:1000px}
+.bilan h2{font-size:clamp(1.8rem,3.6vw,2.5rem);color:var(--pine);margin:.3rem 0 1rem}
+.big-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.big-score{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem}
+.big-score b{font-family:var(--serif);font-size:2.8rem;line-height:1;color:var(--pine)}
+.big-score.coh b{color:var(--lav)}
+.big-score p{margin:.4rem 0 0;color:var(--muted);font-size:.9rem}
+.bilan h3{font-size:1.35rem;margin:2rem 0 .8rem}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem}
+.badge{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem .7rem;text-align:center}
+.badge .ic{width:54px;height:54px;border-radius:50%;margin:0 auto .5rem;display:grid;place-items:center;font-size:1.6rem;background:var(--lav-soft);border:2px dashed var(--line);filter:grayscale(1);opacity:.45}
+.badge.on .ic{filter:none;opacity:1;border:2px solid var(--lav)}
+.badge b{display:block;font-size:.92rem}
+.badge small{color:var(--muted);font-size:.78rem}
+.chap-bars{display:grid;gap:.5rem}
+.chap-bar{display:grid;grid-template-columns:minmax(0,1fr) 3.5rem;gap:.8rem;align-items:center;font-size:.92rem}
+.chap-bar .bar{height:8px;background:var(--mist);border-radius:4px;overflow:hidden;grid-column:1/-1}
+.chap-bar .bar i{display:block;height:100%;background:var(--pine)}
+.checks-list{list-style:none;padding:0;margin:0;display:grid;gap:.45rem}
+.checks-list li{display:grid;grid-template-columns:26px 1fr auto;gap:.6rem;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem}
+.checks-list .st{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700}
+.checks-list .ok .st{background:var(--ok-soft);color:var(--ok)}
+.checks-list .ko .st{background:var(--warn-soft);color:var(--warn)}
+.checks-list p{margin:.15rem 0 0;font-size:.85rem;color:var(--muted)}
+.export-box{margin-top:2rem;background:var(--pine);color:var(--surface);border-radius:14px;padding:1.4rem 1.5rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.export-box h3{margin:0;font-size:1.3rem;color:inherit}
+.export-box p{margin:.3rem 0 0;opacity:.85;font-size:.92rem;max-width:56ch}
+
+/* ---------- pied de page ---------- */
+.main-col{min-width:0;display:flex;flex-direction:column}
+.main-col #main{flex:1}
+.site-foot{border-top:1px solid var(--line);padding:1.2rem clamp(1rem,3vw,2.6rem) 1.6rem;display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:space-between;align-items:center;font-size:.88rem;color:var(--muted)}
+.sf-who strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1rem}
+.sf-links{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.sf-links a{color:var(--pine);text-decoration:none;font-weight:600}
+.sf-links a:hover{text-decoration:underline}
+.sf-links a.sf-course{background:var(--ochre);color:#1C2321;padding:.4em .9em;border-radius:8px}
+.sf-links a.sf-course:hover{text-decoration:none;filter:brightness(1.05)}
+#bootFoot .site-foot{max-width:720px;margin:0 auto}
+#boot:not(.hidden) ~ #bootFoot{display:block}
+#boot.hidden ~ #bootFoot{display:none}
+
+#tip{position:fixed;z-index:60;max-width:260px;background:var(--ink);color:var(--paper);font-size:.84rem;line-height:1.4;padding:.5rem .7rem;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
+.badge{cursor:help}
+
+/* ---------- toasts ---------- */
+#toasts{position:fixed;bottom:1rem;right:1rem;display:grid;gap:.5rem;z-index:50;max-width:min(380px,calc(100vw - 2rem))}
+.toast{background:var(--ink);color:var(--paper);padding:.75rem 1rem;border-radius:10px;font-size:.92rem;box-shadow:0 6px 24px rgba(0,0,0,.25);animation:tin .25s ease-out}
+.toast.badge-toast{background:var(--lav);color:#fff}
+.toast.err{background:var(--warn);color:#fff}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .step-grid{grid-template-columns:1fr}
+  .coach{position:static;order:-1}
+  .coach-body{max-height:360px}
+}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr}
+  #side{position:fixed;inset:0 auto 0 0;width:min(320px,88vw);z-index:40;transform:translateX(-102%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  #side.open{transform:none}
+  .topbar{display:flex;align-items:center;gap:.6rem;position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line);padding:.55rem .8rem}
+  .topbar .t{font-family:var(--serif);font-weight:700;color:var(--pine);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+  #main{padding-top:1.2rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{#side,.topbar,.coach,.step-nav,#toasts{display:none!important}#app{display:block}}
+</style>
+</head>
+<body>
+<section id="boot">
+  <div class="boot-card">
+    <svg class="boot-ridge" viewBox="0 0 720 140" aria-hidden="true">
+      <path d="M0 120 L70 78 L110 96 L190 34 L250 82 L300 60 L380 104 L450 40 L520 88 L585 58 L640 92 L720 70 L720 140 L0 140 Z" fill="currentColor" opacity=".10"/>
+      <path d="M0 120 L70 78 L110 96 L190 34 L250 82 L300 60 L380 104 L450 40 L520 88 L585 58 L640 92 L720 70" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30 132 C150 128 170 110 260 112 S420 126 470 100 S600 76 690 52" fill="none" stroke="#C9861A" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <g fill="#C9861A"><circle cx="30" cy="132" r="6"/><circle cx="168" cy="117" r="5"/><circle cx="330" cy="117" r="5"/><circle cx="470" cy="100" r="5"/><circle cx="590" cy="74" r="5"/></g>
+      <g transform="translate(690 52)"><line x1="0" y1="0" x2="0" y2="-34" stroke="currentColor" stroke-width="2.5"/><path d="M0 -34 L22 -27 L0 -20 Z" fill="#C9861A"/></g>
+    </svg>
+    <h1>Construisez votre stratégie commerciale</h1>
+    <p class="lede">Un parcours en cinq chapitres pour passer de l’idée à un plan d’action concret. À chaque étape : ce qu’il faut produire, la méthode, des astuces, des outils et un exemple complet. À la fin, votre stratégie s’exporte en document Word.</p>
+    <ol class="boot-steps">
+      <li><strong>Marché</strong>Cible, concurrence, positionnement, pitch</li>
+      <li><strong>Offre</strong>Catalogue, prix, argumentaire, objections</li>
+      <li><strong>Communication</strong>Canaux et planning éditorial</li>
+      <li><strong>Parcours</strong>AARRR et plan d’action 90 jours</li>
+      <li><strong>Mesure</strong>CRM et tableau de bord</li>
+    </ol>
+    <div class="boot-actions">
+      <button type="button" class="btn primary" id="bStart">Commencer mon projet</button>
+      <button type="button" class="btn" id="bRestore">Reprendre un brouillon (.json)</button>
+      <button type="button" class="btn ghost" id="bExample">Découvrir l’exemple complet</button>
+    </div>
+    <p class="boot-note"><a href="https://drive.google.com/drive/folders/1vT49A2pWeYabVVhyBWWz42wt5_4I0kl2?usp=sharing" target="_blank" rel="noopener">Consulter le cours complet (diaporama et ressources)</a></p>
+    <p class="boot-note">Rien n’est enregistré automatiquement. Utilisez « Enregistrer un brouillon » pour sauvegarder votre travail dans un fichier, puis « Reprendre un brouillon » pour continuer plus tard, sur cet ordinateur ou un autre.</p>
+  </div>
+</section>
+<div id="bootFoot"><footer class="site-foot">
+  <div class="sf-who"><strong>Pierrick Frottier</strong><span>Formateur indépendant en marketing, digital et création d’entreprise</span></div>
+  <div class="sf-links">
+    <a href="https://drive.google.com/drive/folders/1vT49A2pWeYabVVhyBWWz42wt5_4I0kl2?usp=sharing" target="_blank" rel="noopener" class="sf-course">Ouvrir le cours complet</a>
+    <a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="tel:+33631795936">06 31 79 59 36</a>
+    <a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>
+  </div>
+</footer></div>
+<div id="shell" class="hidden">
+  <div class="topbar"><button type="button" class="btn ghost" id="menuBtn" aria-label="Ouvrir le sommaire">☰ Sommaire</button><span class="t" id="topt"></span></div>
+  <div id="app">
+    <nav id="side" aria-label="Sommaire du parcours"></nav>
+    <div class="main-col"><main id="main"></main><footer class="site-foot">
+  <div class="sf-who"><strong>Pierrick Frottier</strong><span>Formateur indépendant en marketing, digital et création d’entreprise</span></div>
+  <div class="sf-links">
+    <a href="https://drive.google.com/drive/folders/1vT49A2pWeYabVVhyBWWz42wt5_4I0kl2?usp=sharing" target="_blank" rel="noopener" class="sf-course">Ouvrir le cours complet</a>
+    <a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="tel:+33631795936">06 31 79 59 36</a>
+    <a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>
+  </div>
+</footer></div>
+  </div>
+  <div id="scrim" class="hidden"></div>
+</div>
+<div id="toasts" role="status" aria-live="polite"></div>
+<div id="tip" role="tooltip" hidden></div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<script>/* ==========================================================
+   CONTENU PÉDAGOGIQUE — Atelier « Mettre en place sa stratégie commerciale »
+   Fil rouge : La Roulotte Gourmande (entreprise fictive)
+   ========================================================== */
+
+const CHAPTERS = [
+  { id: 'c0', n: 0, title: 'Point de départ', time: '15 min' },
+  { id: 'c1', n: 1, title: 'Trouver son marché et sa place', time: '1 h' },
+  { id: 'c2', n: 2, title: 'Créer son offre', time: '2 h' },
+  { id: 'c3', n: 3, title: 'Communiquer', time: '1 h' },
+  { id: 'c4', n: 4, title: 'Parcours client et plan d’action', time: '2 h' },
+  { id: 'c5', n: 5, title: 'Outils et mesure', time: '1 h' }
+];
+
+const CANAUX = [
+  { g: 'Média', items: [
+    { v: 'Presse locale', k: ['presse', 'journal', 'magazine'] },
+    { v: 'Radio locale', k: ['radio'] },
+    { v: 'Affichage', k: ['affich', 'panneau'] }
+  ]},
+  { g: 'Hors média', items: [
+    { v: 'Flyers et dépliants', k: ['flyer', 'dépliant', 'prospectus', 'boîte aux lettres'] },
+    { v: 'Salons, foires et marchés', k: ['salon', 'foire', 'marché', 'événement', 'evenement'] },
+    { v: 'Prospection terrain et téléphone', k: ['terrain', 'téléphone', 'telephone', 'phoning', 'porte'] },
+    { v: 'Prescripteurs et partenaires', k: ['partenaire', 'prescripteur', 'office de tourisme', 'commerçant', 'commercant'] },
+    { v: 'Réseaux d’entrepreneurs (CCI, clubs, BNI…)', k: ['réseau', 'reseau', 'cci', 'club', 'bni', 'afterwork'] },
+    { v: 'Bouche-à-oreille et parrainage', k: ['bouche', 'oreille', 'recommand', 'parrain', 'ami', 'collègue', 'collegue'] }
+  ]},
+  { g: 'Digital', items: [
+    { v: 'Site internet', k: ['site', 'web', 'internet'] },
+    { v: 'Fiche Google Business Profile', k: ['google', 'maps', 'avis'] },
+    { v: 'Instagram', k: ['instagram', 'insta'] },
+    { v: 'Facebook', k: ['facebook', 'groupe'] },
+    { v: 'LinkedIn', k: ['linkedin'] },
+    { v: 'TikTok', k: ['tiktok'] },
+    { v: 'E-mailing et newsletter', k: ['mail', 'newsletter', 'courriel'] },
+    { v: 'Publicité en ligne (Google Ads, Meta Ads)', k: ['publicité', 'publicite', 'ads', 'sponsoris'] },
+    { v: 'Plateformes et marketplaces', k: ['plateforme', 'marketplace', 'application', 'appli', 'uber', 'etsy', 'malt'] }
+  ]}
+];
+
+const STEPS = [
+/* ---------------------------------------------------------- C0 */
+{
+  id: 's0', chap: 'c0', title: 'Mon projet en bref', time: '15 min',
+  produce: 'Une fiche d’identité de votre projet. Elle sert de point d’appui à toutes les étapes suivantes et ouvrira votre document final.',
+  theory: [
+    { t: 'Qu’est-ce qu’une stratégie commerciale ?', b: `<p>La stratégie commerciale est le plan d’actions qu’une entreprise met en place pour vendre ses produits ou services de manière efficace. Elle vise des objectifs précis : augmenter les ventes, conquérir de nouveaux marchés, fidéliser les clients.</p><p><strong>En clair :</strong> c’est la réponse écrite à quatre questions. À qui je vends ? Quoi ? Comment ils vont me connaître et m’acheter ? Comment je sais si ça marche ?</p>` },
+    { t: 'Les six enjeux', b: `<p>Une stratégie commerciale sert à <strong>orienter vos efforts</strong> (ne pas tout faire), à <strong>vous différencier</strong>, à <strong>cibler les bons clients</strong>, à <strong>maximiser vos revenus</strong> (prix, canaux, promotions), à <strong>anticiper</strong> les évolutions du marché et à <strong>fidéliser</strong>.</p><p><strong>Exemple :</strong> un créateur sans stratégie poste sur cinq réseaux sociaux, distribue des flyers et répond aux appels d’offres « au cas où ». Avec une stratégie, il choisit deux canaux où sont réellement ses clients et y met toute son énergie.</p>` },
+    { t: 'Comment fonctionne ce parcours', b: `<p>Cinq chapitres reprennent les cinq temps de l’atelier. Chaque étape vous dit quoi produire, apporte la méthode, des astuces et des outils, et propose un exemple complet : <em>La Roulotte Gourmande</em>, un food truck fictif.</p><p>Vous pouvez avancer dans l’ordre ou sauter une étape et y revenir. Le score de <strong>complétude</strong> mesure ce qui est rempli. Le score de <strong>cohérence</strong> vérifie que vos choix se répondent d’une étape à l’autre.</p>` }
+  ],
+  tips: [
+    'Écrivez comme vous parleriez à votre banquier ou à votre parrain Initiative : simple, concret, sans jargon.',
+    'Pas besoin de tout savoir aujourd’hui. Notez vos hypothèses, vous les corrigerez après vos premiers clients.',
+    'Enregistrez un brouillon à la fin de chaque séance : c’est votre seule sauvegarde.'
+  ],
+  tools: [
+    { n: 'Bpifrance Création', u: 'https://bpifrance-creation.fr', d: 'Fiches pratiques et dossiers sectoriels gratuits pour les créateurs.' },
+    { n: 'Annuaire des entreprises', u: 'https://annuaire-entreprises.data.gouv.fr', d: 'Base officielle et gratuite pour repérer les entreprises de votre secteur.' }
+  ],
+  fields: [
+    { id: 'p_nom', type: 'text', label: 'Nom de l’entreprise ou du projet', ph: 'Ex. La Roulotte Gourmande',
+      hints: ['Un nom provisoire suffit pour l’instant.', 'Vérifiez qu’il n’est pas déjà pris : annuaire des entreprises, INPI, réseaux sociaux.'] },
+    { id: 'p_porteur', type: 'text', label: 'Porteur ou porteuse de projet', ph: 'Prénom Nom',
+      hints: ['Indiquez tous les associés s’il y en a plusieurs.'] },
+    { id: 'p_activite', type: 'area', rows: 3, label: 'Votre activité en deux ou trois phrases', ph: 'Que vendez-vous, sous quelle forme, à qui ?',
+      hints: ['Commencez par un verbe : « Je propose… », « Je fabrique… », « J’accompagne… ».', 'Précisez la forme : produit, service, abonnement, prestation sur devis.', 'Exemple de structure : « Je propose [quoi] à [qui] sous forme de [comment], sur [quelle zone]. »'] },
+    { id: 'p_zone', type: 'text', label: 'Zone géographique visée', ph: 'Ex. Manosque et 30 km autour',
+      hints: ['Soyez réaliste : la zone que vous pouvez servir sans vous épuiser.', 'Pour une activité en ligne, précisez « France entière » et la langue.'] },
+    { id: 'p_stade', type: 'select', label: 'Où en êtes-vous ?', options: ['Idée en cours de validation', 'Projet en construction, pas encore lancé', 'Lancé depuis moins d’un an', 'Lancé depuis plus d’un an'],
+      hints: ['Ce choix n’influence pas le parcours, il donne du contexte au lecteur de votre document.'] },
+    { id: 'p_ambition', type: 'area', rows: 3, label: 'Votre ambition à un an', ph: 'Ce que vous voulez avoir atteint dans douze mois',
+      hints: ['Mélangez chiffres et qualitatif : « vivre de mon activité », « 3 000 € de CA mensuel », « 2 clients entreprises réguliers ».', 'Vous transformerez cette ambition en objectifs SMART au chapitre 4.'] }
+  ]
+},
+
+/* ---------------------------------------------------------- C1 */
+{
+  id: 's1', chap: 'c1', title: 'Mon marché et ses tendances', time: '20 min',
+  produce: 'Une définition claire de votre marché, une lecture PESTEL des tendances qui vous concernent, et votre « océan bleu » : ce que vous faites autrement.',
+  theory: [
+    { t: 'Pourquoi définir un marché précis', b: `<p>Définir un marché précis permet de <strong>réduire la concurrence</strong>, d’<strong>innover</strong> en répondant à des besoins non couverts et de <strong>concentrer vos ressources</strong> sur une clientèle à forte valeur.</p><p><strong>Exemple :</strong> une petite boulangerie évite la guerre des prix en se spécialisant dans le sans gluten ou le bio. Elle attire une clientèle précise, se différencie et vend à plus forte valeur ajoutée.</p>` },
+    { t: 'Le PESTEL', b: `<p>Le PESTEL passe en revue six familles de facteurs externes que vous ne contrôlez pas : <strong>P</strong>olitiques, <strong>É</strong>conomiques, <strong>S</strong>ociaux, <strong>T</strong>echnologiques, <strong>E</strong>nvironnementaux, <strong>L</strong>égaux.</p><p><strong>En clair :</strong> ce qui bouge autour de vous et qui peut vous aider ou vous gêner.</p><p><strong>Exemple :</strong> pour un food truck, une nouvelle règle municipale sur les emplacements (Politique), l’inflation des matières premières (Économique), la mode du « manger local » (Social).</p><p>Ne remplissez que ce qui a un <strong>impact réel</strong> sur votre projet. Une ligne vide vaut mieux qu’une banalité.</p>` },
+    { t: 'L’océan bleu et la grille ERAC', b: `<p>La stratégie océan bleu (Kim et Mauborgne) consiste à créer un espace où la concurrence n’est pas pertinente, plutôt que de se battre dans un « océan rouge » saturé.</p><p>La grille <strong>ERAC</strong> aide à le construire en partant des habitudes du secteur :</p><ul><li><strong>Exclure</strong> ce que le secteur fait mais que les clients ne valorisent pas.</li><li><strong>Réduire</strong> ce qui est surdimensionné.</li><li><strong>Augmenter</strong> ce qui est sous-servi.</li><li><strong>Créer</strong> ce que personne ne propose encore.</li></ul><p><strong>Exemple :</strong> le Cirque du Soleil a exclu les animaux, réduit le côté forain, augmenté la mise en scène et créé un spectacle à mi-chemin entre cirque et théâtre.</p>` }
+  ],
+  tips: [
+    'Un marché se définit par un besoin, une clientèle et une zone. « La restauration » n’est pas un marché ; « le déjeuner rapide des salariés des zones d’activités de Manosque » en est un.',
+    'Cherchez des chiffres datés et sourcés. Notez la source entre parenthèses, votre banquier vous la demandera.',
+    'Pour l’ERAC, listez d’abord ce que font tous vos concurrents, puis demandez-vous ce que vos clients regrettent.'
+  ],
+  tools: [
+    { n: 'INSEE', u: 'https://www.insee.fr', d: 'Population, revenus, nombre d’entreprises par commune (dossiers complets).' },
+    { n: 'Google Trends', u: 'https://trends.google.fr', d: 'Voir si l’intérêt pour un sujet monte ou baisse, par région.' },
+    { n: 'Bpifrance Création, dossiers projecteurs', u: 'https://bpifrance-creation.fr', d: 'Synthèses sectorielles : chiffres, réglementation, tendances.' },
+    { n: 'Fédérations professionnelles et CCI', d: 'Études de marché locales, souvent gratuites ou peu chères.' }
+  ],
+  fields: [
+    { id: 'm_def', type: 'area', rows: 3, label: 'Mon marché en une phrase', ph: 'Quel besoin, pour quelle clientèle, sur quelle zone ?',
+      hints: ['Formule : « Le marché de [besoin] pour [clientèle] sur [zone]. »', 'Si vous visez des particuliers et des entreprises, citez les deux : ce sont deux marchés.', 'Ajoutez un ordre de grandeur si vous l’avez (nombre de clients potentiels, CA du secteur) avec sa source.'] },
+    { id: 'm_pestel', type: 'table', need: 3, label: 'Les tendances qui me concernent (PESTEL)', fixedRows: ['Politique', 'Économique', 'Social', 'Technologique', 'Environnemental', 'Légal'],
+      cols: [{ k: 'f', l: 'Facteur' }, { k: 'obs', l: 'Ce que j’observe' }, { k: 'imp', l: 'Impact sur mon projet', type: 'select', options: ['', 'Opportunité', 'Menace', 'Neutre'] }],
+      hints: ['Visez deux à quatre lignes vraiment utiles plutôt que six lignes génériques.', 'Pour chaque observation, demandez-vous : « et alors, qu’est-ce que ça change pour moi ? »', 'Les opportunités et menaces repérées ici alimenteront votre MOFF à l’étape suivante.'] },
+    { id: 'm_erac', type: 'table', label: 'Mon océan bleu (grille ERAC)', fixedRows: ['Exclure', 'Réduire', 'Augmenter', 'Créer'],
+      cols: [{ k: 'f', l: 'Action' }, { k: 'txt', l: 'Ce que je fais par rapport aux habitudes du secteur' }],
+      hints: ['Commencez par « Créer » : qu’apportez-vous que personne ne propose près de chez vous ?', 'Exclure et réduire libèrent du temps et de l’argent pour financer « Augmenter » et « Créer ».'] }
+  ]
+},
+{
+  id: 's2', chap: 'c1', title: 'Concurrence et diagnostic', time: '15 min',
+  produce: 'Un benchmark d’au moins trois concurrents et votre diagnostic MOFF (menaces, opportunités, forces, faiblesses).',
+  theory: [
+    { t: 'Concurrents directs et indirects', b: `<p>Un concurrent <strong>direct</strong> vend la même chose à la même cible. Un concurrent <strong>indirect</strong> répond au même besoin autrement.</p><p><strong>Exemple :</strong> pour un food truck, les autres food trucks sont directs ; la boulangerie qui fait des sandwichs, la cantine d’entreprise ou la gamelle préparée à la maison sont indirects.</p>` },
+    { t: 'Le benchmark', b: `<p>Le benchmark compare vos concurrents sur les mêmes critères : offre, prix, cible, canaux, points forts et faibles. Il révèle les standards du marché et les trous dans la raquette.</p><p>Les cinq forces de Porter complètent la lecture : rivalité entre concurrents, menace des nouveaux entrants, des produits de substitution, pouvoir de négociation des clients et des fournisseurs.</p>` },
+    { t: 'Le MOFF (ou SWOT)', b: `<p>Le MOFF croise l’<strong>externe</strong> (Menaces, Opportunités) et l’<strong>interne</strong> (Forces, Faiblesses). C’est la version française du SWOT.</p><p><strong>En clair :</strong> forces et faiblesses parlent de vous, opportunités et menaces parlent de votre environnement.</p><p>L’intérêt est de croiser : utiliser une force pour saisir une opportunité, corriger une faiblesse qui vous exposerait à une menace.</p>` }
+  ],
+  tips: [
+    'Jouez le client mystère : appelez, demandez un devis, passez commander. Rien ne remplace l’expérience vécue.',
+    'Lisez les avis Google de vos concurrents, surtout ceux à 2 ou 3 étoiles : ils décrivent les attentes déçues, donc vos opportunités.',
+    'Une force n’en est une que si le client la perçoit. « Je suis passionné » n’est pas une force, « 15 ans en cuisine gastronomique » en est une.'
+  ],
+  tools: [
+    { n: 'Google Maps et avis', d: 'Repérer les concurrents locaux et lire ce que leurs clients en disent.' },
+    { n: 'Pappers', u: 'https://www.pappers.fr', d: 'Chiffre d’affaires et ancienneté des concurrents (comptes publiés).' },
+    { n: 'Bibliothèque publicitaire Meta', u: 'https://www.facebook.com/ads/library', d: 'Voir les publicités que diffusent vos concurrents.' }
+  ],
+  fields: [
+    { id: 'c_bench', type: 'table', label: 'Benchmark de mes concurrents', minRows: 3, addLabel: 'Ajouter un concurrent',
+      cols: [{ k: 'nom', l: 'Concurrent' }, { k: 'type', l: 'Type', type: 'select', options: ['', 'Direct', 'Indirect'] }, { k: 'offre', l: 'Offre et prix' }, { k: 'fort', l: 'Points forts' }, { k: 'faible', l: 'Points faibles' }],
+      hints: ['Trois concurrents minimum, dont au moins un indirect.', 'Notez des prix réels relevés, pas des estimations.', 'Dans « points faibles », cherchez ce que vous pourriez faire mieux : c’est votre angle de différenciation.'] },
+    { id: 'c_moff', type: 'table', label: 'Mon diagnostic MOFF', fixedRows: ['Forces (interne)', 'Faiblesses (interne)', 'Opportunités (externe)', 'Menaces (externe)'],
+      cols: [{ k: 'f', l: 'Catégorie' }, { k: 'txt', l: 'Éléments (un par ligne)', type: 'area' }],
+      hints: ['Reprenez les opportunités et menaces de votre PESTEL.', 'Pour les forces : compétences, réseau, matériel, emplacement, financement obtenu.', 'Soyez honnête sur les faiblesses : c’est ce qui montre à un financeur que vous avez du recul.'] },
+    { id: 'c_lecon', type: 'area', rows: 3, label: 'Ce que j’en retiens pour ma stratégie', ph: 'Deux ou trois conclusions',
+      hints: ['Formule : « Je m’appuie sur [force] pour saisir [opportunité]. »', 'Et : « Je corrige [faiblesse] pour me protéger de [menace]. »'] }
+  ]
+},
+{
+  id: 's3', chap: 'c1', title: 'Ma cible et mon persona', time: '20 min',
+  produce: 'La description de votre cible principale et un persona détaillé : profil, besoins, freins, motivations et lieux où il s’informe.',
+  theory: [
+    { t: 'La cible', b: `<p>La cible est le groupe de clients que l’entreprise choisit de prioriser, en adaptant son offre et sa communication à leurs besoins et comportements.</p><p>Cinq familles de critères permettent de la décrire :</p><ul><li><strong>Démographiques :</strong> âge, sexe, situation familiale, profession.</li><li><strong>Géographiques :</strong> commune, zone rurale ou urbaine.</li><li><strong>Psychographiques :</strong> style de vie, valeurs, centres d’intérêt.</li><li><strong>Comportementaux :</strong> habitudes et fréquence d’achat, sensibilité au prix, fidélité.</li><li><strong>Socio-économiques :</strong> revenus, catégorie professionnelle.</li></ul><p>En B2B, on ajoute la taille de l’entreprise, le secteur et surtout <strong>qui décide</strong> et qui paie.</p>` },
+    { t: 'Le persona', b: `<p>Un persona est un profil fictif et détaillé qui représente un client type. Il donne un visage à votre cible pour adapter offre et message.</p><p><strong>Exemple (cours) :</strong> pour Tesla, « L’Innovateur Éco-Technophile », 30-55 ans, urbain, revenu moyen à élevé. Motivations : innovation, statut, écologie. Freins : prix, réseau de recharge, peur du changement. Il s’informe sur YouTube, LinkedIn, dans la presse tech.</p><p>Le champ « où il s’informe » est décisif : il dictera vos canaux de communication au chapitre 3.</p>` },
+    { t: 'Freins et motivations', b: `<p>Les <strong>motivations</strong> poussent à acheter, les <strong>freins</strong> retiennent. Votre argumentaire (chapitre 2) devra répondre à chaque frein.</p><p><strong>Exemple :</strong> une personne âgée veut une aide à domicile (motivation : rester chez elle) mais hésite (freins : laisser entrer un inconnu, coût, démarches).</p>` }
+  ],
+  tips: [
+    'Basez votre persona sur de vraies personnes. Interrogez cinq clients potentiels avant de remplir : 15 minutes chacun suffisent.',
+    'Un seul persona principal aujourd’hui. Vous en ajouterez quand le premier sera rentable.',
+    'Utilisez les mots exacts de vos interlocuteurs pour les besoins et les freins : ils vous serviront tels quels dans vos messages.'
+  ],
+  tools: [
+    { n: 'Google Forms', u: 'https://forms.google.com', d: 'Questionnaire gratuit pour interroger vos clients potentiels.' },
+    { n: 'AnswerThePublic', u: 'https://answerthepublic.com', d: 'Les questions que les gens tapent dans Google sur votre sujet.' },
+    { n: 'Groupes Facebook locaux et forums', d: 'Observer les besoins et les plaintes exprimés spontanément.' }
+  ],
+  fields: [
+    { id: 'ci_cible', type: 'area', rows: 3, label: 'Ma cible principale (critères)', ph: 'Démographiques, géographiques, comportementaux…',
+      hints: ['Utilisez au moins trois familles de critères.', 'En B2B : taille, secteur, fonction de l’interlocuteur.', 'Testez : pourriez-vous trouver dix personnes correspondant à cette description cette semaine ?'] },
+    { id: 'pe_nom', type: 'text', label: 'Persona : prénom, âge, métier', ph: 'Ex. Claire, 38 ans, responsable RH',
+      hints: ['Un prénom rend le persona vivant : vous vous demanderez « est-ce que Claire lirait ça ? ».'] },
+    { id: 'pe_profil', type: 'area', rows: 3, label: 'Son profil et son quotidien', ph: 'Situation, mode de vie, contraintes',
+      hints: ['Décrivez une journée type et le moment où votre offre entre en jeu.'] },
+    { id: 'pe_besoins', type: 'area', rows: 3, label: 'Ses besoins et attentes', ph: 'Ce qu’il cherche à obtenir',
+      hints: ['Distinguez le besoin fonctionnel (manger vite) et le besoin émotionnel (faire une vraie pause).', 'Ces besoins nourriront la colonne « Avantage » de votre CAP/SONCAS.'] },
+    { id: 'pe_freins', type: 'area', rows: 3, label: 'Ses freins et points de douleur', ph: 'Ce qui l’empêche d’acheter ou l’agace aujourd’hui',
+      hints: ['Prix, confiance, temps, habitude, peur de se tromper, démarches.', 'Chaque frein deviendra une objection à traiter au chapitre 2.'] },
+    { id: 'pe_motiv', type: 'area', rows: 2, label: 'Ce qui le décide à acheter', ph: 'Son critère de choix décisif',
+      hints: ['Pensez SONCAS : sécurité, orgueil, nouveauté, confort, argent, sympathie. Lequel domine chez lui ?'] },
+    { id: 'pe_canaux', type: 'area', rows: 3, label: 'Où il s’informe et qui l’influence', ph: 'Réseaux, médias, lieux, personnes de confiance',
+      hints: ['Soyez précis : « Instagram le soir », « le groupe Facebook Manosque Bons Plans », « les collègues ».', 'Ce champ est vérifié par le score de cohérence : vos canaux du chapitre 3 doivent s’y retrouver.'] }
+  ]
+},
+{
+  id: 's4', chap: 'c1', title: 'Positionnement et valeurs', time: '15 min',
+  produce: 'Une phrase de positionnement complète, trois valeurs et votre promesse en quelques mots.',
+  theory: [
+    { t: 'Le positionnement', b: `<p>Le positionnement est la place qu’occupe une marque dans l’esprit des clients, ce qui la distingue de ses concurrents. C’est la plus-value que vous apportez, presque votre raison d’être.</p><p>C’est l’élément le plus important de votre stratégie marketing : <strong>chaque canal, chaque outil doit lui faire écho.</strong></p><p><strong>Exemples (cours) :</strong> Apple, « l’innovation et le design premium au service de l’expérience utilisateur » ; Le Slip Français, « le made in France responsable et stylé ».</p>` },
+    { t: 'La phrase de positionnement', b: `<p>Une formule éprouvée oblige à être précis :</p><p><em>Pour</em> [cible] <em>qui</em> [besoin], [marque] <em>est</em> [catégorie] <em>qui</em> [bénéfice principal]. <em>Contrairement à</em> [alternative], nous [différence], <em>car</em> [preuve].</p><p>Elle n’est pas faite pour être publiée telle quelle : c’est une boussole interne d’où découlent slogan, pitch et messages.</p>` },
+    { t: 'Les valeurs', b: `<p>Les valeurs de marque sont les principes qui orientent vos actions, votre image et votre relation client. Elles créent une connexion émotionnelle et renforcent la fidélité.</p><p>Une valeur crédible se prouve par un comportement. « Proximité » devient réel si vous rappelez chaque client sous 24 h.</p>` }
+  ],
+  tips: [
+    'Si votre phrase pourrait être signée par un concurrent, elle n’est pas encore assez précise.',
+    'Choisissez trois valeurs maximum et associez à chacune une preuve concrète.',
+    'Testez votre promesse sur trois personnes : si elles la reformulent sans erreur, elle est claire.'
+  ],
+  tools: [
+    { n: 'Canva', u: 'https://www.canva.com', d: 'Mettre en forme une planche de marque : promesse, valeurs, couleurs.' }
+  ],
+  fields: [
+    { id: 'po_pour', type: 'text', label: 'Pour… (ma cible)', ph: 'Ex. les salariés des zones d’activités de Manosque',
+      hints: ['Reprenez votre persona en une expression.'] },
+    { id: 'po_qui', type: 'text', label: 'Qui… (leur besoin)', ph: 'Ex. veulent un déjeuner sain et rapide sans prendre la voiture',
+      hints: ['Un besoin réel, formulé avec les mots du client.'] },
+    { id: 'po_est', type: 'text', label: '[Ma marque] est… (catégorie)', ph: 'Ex. un food truck de cuisine provençale de saison',
+      hints: ['La catégorie permet au client de vous ranger quelque part : « un cabinet de… », « une boutique de… ».'] },
+    { id: 'po_benef', type: 'text', label: 'Qui… (bénéfice principal)', ph: 'Ex. vient jusqu’à eux avec des plats faits maison chaque jour',
+      hints: ['Un seul bénéfice, le plus fort. Les autres iront dans l’argumentaire.'] },
+    { id: 'po_contre', type: 'text', label: 'Contrairement à… (alternative et différence)', ph: 'Ex. la boulangerie ou la cantine, nous changeons de menu chaque semaine',
+      hints: ['Citez un concurrent de votre benchmark ou une habitude du client.', 'C’est le cœur de votre différenciation : vérifié par le score de cohérence.'] },
+    { id: 'po_preuve', type: 'text', label: 'Car… (preuve)', ph: 'Ex. nous travaillons avec 6 producteurs à moins de 40 km',
+      hints: ['Un fait vérifiable : chiffre, certification, parcours, partenariat.'] },
+    { id: 'po_preview', type: 'preview', label: 'Votre phrase de positionnement' },
+    { id: 'po_valeurs', type: 'table', label: 'Mes trois valeurs', fixedRows: ['Valeur 1', 'Valeur 2', 'Valeur 3'],
+      cols: [{ k: 'f', l: '' }, { k: 'v', l: 'Valeur' }, { k: 'p', l: 'Comment je la prouve au quotidien' }],
+      hints: ['Évitez les mots fourre-tout (« qualité », « professionnalisme ») sans preuve.', 'Une preuve = un comportement observable par le client.'] },
+    { id: 'po_promesse', type: 'text', label: 'Ma promesse ou mon slogan', ph: 'Ex. Le marché provençal vient à vous',
+      hints: ['Court (moins de dix mots), concret, orienté bénéfice client.', 'Inspirez-vous des exemples du cours : « Think Different », « Les trublions du goût ! ».'] }
+  ]
+},
+{
+  id: 's5', chap: 'c1', title: 'Mon pitch', time: '10 min',
+  produce: 'Un pitch de 30 secondes à une minute qui dit qui vous êtes, ce que vous proposez, à qui et pourquoi vous.',
+  theory: [
+    { t: 'Qu’est-ce qu’un pitch', b: `<p>Un pitch est une présentation concise et persuasive d’un projet, destinée à convaincre un client, un financeur ou un partenaire. Il répond à quatre questions : <strong>qui êtes-vous, que proposez-vous, à qui, pourquoi vous ?</strong></p>` },
+    { t: 'Les cinq qualités d’un bon pitch', b: `<ul><li><strong>Clarté :</strong> compréhensible sans jargon.</li><li><strong>Concision :</strong> de 30 secondes à quelques minutes.</li><li><strong>Pertinence :</strong> adapté à l’audience.</li><li><strong>Impact :</strong> centré sur la valeur pour l’autre.</li><li><strong>Histoire :</strong> une situation ou une anecdote crée la connexion.</li></ul><p><strong>Exemple (cours) :</strong> la présentation de l’iPhone par Steve Jobs en 2007 : accroche forte, simplicité, suspense, démonstration. Un bon pitch ne vend pas un produit, il raconte une vision.</p>` },
+    { t: 'Repère de durée', b: `<p>À l’oral, on prononce environ 130 à 150 mots par minute. Un pitch de 30 secondes fait donc 65 à 75 mots, un pitch d’une minute 130 à 150 mots. Le compteur sous le champ vous l’indique.</p>` }
+  ],
+  tips: [
+    'Commencez par le problème du client, pas par votre parcours.',
+    'Terminez par une demande claire : un rendez-vous, une commande, une mise en relation.',
+    'Chronométrez-vous à voix haute et enregistrez-vous avec votre téléphone. Coupez tout ce qui fait trébucher.'
+  ],
+  tools: [
+    { n: 'Dictaphone du téléphone', d: 'S’enregistrer et se réécouter : l’outil le plus efficace pour progresser.' }
+  ],
+  fields: [
+    { id: 'pi_qui', type: 'text', label: 'Qui êtes-vous ?', ph: 'En une phrase',
+      hints: ['Prénom, rôle, et un élément de légitimité.'] },
+    { id: 'pi_quoi', type: 'text', label: 'Que proposez-vous ?', ph: 'Votre offre en une phrase',
+      hints: ['Parlez de résultat pour le client plutôt que de tâches.'] },
+    { id: 'pi_aqui', type: 'text', label: 'À qui ?', ph: 'Votre cible',
+      hints: ['Reprenez le « Pour… » de votre positionnement.'] },
+    { id: 'pi_pourquoi', type: 'text', label: 'Pourquoi vous ?', ph: 'Votre différence',
+      hints: ['Reprenez le « Contrairement à… » et la preuve.'] },
+    { id: 'pi_texte', type: 'area', rows: 6, counter: true, label: 'Mon pitch rédigé', ph: 'Accroche, problème, solution, différence, demande',
+      hints: ['Structure : accroche (une question ou un chiffre) → problème → votre solution → pourquoi vous → demande.', 'Visez 65 à 150 mots selon la durée.', 'Lisez-le à voix haute : si une phrase vous essouffle, coupez-la en deux.'] }
+  ]
+},
+
+/* ---------------------------------------------------------- C2 */
+{
+  id: 's6', chap: 'c2', title: 'Mon catalogue', time: '25 min',
+  produce: 'La liste structurée de vos offres avec leur prix, et ce que vous choisissez de ne pas proposer.',
+  theory: [
+    { t: 'Pourquoi un catalogue', b: `<p>Le catalogue présente clairement ce que vous vendez. Il <strong>facilite la vente</strong> (description, prix), <strong>renforce votre image</strong> de professionnel et <strong>organise l’offre</strong> par segment ou par besoin.</p><p>Définir ce que vous ne proposez pas est aussi important : c’est être clair pour vos clients et pour vous.</p>` },
+    { t: 'Structurer une gamme', b: `<p>Une gamme lisible tient souvent en trois niveaux :</p><ul><li><strong>Offre d’entrée :</strong> petite, peu chère, pour faire découvrir et lever le risque.</li><li><strong>Offre cœur :</strong> celle qui fait l’essentiel du chiffre d’affaires.</li><li><strong>Offre premium ou complémentaire :</strong> plus complète, ou vendue en plus (montée en gamme, vente additionnelle).</li></ul><p><strong>Exemple :</strong> un coach sportif propose une séance d’essai à 25 €, un carnet de 10 séances à 350 € et un accompagnement nutrition en option.</p>` },
+    { t: 'Prix HT et TTC', b: `<p>Raisonnez en <strong>HT</strong> pour vos calculs de marge. Affichez en <strong>TTC</strong> pour les particuliers (obligation légale), en HT pour les professionnels.</p><p>En micro-entreprise sous le seuil de franchise, vous ne facturez pas de TVA : la mention « TVA non applicable, art. 293 B du CGI » doit figurer sur vos factures.</p>` }
+  ],
+  tips: [
+    'Moins d’offres, mieux expliquées. Au-delà de cinq ou six, le client hésite et repart.',
+    'Nommez vos offres par le bénéfice (« Pack sérénité ») plutôt que par la technique.',
+    'Prévoyez une offre d’entrée : c’est elle qui transforme un curieux en client.'
+  ],
+  tools: [
+    { n: 'Canva', u: 'https://www.canva.com', d: 'Mettre en page un catalogue ou une carte en PDF.' },
+    { n: 'Tableur (Excel, Google Sheets)', d: 'Tenir à jour prix, coûts et marges de chaque offre.' }
+  ],
+  fields: [
+    { id: 'o_cat', type: 'table', label: 'Mon catalogue', minRows: 3, addLabel: 'Ajouter une offre',
+      cols: [{ k: 'nom', l: 'Offre' }, { k: 'niv', l: 'Rôle', type: 'select', options: ['', 'Entrée', 'Cœur', 'Premium', 'Complément'] }, { k: 'desc', l: 'Description et contenu' }, { k: 'cible', l: 'Pour qui' }, { k: 'prix', l: 'Prix HT (€)', type: 'number' }],
+      hints: ['Une ligne par offre, même provisoire.', 'Précisez l’unité dans la description : à l’heure, au forfait, par personne, par mois.', 'Chaque offre doit avoir un prix : c’est vérifié par le score de cohérence.'] },
+    { id: 'o_non', type: 'area', rows: 3, label: 'Ce que je ne propose pas (et pourquoi)', ph: 'Les demandes que vous refuserez',
+      hints: ['Exemples : « pas de livraison à domicile », « pas de missions de moins de 2 heures ».', 'Refuser certaines demandes protège votre rentabilité et votre positionnement.'] }
+  ]
+},
+{
+  id: 's7', chap: 'c2', title: 'Fixer mes prix', time: '30 min',
+  produce: 'Votre stratégie de tarification justifiée et le calcul de votre seuil de rentabilité.',
+  theory: [
+    { t: 'Les quatre stratégies de tarification', b: `<ul><li><strong>Basée sur les coûts :</strong> coût de revient plus une marge. Assure une rentabilité minimale mais ignore la valeur perçue et la concurrence.</li><li><strong>Concurrentielle :</strong> alignement sur les prix du marché. Utile en marché très disputé, limite la marge.</li><li><strong>De pénétration :</strong> prix bas au départ pour gagner vite des clients. Efficace pour entrer, mais réduit la rentabilité à court terme et rend la hausse difficile.</li><li><strong>Basée sur la valeur :</strong> prix fixé selon ce que le client est prêt à payer pour le bénéfice obtenu. Maximise la marge sur les offres à forte valeur ajoutée.</li></ul><p>En pratique, on combine : le coût donne le plancher, la valeur perçue le plafond, la concurrence le repère.</p>` },
+    { t: 'Le seuil de rentabilité', b: `<p>Le seuil de rentabilité est le chiffre d’affaires à partir duquel vous ne perdez plus d’argent : vos ventes couvrent toutes vos charges.</p><p><strong>Marge unitaire</strong> = prix de vente moyen HT − coût variable unitaire.</p><p><strong>Seuil en ventes</strong> = charges fixes ÷ marge unitaire.</p><p><strong>Seuil en chiffre d’affaires</strong> = seuil en ventes × prix moyen.</p><table class="mini"><tr><th>Terme</th><th>Sens</th><th>Unité</th></tr><tr><td>Charges fixes</td><td>Ce que vous payez même sans vendre : loyer, assurance, crédit, abonnements, votre rémunération</td><td>€ par mois</td></tr><tr><td>Coût variable</td><td>Ce que coûte chaque vente : matière, emballage, commission, transport</td><td>€ par vente</td></tr><tr><td>Prix moyen HT</td><td>Panier moyen d’une vente</td><td>€ par vente</td></tr></table><p><strong>Exemple :</strong> 3 400 € de charges fixes, repas à 13 € HT qui coûte 4,50 € → marge 8,50 € → 3 400 ÷ 8,50 = <strong>400 repas par mois</strong>, soit 5 200 € de CA. Sur 20 jours, 20 repas par jour.</p>` },
+    { t: 'Prix psychologique', b: `<p>Le prix psychologique est celui que la majorité des clients juge acceptable : ni trop cher, ni trop bas pour être crédible. On l’estime en demandant à des clients potentiels à partir de quel prix ils trouvent l’offre trop chère, puis à partir de quel prix ils douteraient de sa qualité.</p>` }
+  ],
+  tips: [
+    'Incluez votre propre rémunération dans les charges fixes. Sinon, votre seuil est faux et vous travaillez gratuitement.',
+    'Si le nombre de ventes par jour vous paraît irréaliste, trois leviers : augmenter le prix, baisser le coût variable, réduire les charges fixes.',
+    'Un prix bas est difficile à remonter. Mieux vaut un prix juste et une offre de lancement limitée dans le temps.'
+  ],
+  tools: [
+    { n: 'Simulateur de revenus URSSAF', u: 'https://www.autoentrepreneur.urssaf.fr', d: 'Estimer cotisations et revenu net en micro-entreprise.' },
+    { n: 'Votre expert-comptable ou votre chargé Initiative', d: 'Faire relire vos charges fixes avant de figer vos prix.' }
+  ],
+  fields: [
+    { id: 'pr_strat', type: 'radio', label: 'Ma stratégie de tarification principale', options: [
+      { v: 'Basée sur les coûts', d: 'Coût de revient + marge' },
+      { v: 'Concurrentielle', d: 'Alignée sur le marché' },
+      { v: 'De pénétration', d: 'Prix bas pour démarrer' },
+      { v: 'Basée sur la valeur', d: 'Prix selon le bénéfice perçu' }],
+      hints: ['Regardez votre positionnement : premium et pénétration sont rarement compatibles.', 'Comparez avec les prix relevés dans votre benchmark.'] },
+    { id: 'pr_justif', type: 'area', rows: 3, label: 'Pourquoi ce choix ?', ph: 'Lien avec votre cible, votre positionnement, la concurrence',
+      hints: ['Formule : « Ma cible [persona] accepte de payer [x] parce que [bénéfice], et mes concurrents sont entre [y] et [z]. »'] },
+    { id: 'pr_calc', type: 'calc', label: 'Calculateur de seuil de rentabilité',
+      hints: ['Charges fixes : additionnez loyer ou emplacement, assurances, remboursement d’emprunt, abonnements, téléphone, comptable, et votre rémunération.', 'Coût variable : ce que vous dépensez à chaque vente et pas autrement.', 'Si vous vendez plusieurs offres, utilisez un panier moyen pondéré.'] },
+    { id: 'pr_cond', type: 'area', rows: 3, label: 'Conditions de vente', ph: 'Acompte, délais de paiement, remises, offre de lancement',
+      hints: ['Précisez : acompte à la commande, paiement à 30 jours pour les pros, remise de volume.', 'Ces conditions figureront dans vos CGV.'] }
+  ]
+},
+{
+  id: 's8', chap: 'c2', title: 'Mon argumentaire CAP/SONCAS', time: '30 min',
+  produce: 'Un tableau d’arguments qui relie chaque caractéristique de votre offre à un avantage client et à une preuve, pour chaque motivation SONCAS.',
+  theory: [
+    { t: 'CAP : Caractéristique, Avantage, Preuve', b: `<ul><li><strong>Caractéristique :</strong> un aspect de votre offre (une fonction, une qualité, un élément distinctif).</li><li><strong>Avantage :</strong> le bénéfice que le client en retire. Répond à « en quoi c’est utile pour moi ? ».</li><li><strong>Preuve :</strong> ce qui rend l’avantage crédible : témoignage, certification, chiffre, démonstration.</li></ul><p><strong>En clair :</strong> le client n’achète pas la caractéristique, il achète l’avantage, et il y croit grâce à la preuve.</p>` },
+    { t: 'SONCAS : six motivations d’achat', b: `<ul><li><strong>Sécurité :</strong> se protéger d’un risque.</li><li><strong>Orgueil :</strong> image, statut, fierté.</li><li><strong>Nouveauté :</strong> innovation, originalité.</li><li><strong>Confort :</strong> facilité, gain de temps, bien-être.</li><li><strong>Argent :</strong> économies, rapport qualité-prix.</li><li><strong>Sympathie :</strong> valeurs partagées, lien humain.</li></ul><p><strong>Exemple (cours) :</strong> pour un lave-linge, Sécurité = verrouillage de porte pendant le lavage → évite les accidents avec des enfants → certificat de conformité aux normes européennes.</p>` },
+    { t: 'Comment l’utiliser en rendez-vous', b: `<p>Écoutez d’abord : posez des questions ouvertes pour repérer la motivation dominante du client. Puis piochez dans la ligne correspondante. Un client « Argent » n’entendra pas un argument « Orgueil ».</p>` }
+  ],
+  tips: [
+    'Les preuves les plus fortes pour un créateur : témoignages de premiers clients, photos avant/après, diplômes, labels, partenaires connus.',
+    'Pas encore de clients ? Offrez trois prestations contre un avis écrit et une photo : vous aurez vos premières preuves.',
+    'Remplissez au moins quatre lignes sur six. Une ligne vide n’est pas grave, une preuve inventée l’est.'
+  ],
+  tools: [
+    { n: 'Google Business Profile', u: 'https://business.google.com', d: 'Collecter des avis clients, qui deviennent des preuves publiques.' },
+    { n: 'Trustpilot, Avis Vérifiés', d: 'Plateformes d’avis pour le commerce en ligne.' }
+  ],
+  fields: [
+    { id: 'cap', type: 'table', need: 4, label: 'Mon tableau CAP/SONCAS', fixedRows: ['Sécurité', 'Orgueil', 'Nouveauté', 'Confort', 'Argent', 'Sympathie'],
+      cols: [{ k: 'f', l: 'SONCAS' }, { k: 'c', l: 'Caractéristique' }, { k: 'a', l: 'Avantage pour le client' }, { k: 'p', l: 'Preuve' }],
+      hints: ['Partez des besoins de votre persona : chaque besoin cherche un avantage.', 'Vérifiez que l’avantage commence par « vous » : « vous gagnez… », « vous êtes sûr de… ».', 'Une preuve doit pouvoir être montrée : document, chiffre, avis, photo.'] }
+  ]
+},
+{
+  id: 's9', chap: 'c2', title: 'Traiter les objections', time: '20 min',
+  produce: 'Les objections que vous entendrez le plus et votre réponse préparée pour chacune.',
+  theory: [
+    { t: 'Une objection est une bonne nouvelle', b: `<p>Un client qui objecte est un client qui s’intéresse. Le vrai danger est le silence poli. L’objection révèle souvent un frein que vous avez repéré sur votre persona.</p>` },
+    { t: 'La méthode en cinq temps', b: `<ol><li><strong>Accueillir :</strong> « C’est une vraie question. »</li><li><strong>Creuser :</strong> « Trop cher par rapport à quoi ? »</li><li><strong>Reformuler :</strong> « Si je comprends bien, vous craignez que… »</li><li><strong>Répondre :</strong> avec un argument CAP et une preuve.</li><li><strong>Vérifier :</strong> « Est-ce que cela répond à votre inquiétude ? »</li></ol><p><strong>Exemple :</strong> « C’est cher. » → « Je comprends. Vous comparez à quoi ? » → « À la boulangerie. » → « Chez nous le plat est complet et cuisiné le matin même avec des produits de producteurs locaux : c’est un vrai repas, pas un sandwich. Est-ce que vous voulez goûter le plat du jour ? »</p>` },
+    { t: 'Trois techniques utiles', b: `<ul><li><strong>Compensation :</strong> reconnaître le point faible et le compenser par un avantage plus fort.</li><li><strong>Boomerang :</strong> retourner l’objection en argument (« Justement, c’est parce que vous manquez de temps que… »).</li><li><strong>Preuve sociale :</strong> « Beaucoup de mes clients se posaient la même question, voici ce qu’ils en disent. »</li></ul>` }
+  ],
+  tips: [
+    'Reprenez les freins de votre persona : chacun est une objection en puissance.',
+    'Notez les objections réelles entendues pendant vos premiers rendez-vous et complétez ce tableau en continu.',
+    'Ne contredisez jamais frontalement. Le client a toujours une raison de penser ce qu’il pense.'
+  ],
+  tools: [
+    { n: 'Carnet d’objections partagé', d: 'Un simple document que vous enrichissez après chaque rendez-vous.' }
+  ],
+  fields: [
+    { id: 'obj', type: 'table', label: 'Mes objections et réponses', minRows: 3, addLabel: 'Ajouter une objection',
+      cols: [{ k: 'o', l: 'Objection entendue' }, { k: 'r', l: 'Ma réponse' }, { k: 'p', l: 'Preuve à montrer' }],
+      hints: ['Commencez par les classiques : le prix, le délai, la confiance, « je vais réfléchir ».', 'Réutilisez vos lignes CAP/SONCAS dans vos réponses.', 'Terminez chaque réponse par une question de vérification.'] }
+  ]
+},
+{
+  id: 's10', chap: 'c2', title: 'Ma promesse de qualité de service', time: '15 min',
+  produce: 'Les quatre dimensions de votre qualité de service et la façon dont vous mesurerez ce que vos clients perçoivent.',
+  theory: [
+    { t: 'Les quatre dimensions de la qualité', b: `<ul><li><strong>Qualité attendue :</strong> ce que le client espère.</li><li><strong>Qualité voulue :</strong> ce que vous décidez de lui offrir (votre standard).</li><li><strong>Qualité produite :</strong> ce que vous délivrez réellement au quotidien.</li><li><strong>Qualité perçue :</strong> ce que le client ressent au final.</li></ul><p>Les deux premières relèvent de l’expérience client, les deux dernières de votre performance d’exploitant.</p><p><strong>En clair :</strong> chaque écart entre deux dimensions crée de l’insatisfaction. Si vous promettez plus que vous ne produisez, la qualité perçue s’effondre.</p>` },
+    { t: 'Pourquoi rester en veille', b: `<p>Aligner perçu et attendu fidélise. Offrir une qualité perçue supérieure à celle des concurrents crée un avantage. Aligner produit et voulu réduit les erreurs et les coûts.</p><p><strong>Exemple :</strong> un artisan promet une intervention sous 48 h (voulue). S’il intervient en quatre jours (produite), le client juge le service mauvais même si le travail est parfait.</p>` }
+  ],
+  tips: [
+    'Promettez un peu moins que ce que vous savez tenir, puis dépassez la promesse.',
+    'Mesurez la qualité perçue simplement : une question « De 0 à 10, recommanderiez-vous… ? » envoyée après chaque vente.',
+    'Écrivez votre standard (qualité voulue) en chiffres : délai de réponse, délai d’intervention, garantie.'
+  ],
+  tools: [
+    { n: 'Google Forms ou Tally', u: 'https://tally.so', d: 'Questionnaire de satisfaction gratuit en deux minutes.' },
+    { n: 'QR code vers les avis Google', d: 'À imprimer sur votre facture ou votre comptoir.' }
+  ],
+  fields: [
+    { id: 'q_dims', type: 'table', label: 'Les quatre dimensions pour mon activité', fixedRows: ['Qualité attendue', 'Qualité voulue', 'Qualité produite', 'Qualité perçue'],
+      cols: [{ k: 'f', l: 'Dimension' }, { k: 'txt', l: 'Pour mon activité, concrètement' }],
+      hints: ['Attendue : ce que dirait votre persona.', 'Voulue : vos engagements chiffrés (délai, garantie).', 'Produite : comment vous vous organisez pour tenir l’engagement.', 'Perçue : comment vous le saurez.'] },
+    { id: 'q_mesure', type: 'area', rows: 2, label: 'Comment je mesure la satisfaction', ph: 'Outil, moment, question posée',
+      hints: ['Un outil, un moment précis (J+2 après la vente), une question.', 'Ce sera un indicateur de votre tableau de bord au chapitre 5.'] }
+  ]
+},
+
+/* ---------------------------------------------------------- C3 */
+{
+  id: 's11', chap: 'c3', title: 'Choisir mes canaux', time: '25 min',
+  produce: 'Une sélection resserrée de canaux de communication et de distribution, chacun justifié par votre cible et votre positionnement.',
+  theory: [
+    { t: 'Trois grandes familles de canaux', b: `<ul><li><strong>Média :</strong> télévision, presse, radio, affichage, cinéma.</li><li><strong>Hors média :</strong> salons et foires, flyers, catalogues, phoning, partenariats, événements.</li><li><strong>Digital :</strong> site internet, publicité en ligne, e-mailing, réseaux sociaux.</li></ul>` },
+    { t: 'Quatre critères de choix', b: `<ul><li><strong>Votre positionnement :</strong> des moyens cohérents avec vos valeurs et votre message.</li><li><strong>Votre cible :</strong> les canaux doivent correspondre à ses habitudes. Reprenez « où il s’informe » de votre persona.</li><li><strong>La concurrence :</strong> ce qui fonctionne dans votre secteur, et où vous pouvez vous démarquer.</li><li><strong>Les tendances :</strong> nouveaux usages, nouveaux formats.</li></ul>` },
+    { t: 'Faites moins, mais mieux', b: `<p>Ne cherchez pas à être présent partout. Moins de canaux, c’est :</p><ul><li>un <strong>message plus pertinent</strong>, adapté à chaque canal ;</li><li>une <strong>gestion et une évaluation plus simples</strong> : vous savez ce qui marche ;</li><li>des <strong>ressources concentrées</strong> : temps et budget au bon endroit.</li></ul><p>Pour un créateur seul, deux ou trois canaux bien tenus valent mieux que six abandonnés au bout d’un mois.</p><p><strong>Exemple (cours) :</strong> Apple concentre sa communication sur son site, ses keynotes, ses boutiques-expériences et quelques réseaux, et interagit peu sur Facebook ou X.</p>` }
+  ],
+  tips: [
+    'Pour une activité locale, la fiche Google Business Profile est souvent le canal le plus rentable : gratuite, visible au moment où le client cherche.',
+    'Comptez en heures par semaine, pas seulement en euros. Votre temps est votre premier budget.',
+    'Un canal = un objectif. Instagram pour se faire connaître, l’e-mail pour faire revenir, le téléphone pour conclure.'
+  ],
+  tools: [
+    { n: 'Google Business Profile', u: 'https://business.google.com', d: 'Apparaître sur Google Maps et collecter des avis.' },
+    { n: 'Meta Business Suite', u: 'https://business.facebook.com', d: 'Programmer vos publications Facebook et Instagram.' },
+    { n: 'Brevo', u: 'https://www.brevo.com', d: 'E-mailing et newsletter, offre gratuite pour démarrer (outil français).' },
+    { n: 'Canva', u: 'https://www.canva.com', d: 'Créer flyers, visuels et publications.' }
+  ],
+  fields: [
+    { id: 'ca_sel', type: 'checks', label: 'Mes canaux retenus (idéalement 2 ou 3)', groups: CANAUX,
+      hints: ['Relisez le champ « où il s’informe » de votre persona avant de cocher.', 'Au-delà de trois, demandez-vous si vous aurez vraiment le temps de les tenir chaque semaine.'] },
+    { id: 'ca_tab', type: 'canaux', label: 'Pourquoi et comment, canal par canal', source: 'ca_sel',
+      cols: [{ k: 'pq', l: 'Pourquoi ce canal (cible, positionnement)' }, { k: 'obj', l: 'Objectif' }, { k: 'moy', l: 'Moyens (temps, budget)' }],
+      hints: ['Le tableau se remplit automatiquement avec les canaux cochés.', 'Objectif : se faire connaître, faire venir, faire acheter, faire revenir ou faire recommander.', 'Moyens : « 2 h par semaine », « 50 € par mois de publicité ».'] },
+    { id: 'ca_distrib', type: 'area', rows: 3, label: 'Comment le client achète (distribution)', ph: 'En direct, en boutique, en ligne, via un revendeur…',
+      hints: ['Un canal de communication fait connaître, un canal de distribution fait acheter.', 'Exemples : vente directe sur place, devis par e-mail, boutique en ligne, dépôt-vente, plateforme.'] }
+  ]
+},
+{
+  id: 's12', chap: 'c3', title: 'Ligne éditoriale et planning', time: '35 min',
+  produce: 'Votre ton, vos piliers de contenu et un planning éditorial sur quatre semaines.',
+  theory: [
+    { t: 'La ligne éditoriale', b: `<p>La ligne éditoriale fixe <strong>ce dont vous parlez, comment et à quel rythme</strong>. Elle découle directement du positionnement et assure que chaque publication renforce la même image.</p><p>Elle comprend : le ton (expert, chaleureux, décalé…), les piliers de contenu, les formats et la fréquence.</p>` },
+    { t: 'Les piliers de contenu', b: `<p>Un pilier est une grande thématique récurrente. Trois piliers suffisent, par exemple :</p><ul><li><strong>Éduquer :</strong> conseils, astuces, coulisses du métier.</li><li><strong>Inspirer ou divertir :</strong> histoires, clients, valeurs.</li><li><strong>Vendre :</strong> offres, nouveautés, avis clients.</li></ul><p>Repère courant : environ 80 % de contenu utile ou inspirant pour 20 % de contenu directement commercial. Une page qui ne fait que vendre perd son audience.</p>` },
+    { t: 'Le planning éditorial', b: `<p>Le planning répartit les sujets dans le temps : date, canal, sujet, format, objectif. Il évite la page blanche et permet de produire en lot (préparer quatre publications en une séance).</p><p>Pensez aux temps forts de votre activité : saisons, fêtes, événements locaux, rentrée.</p>` }
+  ],
+  tips: [
+    'La régularité compte plus que la fréquence : deux publications par semaine pendant six mois battent une par jour pendant trois semaines.',
+    'Bloquez un créneau fixe dans votre agenda pour produire vos contenus du mois.',
+    'Recyclez : un avis client devient une publication, un e-mail, une ligne de votre site.'
+  ],
+  tools: [
+    { n: 'Meta Business Suite', u: 'https://business.facebook.com', d: 'Programmer à l’avance sur Facebook et Instagram.' },
+    { n: 'Notion ou Trello', d: 'Tenir le planning éditorial sous forme de tableau ou de calendrier.' },
+    { n: 'Canva', u: 'https://www.canva.com', d: 'Créer des modèles réutilisables pour chaque pilier.' }
+  ],
+  fields: [
+    { id: 'le_ton', type: 'select', label: 'Mon ton dominant', options: ['Expert et pédagogue', 'Chaleureux et proche', 'Décalé et humoristique', 'Inspirant et engagé', 'Sobre et premium'],
+      hints: ['Il doit correspondre à vos valeurs : un ton décalé pour une marque premium crée un décalage.'] },
+    { id: 'le_ton_desc', type: 'area', rows: 2, label: 'Mon ton en pratique', ph: 'Tutoiement ou vouvoiement, emojis, mots à utiliser ou à éviter',
+      hints: ['Exemple : « Tutoiement, emojis légers, jamais de jargon culinaire. »'] },
+    { id: 'le_piliers', type: 'table', label: 'Mes trois piliers de contenu', fixedRows: ['Pilier 1', 'Pilier 2', 'Pilier 3'],
+      cols: [{ k: 'f', l: '' }, { k: 'nom', l: 'Thème' }, { k: 'ex', l: 'Exemples de sujets' }],
+      hints: ['Un pilier pour éduquer, un pour inspirer, un pour vendre.', 'Pour trouver des sujets, listez les dix questions que vos clients vous posent le plus.'] },
+    { id: 'le_freq', type: 'text', label: 'Fréquence par canal', ph: 'Ex. Instagram 2 fois par semaine, newsletter 1 fois par mois',
+      hints: ['Choisissez un rythme que vous tiendrez même pendant une semaine chargée.'] },
+    { id: 'le_plan', type: 'table', label: 'Mon planning éditorial (4 semaines)', minRows: 4, addLabel: 'Ajouter une publication',
+      cols: [{ k: 'sem', l: 'Semaine' }, { k: 'can', l: 'Canal' }, { k: 'suj', l: 'Sujet' }, { k: 'fmt', l: 'Format' }, { k: 'obj', l: 'Objectif', type: 'select', options: ['', 'Acquisition', 'Activation', 'Rétention', 'Revenu', 'Recommandation'] }],
+      hints: ['Au moins une ligne par semaine.', 'Formats : photo, carrousel, vidéo courte, article, e-mail, témoignage.', 'La colonne objectif fait le lien avec votre AARRR du chapitre 4.'] }
+  ]
+},
+
+/* ---------------------------------------------------------- C4 */
+{
+  id: 's13', chap: 'c4', title: 'Mon parcours client', time: '40 min',
+  produce: 'Les étapes que traverse votre client du premier contact à la fidélité, avec ses freins et vos actions pour les lever.',
+  theory: [
+    { t: 'Le parcours client', b: `<p>Le parcours client désigne l’ensemble des étapes que traverse un client, de la prise de conscience d’un besoin jusqu’à l’achat et au-delà, y compris l’après-vente.</p><p>Il sert à <strong>repérer les points de friction</strong>, à <strong>adapter messages et canaux à chaque étape</strong> et à <strong>mieux comprendre</strong> les comportements.</p>` },
+    { t: 'Six statuts successifs', b: `<p>Le client passe de <strong>visiteur</strong> (il découvre l’offre) à <strong>prospect</strong> (il identifie une offre pertinente, laisse ses coordonnées), puis <strong>activé</strong> (il essaie, prend en main), <strong>client</strong> (il achète), <strong>régulier</strong> (il revient) et enfin <strong>fidèle</strong> (il recommande).</p><p><strong>Exemple (cours), un magasin de vêtements :</strong> enseigne et vitrine → « Bonjour » à l’entrée → le vendeur propose son aide et conseille avec le SONCAS → essayage → produit complémentaire en caisse et programme de fidélité → QR code pour un avis → SMS de satisfaction à J+2.</p>` },
+    { t: 'Les freins à chaque étape', b: `<p>À chaque passage d’un statut à l’autre, une partie des personnes abandonne. Votre travail est de repérer pourquoi et d’agir.</p><p><strong>Exemple :</strong> un visiteur du site ne devient pas prospect si le formulaire de contact est introuvable. Action : un bouton « Demander un devis » visible sur chaque page.</p>` }
+  ],
+  tips: [
+    'Faites le parcours vous-même comme un client : cherchez votre entreprise sur Google, appelez, commandez. Notez chaque moment d’hésitation.',
+    'Les freins de votre persona se placent naturellement à une étape précise du parcours.',
+    'Le moment après l’achat est le plus oublié et le plus rentable : un client satisfait coûte moins cher à faire revenir qu’un nouveau à conquérir.'
+  ],
+  tools: [
+    { n: 'Miro ou une grande feuille', u: 'https://miro.com', d: 'Dessiner le parcours avec des post-its, seul ou en atelier.' }
+  ],
+  fields: [
+    { id: 'pc', type: 'table', label: 'Mon parcours client', fixedRows: ['Visiteur', 'Prospect', 'Activé', 'Client', 'Régulier', 'Fidèle'],
+      cols: [{ k: 'f', l: 'Statut' }, { k: 'tp', l: 'Point de contact' }, { k: 'cli', l: 'Ce que fait le client' }, { k: 'fr', l: 'Frein possible' }, { k: 'act', l: 'Mon action pour le lever' }],
+      hints: ['Point de contact : où et comment il vous croise (Google, marché, bouche-à-oreille, e-mail…).', 'Reprenez les freins de votre persona et placez-les à la bonne étape.', 'Chaque action doit être concrète et réalisable cette année.'] }
+  ]
+},
+{
+  id: 's14', chap: 'c4', title: 'Mes actions AARRR', time: '40 min',
+  produce: 'Pour chacune des cinq étapes AARRR, l’action du client attendue, votre action et l’indicateur qui mesurera le résultat.',
+  theory: [
+    { t: 'Le modèle AARRR', b: `<p>AARRR (ou « pirate metrics ») découpe le développement commercial en cinq étapes :</p><ul><li><strong>Acquisition :</strong> faire venir du monde (contact).</li><li><strong>Activation :</strong> susciter l’intérêt (prospect).</li><li><strong>Rétention :</strong> conserver l’intérêt (prospect chaud).</li><li><strong>Revenu :</strong> vendre, convertir (client).</li><li><strong>Referral :</strong> déclencher le bouche-à-oreille (client fidèle, ambassadeur).</li></ul><p>Pour chaque étape, deux questions : <strong>que doit faire le client</strong> pour passer à l’étape suivante ? <strong>Que doit faire l’entreprise</strong> pour l’y pousser ?</p>` },
+    { t: 'Exemple : Netflix', b: `<ul><li><strong>Acquisition :</strong> publicité, partenariats avec de grandes franchises, SEO.</li><li><strong>Activation :</strong> personnalisation immédiate des goûts, interface simple.</li><li><strong>Rétention :</strong> recommandations, lecture automatique, contenus exclusifs.</li><li><strong>Revenu :</strong> abonnement récurrent, offres différenciées.</li><li><strong>Referral :</strong> séries virales, influenceurs, community management.</li></ul>` },
+    { t: 'Un indicateur par étape', b: `<p>Chaque étape se mesure : nombre de visiteurs (acquisition), nombre de demandes de devis (activation), taux d’ouverture des e-mails (rétention), taux de transformation devis → commande (revenu), nombre d’avis ou de clients parrainés (referral).</p><p><strong>Taux de transformation</strong> = commandes ÷ devis envoyés × 100. Exemple : 6 commandes pour 20 devis = 30 %.</p>` }
+  ],
+  tips: [
+    'Repérez votre goulot d’étranglement : l’étape où vous perdez le plus de monde. C’est là qu’il faut agir en premier.',
+    'Le referral se provoque : demandez explicitement un avis ou une recommandation au moment où le client est le plus satisfait.',
+    'Un indicateur que vous ne pouvez pas mesurer facilement est inutile. Choisissez ce que votre outil compte déjà.'
+  ],
+  tools: [
+    { n: 'Statistiques Google Business Profile et Meta', d: 'Vues, clics, appels, demandes d’itinéraire : vos indicateurs d’acquisition.' },
+    { n: 'Google Analytics', u: 'https://analytics.google.com', d: 'Trafic et conversions de votre site.' }
+  ],
+  fields: [
+    { id: 'aarrr', type: 'table', label: 'Mon tableau AARRR', fixedRows: ['Acquisition', 'Activation', 'Rétention', 'Revenu', 'Recommandation'],
+      cols: [{ k: 'f', l: 'Étape' }, { k: 'cli', l: 'Ce que fait le client' }, { k: 'act', l: 'Mes actions' }, { k: 'kpi', l: 'Indicateur' }, { k: 'obj', l: 'Objectif chiffré' }],
+      hints: ['Reprenez vos canaux du chapitre 3 dans les actions d’acquisition.', 'Chaque ligne doit avoir une action et un indicateur : vérifié par le score de cohérence.', 'Objectif chiffré : « 30 demandes par mois », « 40 % de clients qui reviennent ».'] }
+  ]
+},
+{
+  id: 's15', chap: 'c4', title: 'Objectifs SMART et plan d’action 90 jours', time: '40 min',
+  produce: 'Deux ou trois objectifs commerciaux SMART et un plan d’action daté sur trois mois : votre feuille de route opérationnelle.',
+  theory: [
+    { t: 'Un objectif SMART', b: `<ul><li><strong>Spécifique :</strong> précis, sans ambiguïté.</li><li><strong>Mesurable :</strong> un chiffre.</li><li><strong>Atteignable :</strong> ambitieux mais réaliste avec vos moyens.</li><li><strong>Réaliste :</strong> cohérent avec votre seuil de rentabilité et votre temps.</li><li><strong>Temporellement défini :</strong> une échéance.</li></ul><p><strong>Exemple :</strong> « Développer mon activité » n’est pas SMART. « Signer 4 contrats traiteur entreprise d’ici le 30 juin » l’est.</p>` },
+    { t: 'Du seuil à l’objectif', b: `<p>Votre objectif de chiffre d’affaires doit au minimum atteindre votre seuil de rentabilité (chapitre 2). Ensuite, décomposez : combien de clients, combien de devis pour les obtenir, combien de contacts pour ces devis.</p><p><strong>Exemple :</strong> 10 clients par mois avec 30 % de transformation → 34 devis → si un contact sur deux demande un devis, 68 contacts à générer.</p>` },
+    { t: 'Le plan d’action', b: `<p>Chaque action répond à : <strong>quoi</strong>, <strong>quand</strong> (échéance), <strong>combien</strong> (budget, temps) et <strong>comment je sais que c’est fait</strong> (indicateur). Sans échéance, une action reste une intention.</p><p>Un plan sur 90 jours est assez court pour rester concret et assez long pour voir des résultats.</p>` }
+  ],
+  tips: [
+    'Mettez en premier les actions gratuites et rapides : fiche Google, message à votre réseau, demande d’avis.',
+    'Une action trop grosse (« créer mon site ») se découpe : choisir l’outil, rédiger les pages, publier.',
+    'Revoyez ce plan chaque mois : cochez, décalez, ajoutez. C’est un document vivant.'
+  ],
+  tools: [
+    { n: 'Agenda (Google Agenda, Outlook)', d: 'Bloquer chaque action comme un rendez-vous avec vous-même.' },
+    { n: 'Trello ou Notion', d: 'Suivre l’avancement en colonnes « à faire, en cours, fait ».' }
+  ],
+  fields: [
+    { id: 'smart', type: 'table', label: 'Mes objectifs SMART', minRows: 2, addLabel: 'Ajouter un objectif',
+      cols: [{ k: 'obj', l: 'Objectif' }, { k: 'chif', l: 'Chiffre visé' }, { k: 'ech', l: 'Échéance' }],
+      hints: ['Un objectif de chiffre d’affaires, un objectif de nombre de clients, éventuellement un objectif de notoriété.', 'Comparez votre objectif de CA mensuel à votre seuil de rentabilité.', 'Le score de cohérence vérifie qu’il y a un chiffre et une échéance.'] },
+    { id: 'plan', type: 'table', label: 'Mon plan d’action 90 jours', minRows: 5, addLabel: 'Ajouter une action',
+      cols: [{ k: 'act', l: 'Action' }, { k: 'aarrr', l: 'Étape AARRR', type: 'select', options: ['', 'Acquisition', 'Activation', 'Rétention', 'Revenu', 'Recommandation'] }, { k: 'ech', l: 'Échéance' }, { k: 'bud', l: 'Budget ou temps' }, { k: 'ind', l: 'Indicateur de réussite' }, { k: 'st', l: 'Statut', type: 'select', options: ['', 'À faire', 'En cours', 'Fait'] }],
+      hints: ['Au moins cinq actions, réparties sur les étapes AARRR.', 'Reprenez les actions de votre parcours client et de votre tableau AARRR.', 'Échéance précise : une date ou « semaine 3 ».'] }
+  ]
+},
+
+/* ---------------------------------------------------------- C5 */
+{
+  id: 's16', chap: 'c5', title: 'Mon CRM', time: '25 min',
+  produce: 'Le choix de votre outil de suivi client, les étapes de votre pipeline commercial et votre rituel de relance.',
+  theory: [
+    { t: 'Pourquoi un CRM', b: `<p>Un CRM (gestion de la relation client) centralise tout ce que vous savez sur vos prospects et clients : coordonnées, échanges, devis, achats, prochaines actions.</p><p><strong>En clair :</strong> c’est votre mémoire commerciale. Sans lui, les relances s’oublient et les opportunités se perdent.</p><p>Pour un créateur, un tableur bien tenu est un vrai CRM. On passe à un outil dédié quand on dépasse quelques dizaines de contacts actifs.</p>` },
+    { t: 'Le pipeline commercial', b: `<p>Le pipeline représente vos affaires en cours, rangées par étape : nouveau contact → premier échange → devis envoyé → négociation → gagné ou perdu.</p><p>Il montre d’un coup d’œil où se trouvent vos ventes futures et où elles bloquent.</p><p><strong>Exemple :</strong> 12 devis en attente depuis plus de 10 jours : votre priorité de la semaine est la relance, pas la prospection.</p>` },
+    { t: 'RGPD : les règles de base', b: `<p>Vous ne collectez que les données utiles, vous informez la personne de leur usage, vous les conservez pour une durée limitée (en général trois ans après le dernier contact pour un prospect) et vous permettez la désinscription. Pour l’e-mailing aux particuliers, leur consentement préalable est requis.</p>` }
+  ],
+  tips: [
+    'La règle d’or : toute affaire en cours a une prochaine action datée.',
+    'Notez un détail personnel à chaque échange (un projet, un événement) : votre relance sera plus humaine.',
+    'Relancez un devis à J+3 puis J+10. Beaucoup de ventes se jouent à la deuxième relance.'
+  ],
+  tools: [
+    { n: 'Tableur (Google Sheets, Excel)', d: 'Le CRM le plus simple pour démarrer.' },
+    { n: 'HubSpot CRM', u: 'https://www.hubspot.fr/products/crm', d: 'Version gratuite complète pour démarrer.' },
+    { n: 'Axonaut, Sellsy', d: 'Solutions françaises qui réunissent CRM, devis et factures.' },
+    { n: 'folk, Pipedrive, Zoho Bigin', d: 'CRM simples orientés pipeline.' },
+    { n: 'CNIL', u: 'https://www.cnil.fr', d: 'Guides pratiques RGPD pour les TPE.' }
+  ],
+  fields: [
+    { id: 'crm_outil', type: 'select', label: 'Mon outil', options: ['Tableur (Excel, Google Sheets)', 'HubSpot CRM', 'Axonaut', 'Sellsy', 'folk', 'Pipedrive', 'Zoho Bigin', 'Notion', 'Logiciel métier de mon secteur', 'Autre'],
+      hints: ['Choisissez celui que vous ouvrirez vraiment tous les jours.', 'Si vous faites déjà vos devis et factures dans un logiciel, regardez s’il a un module CRM.'] },
+    { id: 'crm_pipe', type: 'area', rows: 3, label: 'Les étapes de mon pipeline', ph: 'Ex. Contact → Échange → Devis envoyé → Relancé → Gagné / Perdu',
+      hints: ['Quatre à six étapes. Chacune correspond à une action du client, pas à une impression.'] },
+    { id: 'crm_infos', type: 'area', rows: 3, label: 'Les informations que je note sur chaque contact', ph: 'Coordonnées, origine, besoin, budget, date de prochaine action…',
+      hints: ['« Origine du contact » est essentielle : elle vous dira quel canal rapporte vraiment.'] },
+    { id: 'crm_rituel', type: 'area', rows: 3, label: 'Mon rituel de suivi et de relance', ph: 'Quand je mets à jour, quand je relance',
+      hints: ['Exemple : « Chaque lundi 30 minutes : mise à jour du pipeline et relances. »'] }
+  ]
+},
+{
+  id: 's17', chap: 'c5', title: 'Mon tableau de bord', time: '35 min',
+  produce: 'Une sélection d’indicateurs clés, avec leur calcul, leur objectif, leur fréquence et leur source, et votre budget de communication mensuel.',
+  theory: [
+    { t: 'Qu’est-ce qu’un KPI', b: `<p>Un KPI (indicateur clé de performance) est un chiffre suivi régulièrement qui dit si vous avancez vers vos objectifs. Un bon KPI est <strong>relié à un objectif</strong>, <strong>facile à mesurer</strong> et <strong>déclenche une décision</strong> s’il dérape.</p>` },
+    { t: 'Les indicateurs essentiels d’un créateur', b: `<table class="mini"><tr><th>Indicateur</th><th>Calcul</th></tr><tr><td>Chiffre d’affaires</td><td>Somme des ventes HT de la période</td></tr><tr><td>Panier moyen</td><td>CA ÷ nombre de ventes</td></tr><tr><td>Taux de transformation</td><td>Commandes ÷ devis (ou visiteurs) × 100</td></tr><tr><td>Coût d’acquisition client</td><td>Dépenses de communication ÷ nouveaux clients</td></tr><tr><td>Taux de clients récurrents</td><td>Clients ayant racheté ÷ total clients × 100</td></tr><tr><td>Satisfaction (NPS)</td><td>% de notes 9-10 − % de notes 0-6</td></tr></table><p><strong>Exemple :</strong> 300 € de publicité pour 12 nouveaux clients → coût d’acquisition de 25 € par client. Si un client rapporte 8,50 € de marge par repas, il doit revenir au moins trois fois pour être rentable.</p>` },
+    { t: 'Le rituel de pilotage', b: `<p>Un tableau de bord ne sert que s’il est regardé. Fixez un moment (chaque semaine pour l’activité commerciale, chaque mois pour le financier) et une question : « quel écart, pourquoi, quelle action ? ». C’est l’analyse des écarts.</p>` }
+  ],
+  tips: [
+    'Cinq à sept indicateurs maximum. Au-delà, on ne regarde plus rien.',
+    'Associez au moins un indicateur à chaque objectif SMART.',
+    'Un graphique simple dans votre tableur, mis à jour chaque semaine, suffit largement au démarrage.'
+  ],
+  tools: [
+    { n: 'Google Sheets ou Excel', d: 'Un onglet par mois, un graphique d’évolution.' },
+    { n: 'Looker Studio', u: 'https://lookerstudio.google.com', d: 'Tableau de bord gratuit relié à Google Sheets et Analytics.' },
+    { n: 'Tableaux de bord de votre CRM', d: 'Pipeline, taux de transformation et CA prévisionnel automatiques.' }
+  ],
+  fields: [
+    { id: 'kpi', type: 'table', label: 'Mes indicateurs clés', minRows: 4, addLabel: 'Ajouter un indicateur',
+      cols: [{ k: 'ind', l: 'Indicateur' }, { k: 'calc', l: 'Calcul' }, { k: 'obj', l: 'Objectif' }, { k: 'freq', l: 'Fréquence', type: 'select', options: ['', 'Chaque semaine', 'Chaque mois', 'Chaque trimestre'] }, { k: 'src', l: 'Source' }],
+      hints: ['Reprenez les indicateurs de votre tableau AARRR.', 'L’objectif doit être chiffré : vérifié par le score de cohérence.', 'Source : votre CRM, votre caisse, Google Business Profile, Brevo…'] },
+    { id: 'kpi_budget', type: 'text', label: 'Mon budget de communication mensuel', ph: 'Ex. 120 € et 4 h par semaine',
+      hints: ['Additionnez les moyens indiqués canal par canal au chapitre 3.', 'Avec ce budget et vos nouveaux clients, vous calculerez votre coût d’acquisition.'] },
+    { id: 'kpi_rituel', type: 'area', rows: 3, label: 'Mon rituel de pilotage', ph: 'Quand je regarde mes chiffres et ce que je fais en cas d’écart',
+      hints: ['Exemple : « Le premier lundi du mois, je compare au mois précédent et je choisis une action corrective. »'] }
+  ]
+}
+];
+
+/* ---------- Exemple fil rouge : La Roulotte Gourmande (fictif) ---------- */
+const EXAMPLE = {
+  p_nom: 'La Roulotte Gourmande',
+  p_porteur: 'Inès Roux',
+  p_activite: 'Je propose une cuisine provençale de saison, faite maison avec des produits de producteurs locaux, servie depuis un food truck. Le midi dans les zones d’activités, et en prestation traiteur pour les événements d’entreprise.',
+  p_zone: 'Manosque et 30 km autour (Sainte-Tulle, Oraison, Pierrevert)',
+  p_stade: 'Projet en construction, pas encore lancé',
+  p_ambition: 'Vivre de mon activité avec 2 000 € nets par mois, servir 25 repas par jour en moyenne et signer 2 clients entreprises réguliers pour le traiteur.',
+  m_def: 'Le marché du déjeuner sur le pouce pour les salariés des zones d’activités de Manosque, et celui de la restauration événementielle pour les entreprises du secteur.',
+  m_pestel: [
+    { f: 'Politique', obs: 'La mairie attribue les emplacements de food trucks sur dossier, pour une durée d’un an.', imp: 'Menace' },
+    { f: 'Économique', obs: 'Hausse du prix des matières premières, budgets déjeuner des salariés serrés.', imp: 'Menace' },
+    { f: 'Social', obs: 'Envie de manger local et de saison, besoin de vraies pauses déjeuner.', imp: 'Opportunité' },
+    { f: 'Technologique', obs: 'Précommande en ligne et paiement sans contact devenus des habitudes.', imp: 'Opportunité' },
+    { f: 'Environnemental', obs: 'Interdiction progressive des emballages à usage unique.', imp: 'Neutre' },
+    { f: 'Légal', obs: 'Normes d’hygiène HACCP et formation obligatoire.', imp: 'Neutre' }
+  ],
+  m_erac: [
+    { f: 'Exclure', txt: 'Les produits surgelés et les menus fixes toute l’année.' },
+    { f: 'Réduire', txt: 'Le choix : trois plats seulement, pour garantir la fraîcheur.' },
+    { f: 'Augmenter', txt: 'La part de produits locaux et la convivialité du service.' },
+    { f: 'Créer', txt: 'La précommande la veille par SMS et un menu qui change chaque semaine selon le marché.' }
+  ],
+  c_bench: [
+    { nom: 'Food truck burgers (zone Saint-Joseph)', type: 'Direct', offre: 'Burgers, frites. Menu 14 €', fort: 'Notoriété, rapide', faible: 'Peu de choix sain, menu identique toute l’année' },
+    { nom: 'Boulangerie de la zone', type: 'Indirect', offre: 'Formule sandwich 8,50 €', fort: 'Prix, proximité', faible: 'Pas de plat chaud, file d’attente à 12 h 15' },
+    { nom: 'Traiteur événementiel de Manosque', type: 'Direct', offre: 'Buffets à partir de 25 € par personne', fort: 'Expérience, grosse capacité', faible: 'Minimum 40 personnes, peu flexible' }
+  ],
+  c_moff: [
+    { f: 'Forces (interne)', txt: '8 ans en cuisine de restaurant\nRéseau de producteurs locaux\nPrêt d’honneur obtenu' },
+    { f: 'Faiblesses (interne)', txt: 'Aucune notoriété\nCapacité limitée à 60 couverts par service\nSeule en cuisine' },
+    { f: 'Opportunités (externe)', txt: 'Envie de manger local\nPeu d’offre saine dans les zones d’activités\nPrécommande en ligne' },
+    { f: 'Menaces (externe)', txt: 'Attribution des emplacements\nHausse des matières premières' }
+  ],
+  c_lecon: 'Je m’appuie sur mon réseau de producteurs pour saisir l’envie de manger local. Je corrige ma capacité limitée avec la précommande, qui me permet d’anticiper les quantités et de réduire l’attente.',
+  ci_cible: 'Salariés de 25 à 55 ans travaillant dans les zones d’activités de Manosque, pause déjeuner de 45 minutes, budget de 10 à 15 €, sensibles au fait maison. Deuxième cible : responsables RH et assistants de direction des entreprises de plus de 20 salariés pour les événements.',
+  pe_nom: 'Claire, 38 ans, chargée de clientèle',
+  pe_profil: 'Travaille dans une PME de la zone Saint-Joseph. Deux enfants, journées chargées. Pas de cantine, elle mange souvent un sandwich devant son ordinateur.',
+  pe_besoins: 'Manger un vrai repas, sain et chaud, sans prendre la voiture. Faire une vraie pause avec ses collègues.',
+  pe_freins: 'Peur de faire la queue et de perdre sa pause. Prix au-dessus de 15 €. Ne connaît pas la cuisine proposée.',
+  pe_motiv: 'Confort (rapidité, proximité) puis sympathie (local, fait maison).',
+  pe_canaux: 'Instagram le soir, le groupe Facebook « Manosque Bons Plans », le bouche-à-oreille entre collègues, Google Maps quand elle cherche où manger.',
+  po_pour: 'les salariés des zones d’activités de Manosque',
+  po_qui: 'veulent un déjeuner sain et chaud sans prendre la voiture',
+  po_est: 'un food truck de cuisine provençale de saison',
+  po_benef: 'vient jusqu’à eux avec des plats faits maison chaque jour',
+  po_contre: 'la boulangerie ou les burgers, nous changeons de menu chaque semaine selon le marché',
+  po_preuve: 'nous travaillons avec 6 producteurs situés à moins de 40 km',
+  po_valeurs: [
+    { f: 'Valeur 1', v: 'Local', p: 'Le nom des producteurs est affiché chaque semaine sur le camion.' },
+    { f: 'Valeur 2', v: 'Fait maison', p: 'Tout est cuisiné le matin même, rien de surgelé.' },
+    { f: 'Valeur 3', v: 'Convivialité', p: 'Tables et chaises installées, on connaît le prénom des habitués.' }
+  ],
+  po_promesse: 'Le marché provençal vient à vous',
+  pi_qui: 'Je suis Inès, cuisinière depuis 8 ans dans des restaurants de la région.',
+  pi_quoi: 'Je sers chaque midi un plat provençal de saison, fait maison, au pied de votre bureau.',
+  pi_aqui: 'Aux salariés des zones d’activités de Manosque.',
+  pi_pourquoi: 'Mes produits viennent de 6 producteurs à moins de 40 km et le menu change chaque semaine.',
+  pi_texte: 'Vous aussi, vous mangez un sandwich devant votre écran trois fois par semaine ? Je suis Inès, cuisinière depuis huit ans. Avec La Roulotte Gourmande, je vous apporte chaque midi un vrai plat provençal, chaud et fait maison, au pied de votre bureau. Mes légumes et mes viandes viennent de six producteurs à moins de quarante kilomètres, et le menu change chaque semaine. Vous commandez la veille par SMS, vous récupérez sans attendre. Je serai sur votre zone dès le mois prochain : je peux venir faire goûter le plat du jour à votre équipe ?',
+  o_cat: [
+    { nom: 'Plat du jour', niv: 'Entrée', desc: 'Plat provençal de saison, à emporter ou sur place', cible: 'Salariés', prix: '11' },
+    { nom: 'Formule du midi', niv: 'Cœur', desc: 'Plat, dessert maison et boisson', cible: 'Salariés', prix: '14' },
+    { nom: 'Formule événement', niv: 'Premium', desc: 'Food truck privatisé, buffet provençal, par personne (minimum 20)', cible: 'Entreprises', prix: '24' }
+  ],
+  o_non: 'Pas de livraison à domicile (marges trop faibles), pas de menu à la carte (fraîcheur garantie par un choix court), pas d’événements privés de particuliers la première année.',
+  pr_strat: 'Basée sur la valeur',
+  pr_justif: 'Claire accepte de payer 14 € pour un vrai repas chaud et local, contre 8,50 € pour un sandwich. Mes concurrents directs sont entre 13 et 15 €. Je reste dans cette fourchette en justifiant le prix par le fait maison et le local.',
+  pr_calc: { cf: '3400', pv: '13', cv: '4.5', jours: '20', obj: '500' },
+  pr_cond: 'Paiement sur place (carte, sans contact, espèces). Événements : acompte de 30 % à la réservation, solde à 30 jours. Carte de fidélité : le 10e repas offert. Offre de lancement : dessert offert le premier mois.',
+  cap: [
+    { f: 'Sécurité', c: 'Formation HACCP, traçabilité des produits', a: 'Vous mangez sain en toute confiance', p: 'Attestation HACCP affichée, liste des producteurs' },
+    { f: 'Orgueil', c: 'Buffet provençal soigné pour les événements', a: 'Vous faites bonne impression auprès de vos invités', p: 'Photos des prestations, avis d’entreprises clientes' },
+    { f: 'Nouveauté', c: 'Menu différent chaque semaine', a: 'Vous ne vous lassez jamais', p: 'Menus des huit dernières semaines sur Instagram' },
+    { f: 'Confort', c: 'Précommande par SMS la veille', a: 'Vous récupérez votre plat sans attendre', p: 'Retrait garanti en moins de deux minutes' },
+    { f: 'Argent', c: 'Formule complète à 14 €', a: 'Un vrai repas pour le prix d’un menu burger', p: 'Comparatif avec les prix de la zone' },
+    { f: 'Sympathie', c: 'Producteurs locaux nommés', a: 'Vous soutenez l’économie de votre territoire', p: 'Portraits des producteurs sur le camion et en ligne' }
+  ],
+  obj: [
+    { o: 'C’est plus cher qu’un sandwich.', r: 'C’est vrai. Vous comparez à un sandwich : chez nous c’est un plat complet et chaud, cuisiné le matin même. Voulez-vous goûter le plat du jour ?', p: 'Composition du plat, avis clients' },
+    { o: 'Je n’ai pas le temps de faire la queue.', r: 'Justement, vous commandez la veille par SMS et vous récupérez en deux minutes. Je vous montre ?', p: 'Démonstration du SMS de commande' },
+    { o: 'Je ne connais pas la cuisine provençale.', r: 'Beaucoup de clients me l’ont dit au début. Je vous propose une portion découverte offerte.', p: 'Portion dégustation' }
+  ],
+  q_dims: [
+    { f: 'Qualité attendue', txt: 'Un plat chaud, bon, servi en moins de 5 minutes, à moins de 15 €.' },
+    { f: 'Qualité voulue', txt: 'Service en moins de 3 minutes, 2 minutes en précommande. Plats cuisinés le matin même.' },
+    { f: 'Qualité produite', txt: 'Mise en place à 11 h, précommandes préparées à 11 h 45, portions pesées.' },
+    { f: 'Qualité perçue', txt: 'Mesurée par une note de 0 à 10 et les avis Google.' }
+  ],
+  q_mesure: 'QR code sur le comptoir vers les avis Google, et un SMS une fois par mois aux clients en précommande : « De 0 à 10, recommanderiez-vous La Roulotte Gourmande ? »',
+  ca_sel: ['Fiche Google Business Profile', 'Instagram', 'Prescripteurs et partenaires'],
+  ca_tab: {
+    'Fiche Google Business Profile': { pq: 'Claire cherche « où manger » sur Google Maps', obj: 'Faire venir', moy: '30 min par semaine, gratuit' },
+    'Instagram': { pq: 'Claire est sur Instagram le soir. Idéal pour montrer les plats et les producteurs', obj: 'Se faire connaître, faire revenir', moy: '2 h par semaine, 40 € de publicité par mois' },
+    'Prescripteurs et partenaires': { pq: 'Les assistants de direction recommandent aux collègues, l’association de la zone d’activités relaie', obj: 'Faire acheter (événements)', moy: '1 h par semaine, 50 € de dégustations' }
+  },
+  ca_distrib: 'Vente directe au camion, précommande par SMS, réservation des événements par téléphone ou e-mail après devis.',
+  le_ton: 'Chaleureux et proche',
+  le_ton_desc: 'Tutoiement, emojis légers, vocabulaire simple. On montre les gens : producteurs, clients, coulisses.',
+  le_piliers: [
+    { f: 'Pilier 1', nom: 'Les coulisses', ex: 'Le marché du matin, la préparation, un producteur à l’honneur' },
+    { f: 'Pilier 2', nom: 'Les clients', ex: 'Avis, photos des habitués, équipes en événement' },
+    { f: 'Pilier 3', nom: 'Le menu', ex: 'Menu de la semaine le lundi, plat star, offres' }
+  ],
+  le_freq: 'Instagram 3 fois par semaine (dont le menu du lundi), fiche Google mise à jour chaque lundi.',
+  le_plan: [
+    { sem: 'Semaine 1', can: 'Instagram', suj: 'Le menu de la semaine', fmt: 'Carrousel', obj: 'Acquisition' },
+    { sem: 'Semaine 1', can: 'Fiche Google', suj: 'Photo du plat du jour et horaires', fmt: 'Photo', obj: 'Acquisition' },
+    { sem: 'Semaine 2', can: 'Instagram', suj: 'Portrait du maraîcher d’Oraison', fmt: 'Vidéo courte', obj: 'Rétention' },
+    { sem: 'Semaine 3', can: 'Instagram', suj: 'Comment précommander par SMS', fmt: 'Vidéo courte', obj: 'Activation' },
+    { sem: 'Semaine 4', can: 'Instagram', suj: 'Avis d’une cliente habituée', fmt: 'Photo et témoignage', obj: 'Recommandation' }
+  ],
+  pc: [
+    { f: 'Visiteur', tp: 'Google Maps, Instagram, camion vu sur la zone', cli: 'Découvre le camion et le menu', fr: 'Ne sait pas ce qu’est la cuisine provençale', act: 'Photos des plats sur la fiche Google et le camion' },
+    { f: 'Prospect', tp: 'Au camion, sur Instagram', cli: 'Regarde le menu, s’abonne', fr: 'Peur de la file d’attente', act: 'Afficher « précommande par SMS » en grand' },
+    { f: 'Activé', tp: 'Au camion', cli: 'Goûte une portion découverte', fr: 'Hésite sur le prix', act: 'Portion découverte offerte le premier mois' },
+    { f: 'Client', tp: 'Au camion, SMS', cli: 'Achète une formule', fr: 'Attente trop longue', act: 'Précommande préparée à 11 h 45' },
+    { f: 'Régulier', tp: 'SMS, carte de fidélité', cli: 'Revient chaque semaine', fr: 'Lassitude', act: 'Menu qui change chaque semaine, 10e repas offert' },
+    { f: 'Fidèle', tp: 'Bouche-à-oreille, avis Google', cli: 'Recommande à ses collègues, laisse un avis', fr: 'Oublie de le faire', act: 'Demande d’avis au 5e repas, offre parrainage' }
+  ],
+  aarrr: [
+    { f: 'Acquisition', cli: 'Voit le camion ou la fiche Google', act: 'Fiche Google complète, Instagram, présence fixe 4 jours par semaine', kpi: 'Vues de la fiche Google', obj: '800 par mois' },
+    { f: 'Activation', cli: 'Goûte ou précommande une première fois', act: 'Portion découverte, affichage précommande', kpi: 'Nouveaux clients par semaine', obj: '15' },
+    { f: 'Rétention', cli: 'Revient dans le mois', act: 'Menu de la semaine par SMS le lundi, carte de fidélité', kpi: 'Taux de clients revenus dans le mois', obj: '40 %' },
+    { f: 'Revenu', cli: 'Choisit la formule complète, réserve un événement', act: 'Mise en avant de la formule, plaquette événements', kpi: 'Panier moyen', obj: '13 € HT' },
+    { f: 'Recommandation', cli: 'Laisse un avis, parraine un collègue', act: 'Demande d’avis au 5e repas, dessert offert au parrain', kpi: 'Avis Google', obj: '50 avis en 6 mois' }
+  ],
+  smart: [
+    { obj: 'Atteindre le seuil de rentabilité sur la vente au camion', chif: '400 repas par mois', ech: 'Fin du 3e mois' },
+    { obj: 'Signer des clients entreprises pour le traiteur', chif: '4 événements', ech: '30 juin' },
+    { obj: 'Constituer une base de clients en précommande', chif: '150 numéros', ech: 'Fin du 3e mois' }
+  ],
+  plan: [
+    { act: 'Créer et compléter la fiche Google Business Profile', aarrr: 'Acquisition', ech: 'Semaine 1', bud: '2 h, gratuit', ind: 'Fiche en ligne avec 10 photos', st: 'Fait' },
+    { act: 'Déposer les flyers dans les 30 entreprises de la zone', aarrr: 'Acquisition', ech: 'Semaine 2', bud: '80 € d’impression, 1 journée', ind: '30 entreprises visitées', st: 'En cours' },
+    { act: 'Mettre en place la précommande par SMS', aarrr: 'Activation', ech: 'Semaine 2', bud: '15 € par mois', ind: '20 précommandes par jour', st: 'À faire' },
+    { act: 'Dégustation offerte à l’association de la zone', aarrr: 'Revenu', ech: 'Semaine 4', bud: '60 €', ind: '3 demandes de devis', st: 'À faire' },
+    { act: 'Lancer la carte de fidélité', aarrr: 'Rétention', ech: 'Semaine 1', bud: '40 €', ind: '40 % de clients revenus', st: 'À faire' },
+    { act: 'Demander un avis au 5e repas', aarrr: 'Recommandation', ech: 'Semaine 6', bud: 'Gratuit', ind: '20 avis à la fin du 3e mois', st: 'À faire' }
+  ],
+  crm_outil: 'Tableur (Excel, Google Sheets)',
+  crm_pipe: 'Événements : Contact → Échange → Devis envoyé → Relancé → Gagné / Perdu',
+  crm_infos: 'Nom, entreprise, fonction, téléphone, e-mail, origine du contact, nombre de personnes, date de l’événement, budget, prochaine action et sa date.',
+  crm_rituel: 'Chaque lundi après-midi, 30 minutes : mise à jour du pipeline, relance des devis à J+3 et J+10.',
+  kpi: [
+    { ind: 'Repas vendus', calc: 'Total des repas de la semaine', obj: '100 par semaine', freq: 'Chaque semaine', src: 'Caisse' },
+    { ind: 'Panier moyen HT', calc: 'CA ÷ nombre de repas', obj: '13 €', freq: 'Chaque semaine', src: 'Caisse' },
+    { ind: 'Taux de transformation des devis', calc: 'Événements signés ÷ devis × 100', obj: '30 %', freq: 'Chaque mois', src: 'Tableur CRM' },
+    { ind: 'Clients revenus dans le mois', calc: 'Clients fidélité revenus ÷ total × 100', obj: '40 %', freq: 'Chaque mois', src: 'Cartes de fidélité' },
+    { ind: 'Note moyenne Google', calc: 'Moyenne des avis', obj: '4,7 sur 5', freq: 'Chaque mois', src: 'Google Business Profile' }
+  ],
+  kpi_budget: '120 € et environ 4 h par semaine',
+  kpi_rituel: 'Le vendredi, je note les ventes de la semaine. Le premier lundi du mois, je compare avec l’objectif et le mois précédent et je choisis une action corrective si un indicateur est sous l’objectif.'
+};
+
+;
+/* ==========================================================
+   LOGIQUE : complétude, calcul de seuil, cohérence, badges
+   ========================================================== */
+
+const L = (() => {
+  const FIELDS = {};
+  STEPS.forEach(st => st.fields.forEach(f => { FIELDS[f.id] = Object.assign({ step: st.id }, f); }));
+
+  const isFilled = v => v !== undefined && v !== null && String(v).trim() !== '';
+  const num = v => { if (!isFilled(v)) return NaN; return parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); };
+  const hasDigit = v => /\d/.test(String(v || ''));
+  const words = t => (String(t || '').trim().match(/\S+/g) || []).length;
+
+  function tableRows(f, s) {
+    let rows = s.values[f.id];
+    if (!Array.isArray(rows)) rows = [];
+    if (f.fixedRows) {
+      return f.fixedRows.map((lab, i) => Object.assign({}, rows[i] || {}, { f: lab }));
+    }
+    return rows;
+  }
+  function dataCols(f) { return f.cols.filter(c => !(f.fixedRows && c.k === 'f')); }
+
+  function canauxRows(f, s) {
+    const sel = s.values[f.source] || [];
+    const map = s.values[f.id] || {};
+    return sel.map(c => Object.assign({ canal: c }, map[c] || {}));
+  }
+
+  function fieldCompletion(f, s) {
+    const v = s.values[f.id];
+    switch (f.type) {
+      case 'preview': return null;
+      case 'checks': return (Array.isArray(v) && v.length) ? 1 : 0;
+      case 'calc': { const c = v || {}; return ['cf', 'pv', 'cv'].filter(k => isFilled(c[k])).length / 3; }
+      case 'canaux': {
+        const rows = canauxRows(f, s); if (!rows.length) return 0;
+        const cols = f.cols; let sc = 0;
+        rows.forEach(r => { sc += cols.filter(c => isFilled(r[c.k])).length / cols.length; });
+        return sc / rows.length;
+      }
+      case 'table': {
+        const rows = tableRows(f, s), cols = dataCols(f);
+        const need = f.need || (f.fixedRows ? f.fixedRows.length : (f.minRows || 1));
+        let sc = 0;
+        rows.forEach(r => { sc += cols.filter(c => isFilled(r[c.k])).length / cols.length; });
+        return Math.min(1, sc / need);
+      }
+      default: return isFilled(v) ? 1 : 0;
+    }
+  }
+  function stepCompletion(st, s) {
+    const vals = st.fields.map(f => fieldCompletion(f, s)).filter(x => x !== null);
+    return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  }
+  function chapterCompletion(cid, s) {
+    const sts = STEPS.filter(st => st.chap === cid);
+    return sts.reduce((a, st) => a + stepCompletion(st, s), 0) / sts.length;
+  }
+  function overall(s) {
+    let n = 0, t = 0;
+    STEPS.forEach(st => st.fields.forEach(f => { const c = fieldCompletion(f, s); if (c !== null) { n++; t += c; } }));
+    return n ? t / n : 0;
+  }
+
+  function calc(c) {
+    c = c || {};
+    const cf = num(c.cf), pv = num(c.pv), cv = num(c.cv), j = num(c.jours), ob = num(c.obj);
+    const r = { valid: false };
+    if (isNaN(cf) || isNaN(pv) || isNaN(cv)) return r;
+    r.mu = pv - cv;
+    r.taux = pv > 0 ? r.mu / pv * 100 : NaN;
+    if (r.mu <= 0) { r.negative = true; return r; }
+    r.valid = true;
+    r.seuil = Math.ceil(cf / r.mu);
+    r.ca = r.seuil * pv;
+    if (!isNaN(j) && j > 0) r.parJour = r.seuil / j;
+    if (!isNaN(ob) && ob > 0) { r.caObj = ob * pv; r.resultat = ob * r.mu - cf; }
+    return r;
+  }
+
+  function posSentence(v) {
+    const g = k => (v[k] || '').trim();
+    if (![g('po_pour'), g('po_est')].every(Boolean)) return '';
+    const nom = g('p_nom') || 'mon entreprise';
+    let t = `Pour ${g('po_pour')}`;
+    if (g('po_qui')) t += ` qui ${g('po_qui')}`;
+    t += `, ${nom} est ${g('po_est')}`;
+    if (g('po_benef')) t += ` qui ${g('po_benef')}`;
+    t += '.';
+    if (g('po_contre')) t += ` Contrairement à ${g('po_contre')}`;
+    if (g('po_preuve')) t += (g('po_contre') ? ', car ' : ' Car ') + g('po_preuve');
+    if (g('po_contre') || g('po_preuve')) t += '.';
+    return t.replace(/\.\./g, '.').replace(/ ,/g, ',');
+  }
+
+  const channelKeywords = {};
+  CANAUX.forEach(g => g.items.forEach(i => { channelKeywords[i.v] = i.k; }));
+
+  const CHECKS = [
+    { id: 'bench', step: 's2', label: 'Au moins deux concurrents analysés',
+      test: s => (s.values.c_bench || []).filter(r => isFilled(r.nom)).length >= 2,
+      advice: 'Ajoutez au moins deux concurrents, dont un indirect, avec leurs points forts et faibles.' },
+    { id: 'persona', step: 's3', label: 'Persona défini avec ses besoins et ses freins',
+      test: s => ['pe_nom', 'pe_besoins', 'pe_freins'].every(k => isFilled(s.values[k])),
+      advice: 'Donnez un nom à votre persona et décrivez ses besoins et ses freins.' },
+    { id: 'diff', step: 's4', label: 'Positionnement différenciant et prouvé',
+      test: s => ['po_pour', 'po_est', 'po_contre', 'po_preuve'].every(k => isFilled(s.values[k])),
+      advice: 'Complétez « Contrairement à… » et « Car… » : c’est ce qui vous distingue.' },
+    { id: 'pitch', step: 's5', label: 'Pitch de 30 secondes à une minute (60 à 160 mots)',
+      test: s => { const w = words(s.values.pi_texte); return w >= 60 && w <= 160; },
+      advice: 'Ajustez votre pitch entre 60 et 160 mots.' },
+    { id: 'prix', step: 's6', label: 'Chaque offre du catalogue a un prix',
+      test: s => { const r = (s.values.o_cat || []).filter(x => isFilled(x.nom)); return r.length > 0 && r.every(x => num(x.prix) > 0); },
+      advice: 'Indiquez un prix HT pour chaque offre de votre catalogue.' },
+    { id: 'seuil', step: 's7', label: 'Seuil de rentabilité calculé avec une marge positive',
+      test: s => calc(s.values.pr_calc).valid,
+      advice: 'Renseignez charges fixes, prix moyen et coût variable. Le prix doit dépasser le coût variable.' },
+    { id: 'cap', step: 's8', label: 'Au moins quatre arguments CAP complets avec preuve',
+      test: s => (s.values.cap || []).filter(r => r && isFilled(r.c) && isFilled(r.a) && isFilled(r.p)).length >= 4,
+      advice: 'Complétez caractéristique, avantage et preuve sur au moins quatre motivations SONCAS.' },
+    { id: 'obj', step: 's9', label: 'Au moins trois objections préparées',
+      test: s => (s.values.obj || []).filter(r => isFilled(r.o) && isFilled(r.r)).length >= 3,
+      advice: 'Préparez une réponse aux trois objections les plus fréquentes.' },
+    { id: 'focus', step: 's11', label: 'Un à trois canaux prioritaires',
+      test: s => { const n = (s.values.ca_sel || []).length; return n >= 1 && n <= 3; },
+      advice: 'Faites moins mais mieux : gardez deux ou trois canaux.' },
+    { id: 'justif', step: 's11', label: 'Chaque canal est justifié',
+      test: s => { const sel = s.values.ca_sel || [], m = s.values.ca_tab || {}; return sel.length > 0 && sel.every(c => m[c] && isFilled(m[c].pq)); },
+      advice: 'Expliquez pour chaque canal pourquoi il convient à votre cible.' },
+    { id: 'match', step: 's11', label: 'Vos canaux sont là où s’informe votre persona',
+      test: s => {
+        const txt = String(s.values.pe_canaux || '').toLowerCase(); const sel = s.values.ca_sel || [];
+        if (!txt || !sel.length) return false;
+        return sel.some(c => (channelKeywords[c] || []).some(k => txt.includes(k)));
+      },
+      advice: 'Au moins un canal retenu doit apparaître dans « où il s’informe » de votre persona (étape 3).' },
+    { id: 'plan_ed', step: 's12', label: 'Planning éditorial sur quatre publications ou plus',
+      test: s => (s.values.le_plan || []).filter(r => isFilled(r.suj)).length >= 4,
+      advice: 'Prévoyez au moins une publication par semaine sur quatre semaines.' },
+    { id: 'parcours', step: 's13', label: 'Une action à chaque étape du parcours client',
+      test: s => { const r = s.values.pc || []; return r.length === 6 && r.every(x => x && isFilled(x.act)); },
+      advice: 'Indiquez votre action pour chacun des six statuts du parcours.' },
+    { id: 'aarrr', step: 's14', label: 'AARRR complet : une action et un indicateur par étape',
+      test: s => { const r = s.values.aarrr || []; return r.length === 5 && r.every(x => x && isFilled(x.act) && isFilled(x.kpi)); },
+      advice: 'Chaque étape AARRR doit avoir au moins une action et un indicateur.' },
+    { id: 'smart', step: 's15', label: 'Au moins deux objectifs chiffrés et datés',
+      test: s => (s.values.smart || []).filter(r => isFilled(r.obj) && hasDigit(r.chif) && isFilled(r.ech)).length >= 2,
+      advice: 'Chaque objectif doit avoir un chiffre et une échéance.' },
+    { id: 'plan', step: 's15', label: 'Au moins cinq actions datées et mesurables',
+      test: s => (s.values.plan || []).filter(r => isFilled(r.act) && isFilled(r.ech) && isFilled(r.ind)).length >= 5,
+      advice: 'Donnez à chaque action une échéance et un indicateur de réussite.' },
+    { id: 'kpi', step: 's17', label: 'Au moins trois indicateurs avec un objectif chiffré',
+      test: s => (s.values.kpi || []).filter(r => isFilled(r.ind) && hasDigit(r.obj)).length >= 3,
+      advice: 'Ajoutez un objectif chiffré à au moins trois indicateurs.' }
+  ];
+
+  function coherence(s) {
+    const res = CHECKS.map(c => ({ c, ok: !!c.test(s) }));
+    return { res, score: res.filter(r => r.ok).length / res.length };
+  }
+
+  const BADGES = [
+    { id: 'start', how: 'Remplissez tous les champs de l’étape « Mon projet en bref ».', icon: '🌱', name: 'Premier pas', cond: 'Compléter la fiche projet', test: s => chapterCompletion('c0', s) >= 1 },
+    { id: 'c1', how: 'Complétez au moins 80 % du chapitre 1 : marché, concurrence, persona, positionnement et pitch.', icon: '🧭', name: 'Cartographe', cond: 'Chapitre 1 rempli à 80 %', test: s => chapterCompletion('c1', s) >= 0.8 },
+    { id: 'pitch', how: 'Rédigez un pitch de 60 à 160 mots, soit 30 secondes à une minute à l’oral.', icon: '🎤', name: 'Pitch au chrono', cond: 'Un pitch de 60 à 160 mots', test: s => CHECKS[3].test(s) },
+    { id: 'c2', how: 'Complétez au moins 80 % du chapitre 2 : catalogue, prix, argumentaire, objections et qualité de service.', icon: '🧺', name: 'Artisan de l’offre', cond: 'Chapitre 2 rempli à 80 %', test: s => chapterCompletion('c2', s) >= 0.8 },
+    { id: 'seuil', how: 'Renseignez charges fixes, prix moyen et coût variable dans le calculateur, avec un prix supérieur au coût variable.', icon: '⚖️', name: 'Seuil maîtrisé', cond: 'Seuil de rentabilité calculé', test: s => calc(s.values.pr_calc).valid },
+    { id: 'c3', how: 'Complétez au moins 80 % du chapitre 3 : canaux, ligne éditoriale et planning éditorial.', icon: '📣', name: 'Porte-voix', cond: 'Chapitre 3 rempli à 80 %', test: s => chapterCompletion('c3', s) >= 0.8 },
+    { id: 'focus', how: 'Retenez un à trois canaux et justifiez chacun dans le tableau « Pourquoi et comment ».', icon: '🎯', name: 'Moins mais mieux', cond: 'Un à trois canaux justifiés', test: s => CHECKS[8].test(s) && CHECKS[9].test(s) },
+    { id: 'c4', how: 'Complétez au moins 80 % du chapitre 4 : parcours client, AARRR, objectifs SMART et plan d’action.', icon: '🛤️', name: 'Guide du parcours', cond: 'Chapitre 4 rempli à 80 %', test: s => chapterCompletion('c4', s) >= 0.8 },
+    { id: 'c5', how: 'Complétez au moins 80 % du chapitre 5 : CRM et tableau de bord.', icon: '🎛️', name: 'Pilote', cond: 'Chapitre 5 rempli à 80 %', test: s => chapterCompletion('c5', s) >= 0.8 },
+    { id: 'coh', how: 'Validez au moins 14 des 17 critères du contrôle de cohérence affiché dans le bilan.', icon: '🧩', name: 'Stratège cohérent', cond: 'Score de cohérence d’au moins 80 %', test: s => coherence(s).score >= 0.8 },
+    { id: 'full', how: 'Remplissez au moins 90 % de l’ensemble des champs du parcours.', icon: '🏁', name: 'Stratégie complète', cond: 'Complétude d’au moins 90 %', test: s => overall(s) >= 0.9 }
+  ];
+  const earnedBadges = s => BADGES.filter(b => b.test(s)).map(b => b.id);
+
+  const fmt = (n, d = 0) => isNaN(n) ? '–' : n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  return { FIELDS, isFilled, num, words, tableRows, dataCols, canauxRows, fieldCompletion, stepCompletion, chapterCompletion, overall, calc, posSentence, CHECKS, coherence, BADGES, earnedBadges, fmt };
+})();
+
+;
+/* ==========================================================
+   EXPORT WORD (.docx) sans bibliothèque externe
+   ========================================================== */
+
+const DOCX = (() => {
+  const C = { pine: '1F4D45', ochre: 'C9861A', ink: '1C2321', grey: '6B7470', light: 'EAF1EE', line: 'B9C8C2' };
+
+  const x = s => String(s == null ? '' : s)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  function run(text, o = {}) {
+    let rpr = '';
+    if (o.b) rpr += '<w:b/>';
+    if (o.i) rpr += '<w:i/>';
+    if (o.color) rpr += `<w:color w:val="${o.color}"/>`;
+    if (o.sz) rpr += `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`;
+    const parts = String(text == null ? '' : text).split(/\r?\n/);
+    const body = parts.map((p, i) => (i ? '<w:br/>' : '') + `<w:t xml:space="preserve">${x(p)}</w:t>`).join('');
+    return `<w:r>${rpr ? `<w:rPr>${rpr}</w:rPr>` : ''}${body}</w:r>`;
+  }
+  function para(runs, o = {}) {
+    let ppr = '';
+    if (o.style) ppr += `<w:pStyle w:val="${o.style}"/>`;
+    if (o.keep) ppr += '<w:keepNext/>';
+    if (o.pageBreak) ppr += '<w:pageBreakBefore/>';
+    if (o.border) ppr += `<w:pBdr><w:left w:val="single" w:sz="24" w:space="8" w:color="${o.border}"/></w:pBdr>`;
+    if (o.shade) ppr += `<w:shd w:val="clear" w:color="auto" w:fill="${o.shade}"/>`;
+    if (o.after != null || o.before != null) ppr += `<w:spacing${o.before != null ? ` w:before="${o.before}"` : ''}${o.after != null ? ` w:after="${o.after}"` : ''}/>`;
+    if (o.border) ppr += '<w:ind w:left="200"/>';
+    if (o.align) ppr += `<w:jc w:val="${o.align}"/>`;
+    return `<w:p>${ppr ? `<w:pPr>${ppr}</w:pPr>` : ''}${Array.isArray(runs) ? runs.join('') : runs}</w:p>`;
+  }
+  const filled = v => v != null && String(v).trim() !== '';
+  const P = (t, o) => para(run(t, o), o);
+  const H1 = (t, pb = true) => para(run(t), { style: 'Heading1', pageBreak: pb });
+  const H2 = t => para(run(t), { style: 'Heading2', keep: true });
+  const H3 = t => para(run(t), { style: 'Heading3', keep: true });
+  const empty = () => P('À compléter', { i: true, color: C.grey });
+  const textOrEmpty = v => filled(v) ? P(v) : empty();
+
+  function table(headers, rows, widths) {
+    const total = 9638;
+    if (!widths) widths = headers.map(() => Math.floor(total / headers.length));
+    const sum = widths.reduce((a, b) => a + b, 0);
+    widths = widths.map(w => Math.round(w / sum * total));
+    const cell = (content, w, head) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${head ? `<w:shd w:val="clear" w:color="auto" w:fill="${C.pine}"/>` : ''}<w:tcMar><w:top w:w="60" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/></w:tcMar></w:tcPr>${para(run(content, head ? { b: true, color: 'FFFFFF', sz: 19 } : { sz: 19, color: filled(content) ? null : C.grey, i: !filled(content) }), { after: 0 })}</w:tc>`;
+    const grid = `<w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>`;
+    const b = `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="4" w:space="0" w:color="${C.line}"/>`).join('')}</w:tblBorders>`;
+    const hr = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${headers.map((h, i) => cell(h, widths[i], true)).join('')}</w:tr>`;
+    const br = rows.map(r => `<w:tr><w:trPr><w:cantSplit/></w:trPr>${r.map((c, i) => cell(filled(c) ? c : '–', widths[i], false)).join('')}</w:tr>`).join('');
+    return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/>${b}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr>${grid}${hr}${br}</w:tbl>` + para('', { after: 120 });
+  }
+
+  /* ---------- rendu générique d'un champ ---------- */
+  function renderField(f, s) {
+    const v = s.values[f.id];
+    const out = [];
+    switch (f.type) {
+      case 'preview': return '';
+      case 'text': case 'area': case 'select': case 'radio':
+        out.push(H3(f.label), textOrEmpty(v)); break;
+      case 'checks':
+        out.push(H3(f.label), (v && v.length) ? P(v.join(', ')) : empty()); break;
+      case 'canaux': {
+        const rows = L.canauxRows(f, s);
+        out.push(H3(f.label));
+        if (!rows.length) out.push(empty());
+        else out.push(table(['Canal'].concat(f.cols.map(c => c.l)), rows.map(r => [r.canal].concat(f.cols.map(c => r[c.k]))), [2, 3, 2, 2]));
+        break;
+      }
+      case 'table': {
+        let rows = L.tableRows(f, s);
+        const cols = f.cols.map(c => Object.assign({}, c, { l: c.l || (f.fixedRows ? '' : c.l) }));
+        if (!f.fixedRows) rows = rows.filter(r => f.cols.some(c => filled(r[c.k])));
+        out.push(H3(f.label));
+        if (!rows.length) { out.push(empty()); break; }
+        const headers = cols.map((c, i) => c.l || (i === 0 ? '' : ''));
+        const widths = cols.map((c, i) => (f.fixedRows && i === 0) ? 1.3 : (c.type === 'select' || c.type === 'number' ? 1.2 : 2.2));
+        out.push(table(headers, rows.map(r => cols.map(c => r[c.k])), widths));
+        break;
+      }
+      case 'calc': {
+        const c = v || {}, r = L.calc(c);
+        out.push(H3('Calcul du seuil de rentabilité'));
+        const rows = [
+          ['Charges fixes mensuelles', filled(c.cf) ? L.fmt(L.num(c.cf), 2) + ' €' : ''],
+          ['Prix de vente moyen HT', filled(c.pv) ? L.fmt(L.num(c.pv), 2) + ' €' : ''],
+          ['Coût variable unitaire', filled(c.cv) ? L.fmt(L.num(c.cv), 2) + ' €' : ''],
+          ['Marge unitaire', r.mu != null ? L.fmt(r.mu, 2) + ' €' : ''],
+          ['Seuil de rentabilité (ventes par mois)', r.valid ? L.fmt(r.seuil) + ' ventes' : ''],
+          ['Seuil de rentabilité (CA HT par mois)', r.valid ? L.fmt(r.ca, 0) + ' €' : ''],
+          ['Ventes nécessaires par jour travaillé', r.parJour ? L.fmt(r.parJour, 1) + ' (sur ' + L.fmt(L.num(c.jours)) + ' jours)' : '']
+        ];
+        if (r.resultat != null) rows.push(['Résultat estimé avec ' + L.fmt(L.num(c.obj)) + ' ventes', L.fmt(r.resultat, 0) + ' €']);
+        out.push(table(['Élément', 'Valeur'], rows, [3, 2]));
+        if (r.negative) out.push(P('Attention : le prix moyen ne couvre pas le coût variable. Chaque vente fait perdre de l’argent.', { b: true, color: 'B3261E' }));
+        break;
+      }
+    }
+    return out.join('');
+  }
+
+  /* ---------- document ---------- */
+  function documentXml(s) {
+    const v = s.values, b = [];
+    const nom = filled(v.p_nom) ? v.p_nom : 'Mon projet';
+    const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Couverture
+    b.push(para('', { before: 2400 }));
+    b.push(P('Stratégie commerciale et plan d’action', { style: 'Title' }));
+    b.push(P(nom, { sz: 40, b: true, color: C.ochre }));
+    if (filled(v.p_porteur)) b.push(P('Porté par ' + v.p_porteur, { sz: 24 }));
+    if (filled(v.p_activite)) b.push(para(run(v.p_activite, { i: true }), { before: 360, border: C.ochre }));
+    b.push(para('', { before: 1600 }));
+    b.push(P('Document généré le ' + date, { color: C.grey, sz: 20 }));
+    const co = L.coherence(s);
+    b.push(P(`Complétude ${Math.round(L.overall(s) * 100)} %   |   Cohérence ${Math.round(co.score * 100)} %`, { color: C.grey, sz: 20 }));
+
+    // Synthèse
+    b.push(H1('Synthèse de la stratégie'));
+    const pos = L.posSentence(v);
+    b.push(H2('Positionnement'));
+    b.push(pos ? para(run(pos, { i: true }), { border: C.pine }) : empty());
+    if (filled(v.po_promesse)) b.push(para([run('Promesse : ', { b: true }), run(v.po_promesse)]));
+    b.push(H2('Cible prioritaire'));
+    b.push(filled(v.pe_nom) ? para([run(v.pe_nom, { b: true }), run(filled(v.ci_cible) ? '\n' + v.ci_cible : '')]) : textOrEmpty(v.ci_cible));
+    b.push(H2('Pitch'));
+    b.push(textOrEmpty(v.pi_texte));
+    b.push(H2('Chiffres clés'));
+    const r = L.calc(v.pr_calc), offres = (v.o_cat || []).filter(o => filled(o.nom));
+    b.push(table(['Repère', 'Valeur'], [
+      ['Stratégie de prix', v.pr_strat || ''],
+      ['Offres au catalogue', offres.length ? String(offres.length) : ''],
+      ['Seuil de rentabilité mensuel', r.valid ? `${L.fmt(r.seuil)} ventes, soit ${L.fmt(r.ca)} € HT` : ''],
+      ['Canaux prioritaires', (v.ca_sel || []).join(', ')],
+      ['Budget de communication', v.kpi_budget || '']
+    ], [2, 3]));
+    const sm = (v.smart || []).filter(o => filled(o.obj));
+    b.push(H2('Objectifs'));
+    b.push(sm.length ? table(['Objectif', 'Chiffre visé', 'Échéance'], sm.map(o => [o.obj, o.chif, o.ech]), [4, 2, 2]) : empty());
+
+    // Chapitres
+    CHAPTERS.forEach(ch => {
+      b.push(H1(`${ch.n}. ${ch.title}`));
+      STEPS.filter(st => st.chap === ch.id).forEach(st => {
+        b.push(H2(st.title));
+        st.fields.forEach(f => b.push(renderField(f, s)));
+      });
+    });
+
+    // Annexe cohérence
+    b.push(H1('Annexe : contrôle de cohérence'));
+    b.push(P(`Score de cohérence : ${co.res.filter(x => x.ok).length} critères validés sur ${co.res.length}.`));
+    b.push(table(['Critère', 'Statut', 'Piste d’amélioration'], co.res.map(x => [x.c.label, x.ok ? 'Validé' : 'À reprendre', x.ok ? '' : x.c.advice]), [4, 1.4, 4]));
+    const earned = L.earnedBadges(s);
+    b.push(H2('Badges obtenus'));
+    b.push(earned.length ? P(L.BADGES.filter(bd => earned.includes(bd.id)).map(bd => bd.name).join(', ')) : P('Aucun badge pour le moment.', { i: true, color: C.grey }));
+
+    b.push(H2('Ressources et contact'));
+    b.push(para([run('Cours complet : ', { b: true }), run('https://drive.google.com/drive/folders/1vT49A2pWeYabVVhyBWWz42wt5_4I0kl2?usp=sharing')]));
+    b.push(para([run('Pierrick Frottier', { b: true }), run(', formateur indépendant en marketing, digital et création d’entreprise\n06 31 79 59 36  |  pierrick.frottier.pro@gmail.com  |  linkedin.com/in/pierrick-frottier')]));
+
+    const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="454" w:gutter="0"/></w:sectPr>';
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${b.join('')}${sect}</w:body></w:document>`;
+  }
+
+  function footerXml(nom) {
+    const g = { sz: 16, color: C.grey };
+    const fld = (instr) => `<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:instrText xml:space="preserve"> ${instr} </w:instrText></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:t>1</w:t></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>`;
+    const p1 = `<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="6" w:color="${C.line}"/></w:pBdr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run('Pierrick Frottier', { sz: 16, b: true, color: C.pine })}${run(', formateur indépendant en marketing, digital et création d’entreprise', g)}</w:p>`;
+    const p2 = `<w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run('06 31 79 59 36  |  pierrick.frottier.pro@gmail.com  |  linkedin.com/in/pierrick-frottier', g)}</w:p>`;
+    const p3 = `<w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run(nom + '  |  page ', g)}${fld('PAGE')}${run(' sur ', g)}${fld('NUMPAGES')}</w:p>`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${p1}${p2}${p3}</w:ftr>`;
+  }
+
+  const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="21"/><w:szCs w:val="21"/><w:color w:val="${C.ink}"/><w:lang w:val="fr-FR"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>
+<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>
+<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:after="240"/></w:pPr><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="56"/><w:szCs w:val="56"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${C.ochre}"/></w:pBdr><w:spacing w:before="0" w:after="240"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="320" w:after="120"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="200" w:after="60"/><w:outlineLvl w:val="2"/></w:pPr><w:rPr><w:b/><w:color w:val="${C.ochre}"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:style>
+</w:styles>`;
+
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>';
+  const docRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>';
+  const core = title => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${x(title)}</dc:title><dc:creator>Parcours stratégie commerciale</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString().slice(0, 19)}Z</dcterms:created></cp:coreProperties>`;
+
+  /* ---------- ZIP (méthode « stored ») ---------- */
+  const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = d => { let c = 0xFFFFFFFF; for (let i = 0; i < d.length; i++) c = CRC[(c ^ d[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  function zip(files) {
+    const enc = new TextEncoder(), chunks = [], central = []; let off = 0;
+    files.forEach(f => {
+      const name = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+      const h = new DataView(new ArrayBuffer(30));
+      h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+      h.setUint16(10, 0, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true);
+      h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+      chunks.push(new Uint8Array(h.buffer), name, data);
+      const c = new DataView(new ArrayBuffer(46));
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+      c.setUint16(10, 0, true); c.setUint16(12, 0, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true);
+      c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true);
+      c.setUint32(42, off, true);
+      central.push(new Uint8Array(c.buffer), name);
+      off += 30 + name.length + data.length;
+    });
+    const cSize = central.reduce((a, u) => a + u.length, 0);
+    const e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true);
+    e.setUint32(12, cSize, true); e.setUint32(16, off, true);
+    const all = chunks.concat(central, [new Uint8Array(e.buffer)]);
+    const out = new Uint8Array(all.reduce((a, u) => a + u.length, 0)); let p = 0;
+    all.forEach(u => { out.set(u, p); p += u.length; });
+    return out;
+  }
+
+  function build(s) {
+    const nom = (s.values.p_nom || 'Mon projet').trim() || 'Mon projet';
+    return zip([
+      { name: '[Content_Types].xml', data: contentTypes },
+      { name: '_rels/.rels', data: rootRels },
+      { name: 'docProps/core.xml', data: core('Stratégie commerciale – ' + nom) },
+      { name: 'word/_rels/document.xml.rels', data: docRels },
+      { name: 'word/document.xml', data: documentXml(s) },
+      { name: 'word/styles.xml', data: stylesXml },
+      { name: 'word/footer1.xml', data: footerXml(nom) }
+    ]);
+  }
+  return { build };
+})();
+
+;
+/* ==========================================================
+   APPLICATION
+   ========================================================== */
+(() => {
+  const APP_ID = 'strategie-commerciale';
+  let S = { values: {}, cur: 's0' };
+  let dirty = false, lastSaved = null, coachTab = 'theory';
+  const hintLvl = {};
+  let earned = new Set();
+
+  const $ = sel => document.querySelector(sel);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const chapterOf = id => CHAPTERS.find(c => c.id === id);
+  const stepIndex = id => STEPS.findIndex(s => s.id === id);
+  const pct = x => Math.round(x * 100);
+  const slug = t => (String(t || 'projet').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'projet').slice(0, 40);
+  const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; };
+
+  function toast(msg, cls = '') {
+    const t = document.createElement('div'); t.className = 'toast ' + cls; t.textContent = msg;
+    $('#toasts').appendChild(t); setTimeout(() => t.remove(), cls === 'badge-toast' ? 4200 : 3200);
+  }
+  function download(name, data, type) {
+    const blob = data instanceof Blob ? data : new Blob([data], { type });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }
+  const hasData = () => Object.keys(S.values).some(k => { const v = S.values[k]; return Array.isArray(v) ? v.length : (v && typeof v === 'object' ? Object.keys(v).length : L.isFilled(v)); });
+
+  /* ---------------- rendu des champs ---------------- */
+  function hintsHtml(f) {
+    if (!f.hints || !f.hints.length) return '';
+    const n = hintLvl[f.id] || 0;
+    const list = f.hints.slice(0, n).map((h, i) => `<li><b>Indice ${i + 1}</b>${esc(h)}</li>`).join('');
+    return `<ul class="hints" id="h_${f.id}">${list}</ul>`;
+  }
+  function hintBtn(f) {
+    if (!f.hints || !f.hints.length) return '';
+    const n = hintLvl[f.id] || 0, max = f.hints.length;
+    return `<button type="button" class="hint-btn" data-hint="${f.id}" ${n >= max ? 'disabled' : ''}>${n >= max ? 'Tous les indices affichés' : `Indice ${n + 1}/${max}`}</button>`;
+  }
+  function fieldWrap(f, inner, forId) {
+    const lab = forId ? `<label for="${forId}">${esc(f.label)}</label>` : `<span class="lbl">${esc(f.label)}</span>`;
+    return `<div class="field" data-field="${f.id}"><div class="field-top">${lab}${hintBtn(f)}</div>${hintsHtml(f)}${inner}</div>`;
+  }
+  function cellInput(attrs, col, val) {
+    const v = val == null ? '' : val;
+    if (col.type === 'select') return `<select ${attrs} aria-label="${esc(col.l)}">${col.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+    if (col.type === 'number') return `<input type="number" step="any" min="0" ${attrs} value="${esc(v)}" aria-label="${esc(col.l)}">`;
+    return `<textarea rows="${col.type === 'area' ? 3 : 1}" ${attrs} aria-label="${esc(col.l || 'Valeur')}">${esc(v)}</textarea>`;
+  }
+  function renderTable(f) {
+    const fixed = !!f.fixedRows;
+    let rows = L.tableRows(f, S);
+    if (!fixed) { const min = f.minRows || 1; while (rows.length < min) rows = rows.concat([{}]); }
+    const cols = f.cols;
+    const head = `<tr>${cols.map(c => `<th>${esc(c.l)}</th>`).join('')}${fixed ? '' : '<th aria-label="Supprimer"></th>'}</tr>`;
+    const body = rows.map((r, i) => `<tr>${cols.map(c => {
+      if (fixed && c.k === 'f') return `<td class="rowlab">${esc(r.f)}</td>`;
+      return `<td>${cellInput(`data-t="${f.id}" data-r="${i}" data-c="${c.k}"`, c, r[c.k])}</td>`;
+    }).join('')}${fixed ? '' : `<td class="del"><button type="button" class="del-btn" data-delrow="${f.id}" data-r="${i}" title="Supprimer la ligne" aria-label="Supprimer la ligne ${i + 1}">×</button></td>`}</tr>`).join('');
+    const add = fixed ? '' : `<button type="button" class="btn small add-row" data-addrow="${f.id}">+ ${esc(f.addLabel || 'Ajouter une ligne')}</button>`;
+    return fieldWrap(f, `<div class="tbl-wrap"><table class="grid">${head}${body}</table></div>${add}`);
+  }
+  function renderCanaux(f) {
+    const rows = L.canauxRows(f, S);
+    if (!rows.length) return fieldWrap(f, `<div class="tbl-wrap"><p class="empty-note">Cochez vos canaux ci-dessus : ils apparaîtront ici.</p></div>`);
+    const head = `<tr><th>Canal</th>${f.cols.map(c => `<th>${esc(c.l)}</th>`).join('')}</tr>`;
+    const body = rows.map(r => `<tr><td class="rowlab">${esc(r.canal)}</td>${f.cols.map(c => `<td>${cellInput(`data-cn="${f.id}" data-canal="${esc(r.canal)}" data-c="${c.k}"`, c, r[c.k])}</td>`).join('')}</tr>`).join('');
+    return fieldWrap(f, `<div class="tbl-wrap"><table class="grid">${head}${body}</table></div>`);
+  }
+  function focusMsg(n) {
+    if (!n) return '';
+    if (n <= 3) return `<div class="focus-msg ok">${n} canal${n > 1 ? 'aux' : ''} retenu${n > 1 ? 's' : ''} : c’est tenable dans la durée.</div>`;
+    return `<div class="focus-msg warn">${n} canaux retenus. Faites moins mais mieux : aurez-vous le temps de tous les animer chaque semaine ?</div>`;
+  }
+  function renderChecks(f) {
+    const sel = S.values[f.id] || [];
+    const groups = f.groups.map(g => `<fieldset><legend>${esc(g.g)}</legend><div class="chips">${g.items.map(i => `<label><input type="checkbox" data-chk="${f.id}" value="${esc(i.v)}" ${sel.includes(i.v) ? 'checked' : ''}>${esc(i.v)}</label>`).join('')}</div></fieldset>`).join('');
+    return fieldWrap(f, `<div class="checks">${groups}</div><div id="focusmsg">${focusMsg(sel.length)}</div>`);
+  }
+  function calcOut() {
+    const c = S.values.pr_calc || {}, r = L.calc(c);
+    if (r.negative) return `<div class="calc-msg warn">Votre prix moyen (${L.fmt(L.num(c.pv), 2)} €) ne couvre pas votre coût variable (${L.fmt(L.num(c.cv), 2)} €) : chaque vente vous fait perdre de l’argent. Augmentez le prix ou réduisez le coût variable.</div>`;
+    if (!r.valid) return `<div class="calc-msg">Renseignez au moins les charges fixes, le prix moyen et le coût variable pour voir votre seuil.</div>`;
+    let h = `<div class="calc-out">
+      <div class="kpi"><b>${L.fmt(r.mu, 2)} €</b><span>Marge par vente (${L.fmt(r.taux, 0)} % du prix)</span></div>
+      <div class="kpi big"><b>${L.fmt(r.seuil)}</b><span>Ventes par mois pour être à l’équilibre</span></div>
+      <div class="kpi"><b>${L.fmt(r.ca)} €</b><span>Chiffre d’affaires HT mensuel minimum</span></div>
+      ${r.parJour ? `<div class="kpi"><b>${L.fmt(r.parJour, 1)}</b><span>Ventes par jour travaillé</span></div>` : ''}
+      ${r.resultat != null ? `<div class="kpi ${r.resultat < 0 ? 'neg' : ''}"><b>${r.resultat >= 0 ? '+' : ''}${L.fmt(r.resultat)} €</b><span>Résultat mensuel avec ${L.fmt(L.num(c.obj))} ventes</span></div>` : ''}
+    </div>`;
+    if (r.resultat != null) h += r.resultat >= 0
+      ? `<div class="calc-msg ok">Avec votre objectif de ventes, vous dépassez le seuil de ${L.fmt(L.num(c.obj) - r.seuil)} ventes par mois.</div>`
+      : `<div class="calc-msg warn">Votre objectif de ventes est sous le seuil : il manque ${L.fmt(r.seuil - L.num(c.obj))} ventes par mois pour couvrir vos charges.</div>`;
+    return h;
+  }
+  function renderCalc(f) {
+    const c = S.values[f.id] || {};
+    const inp = (k, lab, ph) => `<div><label for="calc_${k}">${lab}</label><input type="number" step="any" min="0" id="calc_${k}" data-calc="${f.id}" data-k="${k}" value="${esc(c[k] || '')}" placeholder="${ph}"></div>`;
+    return fieldWrap(f, `<div class="calc">
+      ${inp('cf', 'Charges fixes par mois (€)', 'Ex. 3400')}
+      ${inp('pv', 'Prix de vente moyen HT (€)', 'Ex. 13')}
+      ${inp('cv', 'Coût variable par vente (€)', 'Ex. 4,50')}
+      ${inp('jours', 'Jours travaillés par mois', 'Ex. 20')}
+      ${inp('obj', 'Ventes visées par mois (facultatif)', 'Ex. 500')}
+    </div><div id="calcout">${calcOut()}</div>`);
+  }
+  function previewHtml() {
+    const t = L.posSentence(S.values);
+    return t ? `<div class="preview">${esc(t)}</div>` : `<div class="preview empty">Remplissez au moins « Pour… » et « est… » pour voir votre phrase se composer.</div>`;
+  }
+  function counterHtml(v) {
+    const w = L.words(v), sec = Math.round(w / 140 * 60);
+    const cls = !w ? '' : (w >= 60 && w <= 160 ? 'ok' : 'warn');
+    const msg = !w ? 'Visez 60 à 160 mots (30 secondes à une minute).' : `${w} mots, environ ${sec} secondes à l’oral. ${w < 60 ? 'Un peu court : ajoutez une preuve ou une demande.' : w > 160 ? 'Un peu long : coupez ce qui n’est pas indispensable.' : 'Bonne longueur.'}`;
+    return `<div class="counter ${cls}" id="cnt_${'pi_texte'}">${msg}</div>`;
+  }
+  function renderField(f) {
+    const v = S.values[f.id];
+    const id = 'f_' + f.id;
+    switch (f.type) {
+      case 'text': return fieldWrap(f, `<input type="text" id="${id}" data-f="${f.id}" value="${esc(v || '')}" placeholder="${esc(f.ph || '')}">`, id);
+      case 'area': return fieldWrap(f, `<textarea id="${id}" data-f="${f.id}" rows="${f.rows || 3}" placeholder="${esc(f.ph || '')}">${esc(v || '')}</textarea>${f.counter ? counterHtml(v) : ''}`, id);
+      case 'select': return fieldWrap(f, `<select id="${id}" data-f="${f.id}"><option value="">Choisir…</option>${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`, id);
+      case 'radio': return fieldWrap(f, `<div class="radios" role="radiogroup">${f.options.map(o => `<label><input type="radio" name="${f.id}" data-f="${f.id}" value="${esc(o.v)}" ${o.v === v ? 'checked' : ''}><span>${esc(o.v)}<small>${esc(o.d)}</small></span></label>`).join('')}</div>`);
+      case 'table': return renderTable(f);
+      case 'checks': return renderChecks(f);
+      case 'canaux': return renderCanaux(f);
+      case 'calc': return renderCalc(f);
+      case 'preview': return `<div class="field"><span class="lbl">${esc(f.label)}</span><div id="posprev" style="margin-top:.35rem">${previewHtml()}</div></div>`;
+    }
+    return '';
+  }
+
+  /* ---------------- exemple fil rouge ---------------- */
+  function exampleHtml(st) {
+    const parts = st.fields.map(f => {
+      const v = EXAMPLE[f.id];
+      if (f.type === 'preview') { const t = L.posSentence(EXAMPLE); return t ? `<div class="ex-f"><b>${esc(f.label)}</b><p><em>${esc(t)}</em></p></div>` : ''; }
+      if (v == null) return '';
+      if (f.type === 'table') {
+        const cols = f.cols;
+        return `<div class="ex-f"><b>${esc(f.label)}</b><div class="tbl-wrap" style="background:transparent;border-color:transparent"><table class="mini">${'<tr>' + cols.map(c => `<th>${esc(c.l)}</th>`).join('') + '</tr>'}${v.map(r => '<tr>' + cols.map(c => `<td>${esc(r[c.k] || '')}</td>`).join('') + '</tr>').join('')}</table></div></div>`;
+      }
+      if (f.type === 'canaux') return `<div class="ex-f"><b>${esc(f.label)}</b><table class="mini"><tr><th>Canal</th>${f.cols.map(c => `<th>${esc(c.l)}</th>`).join('')}</tr>${Object.keys(v).map(k => `<tr><td>${esc(k)}</td>${f.cols.map(c => `<td>${esc(v[k][c.k] || '')}</td>`).join('')}</tr>`).join('')}</table></div>`;
+      if (f.type === 'checks') return `<div class="ex-f"><b>${esc(f.label)}</b><p>${esc(v.join(', '))}</p></div>`;
+      if (f.type === 'calc') { const r = L.calc(v); return `<div class="ex-f"><b>${esc(f.label)}</b><p>Charges fixes ${v.cf} €, prix moyen ${v.pv} € HT, coût variable ${String(v.cv).replace('.', ',')} € → marge ${L.fmt(r.mu, 2)} €, seuil de ${L.fmt(r.seuil)} repas par mois (${L.fmt(r.ca)} € HT), soit ${L.fmt(r.parJour)} repas par jour sur ${v.jours} jours.</p></div>`; }
+      return `<div class="ex-f"><b>${esc(f.label)}</b><p>${esc(v)}</p></div>`;
+    }).join('');
+    return `<details class="example"><summary>Voir l’exemple : La Roulotte Gourmande (entreprise fictive)</summary><div class="ex-body">${parts}</div></details>`;
+  }
+
+  /* ---------------- panneau méthode ---------------- */
+  function coachHtml(st) {
+    const tabs = [['theory', 'Comprendre'], ['tips', 'Astuces'], ['tools', 'Outils']];
+    let body = '';
+    if (coachTab === 'theory') body = st.theory.map((t, i) => `<details ${i === 0 ? 'open' : ''}><summary>${esc(t.t)}</summary>${t.b}</details>`).join('');
+    if (coachTab === 'tips') body = `<ul class="tips">${st.tips.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
+    if (coachTab === 'tools') body = st.tools.map(t => `<div class="tool"><b>${t.u ? `<a href="${t.u}" target="_blank" rel="noopener">${esc(t.n)}</a>` : esc(t.n)}</b><span>${esc(t.d)}</span></div>`).join('');
+    return `<aside class="coach" aria-label="Méthode"><div class="coach-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" aria-selected="${coachTab === k}" class="${coachTab === k ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div><div class="coach-body">${body}</div></aside>`;
+  }
+
+  /* ---------------- étape ---------------- */
+  function renderStep(st) {
+    const i = stepIndex(st.id), ch = chapterOf(st.chap);
+    const prev = STEPS[i - 1], next = STEPS[i + 1];
+    const comp = L.stepCompletion(st, S);
+    $('#main').innerHTML = `
+      <header class="step-head">
+        <div class="step-kicker"><span>Chapitre ${ch.n}, ${esc(ch.title)}</span><span>Étape ${i + 1} sur ${STEPS.length}</span><span>Durée indicative : ${esc(st.time)}</span></div>
+        <h2>${esc(st.title)}</h2>
+        <div class="step-progress" title="Complétude de l’étape"><i id="stepbar" style="width:${pct(comp)}%"></i></div>
+        <div class="produce"><strong>Ce que vous allez produire</strong>${esc(st.produce)}</div>
+      </header>
+      <div class="step-grid">
+        <section>
+          ${exampleHtml(st)}
+          ${st.fields.map(renderField).join('')}
+          <nav class="step-nav">
+            ${prev ? `<button type="button" class="btn" data-go="${prev.id}">← ${esc(prev.title)}</button>` : '<span></span>'}
+            ${next ? `<button type="button" class="btn primary" data-go="${next.id}">${esc(next.title)} →</button>` : `<button type="button" class="btn primary" data-go="bilan">Voir mon bilan et exporter</button>`}
+          </nav>
+        </section>
+        ${coachHtml(st)}
+      </div>`;
+    autosizeAll();
+  }
+
+  /* ---------------- bilan ---------------- */
+  function renderBilan() {
+    const co = L.coherence(S), ov = L.overall(S), ear = L.earnedBadges(S);
+    $('#main').innerHTML = `<div class="bilan">
+      <div class="step-kicker"><span>Fin du parcours</span></div>
+      <h2>Mon bilan</h2>
+      <div class="big-scores">
+        <div class="big-score"><b>${pct(ov)} %</b><p>Complétude : part des champs remplis dans tout le parcours.</p></div>
+        <div class="big-score coh"><b>${pct(co.score)} %</b><p>Cohérence : ${co.res.filter(r => r.ok).length} critères validés sur ${co.res.length}. Vos choix se répondent-ils d’une étape à l’autre ?</p></div>
+        <div class="big-score"><b>${ear.length}/${L.BADGES.length}</b><p>Badges obtenus.</p></div>
+      </div>
+      <h3>Avancement par chapitre</h3>
+      <div class="chap-bars">${CHAPTERS.map(c => { const p = pct(L.chapterCompletion(c.id, S)); return `<div class="chap-bar"><span>${c.n}. ${esc(c.title)}</span><b>${p} %</b><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('')}</div>
+      <h3>Contrôle de cohérence</h3>
+      <ul class="checks-list">${co.res.map(r => `<li class="${r.ok ? 'ok' : 'ko'}"><span class="st">${r.ok ? '✓' : '!'}</span><div><strong>${esc(r.c.label)}</strong>${r.ok ? '' : `<p>${esc(r.c.advice)}</p>`}</div>${r.ok ? '' : `<button type="button" class="btn small" data-go="${r.c.step}">Reprendre</button>`}</li>`).join('')}</ul>
+      <h3>Badges</h3>
+      <div class="badges">${L.BADGES.map(b => `<div class="badge ${ear.includes(b.id) ? 'on' : ''}" tabindex="0" data-tip="${esc((ear.includes(b.id) ? 'Obtenu ! ' : 'Pour l’obtenir : ') + b.how)}"><div class="ic" aria-hidden="true">${b.icon}</div><b>${esc(b.name)}</b><small>${esc(b.cond)}</small></div>`).join('')}</div>
+      <div class="export-box"><div><h3>Ma stratégie commerciale en document Word</h3><p>Synthèse, toutes vos étapes mises en forme, plan d’action et contrôle de cohérence. Les champs vides apparaissent « À compléter ».</p></div><button type="button" class="btn ochre" data-act="export">Télécharger le Word</button></div>
+    </div>`;
+  }
+
+  /* ---------------- barre latérale ---------------- */
+  function renderSide() {
+    const ov = L.overall(S), co = L.coherence(S), ear = L.earnedBadges(S);
+    const trail = CHAPTERS.map(c => `<li class="ch"><div class="ch-title"><span>${c.n}. ${esc(c.title)}</span><small>${esc(c.time)}</small></div><ol>${STEPS.filter(s => s.chap === c.id).map(st => {
+      const p = L.stepCompletion(st, S); const cls = p >= 0.999 ? 'done' : p > 0 ? 'part' : '';
+      return `<li><button type="button" data-go="${st.id}" class="${S.cur === st.id ? 'cur' : ''}" ${S.cur === st.id ? 'aria-current="step"' : ''}><span class="dot ${cls}" style="--p:${pct(p)}%"></span>${esc(st.title)}</button></li>`;
+    }).join('')}</ol></li>`).join('');
+    const saved = dirty ? 'Modifications non enregistrées' : (lastSaved ? `Brouillon enregistré à ${lastSaved}` : 'Aucun brouillon enregistré');
+    $('#side').innerHTML = `
+      <div class="proj-name">${esc(S.values.p_nom || 'Mon projet')}</div>
+      <div class="proj-sub">${esc(S.values.p_porteur || 'Stratégie commerciale et plan d’action')}</div>
+      <div class="scores">
+        <div class="score"><b>${pct(ov)} %</b><span>Complétude</span><div class="bar"><i style="width:${pct(ov)}%"></i></div></div>
+        <div class="score coh"><b>${pct(co.score)} %</b><span>Cohérence</span><div class="bar"><i style="width:${pct(co.score)}%"></i></div></div>
+      </div>
+      <div class="badge-strip">${L.BADGES.map(b => `<button type="button" class="b ${ear.includes(b.id) ? 'on' : ''}" data-go="bilan" data-tip="${esc((ear.includes(b.id) ? 'Obtenu ! ' : '') + b.name + ' : ' + b.how)}" aria-label="${esc(b.name + ', ' + (ear.includes(b.id) ? 'obtenu' : 'à obtenir') + '. ' + b.how)}">${b.icon}</button>`).join('')}<small>${ear.length}/${L.BADGES.length}</small></div>
+      <ul class="trail">${trail}<li class="ch bilan-link"><ol><li><button type="button" data-go="bilan" class="${S.cur === 'bilan' ? 'cur' : ''}"><span class="dot ${co.score >= .8 ? 'done' : ''}"></span>Bilan et export Word</button></li></ol></li></ul>
+      <div class="side-block">
+        <h3>Brouillon</h3>
+        <div class="save-status ${dirty ? 'dirty' : ''}">${saved}</div>
+        <button type="button" class="btn" data-act="save">Enregistrer un brouillon</button>
+        <button type="button" class="btn" data-act="restore">Restaurer un brouillon</button>
+      </div>
+      <div class="side-block">
+        <button type="button" class="btn primary" data-act="export">Exporter en Word</button>
+        <a class="btn" href="https://drive.google.com/drive/folders/1vT49A2pWeYabVVhyBWWz42wt5_4I0kl2?usp=sharing" target="_blank" rel="noopener">Ouvrir le cours complet</a>
+        <button type="button" class="btn ghost small" data-act="new">Recommencer à zéro</button>
+      </div>`;
+    $('#topt').textContent = S.values.p_nom || 'Ma stratégie commerciale';
+  }
+
+  function render() {
+    renderSide();
+    if (S.cur === 'bilan') renderBilan(); else renderStep(STEPS.find(s => s.id === S.cur) || STEPS[0]);
+  }
+  function go(id) {
+    S.cur = id; closeSide(); render(); window.scrollTo(0, 0);
+    const h = $('#main h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+  }
+
+  /* ---------------- mises à jour légères ---------------- */
+  function refreshLive() {
+    const st = STEPS.find(s => s.id === S.cur);
+    if (st) { const b = $('#stepbar'); if (b) b.style.width = pct(L.stepCompletion(st, S)) + '%'; }
+    const pv = $('#posprev'); if (pv) pv.innerHTML = previewHtml();
+    const co = $('#calcout'); if (co) co.innerHTML = calcOut();
+    const cn = $('#cnt_pi_texte'); if (cn) cn.outerHTML = counterHtml(S.values.pi_texte);
+    renderSide();
+    checkBadges();
+  }
+  function checkBadges(silent) {
+    const now = new Set(L.earnedBadges(S));
+    if (!silent) L.BADGES.forEach(b => { if (now.has(b.id) && !earned.has(b.id)) toast(`Badge obtenu : ${b.icon} ${b.name}`, 'badge-toast'); });
+    earned = now;
+  }
+  function markDirty() { dirty = true; }
+  function autosize(el) { if (el && el.tagName === 'TEXTAREA' && el.closest('table.grid')) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; } }
+  function autosizeAll() { document.querySelectorAll('table.grid textarea').forEach(autosize); }
+
+  function ensureRows(f) {
+    let rows = S.values[f.id];
+    if (!Array.isArray(rows)) rows = [];
+    if (f.fixedRows) rows = f.fixedRows.map((lab, i) => Object.assign({}, rows[i] || {}, { f: lab }));
+    S.values[f.id] = rows; return rows;
+  }
+
+  /* ---------------- événements ---------------- */
+  function onInput(e) {
+    const t = e.target;
+    if (e.type === 'input' && (t.type === 'checkbox' || t.type === 'radio')) return;
+    if (t.dataset.f) {
+      S.values[t.dataset.f] = t.value;
+    } else if (t.dataset.t) {
+      const f = L.FIELDS[t.dataset.t], rows = ensureRows(f), r = +t.dataset.r;
+      while (rows.length <= r) rows.push({});
+      rows[r][t.dataset.c] = t.value; autosize(t);
+    } else if (t.dataset.cn) {
+      const m = S.values[t.dataset.cn] = S.values[t.dataset.cn] || {};
+      const k = t.dataset.canal; m[k] = m[k] || {}; m[k][t.dataset.c] = t.value; autosize(t);
+    } else if (t.dataset.calc) {
+      const c = S.values[t.dataset.calc] = S.values[t.dataset.calc] || {}; c[t.dataset.k] = t.value;
+    } else if (t.dataset.chk) {
+      const id = t.dataset.chk, sel = new Set(S.values[id] || []);
+      t.checked ? sel.add(t.value) : sel.delete(t.value);
+      const order = []; CANAUX.forEach(g => g.items.forEach(i => { if (sel.has(i.v)) order.push(i.v); }));
+      S.values[id] = order;
+      markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y);
+      const again = document.querySelector(`[data-chk="${id}"][value="${CSS.escape(t.value)}"]`); if (again) again.focus({ preventScroll: true });
+      refreshLive(); return;
+    } else return;
+    markDirty(); refreshLive();
+  }
+
+  function onClick(e) {
+    const b = e.target.closest('button,[data-go]'); if (!b) return;
+    const d = b.dataset;
+    if (d.go) { go(d.go); return; }
+    if (d.tab) { coachTab = d.tab; const st = STEPS.find(s => s.id === S.cur); const c = document.querySelector('.coach'); c.outerHTML = coachHtml(st); return; }
+    if (d.hint) {
+      const f = L.FIELDS[d.hint]; hintLvl[f.id] = Math.min((hintLvl[f.id] || 0) + 1, f.hints.length);
+      const w = document.querySelector(`.field[data-field="${f.id}"]`);
+      w.querySelector('.hints').outerHTML = hintsHtml(f);
+      const nb = document.createElement('div'); nb.innerHTML = hintBtn(f); const nbtn = nb.firstChild;
+      b.replaceWith(nbtn); nbtn.focus(); return;
+    }
+    if (d.addrow) {
+      const f = L.FIELDS[d.addrow], rows = ensureRows(f);
+      const min = f.minRows || 1; while (rows.length < min) rows.push({});
+      rows.push({}); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      const last = document.querySelectorAll(`[data-t="${f.id}"][data-r="${rows.length - 1}"]`)[0]; if (last) last.focus();
+      return;
+    }
+    if (d.delrow) {
+      const f = L.FIELDS[d.delrow], rows = ensureRows(f), r = +d.r;
+      const row = rows[r] || {};
+      if (f.cols.some(c => L.isFilled(row[c.k])) && !confirm('Supprimer cette ligne et son contenu ?')) return;
+      rows.splice(r, 1); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      return;
+    }
+    if (d.act === 'save') return saveDraft();
+    if (d.act === 'restore') return $('#fileIn').click();
+    if (d.act === 'export') return exportWord();
+    if (d.act === 'new') {
+      if (!confirm('Recommencer à zéro ? Tout le contenu non enregistré sera perdu. Pensez à enregistrer un brouillon avant.')) return;
+      S = { values: {}, cur: 's0' }; dirty = false; lastSaved = null; checkBadges(true); go('s0'); return;
+    }
+  }
+
+  /* ---------------- brouillon ---------------- */
+  function saveDraft() {
+    const data = { app: APP_ID, version: 1, savedAt: new Date().toISOString(), state: { values: S.values, cur: S.cur } };
+    download(`brouillon_strategie_${slug(S.values.p_nom)}_${stamp()}.json`, JSON.stringify(data, null, 2), 'application/json');
+    dirty = false; lastSaved = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    renderSide(); toast('Brouillon enregistré dans vos téléchargements.');
+  }
+  function loadState(st, msg) {
+    S = { values: st.values || {}, cur: st.cur && (st.cur === 'bilan' || stepIndex(st.cur) >= 0) ? st.cur : 's0' };
+    dirty = false; checkBadges(true); showApp(); render(); window.scrollTo(0, 0); if (msg) toast(msg);
+  }
+  function restoreFile(file) {
+    const rd = new FileReader();
+    rd.onload = () => {
+      let data;
+      try { data = JSON.parse(rd.result); } catch (e) { toast('Ce fichier n’est pas un brouillon lisible (JSON invalide).', 'err'); return; }
+      if (!data || data.app !== APP_ID || !data.state || typeof data.state.values !== 'object') { toast('Ce fichier n’est pas un brouillon de ce parcours.', 'err'); return; }
+      if (hasData() && dirty && !confirm('Remplacer votre travail en cours par ce brouillon ? Les modifications non enregistrées seront perdues.')) return;
+      lastSaved = data.savedAt ? new Date(data.savedAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : null;
+      loadState(data.state, 'Brouillon restauré : vous reprenez là où vous vous étiez arrêté.');
+    };
+    rd.readAsText(file);
+  }
+
+  /* ---------------- export Word ---------------- */
+  function exportWord() {
+    try {
+      const bytes = DOCX.build(S);
+      download(`strategie_commerciale_${slug(S.values.p_nom)}_${stamp()}.docx`, new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
+      toast('Document Word téléchargé.' + (dirty ? ' Pensez aussi à enregistrer un brouillon pour pouvoir le modifier plus tard.' : ''));
+    } catch (e) { console.error(e); toast('L’export a échoué : ' + e.message, 'err'); }
+  }
+
+  /* ---------------- info-bulles ---------------- */
+  function showTip(el) {
+    const tip = $('#tip'); tip.textContent = el.dataset.tip; tip.hidden = false;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2; left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    let top = r.bottom + 8; if (top + th > window.innerHeight - 8) top = r.top - th - 8;
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  }
+  function hideTip() { $('#tip').hidden = true; }
+
+  /* ---------------- coque ---------------- */
+  function openSide() { $('#side').classList.add('open'); $('#scrim').classList.remove('hidden'); }
+  function closeSide() { $('#side').classList.remove('open'); $('#scrim').classList.add('hidden'); }
+  function showApp() { $('#boot').classList.add('hidden'); $('#shell').classList.remove('hidden'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if (f) restoreFile(f); e.target.value = ''; });
+    $('#bStart').addEventListener('click', () => { S = { values: {}, cur: 's0' }; checkBadges(true); showApp(); render(); });
+    $('#bRestore').addEventListener('click', () => $('#fileIn').click());
+    $('#bExample').addEventListener('click', () => { loadState({ values: JSON.parse(JSON.stringify(EXAMPLE)), cur: 's0' }, 'Exemple chargé : La Roulotte Gourmande. Vous pouvez le parcourir, le modifier et l’exporter.'); dirty = false; });
+    $('#main').addEventListener('input', onInput);
+    $('#main').addEventListener('change', e => { if (e.target.type === 'radio' || e.target.type === 'checkbox') onInput(e); });
+    document.addEventListener('click', e => { hideTip(); onClick(e); });
+    document.addEventListener('mouseover', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+    document.addEventListener('focusin', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+    document.addEventListener('scroll', hideTip, true);
+    $('#menuBtn').addEventListener('click', openSide);
+    $('#scrim').addEventListener('click', closeSide);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSide(); });
+    window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+  });
+
+  window.__app = { get state() { return S; }, get dirty() { return dirty; } };
+})();
+</script>
+<!-- Bouton retour vers l'accueil du jeu (ajouté par l'espace formateur) -->
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>
+</body>
+</html>
