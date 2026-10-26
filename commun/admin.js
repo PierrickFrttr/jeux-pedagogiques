@@ -138,7 +138,7 @@
     }
     function gabaritJeu(id) {
       return '<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
-        '<title>Jeux pédagogiques</title>\n<link rel="stylesheet" href="../commun/site.css">\n</head>\n' +
+        '<title>Entreprise en Jeu</title>\n<link rel="icon" type="image/png" href="../favicon.png">\n<link rel="apple-touch-icon" href="../commun/logo-180.png">\n<link rel="stylesheet" href="../commun/site.css">\n</head>\n' +
         '<body data-page="jeu" data-jeu="' + id + '">\n<main class="wrap" id="contenu"><noscript>Cette page nécessite JavaScript.</noscript></main>\n' +
         '<script src="../donnees/catalogue.js"></script>\n<script src="../commun/site.js"></script>\n</body>\n</html>\n';
     }

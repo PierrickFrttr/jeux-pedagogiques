@@ -48,18 +48,22 @@
   function entete() {
     var h = el("header", "entete");
     var m = lien("", BASE + "index.html", "marque");
-    var logo = el("span", "logo"); logo.setAttribute("aria-hidden", "true");
-    for (var i = 0; i < 4; i++) logo.appendChild(el("i"));
-    m.appendChild(logo); m.appendChild(document.createTextNode(catalogue().site.titre));
+    m.appendChild(logo("logo", 26)); m.appendChild(document.createTextNode(catalogue().site.titre));
     h.appendChild(m);
     h.appendChild(lien("Espace formateur", BASE + "formateur/index.html", "lien-discret"));
     return h;
   }
+  function logo(cls, largeur) {
+    var img = el("img", cls); img.src = BASE + "commun/logo.png"; img.alt = "";
+    img.width = largeur; img.height = Math.round(largeur * 256 / 205);
+    return img;
+  }
   function pied(main) {
     var f = el("footer", "pied");
-    f.innerHTML = '<span><strong>Pierrick Frottier</strong>, formateur indépendant</span>' +
+    f.appendChild(logo("logo-pied", 34));
+    f.insertAdjacentHTML("beforeend", '<span><strong>Pierrick Frottier</strong>, formateur indépendant</span>' +
       '<a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>' +
-      '<a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>';
+      '<a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>');
     f.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
     main.appendChild(f);
   }
@@ -76,9 +80,10 @@
   // Accueil : une « boîte » par jeu
   function rendreAccueil(haut, main, cat) {
     document.title = cat.site.titre + " – Pierrick Frottier";
-    var hero = el("section", "hero");
-    hero.appendChild(el("h1", null, cat.site.titre));
-    hero.appendChild(el("p", null, cat.site.intro));
+    var hero = el("section", "hero"), txt = el("div");
+    txt.appendChild(el("h1", null, cat.site.titre));
+    txt.appendChild(el("p", null, cat.site.intro));
+    hero.appendChild(logo("logo-hero", 150)); hero.appendChild(txt);
     main.appendChild(hero);
     zoneAdmin(main);
     var ul = el("ul", "grille jeux");

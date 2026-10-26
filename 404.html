@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Jeux pédagogiques</title>
+<title>Entreprise en Jeu</title>
 <!-- Page de secours servie par GitHub Pages pour toute adresse introuvable.
      Si l'adresse est celle d'un jeu du catalogue (page pas encore en ligne), le jeu est affiché quand même.
      Sinon : « publication en cours » pour une personne connectée (nouvel essai automatique), ou « page introuvable ». -->
 <script>
   var parties = location.pathname.split("/").filter(Boolean);
   var BASE = /\.github\.io$/.test(location.hostname) && parties.length ? "/" + parties.shift() + "/" : "/";
-  document.write('<link rel="stylesheet" href="' + BASE + 'commun/site.css">');
+  document.write('<link rel="stylesheet" href="' + BASE + 'commun/site.css"><link rel="icon" type="image/png" href="' + BASE + 'favicon.png">');
 </script>
 </head>
 <body>
