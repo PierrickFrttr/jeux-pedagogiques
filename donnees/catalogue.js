@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 12,
+  "version": 13,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -130,6 +130,14 @@ window.CATALOGUE = {
           "description": "Un parcours guidé en 5 chapitres pour bâtir pas à pas la stratégie commerciale de votre projet : marché, offre, communication, parcours client et indicateurs. À chaque étape, méthode, astuces, outils et exemple complet. À la fin, votre stratégie s'exporte en document Word.",
           "emoji": "🎯",
           "couleur": "#f2ec36"
+        },
+        {
+          "type": "mission",
+          "fichier": "jeux/rediger-son-business-plan.html",
+          "titre": "Rédiger son business plan",
+          "description": "Construisez pas à pas votre business plan, du modèle économique au prévisionnel sur trois ans, avec une aide au choix du statut, un diagnostic de faisabilité et un dossier exportable en Word.",
+          "emoji": "✍🏼",
+          "couleur": "#67d22d"
         }
       ]
     }
