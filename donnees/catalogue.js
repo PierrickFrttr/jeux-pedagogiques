@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 2,
+  "version": 3,
   "site": {
     "titre": "Jeux pédagogiques",
     "intro": "Des jeux de rôle en équipe pour mettre en pratique le marketing et la supply chain. Choisissez votre jeu, puis la mission du jour."
@@ -103,18 +103,6 @@ window.CATALOGUE = {
           "bouton": "Ouvrir"
         }
       ]
-    },
-    {
-      "id": "ma-strategie-commerciale-createurs-d-entreprise",
-      "titre": "Ma stratégie commerciale – Créateurs d'entreprise",
-      "titrePage": "Construisez votre stratégie commerciale et votre plan d'action pas à pas",
-      "resume": "Un parcours guidé en 5 chapitres pour bâtir pas à pas la stratégie commerciale de votre projet : marché, offre, communication, parcours client et indicateurs. À chaque étape, méthode, astuces, outils et exemple complet. À la fin, votre stratégie s'exporte en document Word.",
-      "intro": "Vous créez ou développez votre entreprise ? Ce parcours vous accompagne pour construire votre stratégie commerciale et un plan d'action concret, directement sur votre propre projet.\n\nLe jeu suit les 5 temps de l'atelier « Stratégie commerciale » :\n1. Trouver son marché et sa place : tendances, concurrence, persona, positionnement et pitch.\n2. Créer son offre : catalogue, prix et seuil de rentabilité, argumentaire CAP/SONCAS, objections.\n3. Communiquer : choix des canaux, ligne éditoriale et planning sur 4 semaines.\n4. Parcours client et plan d'action : étapes du parcours, actions AARRR, objectifs SMART et plan sur 90 jours.\n5. Outils et mesure : CRM et tableau de bord.\n\nÀ chaque étape, vous trouverez ce qu'il faut produire, les notions clés, des astuces, des outils gratuits et des indices progressifs. Un exemple complet, La Roulotte Gourmande, vous montre à quoi ressemble une réponse réussie. Vous naviguez librement : sautez une étape, revenez en arrière, modifiez quand vous voulez.\n\nUn score de complétude, un score de cohérence et 11 badges vous indiquent où vous en êtes et ce qui reste à renforcer.\n\nImportant : rien n'est enregistré automatiquement. Pensez à cliquer sur « Enregistrer un brouillon » à la fin de chaque séance. Vous obtenez un fichier que vous pourrez recharger plus tard, sur cet ordinateur ou un autre. Une fois le parcours terminé, exportez votre stratégie complète en document Word, prête à être présentée à un banquier, un financeur ou un partenaire.",
-      "categorie": "Stratégie commerciale",
-      "emoji": "🧠",
-      "couleur": "#be95be",
-      "retourCss": "",
-      "elements": []
     }
   ]
 };
