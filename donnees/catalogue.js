@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 13,
+  "version": 14,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -138,6 +138,15 @@ window.CATALOGUE = {
           "description": "Construisez pas à pas votre business plan, du modèle économique au prévisionnel sur trois ans, avec une aide au choix du statut, un diagnostic de faisabilité et un dossier exportable en Word.",
           "emoji": "✍🏼",
           "couleur": "#67d22d"
+        },
+        {
+          "type": "mission",
+          "fichier": "jeux/defendre-son-projet.html",
+          "auteur": "PierrickFrttr",
+          "titre": "Défendre son projet",
+          "description": "Préparez votre passage en comité de financement : chiffres clés, pitch, réponses aux questions difficiles, puis un comité simulé qui réagit à chacune de vos réponses.",
+          "emoji": "🤜🏼",
+          "couleur": "#e7f42f"
         }
       ]
     }

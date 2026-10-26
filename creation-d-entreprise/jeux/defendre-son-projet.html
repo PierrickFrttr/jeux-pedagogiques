@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Création d’entreprise – Défendre son projet devant un financeur</title>
+<style>:root{
+  --pine:#1F4D45; --pine-2:#2B6A5F; --ochre:#C9861A; --ochre-soft:#F6E7CB; --lav:#6E64A8; --lav-soft:#E9E6F5;
+  --paper:#F4F6F3; --surface:#FFFFFF; --mist:#E3EAE6; --line:#CBD6D1; --ink:#1C2321; --muted:#5D6A65;
+  --ok:#2E7D4F; --ok-soft:#DDEFE3; --warn:#B3261E; --warn-soft:#F8E1DE;
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --pine:#7CC3B3; --pine-2:#9BD4C6; --ochre:#E6B05A; --ochre-soft:#3A2F1C; --lav:#B3AAE6; --lav-soft:#2C2940;
+    --paper:#141917; --surface:#1C2320; --mist:#25302C; --line:#38463F; --ink:#E7EDEA; --muted:#9FB0A9;
+    --ok:#7BC99A; --ok-soft:#1E3327; --warn:#F09A90; --warn-soft:#3B2220;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--pine)}
+:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;margin:0}
+.hidden{display:none!important}
+
+/* ---------- boutons ---------- */
+.btn{display:inline-flex;align-items:center;gap:.45em;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.55em 1em;cursor:pointer;font-weight:600;font-size:.94rem;text-decoration:none}
+.btn:hover{border-color:var(--pine)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.btn.primary:hover{background:var(--pine-2)}
+.btn.ochre{background:var(--ochre);border-color:var(--ochre);color:#1C2321}
+.btn.ghost{background:transparent;border-color:transparent;padding:.4em .6em}
+.btn.ghost:hover{background:var(--mist)}
+.btn.small{font-size:.84rem;padding:.35em .7em}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---------- écran d'accueil ---------- */
+#boot{min-height:calc(100% - 110px);display:grid;place-items:center;padding:2rem 1.2rem}
+.boot-card{max-width:720px;width:100%}
+.boot-ridge{width:100%;height:auto;display:block;margin-bottom:1.6rem;color:var(--pine)}
+.boot-kicker{margin:0 0 .3rem;font-weight:600;color:var(--ochre);letter-spacing:.02em}
+.boot-card h1{font-size:clamp(2rem,5vw,3.1rem);color:var(--pine);letter-spacing:-.01em}
+.boot-card .lede{font-size:1.15rem;color:var(--muted);max-width:60ch;margin:1rem 0 1.6rem}
+.boot-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;margin:0 0 2rem;padding:0;list-style:none;counter-reset:b}
+.boot-steps li{border-top:3px solid var(--line);padding-top:.5rem;font-size:.86rem;color:var(--muted)}
+.boot-steps li strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1rem}
+.boot-actions{display:flex;flex-wrap:wrap;gap:.7rem}
+.boot-note{font-size:.85rem;color:var(--muted);margin-top:1.4rem}
+@media (max-width:640px){.boot-steps{grid-template-columns:1fr 1fr}}
+
+/* ---------- coque de l'application ---------- */
+#app{display:grid;grid-template-columns:300px 1fr;min-height:100%}
+#side{background:var(--surface);border-right:1px solid var(--line);padding:1.2rem 1rem 2rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+#main{padding:2rem clamp(1rem,3vw,2.6rem) 4rem;min-width:0}
+.topbar{display:none}
+
+.proj-name{font-family:var(--serif);font-size:1.25rem;color:var(--pine);font-weight:700;line-height:1.2;word-break:break-word}
+.proj-sub{font-size:.8rem;color:var(--muted);margin-top:.15rem}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:1rem 0 .6rem}
+.score{background:var(--paper);border-radius:10px;padding:.55rem .7rem}
+.score b{display:block;font-size:1.45rem;font-family:var(--serif);line-height:1}
+.score span{font-size:.75rem;color:var(--muted)}
+.score .bar{height:5px;background:var(--mist);border-radius:3px;margin-top:.4rem;overflow:hidden}
+.score .bar i{display:block;height:100%;background:var(--pine);border-radius:3px;transition:width .4s}
+.score.coh .bar i{background:var(--lav)}
+.badge-strip{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:1rem}
+.badge-strip .b{border:0;padding:0;cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.85rem;background:var(--lav-soft);filter:grayscale(1);opacity:.35}
+.badge-strip .b.on{filter:none;opacity:1;box-shadow:0 0 0 2px var(--lav)}
+.badge-strip small{margin-left:.3rem;color:var(--muted);font-size:.78rem}
+
+/* sentier */
+.trail{list-style:none;margin:0 0 1.2rem;padding:0}
+.trail .ch{margin-top:.9rem}
+.trail .ch-title{font-family:var(--serif);font-weight:700;font-size:.95rem;display:flex;justify-content:space-between;gap:.5rem;align-items:baseline}
+.trail .ch-title small{font-family:var(--sans);font-weight:400;color:var(--muted);font-size:.74rem;white-space:nowrap}
+.trail ol{list-style:none;margin:.35rem 0 0;padding:0;position:relative}
+.trail ol::before{content:"";position:absolute;left:9px;top:10px;bottom:10px;width:2px;background:var(--mist)}
+.trail li button{position:relative;display:flex;gap:.6rem;align-items:center;width:100%;text-align:left;border:0;background:none;padding:.32rem .4rem .32rem 0;border-radius:6px;cursor:pointer;font-size:.88rem;color:var(--ink)}
+.trail li button:hover{background:var(--paper)}
+.trail li button.cur{background:var(--ochre-soft);font-weight:600}
+.dot{flex:0 0 20px;height:20px;border-radius:50%;border:2px solid var(--line);background:var(--surface);position:relative;z-index:1;display:grid;place-items:center;font-size:.6rem;color:var(--surface)}
+.dot.part{border-color:var(--ochre);background:conic-gradient(var(--ochre) var(--p),var(--surface) 0)}
+.dot.done{border-color:var(--pine);background:var(--pine)}
+.dot.done::after{content:"✓";font-weight:700}
+.trail .bilan-link button{font-weight:700}
+
+.side-block{border-top:1px solid var(--line);padding-top:.9rem;margin-top:.9rem}
+.side-block h3{font-family:var(--sans);font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.5rem}
+.side-block .btn{width:100%;justify-content:center;margin-bottom:.45rem}
+.save-status{font-size:.78rem;color:var(--muted);margin:.2rem 0 .5rem}
+.save-status.dirty{color:var(--warn)}
+
+/* ---------- étape ---------- */
+.step-head{max-width:1180px;margin-bottom:1.4rem}
+.step-kicker{font-size:.88rem;color:var(--muted);display:flex;gap:1rem;flex-wrap:wrap}
+.step-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--pine);margin:.25rem 0 .7rem}
+.step-progress{height:6px;background:var(--mist);border-radius:3px;max-width:420px;overflow:hidden}
+.step-progress i{display:block;height:100%;background:var(--ochre);transition:width .3s}
+.produce{margin-top:1rem;background:var(--surface);border-left:4px solid var(--ochre);padding:.8rem 1rem;border-radius:0 8px 8px 0;max-width:80ch}
+.produce strong{display:block;font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.15rem}
+
+.step-grid>*{min-width:0}
+.step-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:2rem;max-width:1180px;align-items:start}
+.coach{position:sticky;top:1rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.coach-tabs{display:flex;border-bottom:1px solid var(--line)}
+.coach-tabs button{flex:1;border:0;background:none;padding:.7rem .3rem;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.coach-tabs button.on{color:var(--pine);border-bottom-color:var(--pine)}
+.coach-body{padding:1rem 1.1rem;max-height:calc(100vh - 7rem);overflow-y:auto;font-size:.92rem}
+.coach-body details{border-bottom:1px solid var(--mist);padding:.5rem 0}
+.coach-body details:last-child{border-bottom:0}
+.coach-body summary{cursor:pointer;font-weight:700;font-family:var(--serif);font-size:1rem;color:var(--pine)}
+.coach-body p,.coach-body ul,.coach-body ol{margin:.5rem 0}
+.coach-body ul,.coach-body ol{padding-left:1.2rem}
+.coach-body li{margin:.2rem 0}
+table.mini{border-collapse:collapse;width:100%;font-size:.84rem;margin:.5rem 0}
+table.mini th,table.mini td{border:1px solid var(--line);padding:.3rem .4rem;text-align:left;vertical-align:top}
+table.mini th{background:var(--mist)}
+.tips li{margin-bottom:.6rem}
+.tool{padding:.5rem 0;border-bottom:1px solid var(--mist)}
+.tool:last-child{border-bottom:0}
+.tool b{display:block}
+.tool span{color:var(--muted);font-size:.86rem}
+
+.example{background:var(--lav-soft);border-radius:10px;padding:.2rem 1rem;margin-bottom:1.4rem}
+.example summary{cursor:pointer;padding:.6rem 0;font-weight:600;color:var(--lav)}
+.example .ex-body{padding-bottom:.8rem;font-size:.92rem}
+.example .ex-f{margin:.5rem 0}
+.example .ex-f b{display:block;font-size:.8rem;color:var(--muted)}
+.example .ex-f p{margin:.1rem 0;white-space:pre-line}
+
+/* ---------- champs ---------- */
+.field{margin-bottom:1.5rem}
+.field-top{display:flex;justify-content:space-between;align-items:flex-end;gap:.8rem;margin-bottom:.35rem}
+.field label,.field .lbl{font-weight:650;font-size:.98rem}
+.hint-btn{border:1px solid var(--lav);color:var(--lav);background:transparent;border-radius:999px;padding:.15rem .7rem;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.hint-btn:hover{background:var(--lav-soft)}
+.hint-btn[disabled]{opacity:.5;cursor:default}
+.hints{margin:.4rem 0 .5rem;padding:0;list-style:none}
+.hints li{background:var(--lav-soft);border-radius:8px;padding:.45rem .7rem;font-size:.88rem;margin-bottom:.3rem}
+.hints li b{color:var(--lav);margin-right:.3rem}
+input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.6rem .7rem;line-height:1.45}
+textarea{resize:vertical;min-height:2.6rem}
+input:focus,textarea:focus,select:focus{border-color:var(--pine);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pine) 22%,transparent)}
+.counter{font-size:.82rem;color:var(--muted);margin-top:.3rem}
+.counter.ok{color:var(--ok)}
+.counter.warn{color:var(--warn)}
+
+.radios{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.5rem}
+.radios label{display:flex;gap:.55rem;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:.6rem .7rem;cursor:pointer;font-weight:600}
+.radios label small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.radios label:has(input:checked){border-color:var(--pine);background:var(--ok-soft)}
+.radios input{margin-top:.25rem;accent-color:var(--pine)}
+
+.checks{display:grid;gap:.9rem}
+.checks fieldset{border:0;margin:0;padding:0}
+.checks legend{font-size:.84rem;color:var(--muted);font-weight:600;margin-bottom:.35rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chips label{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.35rem .8rem;font-size:.88rem;cursor:pointer;display:inline-flex;gap:.4rem;align-items:center}
+.chips label:has(input:checked){background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips label:has(input:focus-visible){outline:3px solid var(--ochre)}
+.focus-msg{font-size:.86rem;margin-top:.5rem;padding:.45rem .7rem;border-radius:8px}
+.focus-msg.ok{background:var(--ok-soft);color:var(--ok)}
+.focus-msg.warn{background:var(--warn-soft);color:var(--warn)}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table.grid{border-collapse:collapse;width:100%;min-width:620px}
+table.grid th{background:var(--mist);text-align:left;font-size:.8rem;font-weight:650;padding:.5rem .55rem;border-bottom:1px solid var(--line)}
+table.grid td{border-top:1px solid var(--mist);padding:.35rem;vertical-align:top}
+table.grid td.rowlab{font-weight:650;font-size:.88rem;padding:.6rem .55rem;background:var(--paper);width:1%;white-space:nowrap}
+table.grid textarea,table.grid input,table.grid select{border-color:transparent;background:transparent;padding:.4rem .45rem;font-size:.9rem;min-height:2.3rem}
+table.grid textarea:hover,table.grid input:hover,table.grid select:hover{border-color:var(--line)}
+table.grid textarea:focus,table.grid input:focus,table.grid select:focus{background:var(--surface);border-color:var(--pine)}
+table.grid td.del{width:1%}
+.del-btn{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.3rem .5rem;border-radius:6px}
+.del-btn:hover{color:var(--warn);background:var(--warn-soft)}
+.add-row{margin-top:.5rem}
+.empty-note{padding:1rem;color:var(--muted);font-size:.9rem}
+
+.preview{background:var(--surface);border:1px dashed var(--pine);border-radius:10px;padding:1rem 1.1rem;font-family:var(--serif);font-size:1.12rem;line-height:1.5}
+.preview.empty{font-family:var(--sans);font-size:.92rem;color:var(--muted);border-color:var(--line)}
+
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem}
+.calc>div{display:flex;flex-direction:column;justify-content:flex-end}
+.calc label{font-size:.84rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-out{margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.7rem .8rem}
+.kpi b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--pine);line-height:1.1}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.kpi.big{border-color:var(--ochre);background:var(--ochre-soft)}
+.kpi.neg b{color:var(--warn)}
+.calc-msg{margin-top:.7rem;font-size:.9rem;padding:.55rem .8rem;border-radius:8px;background:var(--paper)}
+.calc-msg.warn{background:var(--warn-soft);color:var(--warn)}
+.calc-msg.ok{background:var(--ok-soft);color:var(--ok)}
+
+.step-nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);flex-wrap:wrap}
+
+/* ---------- bilan ---------- */
+.bilan{max-width:1000px}
+.bilan h2{font-size:clamp(1.8rem,3.6vw,2.5rem);color:var(--pine);margin:.3rem 0 1rem}
+.big-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.big-score{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem}
+.big-score b{font-family:var(--serif);font-size:2.8rem;line-height:1;color:var(--pine)}
+.big-score.coh b{color:var(--lav)}
+.big-score p{margin:.4rem 0 0;color:var(--muted);font-size:.9rem}
+.bilan h3{font-size:1.35rem;margin:2rem 0 .8rem}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem}
+.badge{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem .7rem;text-align:center}
+.badge .ic{width:54px;height:54px;border-radius:50%;margin:0 auto .5rem;display:grid;place-items:center;font-size:1.6rem;background:var(--lav-soft);border:2px dashed var(--line);filter:grayscale(1);opacity:.45}
+.badge.on .ic{filter:none;opacity:1;border:2px solid var(--lav)}
+.badge b{display:block;font-size:.92rem}
+.badge small{color:var(--muted);font-size:.78rem}
+.chap-bars{display:grid;gap:.5rem}
+.chap-bar{display:grid;grid-template-columns:minmax(0,1fr) 3.5rem;gap:.8rem;align-items:center;font-size:.92rem}
+.chap-bar .bar{height:8px;background:var(--mist);border-radius:4px;overflow:hidden;grid-column:1/-1}
+.chap-bar .bar i{display:block;height:100%;background:var(--pine)}
+.checks-list{list-style:none;padding:0;margin:0;display:grid;gap:.45rem}
+.checks-list li{display:grid;grid-template-columns:26px 1fr auto;gap:.6rem;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem}
+.checks-list .st{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700}
+.checks-list .ok .st{background:var(--ok-soft);color:var(--ok)}
+.checks-list .ko .st{background:var(--warn-soft);color:var(--warn)}
+.checks-list p{margin:.15rem 0 0;font-size:.85rem;color:var(--muted)}
+.export-box{margin-top:2rem;background:var(--pine);color:var(--surface);border-radius:14px;padding:1.4rem 1.5rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.export-box h3{margin:0;font-size:1.3rem;color:inherit}
+.export-box p{margin:.3rem 0 0;opacity:.85;font-size:.92rem;max-width:56ch}
+
+/* ---------- pied de page ---------- */
+.main-col{min-width:0;display:flex;flex-direction:column}
+.main-col #main{flex:1}
+.site-foot{border-top:1px solid var(--line);padding:1.2rem clamp(1rem,3vw,2.6rem) 1.6rem;display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:space-between;align-items:center;font-size:.88rem;color:var(--muted)}
+.sf-who strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1rem}
+.sf-links{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center}
+.sf-links a{color:var(--pine);text-decoration:none;font-weight:600}
+.sf-links a:hover{text-decoration:underline}
+.sf-links a.sf-course{background:var(--ochre);color:#1C2321;padding:.4em .9em;border-radius:8px}
+.sf-links a.sf-course:hover{text-decoration:none;filter:brightness(1.05)}
+#bootFoot .site-foot{max-width:720px;margin:0 auto}
+#boot:not(.hidden) ~ #bootFoot{display:block}
+#boot.hidden ~ #bootFoot{display:none}
+
+#tip{position:fixed;z-index:60;max-width:260px;background:var(--ink);color:var(--paper);font-size:.84rem;line-height:1.4;padding:.5rem .7rem;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
+.badge{cursor:help}
+
+#leave{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.45);display:grid;place-items:center;padding:1rem}
+#leave.hidden{display:none}
+.leave-card{background:var(--surface);border-radius:14px;padding:1.5rem 1.6rem;max-width:460px;border-top:5px solid var(--ochre);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.leave-card h2{font-size:1.35rem;color:var(--pine);margin-bottom:.6rem}
+.leave-card p{margin:0 0 1.2rem;color:var(--muted)}
+.leave-actions{display:flex;flex-wrap:wrap;gap:.6rem}
+
+/* ---------- mission étude de marché ---------- */
+.formula{font-family:var(--serif);font-size:1.02rem;background:var(--pine);color:var(--surface);padding:.7rem .9rem;border-radius:8px;margin:.6rem 0;line-height:1.4}
+table.grid td.rowlab.wrap{white-space:normal;min-width:9rem;max-width:14rem}
+.map-wrap{display:grid;grid-template-columns:1fr;gap:1rem}
+.map-ctrl{display:contents}
+.map-axes{order:1}.map-view{order:2;max-width:480px;width:100%;justify-self:center}.map-help{order:3}.map-ctrl .tbl-wrap,.map-ctrl .empty-note{order:4}
+.map-axes{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:.5rem;margin-bottom:.6rem}
+.map-axes label{font-size:.8rem;font-weight:600;display:block;margin-bottom:.15rem}
+.map-help{font-size:.84rem;color:var(--muted);margin:.4rem 0}
+table.map-tab{min-width:0}
+table.map-tab tr.me td.rowlab{color:var(--ochre)}
+table.map-tab small{display:block;font-weight:400;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--pine)}
+input[type=range].unset{opacity:.4}
+.mapsvg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.mp-bg{fill:var(--paper)}
+.mp-axis{stroke:var(--line);stroke-width:1.5}
+.mp-title{font:700 13px var(--sans);fill:var(--pine)}
+.mp-end{font:11px var(--sans);fill:var(--muted)}
+.mp-dot{fill:var(--pine);stroke:var(--surface);stroke-width:2}
+.mp-me{fill:var(--ochre);stroke:var(--surface);stroke-width:2}
+.mp-lab{font:600 11px var(--sans);fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:3px}
+.mp-lab.me{fill:var(--ochre);font-weight:700}
+.next-box{margin-top:1rem;border:2px dashed var(--ochre);border-radius:14px;padding:1.1rem 1.3rem}
+.next-box h3{margin:0 0 .3rem;font-size:1.15rem;color:var(--ochre)}
+.next-box p{margin:0;color:var(--muted)}
+@media (max-width:640px){.map-axes{grid-template-columns:1fr 1fr}.map-axes>div:nth-child(3n+1){grid-column:1/-1}}
+
+.add-row{display:flex;flex-wrap:wrap;gap:.5rem}
+th.th-custom div{display:flex;gap:.2rem;align-items:center}
+.th-in{border:1px dashed var(--pine)!important;background:var(--surface)!important;padding:.25rem .4rem!important;font-size:.8rem!important;font-weight:650;min-width:7rem}
+.th-custom .del-btn{font-size:1rem;padding:.1rem .35rem}
+table.grid td.rowlab textarea{font-weight:650}
+.tip-i{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;border:1px solid currentColor;font:700 10px/1 var(--serif);font-style:italic;opacity:.7;margin-left:.15rem}
+.chips label[data-tip],legend.has-tip{cursor:help}
+
+table.grid td{min-width:8.5rem}
+table.grid td.del,table.map-tab td{min-width:0}
+table.grid td:has(select){min-width:7.5rem}
+.th-in{min-width:8rem}
+
+/* ---------- mission business plan ---------- */
+.num-in{max-width:16rem}
+.range-row{display:flex;gap:1rem;align-items:center}
+.range-row output{font-family:var(--serif);font-weight:700;font-size:1.3rem;color:var(--ochre);min-width:4.5rem}
+.report-body{margin-top:.4rem}
+table.rep{background:var(--surface);margin:0}
+table.rep td.num{text-align:right;white-space:nowrap}
+table.rep tr.strong td{font-weight:700}
+table.rep tr.total td{font-weight:800;background:var(--ochre-soft)}
+table.rep tr.neg td{color:var(--warn)}
+table.rep small.why{display:block;color:var(--muted);font-size:.78rem;margin-top:.15rem}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;padding:.1rem .5rem;border-radius:999px;vertical-align:middle}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.vig{background:var(--ochre-soft);color:var(--ochre)}
+.pill.ko{background:var(--warn-soft);color:var(--warn)}
+.verdict{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1rem;border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.8rem;border:2px solid}
+.verdict span{font-size:.85rem;color:var(--muted);width:100%}
+.verdict b{font-family:var(--serif);font-size:1.7rem}
+.verdict small{color:var(--muted)}
+.verdict.ok{border-color:var(--ok);background:var(--ok-soft)}.verdict.ok b{color:var(--ok)}
+.verdict.vig{border-color:var(--ochre);background:var(--ochre-soft)}.verdict.vig b{color:var(--ochre)}
+.verdict.ko{border-color:var(--warn);background:var(--warn-soft)}.verdict.ko b{color:var(--warn)}
+.reco{list-style:none;padding:0;margin:0 0 .6rem;display:grid;gap:.45rem}
+.reco li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem}
+.reco li.top{border:2px solid var(--pine);background:var(--ok-soft)}
+.reco li.out{opacity:.55}
+.reco .score{font-family:var(--serif);font-weight:700;color:var(--pine);margin-left:.4rem}
+.reco small{display:block;color:var(--muted);margin-top:.2rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media (max-width:700px){.two{grid-template-columns:1fr}}
+.bars,.tbars{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;height:120px;margin-top:.8rem;padding:0 .2rem}
+.bars div,.tbars div{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.bars i,.tbars i{display:block;width:100%;background:var(--pine);border-radius:4px 4px 0 0}
+.tbars i.neg{background:var(--warn)}
+.bars span,.tbars span{font-size:.7rem;color:var(--muted);margin-top:.2rem}
+.bmc{display:grid;grid-template-columns:repeat(10,1fr);gap:.5rem}
+.bmc-b{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.55rem;display:flex;flex-direction:column}
+.bmc-b label{font-family:var(--serif);font-weight:700;color:var(--pine);font-size:.95rem}
+.bmc-b small{color:var(--muted);font-size:.76rem;line-height:1.3;margin:.15rem 0 .35rem}
+.bmc-b textarea{flex:1;font-size:.88rem;min-height:5.5rem}
+.bmc-part{grid-column:1/3;grid-row:1/3}.bmc-act{grid-column:3/5;grid-row:1}.bmc-res{grid-column:3/5;grid-row:2}
+.bmc-val{grid-column:5/7;grid-row:1/3;border-color:var(--ochre)}.bmc-rel{grid-column:7/9;grid-row:1}.bmc-can{grid-column:7/9;grid-row:2}
+.bmc-seg{grid-column:9/11;grid-row:1/3}.bmc-cout{grid-column:1/6;grid-row:3}.bmc-rev{grid-column:6/11;grid-row:3}
+@media (max-width:900px){.bmc{grid-template-columns:1fr}.bmc>div{grid-column:auto!important;grid-row:auto!important}}
+.import-box{display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;border:2px dashed var(--ochre);border-radius:12px;padding:.9rem 1.1rem}
+.import-box p{margin:.2rem 0 0;color:var(--muted);font-size:.9rem;max-width:60ch}
+
+.step-grid.wide{grid-template-columns:1fr}
+.step-grid.wide .coach{position:static;order:-1}
+.step-grid.wide .coach-body{max-height:320px}
+
+/* ---------- comité ---------- */
+.game{max-width:860px}
+.cm-intro{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.4rem}
+.cm-intro h4,.game h4{font-family:var(--serif);font-size:1.25rem;color:var(--pine);margin:0 0 .5rem}
+.cm-gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.5rem}
+.cm-gauges>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;display:grid;grid-template-columns:1fr auto;gap:.2rem .5rem;align-items:center}
+.cm-gauges span{font-size:.8rem;color:var(--muted)}
+.cm-gauges b{font-family:var(--serif);grid-row:1/3;grid-column:2}
+.cm-gauges .bar{height:6px;background:var(--mist);border-radius:3px;overflow:hidden}
+.cm-gauges .bar i{display:block;height:100%;background:var(--pine);transition:width .4s}
+.cm-rel{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem}
+.cm-rel .chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.2rem .7rem .2rem .25rem;font-size:.84rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--ochre)}
+.cm-rel .chip i{font-style:normal;font-size:.68rem;font-weight:700;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--pine);color:var(--surface)}
+.cm-nav{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem;font-size:.84rem;color:var(--muted)}
+.cm-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem}
+.cm-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--mist);padding-bottom:.4rem;margin-bottom:.7rem}
+.cm-head span{font-family:var(--serif);font-weight:700;color:var(--ochre);font-size:1.05rem}
+.cm-head small{color:var(--muted)}
+.cm-line{display:flex;gap:.7rem;margin:.6rem 0}
+.av{font-style:normal;flex:0 0 38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:700;color:#fff}
+.av-c{background:#6E64A8}.av-b{background:#1F4D45}.av-d{background:#C9861A}
+.cm-line b{font-size:.92rem}.cm-line small{color:var(--muted);margin-left:.4rem;font-size:.78rem}
+.cm-line p{margin:.15rem 0 0;background:var(--paper);border-radius:0 10px 10px 10px;padding:.5rem .7rem}
+.cm-line p.act{background:none;font-style:italic;color:var(--muted);padding:.15rem 0}
+.cm-narr{font-style:italic;color:var(--muted);border-left:3px solid var(--line);padding-left:.7rem}
+.cm-q{font-weight:700;margin:1rem 0 .5rem}
+.cm-opts{display:grid;gap:.45rem}
+.cm-opt{text-align:left;display:flex;gap:.7rem;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:.65rem .8rem;cursor:pointer;font-size:.95rem;color:var(--ink)}
+.cm-opt:hover{border-color:var(--pine);background:var(--ok-soft)}
+.cm-opt b{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--mist);color:var(--pine);font-family:var(--serif)}
+.cm-chosen{background:var(--mist);border-radius:10px;padding:.6rem .8rem;margin:.8rem 0}
+.cm-chosen p{margin:.2rem 0 0}
+.cm-coach{border-radius:10px;padding:.6rem .8rem;margin:.8rem 0;border-left:4px solid}
+.cm-coach p{margin:.2rem 0 0}
+.cm-coach.good{background:var(--ok-soft);border-color:var(--ok)}.cm-coach.good b{color:var(--ok)}
+.cm-coach.mixed{background:var(--ochre-soft);border-color:var(--ochre)}.cm-coach.mixed b{color:var(--ochre)}
+.cm-coach.risky{background:var(--warn-soft);border-color:var(--warn)}.cm-coach.risky b{color:var(--warn)}
+.cm-j{display:block;font-weight:600;font-size:.88rem;margin-top:.6rem}
+.cm-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.8rem}
+ol.kit{padding-left:1.4rem}ol.kit li{margin:.35rem 0}
+@media (max-width:640px){.cm-gauges{grid-template-columns:1fr}}
+
+/* ---------- toasts ---------- */
+#toasts{position:fixed;bottom:1rem;right:1rem;display:grid;gap:.5rem;z-index:50;max-width:min(380px,calc(100vw - 2rem))}
+.toast{background:var(--ink);color:var(--paper);padding:.75rem 1rem;border-radius:10px;font-size:.92rem;box-shadow:0 6px 24px rgba(0,0,0,.25);animation:tin .25s ease-out}
+.toast.badge-toast{background:var(--lav);color:#fff}
+.toast.err{background:var(--warn);color:#fff}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .step-grid{grid-template-columns:1fr}
+  .coach{position:static;order:-1}
+  .coach-body{max-height:360px}
+}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr}
+  #side{position:fixed;inset:0 auto 0 0;width:min(320px,88vw);z-index:40;transform:translateX(-102%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  #side.open{transform:none}
+  .topbar{display:flex;align-items:center;gap:.6rem;position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line);padding:.55rem .8rem}
+  .topbar .t{font-family:var(--serif);font-weight:700;color:var(--pine);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+  #main{padding-top:1.2rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{#side,.topbar,.coach,.step-nav,#toasts{display:none!important}#app{display:block}}
+</style>
+</head>
+<body>
+<section id="boot">
+  <div class="boot-card">
+    <svg class="boot-ridge" viewBox="0 0 720 140" aria-hidden="true">
+      <path d="M0 120 L70 78 L110 96 L190 34 L250 82 L300 60 L380 104 L450 40 L520 88 L585 58 L640 92 L720 70 L720 140 L0 140 Z" fill="currentColor" opacity=".10"/>
+      <path d="M0 120 L70 78 L110 96 L190 34 L250 82 L300 60 L380 104 L450 40 L520 88 L585 58 L640 92 L720 70" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30 132 C150 128 170 110 260 112 S420 126 470 100 S600 76 690 52" fill="none" stroke="#C9861A" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <g fill="#C9861A"><circle cx="30" cy="132" r="6"/><circle cx="168" cy="117" r="5"/><circle cx="330" cy="117" r="5"/><circle cx="470" cy="100" r="5"/><circle cx="590" cy="74" r="5"/></g>
+      <g transform="translate(690 52)"><line x1="0" y1="0" x2="0" y2="-34" stroke="currentColor" stroke-width="2.5"/><path d="M0 -34 L22 -27 L0 -20 Z" fill="#C9861A"/></g>
+    </svg>
+    <p class="boot-kicker">Jeu Création d’entreprise</p>
+    <h1>Défendez votre projet devant un financeur</h1>
+    <p class="lede">Préparez votre passage devant un comité de prêt d’honneur avec un banquier : vos chiffres par cœur, un pitch de cinq minutes, vos réponses aux questions difficiles, puis un comité simulé qui réagit à chacune de vos réponses. Entraînez-vous ensuite en binôme et repartez avec votre dossier de préparation en Word.</p>
+    <ol class="boot-steps">
+      <li><strong>Jury</strong>Ce qu’il évalue, les 5 C</li>
+      <li><strong>Argumentaire</strong>Antisèche, pitch, support</li>
+      <li><strong>Points faibles</strong>Parades et preuves</li>
+      <li><strong>Questions</strong>30 questions de comité</li>
+      <li><strong>Comité</strong>Simulation interactive</li>
+      <li><strong>Binôme</strong>Kit jury, grille, progression</li>
+    </ol>
+    <div class="boot-actions">
+      <button type="button" class="btn primary" id="bStart">Commencer mon projet</button>
+      <button type="button" class="btn" id="bRestore">Reprendre un brouillon (.json)</button>
+      <button type="button" class="btn" id="bDocx">Démarrer avec mon business plan (Word)</button>
+      <button type="button" class="btn ghost" id="bExample">Découvrir l’exemple complet</button>
+    </div>
+    <p class="boot-note"><a href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener">Consulter le cours complet (diaporama et ressources)</a></p>
+    <p class="boot-note">Rien n’est enregistré automatiquement. Utilisez « Enregistrer un brouillon » pour sauvegarder votre travail dans un fichier, puis « Reprendre un brouillon » pour continuer plus tard, sur cet ordinateur ou un autre.</p>
+  </div>
+</section>
+<div id="bootFoot"><footer class="site-foot">
+  <div class="sf-who"><strong>Pierrick Frottier</strong><span>Formateur indépendant en marketing, digital et création d’entreprise</span></div>
+  <div class="sf-links">
+    <a href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener" class="sf-course">Ouvrir le cours complet</a>
+    <a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a>
+    <a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="tel:+33631795936">06 31 79 59 36</a>
+    <a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>
+  </div>
+</footer></div>
+<div id="shell" class="hidden">
+  <div class="topbar"><button type="button" class="btn ghost" id="menuBtn" aria-label="Ouvrir le sommaire">☰ Sommaire</button><span class="t" id="topt"></span></div>
+  <div id="app">
+    <nav id="side" aria-label="Sommaire du parcours"></nav>
+    <div class="main-col"><main id="main"></main><footer class="site-foot">
+  <div class="sf-who"><strong>Pierrick Frottier</strong><span>Formateur indépendant en marketing, digital et création d’entreprise</span></div>
+  <div class="sf-links">
+    <a href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener" class="sf-course">Ouvrir le cours complet</a>
+    <a href="https://pierrickfrottier.fr" target="_blank" rel="noopener">pierrickfrottier.fr</a>
+    <a href="https://www.linkedin.com/in/pierrick-frottier/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="tel:+33631795936">06 31 79 59 36</a>
+    <a href="mailto:pierrick.frottier.pro@gmail.com">pierrick.frottier.pro@gmail.com</a>
+  </div>
+</footer></div>
+  </div>
+  <div id="scrim" class="hidden"></div>
+</div>
+<div id="toasts" role="status" aria-live="polite"></div>
+<div id="tip" role="tooltip" hidden></div>
+<div id="leave" class="hidden" role="dialog" aria-modal="true" aria-labelledby="leaveT">
+  <div class="leave-card">
+    <h2 id="leaveT">Avant de partir, enregistrez votre brouillon</h2>
+    <p>Rien n’est sauvegardé automatiquement. Si vous fermez cette page maintenant, les modifications faites depuis votre dernier brouillon seront perdues.</p>
+    <div class="leave-actions">
+      <button type="button" class="btn primary" id="leaveSave">Enregistrer mon brouillon</button>
+      <button type="button" class="btn" id="leaveStay">Continuer sans enregistrer</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<input type="file" id="fileImp" accept=".json,application/json" hidden>
+<input type="file" id="fileDocx" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+<script>/* ==========================================================
+   MISSION « DÉFENDRE SON PROJET DEVANT UN FINANCEUR »
+   Jeu Création d'entreprise – fil rouge : La Roulotte Gourmande (fictif)
+   Comité simulé : prêt d'honneur avec un banquier (comité mixte)
+   ========================================================== */
+
+const APP = {
+  id: 'comite-financeur',
+  docTitle: 'Défendre son projet',
+  docSub: 'Ma préparation au comité de financement',
+  slugPrefix: 'preparation_comite',
+  exportTitle: 'Ma préparation au comité en Word',
+  exportText: 'Fiche des chiffres clés, pitch, plan du support, réponses préparées, points faibles et parades, compte rendu du comité simulé, grille du binôme, plan de progression et check-list. Le kit jury est en annexe pour votre binôme.',
+  nextMission: { title: 'Le jour J', text: 'Relisez votre antisèche la veille, arrivez en avance, et après le comité envoyez un message de remerciement à votre chargé d’accompagnement. Si des conditions vous sont posées, notez-les dans votre plan d’action et levez-les une par une.' }
+};
+
+const CHAPTERS = [
+  { id: 'c0', n: 0, title: 'Point de départ', time: '10 min' },
+  { id: 'c1', n: 1, title: 'Comprendre son jury', time: '20 min' },
+  { id: 'c2', n: 2, title: 'Préparer son argumentaire', time: '35 min' },
+  { id: 'c3', n: 3, title: 'Anticiper les questions', time: '30 min' },
+  { id: 'c4', n: 4, title: 'Le comité', time: '45 min' },
+  { id: 'c5', n: 5, title: 'Entraînement en binôme', time: '30 min' },
+  { id: 'c6', n: 6, title: 'Débriefing et progression', time: '20 min' }
+];
+
+/* ---------- utilitaires ---------- */
+const N = v => { if (v == null || String(v).trim() === '') return NaN; return parseFloat(String(v).replace(/[\s\u00a0\u202f]/g, '').replace('−', '-').replace(',', '.')); };
+const F = (n, d = 0) => (n == null || isNaN(n) || !isFinite(n)) ? '–' : n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const E = n => F(n) + ' €';
+const filledV = v => v != null && String(v).trim() !== '';
+const rowsOf = (v, id) => Array.isArray(v[id]) ? v[id] : [];
+const STATUTS = ['Micro-entreprise', 'Entreprise individuelle au réel', 'EURL ou SARL', 'SASU ou SAS'];
+
+/* ---------- les 10 chiffres clés ---------- */
+const KF = [
+  { id: 'kf_besoin', l: 'Besoin de financement total (€)', ph: 'Ex. 49830', exp: 'Tout ce qu’il faut réunir pour démarrer : investissements, frais, stock et trésorerie de départ.' },
+  { id: 'kf_apport', l: 'Apports (personnel, prêt d’honneur, aides) (€)', ph: 'Ex. 20000', exp: 'Ce que vous mettez vous-même dans le projet, prêt d’honneur compris : c’est votre engagement.' },
+  { id: 'kf_ph', l: 'Prêt d’honneur demandé (€)', ph: 'Ex. 8000', exp: 'Prêt personnel à taux zéro, sans garantie, qui renforce vos apports.' },
+  { id: 'kf_banque', l: 'Prêt bancaire demandé (€)', ph: 'Ex. 30000', exp: 'Dette de l’entreprise, qui finance vos investissements.' },
+  { id: 'kf_ca1', l: 'Chiffre d’affaires année 1 (€ HT)', ph: 'Ex. 75700', exp: 'Ce que vous prévoyez de facturer la première année, montée en charge comprise.' },
+  { id: 'kf_ca3', l: 'Chiffre d’affaires année 3 (€ HT)', ph: 'Ex. 118600', exp: 'Votre rythme de croisière, à justifier par la croissance des volumes.' },
+  { id: 'kf_rn3', l: 'Résultat net année 3 (€)', ph: 'Ex. 12362', exp: 'Ce que l’entreprise gagne une fois tout payé, votre rémunération comprise.' },
+  { id: 'kf_ms', l: 'Marge de sécurité année 2 (%)', ph: 'Ex. 13', exp: 'De combien vos ventes peuvent baisser avant que l’entreprise perde de l’argent.' },
+  { id: 'kf_treso', l: 'Trésorerie la plus basse en année 1 (€)', ph: 'Ex. 2562', exp: 'Le point bas de votre compte : il doit rester positif.' },
+  { id: 'kf_rem2', l: 'Rémunération nette mensuelle année 2 (€)', ph: 'Ex. 1900', exp: 'Ce que vous vous versez : le projet doit vous faire vivre.' }
+];
+function K(v) {
+  const k = {};
+  KF.forEach(x => { const n = N(v[x.id]); k[x.id.slice(3)] = isNaN(n) ? null : n; });
+  k.nom = v.p_nom || 'votre projet';
+  k.apct = (k.apport != null && k.besoin) ? k.apport / k.besoin * 100 : null;
+  k.levier = (k.ph && k.banque) ? k.banque / k.ph : null;
+  return k;
+}
+const kOr = (x, txt, alt) => x != null ? txt : alt;
+
+/* ==========================================================
+   IMPORT DU BUSINESS PLAN (Word exporté par la mission Business plan)
+   ========================================================== */
+function mapBusinessPlan(D) {
+  const out = {}, num = s => { const m = String(s || '').replace(/[\u00a0\u202f]/g, ' ').match(/−?-?\s?\d[\d\s]*(?:,\d+)?/); return m ? String(N(m[0].replace(/\s/g, ''))) : ''; };
+  const set = (k, val) => { if (val != null && String(val).trim() !== '' && String(val) !== 'NaN') out[k] = String(val).trim(); };
+  set('p_nom', D.text('Nom de l’entreprise ou du projet'));
+  const rep = D.row('Statut juridique'); if (rep) set('kf_statut', STATUTS.find(s => rep[1] && rep[1].includes(s.split(' ')[0])) || '');
+  const dt = D.row('Démarrage visé'); if (dt) set('kf_date', dt[1]);
+  const b = D.row('Besoins de démarrage') || D.row('Total des besoins'); if (b) set('kf_besoin', num(b[1]));
+  const a = D.row('Apports') || D.row('Apports (personnels, prêt d’honneur, aides…)'); if (a) set('kf_apport', num(a[1]));
+  const em = D.row('Emprunts bancaires'); if (em) set('kf_banque', num(em[1]));
+  const ph = D.row('Prêt d’honneur'); if (ph) set('kf_ph', num(ph[ph.length - 1]));
+  const ca = D.row('Chiffre d’affaires HT'); if (ca) { set('kf_ca1', num(ca[1])); set('kf_ca3', num(ca[3])); }
+  const rn = D.row('Résultat net'); if (rn) set('kf_rn3', num(rn[3]));
+  const rem = D.row('Rémunération nette du dirigeant'); if (rem && num(rem[2])) set('kf_rem2', String(Math.round(N(num(rem[2])) / 12)));
+  const ms = D.rowStart('Marge de sécurité (année 2)'); if (ms) set('kf_ms', num(ms[1]));
+  const tr = D.rowStart('Trésorerie de l’année 1'); if (tr) set('kf_treso', num(tr[1]));
+  const dec = D.para('Décision du porteur :') || D.para('Verdict automatique :');
+  if (dec) { const v = ['No go en l’état', 'Go sous conditions', 'Go'].find(x => dec.includes(x)); if (v) set('kf_verdict', v); }
+  set('pc_court', D.text('Mon pitch rédigé'));
+  // points faibles : indicateurs non OK + risques
+  const fw = [];
+  const diag = D.tableByHead('Indicateur');
+  if (diag) diag.slice(1).forEach(r => { if (r[2] && !/^OK/i.test(r[2].trim())) fw.push({ f: `${r[0]} : ${r[1]} (${r[2]})`, r: '', p: '' }); });
+  const risk = D.tableByHead('Risque');
+  if (risk) risk.slice(1).forEach(r => { if (r[0] && r[0] !== '–') fw.push({ f: r[0], r: r[3] && r[3] !== '–' ? r[3] : '', p: r[4] && r[4] !== '–' ? r[4] : '' }); });
+  if (fw.length) out.fb_tab = fw;
+  return out;
+}
+
+/* ==========================================================
+   COMITÉ SIMULÉ
+   ========================================================== */
+const CAST = {
+  c: { n: 'Sophie Lambert', r: 'chargée d’accompagnement de la plateforme', i: 'SL' },
+  b: { n: 'Julien Mercier', r: 'conseiller bancaire professionnel', i: 'JM' },
+  d: { n: 'Hélène Barral', r: 'dirigeante de PME, bénévole au comité', i: 'HB' }
+};
+const G0 = { cred: 3, sol: 3, mai: 3 }, T0 = { c: 1, b: 1, d: 1 };
+const GL = { cred: 'Crédibilité du porteur', sol: 'Solidité du dossier', mai: 'Maîtrise de l’échange' };
+
+const SC = [
+  { id: 'q1', ph: 'Accueil', place: 'Salle du comité, 18 h 05', lines: k => [
+      ['c', `Bonsoir, et bienvenue. Nous sommes ravis de vous recevoir. Vous avez environ dix minutes pour présenter ${k.nom}, puis le comité vous posera ses questions.`],
+      ['b', 'Allez-y, nous vous écoutons.']],
+    q: 'Comment ouvrez-vous votre présentation ?',
+    o: [
+      { t: 'Je me présente longuement, mon parcours depuis le lycée, puis j’arrive au projet.', e: { cred: -1, mai: -1 }, tr: { d: -1 }, r: { d: 'Elle regarde discrètement sa montre.' }, tone: 'risky', coach: 'Le jury a lu votre dossier : il attend le projet. Votre parcours ne compte que s’il prouve votre légitimité, en une ou deux phrases.' },
+      { t: 'J’ouvre sur le problème de mes clients, avec un chiffre de mon enquête, puis je dis en une phrase ce que je propose.', e: { cred: 2, mai: 1 }, tr: { d: 1, c: 1 }, r: { d: 'Elle pose son stylo et lève les yeux vers vous.', c: 'Elle vous adresse un petit signe encourageant.' }, tone: 'good', coach: 'Une accroche centrée sur le client, chiffrée, capte l’attention dès les premières secondes. C’est la meilleure entrée en matière.' },
+      { t: 'Je préviens que je suis très stressé et que je risque de bafouiller.', e: { mai: -1 }, tr: { c: 0 }, r: { c: '« Prenez votre temps, tout va bien. »' }, tone: 'mixed', coach: 'Le jury est bienveillant, mais annoncer son stress le met au centre. Respirez, et commencez par une phrase que vous connaissez par cœur.' },
+      { t: 'J’attaque directement par mon tableau de financement.', e: { sol: 1, cred: -1 }, tr: { b: 1, d: -1 }, r: { b: 'Il hoche la tête, intéressé.', d: '« Et qu’est-ce que vous vendez, au juste ? »' }, tone: 'mixed', coach: 'Les chiffres viennent après le projet : sans contexte, ils ne veulent rien dire pour une partie du jury.' }
+    ] },
+  { id: 'q2', ph: 'Présentation', place: 'Huit minutes plus tard', lines: k => [
+      ['p', 'Vous êtes encore en train de détailler votre étude de marché. Sophie Lambert vous fait signe : il reste deux minutes.']],
+    q: 'Que faites-vous ?',
+    o: [
+      { t: 'Je continue sur le marché, c’est la partie la plus importante.', e: { mai: -2, sol: -1 }, tr: { c: -1, b: -1 }, r: { b: '« Nous n’aurons pas vu vos chiffres. »' }, tone: 'risky', coach: 'Dépasser son temps est l’erreur la plus fréquente. Le jury retiendra surtout que vous ne gérez pas votre temps.' },
+      { t: 'Je demande deux ou trois minutes de plus.', e: { mai: -1 }, tr: { c: -1 }, r: { c: '« Malheureusement, plusieurs porteurs passent après vous. »' }, tone: 'mixed', coach: 'Le temps est fixé pour tous. Prévoyez une version courte de chaque partie pour pouvoir accélérer.' },
+      { t: 'Je saute aux chiffres clés et à ma demande de financement, en trois phrases.', e: { mai: 2, sol: 1 }, tr: { c: 1, b: 1 }, r: { b: 'Il note vos montants.', c: 'Elle sourit : le timing est tenu.' }, tone: 'good', coach: 'Savoir couper est une compétence : votre demande et vos chiffres clés doivent toujours être dits, quoi qu’il arrive.' }
+    ] },
+  { id: 'q3', ph: 'Le porteur', place: 'Questions du comité', lines: k => [
+      ['d', 'Merci. Une première question, très directe : pourquoi vous ? Qu’est-ce qui vous rend capable de réussir ce projet ?']],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'C’est ma passion depuis toujours, j’y mettrai toute mon énergie.', e: { cred: -1 }, tr: { d: -1 }, r: { d: '« Tous les créateurs sont passionnés. Qu’avez-vous de plus ? »' }, tone: 'risky', coach: 'La motivation ne suffit pas : le jury cherche des preuves de compétence.' },
+      { t: 'Je cite mon expérience concrète du métier, ce que j’ai déjà fait de proche, et comment je compense ce qui me manque (formation, expert-comptable).', e: { cred: 2 }, tr: { d: 1, b: 1 }, r: { d: '« Vous connaissez vos limites, c’est rassurant. »' }, tone: 'good', coach: 'Expérience prouvée + lucidité sur ses manques + solution pour les combler : c’est exactement ce que le comité veut entendre.' },
+      { t: 'Je n’ai pas d’expérience, mais je me formerai sur le tas.', e: { cred: -2 }, tr: { d: -1, b: -1 }, r: { b: 'Il fronce les sourcils.' }, tone: 'risky', coach: 'Sans expérience, montrez ce que vous avez déjà fait : formation, stage, test, mentor. « Sur le tas » inquiète un financeur.' },
+      { t: 'J’ai travaillé chez un concurrent, je connais leurs faiblesses.', e: { cred: 1 }, tr: { d: 0 }, r: { d: '« Intéressant. Et vos propres compétences ? »' }, tone: 'mixed', coach: 'C’est un atout, mais complétez par vos compétences personnelles et votre réseau.' }
+    ] },
+  { id: 'q4', ph: 'Le marché', place: 'Questions du comité', lines: k => [
+      ['b', 'Vous dites que les clients sont là. Qu’est-ce qui vous permet de l’affirmer ?']],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'Tout le monde autour de moi trouve l’idée géniale.', e: { sol: -2 }, tr: { b: -1 }, r: { b: '« Votre entourage ne sera pas votre clientèle. »' }, tone: 'risky', coach: 'L’avis des proches n’est pas une preuve : ils sont bienveillants.' },
+      { t: 'Je cite les chiffres nationaux du secteur, qui sont en croissance.', e: { sol: 0, cred: 0 }, tr: { b: 0 }, r: { b: '« Et sur votre zone ? »' }, tone: 'mixed', coach: 'Le national donne le contexte, mais le comité veut la preuve locale : enquête, intentions, précommandes.' },
+      { t: 'Je donne les résultats de mon enquête (nombre de répondants, intention d’achat, prix accepté) et mes premiers engagements concrets.', e: { sol: 2, cred: 1 }, tr: { b: 1, d: 1 }, r: { b: 'Il note le nombre de répondants.', d: '« Vous êtes allé sur le terrain, bravo. »' }, tone: 'good', coach: 'Des preuves terrain chiffrées valent plus que n’importe quel rapport sectoriel.' }
+    ] },
+  { id: 'q5', ph: 'La concurrence', place: 'Questions du comité', lines: k => [
+      ['d', 'Si votre idée marche, qu’est-ce qui empêche un concurrent installé de faire la même chose demain ?']],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'Personne ne fait ce que je fais, je n’ai pas de concurrent.', e: { cred: -2, sol: -1 }, tr: { d: -2 }, r: { d: '« Sans concurrent, il n’y a souvent pas de marché. »' }, tone: 'risky', coach: 'Dire qu’on n’a pas de concurrent est un signal d’alarme pour un jury : il y a toujours des alternatives.' },
+      { t: 'Rien, mais je serai le premier et je ferai mieux.', e: { cred: -1 }, tr: { d: -1 }, r: { d: 'Elle reste dubitative.' }, tone: 'mixed', coach: 'Être premier ne protège pas. Le jury veut savoir ce qui sera difficile à copier.' },
+      { t: 'Je reconnais qu’on peut me copier, et j’explique ce qui est difficile à reproduire : mon savoir-faire, mes partenaires, la relation client que je construis.', e: { cred: 2, sol: 1 }, tr: { d: 2 }, r: { d: '« Lucide et argumenté. Très bien. »' }, tone: 'good', coach: 'Admettre le risque puis montrer son avantage durable est la réponse la plus crédible.' }
+    ] },
+  { id: 'q6', ph: 'Les chiffres', place: 'Questions du comité', lines: k => [
+      ['b', kOr(k.ca1, `Votre chiffre d’affaires de première année est de ${E(k.ca1)}. Comment l’avez-vous construit ?`, 'Votre chiffre d’affaires de première année, comment l’avez-vous construit ?')]],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'C’est l’objectif que je me suis fixé pour bien vivre.', e: { sol: -2 }, tr: { b: -2 }, r: { b: '« Un objectif n’est pas une prévision. »' }, tone: 'risky', coach: 'Le CA se démontre : capacité, part de marché, intentions d’achat. Un souhait ne convainc pas.' },
+      { t: 'C’est mon expert-comptable qui a fait les calculs.', e: { sol: -1, cred: -2 }, tr: { b: -1, c: -1 }, r: { c: 'Elle note quelque chose, l’air embarrassé.' }, tone: 'risky', coach: 'Le comité finance un porteur qui maîtrise ses chiffres. Même aidé, vous devez pouvoir les expliquer.' },
+      { t: 'Je pars de ma capacité (ventes par jour × jours ouvrés), je la croise avec ma part de marché visée, et je retiens l’hypothèse la plus prudente.', e: { sol: 2, cred: 1 }, tr: { b: 2 }, r: { b: '« Deux méthodes croisées : c’est solide. »' }, tone: 'good', coach: 'Croiser au moins deux méthodes et retenir la plus prudente, c’est la démarche attendue.' },
+      { t: 'J’ai pris la moyenne du secteur.', e: { sol: 0 }, tr: { b: 0 }, r: { b: '« Une moyenne nationale, pour une entreprise qui démarre ? »' }, tone: 'mixed', coach: 'Un créateur démarre rarement à la moyenne du secteur. Partez de votre capacité réelle.' }
+    ] },
+  { id: 'q6b', ph: 'Les chiffres', place: 'Le banquier insiste', cond: st => st.g.sol <= 4, lines: k => [
+      ['b', 'Je reprends plus simplement : combien de ventes par jour cela représente-t-il, concrètement ?']],
+    q: 'Le banquier creuse. Votre réponse ?',
+    o: [
+      { t: 'Je donne le nombre de ventes par jour et je le compare à ma capacité et à ce que font les concurrents.', e: { sol: 2, mai: 1 }, tr: { b: 1 }, r: { b: '« D’accord, là je comprends. »' }, tone: 'good', coach: 'Ramener un chiffre annuel à un volume par jour le rend concret et vérifiable.' },
+      { t: 'Je ne l’ai pas calculé, mais ça me semble atteignable.', e: { sol: -2, mai: -1 }, tr: { b: -1 }, r: { b: 'Il croise les bras.' }, tone: 'risky', coach: 'Calculez toujours vos ventes par jour ou par semaine : c’est la première question d’un banquier.' },
+      { t: 'Je dis que je vérifierai et que je lui enverrai le détail après le comité.', e: { mai: 1 }, tr: { b: 0 }, r: { b: '« Entendu, mais c’est un point central. »' }, tone: 'mixed', coach: 'Dire « je vérifie » est honnête, mais sur un chiffre aussi central, le comité attend que vous le sachiez.' }
+    ] },
+  { id: 'q7', ph: 'La résistance', place: 'Questions du comité', lines: k => [
+      ['b', kOr(k.ms, `Votre marge de sécurité en année 2 est de ${F(k.ms)} %. Que se passe-t-il si vos ventes sont 15 % en dessous de vos prévisions ?`, 'Que se passe-t-il si vos ventes sont 15 % en dessous de vos prévisions ?')]],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'Ça n’arrivera pas, mes prévisions sont prudentes.', e: { cred: -1, sol: -1 }, tr: { b: -2 }, r: { b: '« Tous les créateurs me disent ça. »' }, tone: 'risky', coach: 'Nier le risque fait perdre la confiance. Le comité veut voir que vous l’avez anticipé.' },
+      { t: 'J’ai fait le test : je sais à partir de quelle baisse je perds de l’argent, et j’ai identifié mes leviers (charges réductibles, rémunération ajustable, offre complémentaire).', e: { sol: 2, cred: 2 }, tr: { b: 2, d: 1 }, r: { b: '« Vous avez fait un test de résistance ? Excellent. »', d: 'Elle approuve d’un signe de tête.' }, tone: 'good', coach: 'Connaître son point de rupture et ses leviers montre une vraie maîtrise du projet.' },
+      { t: 'Je baisserai ma rémunération.', e: { sol: 1, cred: 0 }, tr: { b: 0, c: -1 }, r: { c: '« Et vous vivrez de quoi ? »' }, tone: 'mixed', coach: 'C’est un levier, mais pas une stratégie : citez aussi vos leviers sur les charges et les ventes.' }
+    ] },
+  { id: 'q8', ph: 'Le porteur', place: 'Questions du comité', lines: k => [
+      ['c', kOr(k.rem2, `Vous prévoyez de vous verser ${E(k.rem2)} par mois en année 2. Et la première année, comment vivez-vous ?`, 'Comment allez-vous vivre pendant la première année, le temps que l’activité démarre ?')]],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'Je verrai bien, je suis prêt à me serrer la ceinture.', e: { cred: -1, sol: -1 }, tr: { c: -2 }, r: { c: '« C’est justement ce qui nous inquiète. »' }, tone: 'risky', coach: 'Un porteur sans revenus suffisants est un porteur sous pression qui risque d’abandonner. Le comité y est très attentif.' },
+      { t: 'Je présente mon besoin personnel mensuel, ce que couvrent ma rémunération, les revenus du foyer ou mes droits au chômage, et mon épargne de précaution.', e: { cred: 2, sol: 1 }, tr: { c: 2, b: 1 }, r: { c: '« Vous avez sécurisé votre situation personnelle, c’est important. »' }, tone: 'good', coach: 'Montrer que votre vie personnelle tient pendant la montée en charge rassure autant que les chiffres de l’entreprise.' },
+      { t: 'Je garde un emploi à temps partiel la première année.', e: { cred: 0, sol: 1 }, tr: { c: 1, d: -1 }, r: { d: '« Aurez-vous assez de temps pour l’entreprise ? »' }, tone: 'mixed', coach: 'C’est une sécurité réelle, à condition de montrer que l’activité reste compatible avec ce temps disponible.' }
+    ] },
+  { id: 'q9', ph: 'Le financement', place: 'Questions du comité', lines: k => [
+      ['b', kOr(k.apct, `Vos apports représentent ${F(k.apct)} % du besoin total de ${E(k.besoin)}. Pourquoi ce montage, et quelles garanties proposez-vous ?`, 'Comment avez-vous construit votre plan de financement, et quelles garanties proposez-vous ?')]],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'J’explique la composition de mes apports, l’effet de levier du prêt d’honneur sur le prêt bancaire, et je dis que je suis prêt à étudier une garantie avec la banque.', e: { sol: 2, cred: 1 }, tr: { b: 2, c: 1 }, r: { b: '« C’est clair. Nous pourrons regarder une garantie ensemble. »' }, tone: 'good', coach: 'Un montage expliqué, avec une ouverture sur les garanties, montre que vous comprenez la logique du financeur.' },
+      { t: 'Je n’ai pas plus d’apport, c’est à vous de compléter.', e: { cred: -2 }, tr: { b: -2, c: -1 }, r: { b: 'Le ton se refroidit.' }, tone: 'risky', coach: 'Le financement est un partenariat : présentez votre effort et ce que vous attendez, sans exiger.' },
+      { t: 'Je propose de mettre ma maison en garantie.', e: { sol: 1, cred: -1 }, tr: { c: -1, b: 1 }, r: { c: '« Attention à ne pas mettre en jeu votre patrimoine personnel trop vite. »' }, tone: 'mixed', coach: 'Engager son patrimoine personnel n’est pas anodin : parlez-en d’abord avec votre chargé d’accompagnement.' }
+    ] },
+  { id: 'q10', ph: 'Les risques', place: 'Questions du comité', lines: k => [
+      ['d', 'Quel est, selon vous, le principal risque de votre projet ?']],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'Je n’en vois pas vraiment, j’ai tout prévu.', e: { cred: -2 }, tr: { d: -2, b: -1 }, r: { d: '« Il y a toujours un risque. »' }, tone: 'risky', coach: 'Un porteur qui ne voit aucun risque inquiète : il ne saura pas réagir le jour où il arrive.' },
+      { t: 'J’en cite six ou sept, pour montrer que j’ai réfléchi.', e: { cred: 0, mai: -1 }, tr: { d: 0 }, r: { d: '« Et lequel vous inquiète le plus ? »' }, tone: 'mixed', coach: 'Une liste sans hiérarchie ni parade donne une impression de fragilité. Choisissez le principal.' },
+      { t: 'Je nomme le risque principal, sa parade concrète et l’indicateur que je suivrai pour le détecter tôt.', e: { cred: 2, sol: 1 }, tr: { d: 2, b: 1 }, r: { d: '« Exactement ce que je voulais entendre. »' }, tone: 'good', coach: 'Risque + parade + indicateur de suivi : la réponse type d’un dirigeant lucide.' }
+    ] },
+  { id: 'q10b', ph: 'Le porteur', place: 'Hélène Barral se penche vers vous', cond: st => st.g.cred <= 5, lines: k => [
+      ['d', 'Je vais être franche : je ne suis pas encore convaincue. Qu’est-ce qui vous fera tenir les jours difficiles ?']],
+    q: 'Une question de conviction. Votre réponse ?',
+    o: [
+      { t: 'Je parle de mon entourage, de mon accompagnement et d’un moment concret où j’ai déjà surmonté une difficulté.', e: { cred: 2, mai: 1 }, tr: { d: 2 }, r: { d: '« Merci pour cette sincérité. »' }, tone: 'good', coach: 'Une réponse sincère, appuyée sur un fait vécu et sur votre réseau de soutien, peut renverser une impression.' },
+      { t: 'Je réponds que je n’ai pas le choix, j’ai déjà tout investi.', e: { cred: -1 }, tr: { d: -1, c: -1 }, r: { c: 'Elle semble inquiète.' }, tone: 'risky', coach: 'Sous-entendre qu’on n’a pas d’issue inquiète le comité plus qu’il ne le rassure.' },
+      { t: 'Je reste factuel : mes chiffres montrent que le projet tient.', e: { cred: 0, sol: 1 }, tr: { d: 0 }, r: { d: '« Les chiffres, oui. Mais vous ? »' }, tone: 'mixed', coach: 'La question porte sur vous, pas sur le dossier : le comité finance aussi une personne.' }
+    ] },
+  { id: 'q11', ph: 'La question piège', place: 'Questions du comité', lines: k => [
+      ['b', kOr(k.ph, `Imaginons que le comité ne vous accorde que la moitié du prêt d’honneur demandé, soit ${E(k.ph / 2)}. Que faites-vous ?`, 'Imaginons que le comité ne vous accorde que la moitié du prêt d’honneur demandé. Que faites-vous ?')]],
+    q: 'Votre réponse ?',
+    o: [
+      { t: 'Alors je ne pourrai pas me lancer.', e: { cred: -1, mai: -2 }, tr: { b: -1, c: -1 }, r: { b: '« Votre projet tient donc à un fil. »' }, tone: 'risky', coach: 'Un projet sans plan B paraît fragile. Préparez toujours une version réduite.' },
+      { t: 'J’accepte, je trouverai bien une solution.', e: { mai: -1 }, tr: { b: -1 }, r: { b: '« Laquelle ? »' }, tone: 'mixed', coach: 'Accepter sans dire comment combler l’écart montre que vous n’avez pas anticipé.' },
+      { t: 'Je présente mon plan B chiffré : réduire ou décaler un investissement, compléter par d’autres apports, et ce que cela change à mon démarrage.', e: { mai: 2, sol: 2 }, tr: { b: 2, c: 1 }, r: { b: '« Vous aviez prévu le coup. »', c: 'Elle note votre réponse avec satisfaction.' }, tone: 'good', coach: 'Avoir un plan B chiffré prouve que vous pilotez votre projet, même quand les conditions changent.' }
+    ] },
+  { id: 'q12', ph: 'Conclusion', place: 'Fin des questions', lines: k => [
+      ['c', 'Merci. Avant que le comité ne délibère, souhaitez-vous ajouter un dernier mot ?']],
+    q: 'Votre dernier mot ?',
+    o: [
+      { t: 'Non, merci, je crois avoir tout dit.', e: { mai: 0 }, tr: {}, r: { c: '« Très bien. »' }, tone: 'mixed', coach: 'Le dernier mot est la dernière impression : ne le laissez pas passer.' },
+      { t: 'Je résume mon projet en trois points, je rappelle précisément ma demande et je m’engage à tenir le comité informé.', e: { cred: 1, mai: 2 }, tr: { c: 1, d: 1, b: 1 }, r: { d: 'Elle sourit.', b: '« Merci, c’était clair. »' }, tone: 'good', coach: 'Trois points, une demande précise, un engagement : une conclusion qui reste en tête au moment de délibérer.' },
+      { t: 'Je reviens sur une question à laquelle j’ai mal répondu pour la corriger longuement.', e: { mai: -1, sol: 1 }, tr: { c: -1 }, r: { c: '« Nous avons bien noté, merci. »' }, tone: 'mixed', coach: 'Corriger une erreur est utile, mais en une phrase : ne relancez pas le débat.' }
+    ] }
+];
+
+function cmState(v) {
+  const cm = v.cm || {}, hist = Array.isArray(cm.hist) ? cm.hist : [];
+  const g = Object.assign({}, G0), t = Object.assign({}, T0);
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const st = { g, t, steps: [] };
+  let idx = 0;
+  const nextFrom = i => { for (let j = i; j < SC.length; j++) { if (!SC[j].cond || SC[j].cond(st)) return j; } return -1; };
+  let cur = nextFrom(0);
+  for (const h of hist) {
+    if (cur < 0 || SC[cur].id !== h.id) break;
+    const o = SC[cur].o[h.o];
+    Object.keys(o.e || {}).forEach(k => g[k] = clamp(g[k] + o.e[k], 0, 10));
+    Object.keys(o.tr || {}).forEach(k => t[k] = clamp(t[k] + o.tr[k], 0, 4));
+    st.steps.push({ sc: SC[cur], o, oi: h.o, j: h.j || '' });
+    idx++;
+    cur = nextFrom(cur + 1);
+  }
+  st.cur = cur < 0 ? null : SC[cur];
+  st.review = cm.review && st.steps.length && st.steps[st.steps.length - 1].sc.id === cm.review ? st.steps[st.steps.length - 1] : null;
+  st.done = !st.cur && !st.review && st.steps.length > 0;
+  st.total = g.cred + g.sol + g.mai;
+  const minT = Math.min(t.c, t.b, t.d);
+  const risky = st.steps.filter(x => x.o.tone === 'risky').length; st.risky = risky;
+  st.issue = st.total >= 22 && minT >= 3 && risky <= 1 ? 'Accord' : st.total >= 17 && minT >= 2 && risky <= 3 ? 'Accord sous conditions' : st.total >= 8 ? 'Ajournement' : 'Refus';
+  st.back = cm.back || 0; st.tries = cm.tries || 1;
+  return st;
+}
+const ISSUE = {
+  'Accord': { cls: 'ok', txt: 'Le comité vous accorde le prêt d’honneur demandé. Le banquier confirme son intérêt pour le prêt complémentaire, sous réserve de l’étude habituelle du dossier.' },
+  'Accord sous conditions': { cls: 'vig', txt: 'Le comité est favorable, sous conditions : il vous demande de lever certains points avant le décaissement.' },
+  'Ajournement': { cls: 'ko', txt: 'Le comité ajourne sa décision : le projet l’intéresse, mais il vous demande de retravailler votre dossier et de revenir le présenter.' },
+  'Refus': { cls: 'ko', txt: 'Le comité ne retient pas le projet en l’état. Les échanges ont révélé trop de fragilités dans la préparation.' }
+};
+function finalWord(who, t) {
+  const W = {
+    c: ['Je reste à vos côtés pour retravailler le dossier.', 'Il faudra mieux préparer certains points, je vous aiderai.', 'Vous avez bien progressé depuis nos premiers rendez-vous.', 'Bravo, vous avez défendu votre projet avec beaucoup de clarté.', 'Une présentation exemplaire : je suis fière de vous accompagner.'],
+    b: ['Je ne peux pas suivre en l’état.', 'Vos chiffres me posent encore question.', 'Le dossier tient, je demanderai quelques précisions.', 'Je suis prêt à étudier votre demande de prêt.', 'Un dossier solide, porté par quelqu’un qui maîtrise ses chiffres.'],
+    d: ['Je n’ai pas senti la conviction nécessaire.', 'J’ai encore des doutes sur votre capacité à tenir.', 'Vous avez le potentiel, travaillez votre assurance.', 'Vous m’avez convaincue.', 'J’aimerais vous parrainer si vous le souhaitez.']
+  };
+  return W[who][t];
+}
+
+function renderComite(v) {
+  const k = K(v), st = cmState(v);
+  const gauges = `<div class="cm-gauges">${Object.keys(GL).map(g => `<div><span>${GL[g]}</span><div class="bar"><i style="width:${st.g[g] * 10}%"></i></div><b>${st.g[g]}/10</b></div>`).join('')}</div>
+    <div class="cm-rel">${Object.keys(CAST).map(c => `<span class="chip" title="${CAST[c].n}, ${CAST[c].r}"><i>${CAST[c].i}</i>${CAST[c].n.split(' ')[0]} ${'●'.repeat(st.t[c])}${'○'.repeat(4 - st.t[c])}</span>`).join('')}</div>`;
+  const line = l => l[0] === 'p' ? `<p class="cm-narr">${l[1]}</p>` : `<div class="cm-line"><i class="av av-${l[0]}">${CAST[l[0]].i}</i><div><b>${CAST[l[0]].n}</b><small>${CAST[l[0]].r}</small><p class="${/^[«"]/.test(l[1]) || l[0] === 'c' && !/^(Elle|Il) /.test(l[1]) ? '' : /^(Elle|Il|Le ton) /.test(l[1]) ? 'act' : ''}">${l[1]}</p></div></div>`;
+  const nav = `<div class="cm-nav">${st.steps.length ? '<button type="button" class="btn small" data-gact="back">← Revenir sur ma réponse</button>' : ''}<span>Question ${Math.min(st.steps.length + (st.cur && !st.review ? 1 : 0), 99)} · ${st.steps.length} réponse${st.steps.length > 1 ? 's' : ''}</span></div>`;
+  if (!st.steps.length && !v.cm?.started) return `<div class="cm-intro"><h4>Le comité de financement</h4><p>Trois personnes vous attendent : ${Object.values(CAST).map(c => `<strong>${c.n}</strong>, ${c.r}`).join(' ; ')}. Vous allez répondre à une douzaine de questions. Vos réponses font évoluer trois jauges et la confiance de chaque membre du jury.</p><p>Choisissez la réponse la plus proche de ce que vous diriez vraiment. Vous pouvez revenir sur une réponse. Attention : le comité pardonne une hésitation, rarement plusieurs réponses risquées.</p><button type="button" class="btn primary" data-gact="start">Entrer dans la salle du comité</button></div>`;
+  if (st.review) {
+    const s = st.review, sc = s.sc;
+    return gauges + nav + `<div class="cm-card"><div class="cm-head"><span>${sc.ph}</span><small>${sc.place}</small></div>${sc.lines(k).map(line).join('')}
+      <div class="cm-chosen"><b>Votre réponse</b><p>${s.o.t}</p></div>
+      ${Object.keys(s.o.r || {}).map(c => line([c, s.o.r[c]])).join('')}
+      <div class="cm-coach ${s.o.tone}"><b>${s.o.tone === 'good' ? 'Très bonne réponse' : s.o.tone === 'mixed' ? 'Réponse à nuancer' : 'Réponse risquée'}</b><p>${s.o.coach}</p></div>
+      <label class="cm-j" for="cmj">Justifiez votre choix (facultatif)</label><textarea id="cmj" data-gj="1" rows="2" placeholder="Ce que vous diriez vraiment, avec vos mots et vos chiffres">${String(s.j || '').replace(/</g, '&lt;')}</textarea>
+      <div class="cm-actions"><button type="button" class="btn primary" data-gact="next">${st.cur ? 'Question suivante →' : 'Voir la décision du comité'}</button></div></div>`;
+  }
+  if (st.cur) {
+    const sc = st.cur;
+    return gauges + nav + `<div class="cm-card"><div class="cm-head"><span>${sc.ph}</span><small>${sc.place}</small></div>${sc.lines(k).map(line).join('')}<p class="cm-q">${sc.q}</p><div class="cm-opts">${sc.o.map((o, i) => `<button type="button" class="cm-opt" data-gact="pick" data-o="${i}"><b>${'ABCD'[i]}</b>${o.t}</button>`).join('')}</div></div>`;
+  }
+  const I = ISSUE[st.issue];
+  return gauges + `<div class="verdict ${I.cls}"><span>Décision du comité</span><b>${st.issue}</b><small>Score ${st.total}/30</small></div><p>${I.txt}</p>
+    ${Object.keys(CAST).map(c => line([c, finalWord(c, st.t[c])])).join('')}
+    <h4>Vos réponses</h4>${tblCm(st, k)}
+    <div class="cm-actions"><button type="button" class="btn small" data-gact="back">← Revenir sur ma dernière réponse</button><button type="button" class="btn" data-gact="reset">Rejouer le comité</button></div>`;
+}
+const qText = (sc, k) => { const l = sc.lines(k).find(x => x[0] !== 'p'); const t = l ? l[1] : sc.q; return t.length > 140 ? t.slice(0, 137) + '…' : t; };
+function tblCm(st, k) {
+  return `<div class="tbl-wrap"><table class="mini rep"><tr><th>Question</th><th>Votre réponse</th><th>Appréciation</th></tr>${st.steps.map(s => `<tr><td><b>${s.sc.ph}</b><br>${qText(s.sc, k)}</td><td>${'ABCD'[s.oi]}. ${s.o.t}</td><td>${s.o.tone === 'good' ? '<span class="pill ok">Très bien</span>' : s.o.tone === 'mixed' ? '<span class="pill vig">À nuancer</span>' : '<span class="pill ko">Risquée</span>'}</td></tr>`).join('')}</table></div>`;
+}
+function actComite(v, d) {
+  const cm = v.cm = v.cm || { hist: [] }; cm.hist = cm.hist || [];
+  const st = cmState(v);
+  if (d.gact === 'start') cm.started = true;
+  if (d.gact === 'pick' && st.cur && !st.review) { cm.hist.push({ id: st.cur.id, o: +d.o, j: '' }); cm.review = st.cur.id; }
+  if (d.gact === 'next') cm.review = null;
+  if (d.gact === 'back') { if (st.review) { cm.hist.pop(); cm.review = null; } else if (cm.hist.length) { const h = cm.hist[cm.hist.length - 1]; cm.review = h.id; } cm.back = (cm.back || 0) + 1; if (st.review) { /* annulation de la réponse */ } }
+  if (d.gact === 'reset') { v.cm = { hist: [], started: true, tries: (cm.tries || 1) + 1 }; }
+}
+function inputComite(v, val) {
+  const cm = v.cm || {}; if (!cm.hist || !cm.hist.length) return;
+  cm.hist[cm.hist.length - 1].j = val;
+}
+
+/* ---------- kit jury : questions personnalisées ---------- */
+function kitJury(v) {
+  const k = K(v), q = [];
+  q.push('Présentez-nous votre projet en une minute.');
+  q.push('Pourquoi vous ? Qu’est-ce qui vous rend capable de réussir ce projet ?');
+  q.push(kOr(k.ca1, `Comment avez-vous construit votre chiffre d’affaires de ${E(k.ca1)} en année 1 ? Combien de ventes par jour cela représente-t-il ?`, 'Comment avez-vous construit votre chiffre d’affaires de première année ?'));
+  if (k.ms != null && k.ms < 15) q.push(`Votre marge de sécurité n’est que de ${F(k.ms)} % en année 2. Que faites-vous si vos ventes baissent de 15 % ?`);
+  else q.push('Que se passe-t-il si vos ventes sont 15 % en dessous de vos prévisions ?');
+  if (k.apct != null && k.apct < 20) q.push(`Vos apports ne représentent que ${F(k.apct)} % du besoin. Comment comptez-vous les renforcer ?`);
+  else q.push(kOr(k.apct, `Vos apports représentent ${F(k.apct)} % du besoin : d’où vient cet argent ?`, 'D’où viennent vos apports ?'));
+  if (k.treso != null && k.treso < 3000) q.push(`Votre trésorerie descend à ${E(k.treso)} en année 1. Que faites-vous s’il y a un imprévu ce mois-là ?`);
+  else q.push('Quel est le mois le plus difficile de votre première année, et pourquoi ?');
+  q.push(kOr(k.rem2, `Vous prévoyez ${E(k.rem2)} par mois en année 2. Comment vivez-vous d’ici là ?`, 'Comment allez-vous vivre pendant la montée en charge ?'));
+  q.push('Qu’est-ce qui empêche un concurrent installé de vous copier ?');
+  q.push('Quel est le principal risque de votre projet, et comment le surveillez-vous ?');
+  q.push(kOr(k.ph, `Si le comité ne vous accorde que ${E(k.ph / 2)} au lieu de ${E(k.ph)}, que faites-vous ?`, 'Si le comité ne vous accorde que la moitié du prêt demandé, que faites-vous ?'));
+  const fw = rowsOf(v, 'fb_tab').filter(r => filledV(r.f)).slice(0, 2);
+  fw.forEach(r => q.push(`Le jury a repéré ce point : « ${r.f} ». Que répondez-vous ?`));
+  return q.slice(0, 12);
+}
+const GRILLE = ['Clarté du projet en moins de deux minutes', 'Respect du temps de présentation', 'Maîtrise des chiffres clés', 'Preuves du marché (enquête, clients)', 'Réponses courtes et précises', 'Points faibles reconnus avec leur parade', 'Posture, voix, regard', 'Demande de financement claire et chiffrée'];
+
+/* ---------- bibliothèque de questions ---------- */
+const QB = [
+  { g: 'Le porteur', items: [
+    { v: 'Pourquoi vous ? Qu’est-ce qui vous rend légitime ?', d: 'Bonne réponse : une expérience concrète, ce que vous avez déjà fait de proche, et comment vous comblez vos manques.' },
+    { v: 'Comment allez-vous vivre pendant la première année ?', d: 'Bonne réponse : votre besoin personnel chiffré, ce qui le couvre (rémunération, foyer, chômage) et votre épargne de précaution.' },
+    { v: 'Qui vous accompagne ou vous conseille ?', d: 'Bonne réponse : expert-comptable, mentor, réseau, associés, avec leur rôle précis.' },
+    { v: 'Qu’est-ce qui vous fera tenir les jours difficiles ?', d: 'Bonne réponse : sincère, appuyée sur un fait vécu et sur votre entourage.' },
+    { v: 'Êtes-vous prêt à vous consacrer entièrement au projet ?', d: 'Bonne réponse : votre organisation réelle, votre temps disponible, et le soutien de votre famille.' }] },
+  { g: 'Le marché', items: [
+    { v: 'Comment savez-vous que les clients sont là ?', d: 'Bonne réponse : les preuves terrain chiffrées (enquête, intentions, précommandes), pas l’avis des proches.' },
+    { v: 'Qui est votre client type ?', d: 'Bonne réponse : votre persona en deux phrases, fondé sur vos données.' },
+    { v: 'Combien de clients avez-vous rencontrés ?', d: 'Bonne réponse : un nombre précis et ce que vous en avez appris.' },
+    { v: 'Pourquoi cette zone géographique ?', d: 'Bonne réponse : la zone de chalandise, la population cible et la concurrence locale.' },
+    { v: 'Quelles tendances jouent pour ou contre vous ?', d: 'Bonne réponse : deux ou trois tendances sourcées et ce qu’elles changent pour vous.' }] },
+  { g: 'L’offre et la concurrence', items: [
+    { v: 'Qu’est-ce qui vous différencie de vos concurrents ?', d: 'Bonne réponse : une différence vérifiable, avec la preuve.' },
+    { v: 'Qu’est-ce qui empêche un concurrent de vous copier ?', d: 'Bonne réponse : admettre qu’on peut copier, puis montrer ce qui est difficile à reproduire.' },
+    { v: 'Pourquoi ce prix ?', d: 'Bonne réponse : coût de revient, prix des concurrents et prix accepté par vos clients dans l’enquête.' },
+    { v: 'Que ferez-vous si un concurrent baisse ses prix ?', d: 'Bonne réponse : ne pas suivre aveuglément, renforcer la valeur perçue et la fidélisation.' },
+    { v: 'Comment allez-vous trouver vos premiers clients ?', d: 'Bonne réponse : vos canaux prioritaires et vos premières actions datées.' }] },
+  { g: 'Les chiffres', items: [
+    { v: 'Comment avez-vous construit votre chiffre d’affaires ?', d: 'Bonne réponse : au moins deux méthodes croisées (capacité, part de marché, intentions) et l’hypothèse la plus prudente.' },
+    { v: 'Combien de ventes par jour ou par semaine cela représente-t-il ?', d: 'Bonne réponse : le chiffre exact, comparé à votre capacité et aux concurrents.' },
+    { v: 'Quel est votre seuil de rentabilité ?', d: 'Bonne réponse : le montant et sa traduction en ventes par mois.' },
+    { v: 'Pourquoi un résultat négatif en année 1 ?', d: 'Bonne réponse : frais de démarrage et montée en charge, puis la tendance positive chiffrée.' },
+    { v: 'Que se passe-t-il si vos ventes baissent de 15 % ?', d: 'Bonne réponse : votre point de rupture connu et vos leviers (charges, rémunération, offre).' }] },
+  { g: 'Le financement', items: [
+    { v: 'D’où viennent vos apports ?', d: 'Bonne réponse : épargne, prêt d’honneur, proches, avec les montants et les conditions.' },
+    { v: 'Pourquoi ce montant d’emprunt ?', d: 'Bonne réponse : il correspond à des investissements précis, sur une durée adaptée à leur vie.' },
+    { v: 'Quelles garanties proposez-vous ?', d: 'Bonne réponse : une ouverture vers les garanties d’organismes spécialisés, à étudier avec la banque et votre accompagnateur.' },
+    { v: 'Que faites-vous si vous n’obtenez que la moitié du financement ?', d: 'Bonne réponse : un plan B chiffré (investissement réduit ou décalé, autres apports).' },
+    { v: 'Avez-vous sollicité d’autres financements ou aides ?', d: 'Bonne réponse : la liste, l’état d’avancement de chacun, sans compter ceux qui ne sont pas acquis.' }] },
+  { g: 'Les risques', items: [
+    { v: 'Quel est le principal risque de votre projet ?', d: 'Bonne réponse : le risque principal, sa parade concrète et l’indicateur de suivi.' },
+    { v: 'Que faites-vous si vous tombez malade ?', d: 'Bonne réponse : assurances (prévoyance, perte d’exploitation) et organisation de secours.' },
+    { v: 'Quel est votre mois le plus difficile en trésorerie ?', d: 'Bonne réponse : le mois, le montant, et la solution prévue (découvert négocié, réserve).' },
+    { v: 'Quelles autorisations ou obligations restent à obtenir ?', d: 'Bonne réponse : la liste, leur échéance et votre plan si l’une est refusée.' },
+    { v: 'À quel moment sauriez-vous qu’il faut changer de stratégie ?', d: 'Bonne réponse : un indicateur et un seuil précis, suivis chaque mois.' }] }
+];
+
+/* ==========================================================
+   ÉTAPES
+   ========================================================== */
+const STEPS = [
+/* ================================================== C0 */
+{
+  id: 's0', chap: 'c0', title: 'Mes chiffres clés', time: '10 min',
+  produce: 'La fiche des dix chiffres clés de votre projet, importée de votre business plan Word ou saisie à la main. Ils personnalisent toute la mission, y compris les questions du comité.',
+  theory: [
+    { t: 'Pourquoi tout part des chiffres', b: `<p>Un comité de financement lit votre dossier avant de vous recevoir. Le jour du passage, il vérifie surtout une chose : <strong>maîtrisez-vous vos chiffres ?</strong></p><p><strong>En clair :</strong> le comité ne finance pas un dossier, il finance une personne capable de piloter son projet. Savoir répondre sans hésiter « 49 830 € de besoin, 40 % d’apports » vaut toutes les belles diapositives.</p>` },
+    { t: 'Le comité de prêt d’honneur', b: `<p>Le prêt d’honneur est un prêt personnel à taux zéro, sans garantie, accordé au créateur. Il renforce ses apports et facilite l’obtention d’un prêt bancaire.</p><p>Il est attribué par un <strong>comité</strong> composé de professionnels bénévoles (chefs d’entreprise, banquiers, experts) et de la plateforme qui vous accompagne. Vous y présentez votre projet, puis vous répondez aux questions.</p><p><em>Le format exact (durée de présentation et de questions, composition) varie selon les plateformes : renseignez-vous auprès de votre chargé d’accompagnement.</em></p>` }
+  ],
+  tips: ['Le bouton d’import lit le business plan Word exporté par la mission « Business plan ».', 'Pas de business plan Word ? Saisissez les dix chiffres à la main : c’est l’occasion de les retrouver dans votre dossier.', 'Vérifiez chaque chiffre importé : c’est vous qui le défendrez.'],
+  tools: [{ n: 'Initiative France', u: 'https://www.initiative-france.fr', d: 'Le prêt d’honneur et le réseau des plateformes.' }],
+  fields: [
+    { id: 'imp_docx', type: 'importdocx', label: 'Importer mon business plan (Word)', map: mapBusinessPlan },
+    { id: 'p_nom', type: 'text', label: 'Nom du projet', ph: 'Ex. La Roulotte Gourmande', hints: ['Tel qu’il apparaît dans votre dossier.'] },
+    { id: 'kf_statut', type: 'select', label: 'Statut juridique', options: STATUTS, hints: ['Le statut retenu dans votre business plan.'] },
+    { id: 'kf_date', type: 'text', label: 'Date de démarrage visée', ph: 'Ex. 2 mars 2027', hints: [] }
+  ].concat(KF.map(x => ({ id: x.id, type: 'number', label: x.l, ph: x.ph, hints: [x.exp] }))).concat([
+    { id: 'kf_verdict', type: 'select', label: 'Verdict de mon business plan', options: ['Go', 'Go sous conditions', 'No go en l’état'], hints: ['La décision de l’étape « Faisabilité et décision » de votre business plan.'] }
+  ])
+},
+
+/* ================================================== C1 */
+{
+  id: 's1', chap: 'c1', title: 'Ce que le jury évalue', time: '20 min',
+  produce: 'Votre auto-évaluation sur la grille du banquier (les 5 C), pour repérer vos points forts et vos zones fragiles avant le comité.',
+  theory: [
+    { t: 'Qui siège au comité', b: `<p>Dans un comité mixte, trois regards se croisent :</p><ul><li><strong>Le chargé d’accompagnement</strong> connaît votre dossier et votre parcours. Il veille à ce que le projet soit réaliste et que vous puissiez en vivre.</li><li><strong>Le banquier</strong> regarde la capacité de remboursement, la solidité des chiffres et le montage financier.</li><li><strong>Les chefs d’entreprise bénévoles</strong> jugent le porteur : sa légitimité, sa lucidité, sa capacité à tenir.</li></ul>` },
+    { t: 'Ce qu’il évalue vraiment', b: `<ol><li><strong>Le porteur avant le projet :</strong> compétences, motivation, lucidité, capacité à tenir.</li><li><strong>La cohérence :</strong> marché, offre, prix et chiffres se répondent.</li><li><strong>Le réalisme des chiffres :</strong> hypothèses prudentes et justifiées.</li><li><strong>La viabilité personnelle :</strong> le projet doit faire vivre le porteur.</li></ol><p><strong>Exemple :</strong> un projet solide porté par quelqu’un qui récite son dossier sans pouvoir répondre convainc moins qu’un projet plus modeste défendu avec précision.</p>` },
+    { t: 'La grille du banquier : les 5 C', b: `<ul><li><strong>Caractère :</strong> votre fiabilité, votre parcours, votre engagement.</li><li><strong>Capacité :</strong> l’aptitude du projet à générer de quoi rembourser (CAF, marge de sécurité).</li><li><strong>Capital :</strong> ce que vous apportez vous-même.</li><li><strong>Garanties</strong> (collateral) : ce qui protège le prêteur en cas de difficulté.</li><li><strong>Conditions :</strong> le marché, la concurrence, la conjoncture.</li></ul><p>C’est une grille classique d’analyse du crédit : passez-vous au crible avant que le banquier ne le fasse.</p>` }
+  ],
+  tips: ['Soyez sévère avec vous-même : un point fragile repéré aujourd’hui se travaille ; découvert en comité, il coûte cher.', 'Demandez à votre chargé d’accompagnement comment se déroule le comité de votre plateforme.'],
+  tools: [{ n: 'Votre chargé d’accompagnement', d: 'Format du comité, composition, durée, points d’attention.' }],
+  fields: [
+    { id: 'cc_5c', type: 'table', label: 'Mon auto-évaluation (les 5 C)', fixedRows: ['Caractère (moi, mon engagement)', 'Capacité (rentabilité, remboursement)', 'Capital (mes apports)', 'Garanties', 'Conditions (marché, concurrence)'],
+      cols: [{ k: 'f', l: 'Critère' }, { k: 'n', l: 'Ma note', type: 'select', options: ['', '1 – Fragile', '2 – À renforcer', '3 – Solide', '4 – Très solide'] }, { k: 'p', l: 'Ma preuve ou mon point d’attention' }],
+      hints: ['Capacité : appuyez-vous sur votre marge de sécurité et votre résultat.', 'Capital : comparez vos apports au repère de 20 à 30 % du besoin.'] },
+    { id: 'cc_fragile', type: 'area', rows: 2, label: 'Mon point le plus fragile', ph: 'Celui que le jury risque d’attaquer en premier', hints: ['Vous le travaillerez à l’étape « Mes points faibles ».'] }
+  ]
+},
+
+/* ================================================== C2 */
+{
+  id: 's2', chap: 'c2', title: 'Mon antisèche', time: '10 min',
+  produce: 'Les dix chiffres à connaître par cœur, avec la phrase qui les explique, et vos trois chiffres phares.',
+  theory: [
+    { t: 'Connaître ses chiffres par cœur', b: `<p>Le jour du comité, vous n’aurez pas le temps de chercher dans votre dossier. Les dix chiffres de l’antisèche doivent sortir sans hésitation, avec une phrase d’explication.</p><p><strong>Exemple :</strong> « Mon seuil de rentabilité correspond à environ 20 repas par jour ; j’en prévois 25. »</p>` },
+    { t: 'L’effet de levier', b: `<div class="formula">Effet de levier = Prêt bancaire ÷ Prêt d’honneur</div><p>Il indique combien d’euros de prêt bancaire accompagnent chaque euro de prêt d’honneur. <strong>Exemple :</strong> 30 000 € de prêt bancaire pour 8 000 € de prêt d’honneur font un levier de 3,75.</p><div class="formula">Taux d’apport = Apports ÷ Besoin total × 100</div><p>Avec 20 000 € d’apports pour 49 830 € de besoin, le taux est de 40 %.</p>` }
+  ],
+  tips: ['Imprimez l’antisèche et relisez-la la veille.', 'Arrondissez à l’oral : « environ 50 000 € » se retient mieux que « 49 830 € ».', 'Traduisez les montants annuels en volumes concrets : par jour, par semaine, par client.'],
+  tools: [],
+  fields: [
+    { id: 'as_rep', type: 'report', label: 'Mon antisèche', complete: v => KF.filter(x => filledV(v[x.id])).length >= 8, render: v => {
+      const k = K(v);
+      const rows = KF.map(x => [x.l.replace(/ \(.*\)$/, ''), filledV(v[x.id]) ? (x.id === 'kf_ms' ? F(N(v[x.id])) + ' %' : E(N(v[x.id]))) : '<span class="pill ko">À saisir</span>', x.exp]);
+      rows.push(['Taux d’apport', k.apct != null ? F(k.apct) + ' %' : '–', 'Repère des financeurs : 20 à 30 % du besoin, prêt d’honneur compris.']);
+      rows.push(['Effet de levier du prêt d’honneur', k.levier != null ? F(k.levier, 1) : '–', 'Euros de prêt bancaire obtenus pour chaque euro de prêt d’honneur.']);
+      return `<div class="tbl-wrap"><table class="mini rep"><tr><th>Chiffre</th><th>Valeur</th><th>Ce que je dis</th></tr>${rows.map(r => `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table></div>`;
+    }, doc: (s, D) => { const k = K(s.values); return D.table(['Chiffre', 'Valeur', 'Ce que je dis'], KF.map(x => [x.l.replace(/ \(.*\)$/, ''), filledV(s.values[x.id]) ? (x.id === 'kf_ms' ? F(N(s.values[x.id])) + ' %' : E(N(s.values[x.id]))) : '', x.exp]).concat([['Taux d’apport', k.apct != null ? F(k.apct) + ' %' : '', ''], ['Effet de levier', k.levier != null ? F(k.levier, 1) : '', '']]), [2.5, 1.4, 4]); } },
+    { id: 'as_phares', type: 'area', rows: 3, label: 'Mes trois chiffres phares, avec ma phrase', ph: '1. … 2. … 3. …', hints: ['Un chiffre de marché, un chiffre de rentabilité, un chiffre de financement.', 'Traduisez-les en concret : « soit 25 repas par jour ».'] }
+  ]
+},
+{
+  id: 's3', chap: 'c2', title: 'Mon pitch oral', time: '15 min',
+  produce: 'Le texte de votre présentation orale de cinq minutes, structuré et chronométré.',
+  theory: [
+    { t: 'La structure d’un pitch de comité', b: `<ol><li><strong>Accroche</strong> (20 s) : le problème de vos clients, avec un chiffre.</li><li><strong>La solution</strong> (40 s) : ce que vous proposez, pour qui.</li><li><strong>Le marché</strong> (1 min) : vos preuves terrain.</li><li><strong>Le modèle économique</strong> (40 s) : comment vous gagnez de l’argent.</li><li><strong>Vous</strong> (30 s) : pourquoi vous êtes la bonne personne.</li><li><strong>Les chiffres</strong> (1 min) : CA, rentabilité, besoin et plan de financement.</li><li><strong>La demande</strong> (30 s) : le montant précis et ce qu’il permet.</li></ol><p>Votre pitch court de la mission « Business plan » sert de point de départ : il est importé avec le Word.</p>` },
+    { t: 'Repère de durée', b: `<p>À l’oral, on prononce environ 130 à 150 mots par minute. Cinq minutes représentent donc 650 à 750 mots. Le compteur vous l’indique.</p><p>Si votre plateforme prévoit dix minutes, gardez cinq minutes de pitch et utilisez le reste pour vos diapositives de chiffres : il vaut mieux finir en avance qu’être coupé.</p>` }
+  ],
+  tips: ['Écrivez pour l’oral : phrases courtes, un chiffre par phrase.', 'Apprenez par cœur la première et la dernière phrase, le reste se dit avec vos mots.', 'Chronométrez-vous trois fois, debout, à voix haute.'],
+  tools: [{ n: 'Dictaphone du téléphone', d: 'S’enregistrer, se réécouter, couper.' }],
+  fields: [
+    { id: 'pc_court', type: 'area', rows: 4, label: 'Mon pitch court (repris du business plan)', ph: 'Le pitch d’une minute de votre business plan', hints: ['Il est importé automatiquement avec le Word.'] },
+    { id: 'pc_long', type: 'area', rows: 14, counter: { min: 550, max: 800 }, label: 'Mon pitch oral de cinq minutes', ph: 'Accroche, solution, marché, modèle, moi, chiffres, demande', hints: ['Suivez les sept temps de la théorie.', 'Visez 650 à 750 mots.', 'Terminez par une demande chiffrée : « Je sollicite un prêt d’honneur de… ».'] }
+  ]
+},
+{
+  id: 's4', chap: 'c2', title: 'Mon support de présentation', time: '10 min',
+  produce: 'Le plan de votre support : huit à dix diapositives, chacune avec un seul message clé.',
+  theory: [
+    { t: 'Un message par diapositive', b: `<p>Le support appuie votre parole, il ne la remplace pas. Une diapositive = un message, un titre qui l’énonce, peu de texte, un visuel ou un chiffre.</p><p><strong>Exemple :</strong> plutôt qu’un titre « Marché », écrivez « 2 700 salariés achètent leur déjeuner chaque semaine sur la zone ».</p>` },
+    { t: 'Le plan type', b: `<ol><li>Titre : projet, porteur, demande.</li><li>Le problème client.</li><li>La solution et l’offre.</li><li>Le marché et les preuves.</li><li>La concurrence et votre différence.</li><li>Le porteur et l’équipe.</li><li>Les chiffres clés sur trois ans.</li><li>Le plan de financement et la demande.</li><li>Les risques et leurs parades.</li><li>Le calendrier et les prochaines étapes.</li></ol>` }
+  ],
+  tips: ['Police lisible, au moins 24 points.', 'Gardez une diapositive de réserve avec le détail des chiffres, à montrer seulement si on vous la demande.', 'Imprimez votre support en plusieurs exemplaires pour le jury.'],
+  tools: [{ n: 'Canva, PowerPoint ou Google Slides', d: 'Créer le support.' }],
+  fields: [
+    { id: 'su_tab', type: 'table', label: 'Le plan de mon support', fixedRows: ['1. Titre et demande', '2. Le problème client', '3. La solution', '4. Le marché et les preuves', '5. Concurrence et différence', '6. Le porteur', '7. Les chiffres clés', '8. Financement et demande', '9. Risques et parades', '10. Calendrier'], need: 8,
+      cols: [{ k: 'f', l: 'Diapositive' }, { k: 'm', l: 'Mon message clé (le titre de la diapositive)' }, { k: 'v', l: 'Visuel ou chiffre' }],
+      hints: ['Le titre de chaque diapositive est une phrase qui dit le message.', 'Au moins huit diapositives renseignées.'] }
+  ]
+},
+{
+  id: 's5', chap: 'c2', title: 'Mes points faibles', time: '15 min',
+  produce: 'Vos points faibles, ceux de votre business plan et ceux que vous pressentez, avec la réponse et la preuve que vous apporterez.',
+  theory: [
+    { t: 'Désamorcer avant qu’on attaque', b: `<p>Le jury a lu votre dossier : il connaît vos points faibles. Les reconnaître vous-même, avec leur parade, transforme une faiblesse en preuve de lucidité.</p><p><strong>Formule :</strong> « Mon point d’attention est… Pour y répondre, j’ai prévu… et je le suivrai grâce à… ».</p>` },
+    { t: 'D’où viennent les points faibles', b: `<ul><li>Les indicateurs en vigilance ou en alerte de votre business plan (marge de sécurité, apport, trésorerie…).</li><li>Les risques identifiés dans votre dossier.</li><li>Votre auto-évaluation sur les 5 C.</li></ul><p>L’import du Word préremplit ce tableau avec les deux premiers.</p>` }
+  ],
+  tips: ['Trois à cinq points faibles suffisent, les plus importants en premier.', 'Une parade est concrète et datée : devis, test, accord, assurance.', 'Évitez les fausses faiblesses (« je suis trop perfectionniste ») : le jury les repère tout de suite.'],
+  tools: [],
+  fields: [
+    { id: 'fb_tab', type: 'table', label: 'Mes points faibles et mes réponses', minRows: 3, addLabel: 'Ajouter un point faible',
+      cols: [{ k: 'f', l: 'Point faible' }, { k: 'r', l: 'Ma réponse (parade)' }, { k: 'p', l: 'Ma preuve ou mon indicateur de suivi' }],
+      hints: ['Partez des lignes importées de votre business plan.', 'Ajoutez votre point le plus fragile de l’auto-évaluation.'] }
+  ]
+},
+
+/* ================================================== C3 */
+{
+  id: 's6', chap: 'c3', title: 'Préparer mes réponses', time: '30 min',
+  produce: 'Vos réponses à au moins huit questions fréquentes de comité, choisies dans une bibliothèque de trente questions.',
+  theory: [
+    { t: 'La méthode de réponse', b: `<ol><li><strong>Écouter</strong> la question jusqu’au bout, sans couper.</li><li><strong>Reformuler</strong> si elle est floue : « Si je comprends bien, vous me demandez… ».</li><li><strong>Répondre court</strong> : 30 secondes, un message, un chiffre ou une preuve.</li><li><strong>Vérifier</strong> : « Est-ce que cela répond à votre question ? ».</li></ol>` },
+    { t: 'Les questions difficiles', b: `<ul><li><strong>La question piège</strong> (« et si vous n’obteniez que la moitié ? ») teste votre capacité d’adaptation : ayez un plan B.</li><li><strong>La question déstabilisante</strong> teste votre sang-froid : respirez, reformulez, répondez calmement.</li><li><strong>La question dont vous n’avez pas la réponse :</strong> « Je ne l’ai pas en tête, je vérifie et je vous le transmets dès demain. » C’est mieux qu’un chiffre inventé.</li></ul>` }
+  ],
+  tips: ['Survolez une question pour voir les critères d’une bonne réponse.', 'Couvrez les six familles : un jury pose toujours des questions sur vous, les chiffres et les risques.', 'Entraînez-vous à voix haute : une réponse écrite n’est pas une réponse dite.'],
+  tools: [],
+  fields: [
+    { id: 'qb_sel', type: 'checks', label: 'Les questions que je prépare (survolez pour voir les critères)', groups: QB, hints: ['Au moins huit questions, dans au moins quatre familles.'] },
+    { id: 'qb_rep', type: 'linked', label: 'Mes réponses', source: 'qb_sel', empty: 'Cochez des questions ci-dessus : elles apparaîtront ici.',
+      cols: [{ k: 'r', l: 'Ma réponse en 30 secondes' }, { k: 'p', l: 'Mon chiffre ou ma preuve' }],
+      hints: ['Une réponse = un message + un chiffre ou une preuve.'] }
+  ]
+},
+
+/* ================================================== C4 */
+{
+  id: 's7', chap: 'c4', title: 'Le comité', time: '45 min', wide: true,
+  produce: 'Votre passage devant le comité simulé : une douzaine de questions personnalisées avec vos chiffres, les réactions du jury et sa décision.',
+  theory: [
+    { t: 'Comment fonctionne la simulation', b: `<p>Trois membres du jury vous interrogent. Chaque réponse fait évoluer trois jauges (crédibilité, solidité du dossier, maîtrise de l’échange) et la confiance de chaque membre, de 0 à 4. Selon vos réponses, certains membres relancent ou creusent.</p><p>À la fin, le comité délibère : accord, accord sous conditions, ajournement ou refus. Vous pouvez revenir sur une réponse et rejouer le comité.</p>` },
+    { t: 'Ce qui fait la différence', b: `<ul><li>Des réponses courtes, chiffrées, prouvées.</li><li>La lucidité sur les risques, avec leurs parades.</li><li>Un plan B quand les conditions changent.</li><li>Le respect du temps et une demande claire.</li></ul>` }
+  ],
+  tips: ['Choisissez la réponse la plus proche de ce que vous diriez vraiment, pas celle qui « fait bien ».', 'Utilisez la case de justification pour écrire votre propre formulation.', 'Rejouez le comité après avoir retravaillé vos réponses.'],
+  tools: [],
+  fields: [
+    { id: 'cm_game', type: 'game', label: 'Le comité de financement', render: renderComite, act: actComite, input: inputComite, complete: v => cmState(v).done,
+      doc: (s, D) => { const st = cmState(s.values); if (!st.steps.length) return ''; return D.para([D.run('Décision du comité : ', { b: true }), D.run(st.done ? st.issue : 'simulation non terminée', { b: true, color: D.C.ochre })]) + D.table(['Jauge', 'Score'], Object.keys(GL).map(g => [GL[g], st.g[g] + '/10']).concat(Object.keys(CAST).map(c => ['Confiance de ' + CAST[c].n, st.t[c] + '/4'])), [4, 1.5]) + D.table(['Question', 'Ma réponse', 'Appréciation', 'Ma justification'], st.steps.map(x => [x.sc.ph + ' : ' + qText(x.sc, K(s.values)), x.o.t, x.o.tone === 'good' ? 'Très bien' : x.o.tone === 'mixed' ? 'À nuancer' : 'Risquée', x.j]), [2.2, 3.2, 1.2, 2.4]); } }
+  ]
+},
+
+/* ================================================== C5 */
+{
+  id: 's8', chap: 'c5', title: 'Entraînement en binôme', time: '30 min',
+  produce: 'Une simulation réelle avec un autre participant qui joue le jury grâce au kit, et sa grille d’évaluation de votre oral.',
+  theory: [
+    { t: 'Pourquoi s’entraîner en vrai', b: `<p>Choisir une réponse dans une liste n’est pas la dire à voix haute face à quelqu’un. Le binôme recrée la pression du comité : temps limité, questions qui s’enchaînent, regard de l’autre.</p>` },
+    { t: 'Le déroulé', b: `<ol><li>Le porteur présente son pitch (5 minutes chronométrées).</li><li>Le binôme pose les questions du kit jury, dans l’ordre qu’il veut, et peut relancer (10 minutes).</li><li>Le binôme remplit la grille d’évaluation et donne un retour : un point fort, un point à travailler.</li><li>On inverse les rôles.</li></ol>` }
+  ],
+  tips: ['Le binôme peut être exigeant : c’est un service à rendre.', 'Filmez-vous si possible : la posture se corrige mieux en se voyant.', 'Le kit jury est aussi dans l’export Word, à imprimer pour votre binôme.'],
+  tools: [],
+  fields: [
+    { id: 'kj_rep', type: 'report', label: 'Le kit jury pour mon binôme', render: v => `<ol class="kit">${kitJury(v).map(q => `<li>${q}</li>`).join('')}</ol><p class="map-help">Questions générées à partir de vos chiffres et de vos points faibles.</p>`, doc: (s, D) => kitJury(s.values).map((q, i) => D.P((i + 1) + '. ' + q)).join('') },
+    { id: 'bi_nom', type: 'text', label: 'Mon binôme', ph: 'Prénom', hints: [] },
+    { id: 'bi_grille', type: 'table', label: 'Grille d’évaluation remplie par mon binôme', fixedRows: GRILLE,
+      cols: [{ k: 'f', l: 'Critère' }, { k: 'n', l: 'Note', type: 'select', options: ['', '1', '2', '3', '4'] }, { k: 'c', l: 'Commentaire' }],
+      hints: ['1 = à retravailler, 4 = excellent.', 'Le commentaire est plus utile que la note.'] },
+    { id: 'bi_moy', type: 'report', label: 'Résultat de la grille', render: v => { const n = rowsOf(v, 'bi_grille').map(r => N(r && r.n)).filter(x => !isNaN(x)); return n.length ? `<div class="calc-msg ${n.reduce((a, b) => a + b, 0) / n.length >= 3 ? 'ok' : 'warn'}">Moyenne : ${F(n.reduce((a, b) => a + b, 0) / n.length, 1)} sur 4 (${n.length} critères notés).</div>` : '<p class="empty-note">La moyenne s’affichera quand la grille sera remplie.</p>'; } },
+    { id: 'bi_retour', type: 'area', rows: 3, label: 'Le retour de mon binôme', ph: 'Un point fort, un point à travailler', hints: [] }
+  ]
+},
+
+/* ================================================== C6 */
+{
+  id: 's9', chap: 'c6', title: 'Débriefing et plan de progression', time: '20 min',
+  produce: 'Le bilan de vos simulations, vos axes de progrès, votre plan de préparation et la check-list du jour J.',
+  theory: [
+    { t: 'Tirer les leçons', b: `<p>Comparez la décision du comité simulé, la grille de votre binôme et votre auto-évaluation : les points qui reviennent sont vos priorités.</p>` },
+    { t: 'Après le comité', b: `<ul><li>Remerciez votre chargé d’accompagnement.</li><li>Si des conditions sont posées, notez-les avec une échéance et levez-les une par une.</li><li>En cas d’ajournement, demandez un retour précis et revenez avec les réponses.</li></ul>` }
+  ],
+  tips: ['Trois axes de progrès maximum.', 'Planifiez une répétition générale avec votre chargé d’accompagnement.'],
+  tools: [],
+  fields: [
+    { id: 'db_rep', type: 'report', label: 'Mes résultats', render: v => { const st = cmState(v), n = rowsOf(v, 'bi_grille').map(r => N(r && r.n)).filter(x => !isNaN(x)); return tbl2([['Comité simulé', st.done ? `${st.issue} (${st.total}/30)` : 'Non terminé'], ['Grille du binôme', n.length ? F(n.reduce((a, b) => a + b, 0) / n.length, 1) + ' sur 4' : 'Non remplie'], ['Questions préparées', String(Object.keys(v.qb_rep || {}).filter(k => (v.qb_rep[k] || {}).r).length)], ['Points faibles avec parade', String(rowsOf(v, 'fb_tab').filter(r => filledV(r.f) && filledV(r.r)).length)]]); } },
+    { id: 'db_forts', type: 'area', rows: 3, label: 'Mes points forts', ph: 'Ce que je fais bien', hints: [] },
+    { id: 'db_axes', type: 'area', rows: 3, label: 'Mes trois axes de progrès', ph: '1. … 2. … 3. …', hints: ['Reprenez les réponses « risquées » du comité et les notes faibles du binôme.'] },
+    { id: 'db_plan', type: 'table', label: 'Mon plan de préparation', minRows: 3, addLabel: 'Ajouter une action',
+      cols: [{ k: 'a', l: 'Action' }, { k: 'e', l: 'Échéance' }],
+      hints: ['Ex. « Rejouer le comité », « Répétition générale avec ma chargée d’accompagnement ».'] },
+    { id: 'db_check', type: 'checks', label: 'Ma check-list', groups: [
+      { g: 'J−7', items: ['Pitch chronométré trois fois', 'Support finalisé et relu', 'Antisèche imprimée', 'Répétition avec un binôme'] },
+      { g: 'J−1', items: ['Relire l’antisèche', 'Préparer les exemplaires du dossier et du support', 'Vérifier l’heure, le lieu et l’accès'] },
+      { g: 'Jour J', items: ['Arriver 15 minutes en avance', 'Tenue professionnelle et confortable', 'Respirer avant d’entrer'] },
+      { g: 'Après', items: ['Remercier la plateforme', 'Noter les conditions éventuelles', 'Mettre à jour le business plan'] }],
+      hints: ['Cochez au fur et à mesure.'] }
+  ]
+}
+];
+function tbl2(rows) { return `<div class="tbl-wrap"><table class="mini rep">${rows.map(r => `<tr><td>${r[0]}</td><td class="num"><strong>${r[1]}</strong></td></tr>`).join('')}</table></div>`; }
+
+/* ---------- contrôles de cohérence ---------- */
+const words = t => (String(t || '').trim().match(/\S+/g) || []).length;
+const CHECKS = [
+  { id: 'kf', step: 's0', label: 'Au moins huit chiffres clés renseignés', test: s => KF.filter(x => filledV(s.values[x.id])).length >= 8, advice: 'Importez votre business plan ou saisissez vos chiffres.' },
+  { id: '5c', step: 's1', label: 'Auto-évaluation des 5 C complète', test: s => rowsOf(s.values, 'cc_5c').length === 5 && rowsOf(s.values, 'cc_5c').every(r => r && filledV(r.n) && filledV(r.p)), advice: 'Notez et justifiez chacun des cinq critères.' },
+  { id: 'phares', step: 's2', label: 'Trois chiffres phares préparés', test: s => filledV(s.values.as_phares), advice: 'Choisissez vos trois chiffres phares et leur phrase.' },
+  { id: 'pitch', step: 's3', label: 'Pitch oral de cinq minutes (550 à 800 mots)', test: s => { const w = words(s.values.pc_long); return w >= 550 && w <= 800; }, advice: 'Ajustez votre pitch entre 550 et 800 mots.' },
+  { id: 'demande', step: 's3', label: 'Le pitch formule une demande chiffrée', test: s => /\d/.test(s.values.pc_long || '') && /(prêt|financ|sollicit|demande)/i.test(s.values.pc_long || ''), advice: 'Terminez par votre demande : montant et usage.' },
+  { id: 'support', step: 's4', label: 'Support d’au moins huit diapositives avec message', test: s => rowsOf(s.values, 'su_tab').filter(r => r && filledV(r.m)).length >= 8, advice: 'Donnez un message clé à au moins huit diapositives.' },
+  { id: 'faibles', step: 's5', label: 'Au moins trois points faibles avec parade', test: s => rowsOf(s.values, 'fb_tab').filter(r => filledV(r.f) && filledV(r.r)).length >= 3, advice: 'Préparez une parade pour trois points faibles.' },
+  { id: 'reponses', step: 's6', label: 'Au moins huit réponses préparées dans quatre familles', test: s => { const m = s.values.qb_rep || {}; const ok = Object.keys(m).filter(k => filledV((m[k] || {}).r)); const fam = new Set(ok.map(k => (QB.find(g => g.items.some(i => i.v === k)) || {}).g)); return ok.length >= 8 && fam.size >= 4; }, advice: 'Répondez à huit questions dans au moins quatre familles.' },
+  { id: 'comite', step: 's7', label: 'Comité simulé joué jusqu’à la décision', test: s => cmState(s.values).done, advice: 'Allez au bout du comité.' },
+  { id: 'binome', step: 's8', label: 'Grille du binôme remplie', test: s => rowsOf(s.values, 'bi_grille').filter(r => r && filledV(r.n)).length >= 8, advice: 'Faites-vous évaluer sur les huit critères.' },
+  { id: 'progres', step: 's9', label: 'Axes de progrès et plan de préparation', test: s => filledV(s.values.db_axes) && rowsOf(s.values, 'db_plan').filter(r => filledV(r.a)).length >= 3, advice: 'Formulez vos axes et trois actions de préparation.' },
+  { id: 'lucide', step: 's5', label: 'Les fragilités du business plan sont traitées', test: s => { const v = s.values; if (v.kf_verdict === 'Go') return true; return rowsOf(v, 'fb_tab').filter(r => filledV(r.f) && filledV(r.r)).length >= 2; }, advice: 'Votre business plan n’est pas un « Go » franc : préparez la parade de ses points de vigilance.' }
+];
+
+/* ---------- badges ---------- */
+const BADGES = [
+  { id: 'start', icon: '🌱', name: 'Premier pas', how: 'Renseignez au moins huit de vos dix chiffres clés, par import ou à la main.', test: s => CHECKS[0].test(s) },
+  { id: 'prep', icon: '📋', name: 'Préparé', how: 'Complétez votre auto-évaluation des 5 C et vos trois chiffres phares.', test: s => CHECKS[1].test(s) && CHECKS[2].test(s) },
+  { id: 'pitch', icon: '⏱️', name: 'Pitch au chrono', how: 'Rédigez un pitch de cinq minutes (550 à 800 mots) qui se termine par une demande chiffrée.', test: s => CHECKS[3].test(s) && CHECKS[4].test(s) },
+  { id: 'faibles', icon: '🛡️', name: 'Désamorceur', how: 'Préparez une parade pour au moins trois points faibles.', test: s => CHECKS[6].test(s) },
+  { id: 'rep', icon: '💬', name: 'Réponses prêtes', how: 'Préparez au moins huit réponses dans quatre familles de questions.', test: s => CHECKS[7].test(s) },
+  { id: 'piege', icon: '🧊', name: 'Sang-froid', how: 'Donnez la meilleure réponse à la question piège du comité (le financement réduit de moitié).', test: s => cmState(s.values).steps.some(x => x.sc.id === 'q11' && x.o.tone === 'good') },
+  { id: 'chiffres', icon: '🔢', name: 'Chiffres maîtrisés', how: 'Terminez le comité avec au moins 8/10 en solidité du dossier.', test: s => { const st = cmState(s.values); return st.done && st.g.sol >= 8; } },
+  { id: 'jury', icon: '🤝', name: 'Jury conquis', how: 'Terminez le comité avec une confiance d’au moins 3 sur 4 chez les trois membres du jury.', test: s => { const st = cmState(s.values); return st.done && Math.min(st.t.c, st.t.b, st.t.d) >= 3; } },
+  { id: 'accord', icon: '✅', name: 'Accord obtenu', how: 'Obtenez un accord du comité simulé, sans condition.', test: s => { const st = cmState(s.values); return st.done && st.issue === 'Accord'; } },
+  { id: 'entraine', icon: '🎭', name: 'Entraîné', how: 'Faites-vous évaluer par un binôme sur les huit critères, avec une moyenne d’au moins 3 sur 4.', test: s => { const n = rowsOf(s.values, 'bi_grille').map(r => N(r && r.n)).filter(x => !isNaN(x)); return n.length >= 8 && n.reduce((a, b) => a + b, 0) / n.length >= 3; } },
+  { id: 'full', icon: '🏁', name: 'Mission complète', how: 'Remplissez au moins 90 % de l’ensemble des champs du parcours.', test: s => L.overall(s) >= 0.9 }
+];
+
+/* ---------- synthèse du document Word ---------- */
+function docSynthesis(s, D) {
+  const v = s.values, k = K(v), st = cmState(v), b = [];
+  b.push(D.H1('Synthèse de ma préparation'));
+  b.push(D.H2('Mon projet en chiffres'));
+  b.push(D.table(['Repère', 'Valeur'], [['Statut', v.kf_statut || ''], ['Démarrage', v.kf_date || ''], ['Besoin total', k.besoin != null ? E(k.besoin) : ''], ['Apports', k.apport != null ? `${E(k.apport)}${k.apct != null ? ' (' + F(k.apct) + ' %)' : ''}` : ''], ['Prêt d’honneur demandé', k.ph != null ? E(k.ph) : ''], ['Prêt bancaire demandé', k.banque != null ? E(k.banque) : ''], ['Verdict du business plan', v.kf_verdict || '']], [2.5, 3]));
+  b.push(D.H2('Mes résultats d’entraînement'));
+  const n = rowsOf(v, 'bi_grille').map(r => N(r && r.n)).filter(x => !isNaN(x));
+  b.push(D.table(['Simulation', 'Résultat'], [['Comité simulé', st.done ? `${st.issue} (${st.total}/30)` : 'Non terminé'], ['Grille du binôme', n.length ? F(n.reduce((a, c) => a + c, 0) / n.length, 1) + ' sur 4' : 'Non remplie']], [2.5, 3]));
+  if (D.filled(v.db_axes)) { b.push(D.H2('Mes axes de progrès')); b.push(D.P(v.db_axes)); }
+  return b.join('');
+}
+
+/* ==========================================================
+   EXEMPLE FIL ROUGE : La Roulotte Gourmande (fictif)
+   ========================================================== */
+const EXAMPLE = {
+  p_nom: 'La Roulotte Gourmande', kf_statut: 'EURL ou SARL', kf_date: '2 mars 2027',
+  kf_besoin: '49830', kf_apport: '20000', kf_ph: '8000', kf_banque: '30000', kf_ca1: '75700', kf_ca3: '118600', kf_rn3: '12362', kf_ms: '13', kf_treso: '2562', kf_rem2: '1900',
+  kf_verdict: 'Go sous conditions',
+  cc_5c: [
+    { f: 'Caractère (moi, mon engagement)', n: '4 – Très solide', p: '8 ans en cuisine, formation HACCP, enquête menée seule auprès de 112 salariés.' },
+    { f: 'Capacité (rentabilité, remboursement)', n: '2 – À renforcer', p: 'Marge de sécurité de 13 % en année 2 : peu de réserve si les ventes baissent.' },
+    { f: 'Capital (mes apports)', n: '3 – Solide', p: '40 % d’apports, prêt d’honneur compris.' },
+    { f: 'Garanties', n: '2 – À renforcer', p: 'Le camion peut servir de garantie ; à discuter avec la banque.' },
+    { f: 'Conditions (marché, concurrence)', n: '3 – Solide', p: 'Pas d’offre chaude fait maison à prix moyen sur la zone ; emplacements à obtenir.' }
+  ],
+  cc_fragile: 'La capacité de remboursement : avec 13 % de marge de sécurité, une baisse de ventes de 15 % me met en difficulté.',
+  as_phares: '1. 2 700 salariés achètent leur déjeuner sur la zone, et 54 % veulent un plat chaud.\n2. En année 2, mon seuil de rentabilité est d’environ 90 000 € pour 103 600 € prévus : 13 % de marge de sécurité.\n3. 40 % d’apports : chaque euro de prêt d’honneur accompagne 3,75 € de prêt bancaire.',
+  pc_court: 'Vous aussi, vous mangez un sandwich devant votre écran trois fois par semaine ? Je suis Inès, cuisinière depuis huit ans. Avec La Roulotte Gourmande, je vous apporte chaque midi un vrai plat provençal, chaud et fait maison, au pied de votre bureau. Vous commandez la veille par SMS et vous récupérez en deux minutes.',
+  pc_long: "Bonsoir à toutes et à tous. Sur les zones d’activités de Manosque, environ 2 700 salariés achètent leur déjeuner chaque semaine. Et la plupart d’entre eux mangent un sandwich froid, seuls, devant leur écran. C’est ce constat qui est à l’origine de mon projet.\n\nJe m’appelle Inès Roux. Je suis cuisinière depuis huit ans, dont trois ans comme seconde dans un restaurant de la région. Je sais tenir un service, gérer des stocks et travailler vite sans sacrifier la qualité. Aujourd’hui, je veux mettre ce savoir-faire au service de ceux qui n’ont ni cantine ni le temps de prendre leur voiture le midi.\n\nLa Roulotte Gourmande est un food truck de cuisine provençale de saison. Chaque midi, quatre jours par semaine, je sers sur les zones d’activités un plat chaud fait maison, cuisiné le matin même avec les produits de six producteurs situés à moins de quarante kilomètres. Ma différence, c’est la rapidité : mes clients commandent la veille par SMS et récupèrent leur plat en deux minutes, sans faire la queue. Je propose aussi une formule traiteur pour les événements d’entreprise, à partir de vingt personnes.\n\nAvant de vous présenter ce projet, je suis allée sur le terrain. J’ai interrogé 112 salariés de la zone. Pour 71 % d’entre eux, la rapidité est le premier critère de choix. 54 % veulent un plat chaud. Et 64 % ne trouvent un plat trop cher qu’au-delà de 15 euros. J’ai aussi observé mes concurrents : le food truck burgers voisin sert environ 35 repas par jour, mais seulement deux jours par semaine, et la boulangerie a dix minutes d’attente à midi et quart. Il n’existe aujourd’hui aucune offre chaude, faite maison, à prix moyen.\n\nMon modèle économique est simple. Je vends un plat à 11 euros et une formule à 14 euros hors taxes, payés comptant, avec un coût matière autour d’un tiers du prix. Les prestations traiteur, à 24 euros par personne, apportent un complément plus rentable à partir de la deuxième année.\n\nPour l’organisation, j’ai choisi l’EURL : mes charges réelles sont importantes, avec le camion, le laboratoire de préparation et le carburant, et une société au réel me permet de les déduire. Je suis accompagnée par un expert-comptable pour la gestion, et mon conjoint, comptable de métier, m’aide sur l’administratif.\n\nPassons aux chiffres. Je prévois 75 700 euros de chiffre d’affaires la première année, soit environ 25 repas par jour, ce qui reste dans ma capacité de 60 couverts par service. J’atteins 103 600 euros en deuxième année et 118 600 euros en troisième année, grâce aux événements. La première année est légèrement déficitaire, à cause des frais de démarrage et de la montée en charge. Le projet devient bénéficiaire dès la deuxième année, avec une rémunération de 1 900 euros nets par mois, et dégage plus de 12 000 euros de résultat net la troisième année. Ma trésorerie reste positive tous les mois de la première année.\n\nJe connais aussi mes points d’attention. Ma marge de sécurité en deuxième année est de 13 % : c’est peu. C’est pourquoi j’organise une semaine de test en février pour vérifier mes volumes, et je développe les événements, plus rentables. Autre point : les emplacements. J’ai déposé deux dossiers en mairie et je négocie un accord de stationnement avec une entreprise de la zone.\n\nMon besoin total est de 49 830 euros, pour le camion d’occasion, l’équipement, les frais de démarrage et une trésorerie de sécurité. J’apporte 12 000 euros d’épargne personnelle. Je sollicite aujourd’hui un prêt d’honneur de 8 000 euros, qui portera mes apports à 40 % du besoin et me permettra d’obtenir un prêt bancaire de 30 000 euros sur cinq ans.\n\nAvec votre soutien, je servirai mon premier plat le 2 mars. Je vous remercie de votre attention et je suis prête à répondre à vos questions.",
+  su_tab: [
+    { f: '1. Titre et demande', m: 'La Roulotte Gourmande : un prêt d’honneur de 8 000 € pour lancer le camion', v: 'Photo du camion' },
+    { f: '2. Le problème client', m: '2 700 salariés mangent un sandwich froid devant leur écran', v: 'Chiffre de l’enquête' },
+    { f: '3. La solution', m: 'Un plat chaud fait maison, récupéré en deux minutes', v: 'Photo d’un plat, SMS de précommande' },
+    { f: '4. Le marché et les preuves', m: '112 salariés interrogés, 71 % veulent de la rapidité', v: 'Graphique des critères de choix' },
+    { f: '5. Concurrence et différence', m: 'Aucune offre chaude fait maison à prix moyen', v: 'Carte de positionnement' },
+    { f: '6. Le porteur', m: '8 ans en cuisine et un réseau de six producteurs', v: 'Photo, parcours en trois dates' },
+    { f: '7. Les chiffres clés', m: 'Bénéficiaire dès l’année 2', v: 'CA et résultat sur trois ans' },
+    { f: '8. Financement et demande', m: '40 % d’apports, un levier de 3,75 sur le prêt bancaire', v: 'Plan de financement' },
+    { f: '9. Risques et parades', m: 'Chaque risque a sa parade et son indicateur', v: 'Tableau de trois risques' },
+    { f: '10. Calendrier', m: 'Premier service le 2 mars', v: 'Frise des étapes' }
+  ],
+  fb_tab: [
+    { f: 'Marge de sécurité de 13 % en année 2', r: 'Semaine de test en février pour valider le volume ; développement des événements, plus rentables', p: 'Repas vendus par jour, nombre d’événements signés' },
+    { f: 'Remboursement du camion important dans la CAF', r: 'Camion d’occasion contrôlé, différé de remboursement à négocier', p: 'Offre de prêt avec différé' },
+    { f: 'Emplacements non encore obtenus', r: 'Deux dossiers en mairie et un accord de stationnement privé avec une entreprise', p: 'Autorisations avant le 31 janvier' }
+  ],
+  qb_sel: ['Pourquoi vous ? Qu’est-ce qui vous rend légitime ?', 'Comment allez-vous vivre pendant la première année ?', 'Comment savez-vous que les clients sont là ?', 'Qu’est-ce qui vous différencie de vos concurrents ?', 'Pourquoi ce prix ?', 'Comment avez-vous construit votre chiffre d’affaires ?', 'Combien de ventes par jour ou par semaine cela représente-t-il ?', 'Que se passe-t-il si vos ventes baissent de 15 % ?', 'Que faites-vous si vous n’obtenez que la moitié du financement ?', 'Quel est le principal risque de votre projet ?'],
+  qb_rep: {
+    'Pourquoi vous ? Qu’est-ce qui vous rend légitime ?': { r: 'Huit ans en cuisine, dont trois comme seconde : je sais tenir un service. Pour la gestion, je suis accompagnée par un expert-comptable.', p: '8 ans d’expérience, formation HACCP' },
+    'Comment allez-vous vivre pendant la première année ?': { r: 'Mon besoin est de 1 600 € par mois. Je me verse 1 300 € la première année, mon conjoint couvre les charges fixes du foyer et j’ai trois mois d’épargne de côté.', p: 'Budget du foyer' },
+    'Comment savez-vous que les clients sont là ?': { r: 'J’ai interrogé 112 salariés de la zone : 31 % viendraient sûrement, 36 % probablement.', p: 'Enquête, 112 répondants' },
+    'Qu’est-ce qui vous différencie de vos concurrents ?': { r: 'Je suis la seule à proposer un plat chaud fait maison, récupéré en deux minutes grâce à la précommande.', p: 'Benchmark de quatre concurrents' },
+    'Pourquoi ce prix ?': { r: '14 € la formule : c’est le prix du burger voisin, et 64 % des salariés jugent un plat trop cher seulement au-delà de 15 €.', p: 'Enquête et relevé de prix' },
+    'Comment avez-vous construit votre chiffre d’affaires ?': { r: 'Par ma capacité, 25 repas par jour sur 184 jours, croisée avec la part de marché : 5 % du marché estimé.', p: 'Deux méthodes croisées' },
+    'Combien de ventes par jour ou par semaine cela représente-t-il ?': { r: 'Environ 25 repas par jour, quand le food truck voisin en sert 35.', p: 'Comptage terrain' },
+    'Que se passe-t-il si vos ventes baissent de 15 % ?': { r: 'J’ai fait le test : avec 10 % de moins, le projet reste bénéficiaire ; au-delà, je réduis ma rémunération et je développe les événements.', p: 'Test de résistance du business plan' },
+    'Que faites-vous si vous n’obtenez que la moitié du financement ?': { r: 'Je reporte l’habillage du camion et une partie de l’équipement, soit environ 4 000 € de besoin en moins.', p: 'Plan de financement réduit' },
+    'Quel est le principal risque de votre projet ?': { r: 'Les emplacements. J’ai déposé deux dossiers et je négocie un accord avec une entreprise pour son parking.', p: 'Autorisations avant le 31 janvier' }
+  },
+  cm: { started: true, tries: 1, hist: [
+    { id: 'q1', o: 1, j: 'Sur la zone, 2 700 salariés achètent leur déjeuner, et la plupart mangent froid devant leur écran.' },
+    { id: 'q2', o: 1, j: '' }, { id: 'q3', o: 1, j: '' }, { id: 'q4', o: 2, j: '' }, { id: 'q5', o: 2, j: '' }, { id: 'q6', o: 2, j: '' },
+    { id: 'q7', o: 1, j: 'Avec 10 % de moins je reste bénéficiaire ; au-delà, je réduis ma rémunération et je pousse les événements.' },
+    { id: 'q8', o: 1, j: '' }, { id: 'q9', o: 2, j: '' }, { id: 'q10', o: 2, j: '' }, { id: 'q11', o: 2, j: '' }, { id: 'q12', o: 0, j: '' }] },
+  bi_nom: 'Karim',
+  bi_grille: [
+    { f: GRILLE[0], n: '4', c: 'Très clair dès la première minute.' },
+    { f: GRILLE[1], n: '3', c: '5 min 30, un peu long sur le marché.' },
+    { f: GRILLE[2], n: '4', c: 'Aucune hésitation.' },
+    { f: GRILLE[3], n: '4', c: 'L’enquête convainc.' },
+    { f: GRILLE[4], n: '3', c: 'Certaines réponses trop longues.' },
+    { f: GRILLE[5], n: '3', c: 'Bien sur les emplacements, moins sur la marge de sécurité.' },
+    { f: GRILLE[6], n: '2', c: 'Regard trop souvent sur les notes.' },
+    { f: GRILLE[7], n: '4', c: 'Demande précise.' }
+  ],
+  bi_retour: 'Point fort : la maîtrise des chiffres. À travailler : regarder le jury et raccourcir la partie marché.',
+  db_forts: 'Maîtrise des chiffres, preuves terrain, plan B préparé sur le financement.',
+  db_axes: '1. Raccourcir la partie marché du pitch d’une minute.\n2. Regarder le jury plutôt que mes notes.\n3. Conclure par un résumé en trois points au lieu de m’arrêter net.',
+  db_plan: [
+    { a: 'Réécrire la partie marché du pitch en une minute', e: '10 janvier' },
+    { a: 'Rejouer le comité simulé', e: '12 janvier' },
+    { a: 'Répétition générale avec ma chargée d’accompagnement', e: '20 janvier' }
+  ],
+  db_check: ['Pitch chronométré trois fois', 'Support finalisé et relu', 'Antisèche imprimée', 'Répétition avec un binôme']
+};
+
+;
+/* ==========================================================
+   LOGIQUE GÉNÉRIQUE : complétude, cohérence, badges
+   ========================================================== */
+const L = (() => {
+  const FIELDS = {};
+  STEPS.forEach(st => st.fields.forEach(f => { FIELDS[f.id] = Object.assign({ step: st.id }, f); }));
+  const isFilled = v => v !== undefined && v !== null && String(v).trim() !== '';
+
+  function tableRows(f, s) {
+    let rows = s.values[f.id];
+    if (!Array.isArray(rows)) rows = [];
+    if (f.fixedRows) {
+      const base = f.fixedRows.map((lab, i) => Object.assign({}, rows[i] || {}, { f: lab }));
+      return f.addRows ? base.concat(rows.slice(f.fixedRows.length).map(r => Object.assign({ __extra: true }, r))) : base;
+    }
+    return rows;
+  }
+  const customCols = (f, s) => f.addCols && Array.isArray(s.values[f.id + '__cols']) ? s.values[f.id + '__cols'] : [];
+  const tableCols = (f, s) => f.cols.concat(customCols(f, s).map(c => ({ k: c.k, l: c.l, custom: true })));
+  const dataCols = f => f.cols.filter(c => !(f.fixedRows && c.k === 'f'));
+  const colLabel = (c, v) => typeof c.lab === 'function' ? c.lab(v) : c.l;
+
+  function linkedKeys(f, s) {
+    const src = FIELDS[f.source], v = s.values[f.source];
+    if (!src) return [];
+    if (src.type === 'checks') return Array.isArray(v) ? v.slice() : [];
+    if (src.type === 'table') return (Array.isArray(v) ? v : []).map(r => r && r[f.sourceKey]).filter(isFilled).map(x => String(x).trim());
+    return [];
+  }
+  function linkedRows(f, s) {
+    const map = s.values[f.id] || {};
+    return linkedKeys(f, s).map(k => Object.assign({ __k: k }, map[k] || {}));
+  }
+
+  function mapActors(f, s) {
+    const src = (s.values[f.source] || []).filter(r => r && isFilled(r.nom)).map(r => String(r.nom).trim());
+    return [...new Set(src)];
+  }
+  function mapCompletion(f, s) {
+    const m = s.values[f.id] || {}, pts = m.pts || {};
+    const others = mapActors(f, s).filter(a => pts[a]).length;
+    return ([isFilled(m.ax), isFilled(m.ay), !!pts.__moi].filter(Boolean).length + Math.min(others, 2) / 2) / 4;
+  }
+
+  function fieldCompletion(f, s) {
+    const v = s.values[f.id];
+    switch (f.type) {
+      case 'report': return f.complete ? (f.complete(s.values) ? 1 : 0) : null;
+      case 'game': return f.complete ? (f.complete(s.values) ? 1 : 0) : null;
+      case 'preview': case 'import': case 'importdocx': case 'range': return null;
+      case 'canvas': { const c = v || {}; return f.blocks.filter(b => isFilled(c[b.k])).length / f.blocks.length; }
+      case 'checks': return (Array.isArray(v) && v.length) ? 1 : 0;
+      case 'calc': { const c = v || {}; const req = f.req || f.inputs.map(i => i.k); return req.filter(k => isFilled(c[k])).length / req.length; }
+      case 'map': return mapCompletion(f, s);
+      case 'linked': {
+        const rows = linkedRows(f, s); if (!rows.length) return 0;
+        let sc = 0; rows.forEach(r => { sc += f.cols.filter(c => isFilled(r[c.k])).length / f.cols.length; });
+        return sc / rows.length;
+      }
+      case 'table': {
+        const rows = tableRows(f, s), cols = dataCols(f);
+        const need = f.need || (f.fixedRows ? f.fixedRows.length : (f.minRows || 1));
+        let sc = 0; rows.forEach(r => { sc += cols.filter(c => isFilled(r[c.k])).length / cols.length; });
+        return Math.min(1, sc / need);
+      }
+      default: return isFilled(v) ? 1 : 0;
+    }
+  }
+  function stepCompletion(st, s) {
+    const vals = st.fields.map(f => fieldCompletion(f, s)).filter(x => x !== null);
+    return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  }
+  function chapterCompletion(cid, s) {
+    const sts = STEPS.filter(st => st.chap === cid);
+    return sts.reduce((a, st) => a + stepCompletion(st, s), 0) / sts.length;
+  }
+  function overall(s) {
+    let n = 0, t = 0;
+    STEPS.forEach(st => st.fields.forEach(f => { const c = fieldCompletion(f, s); if (c !== null) { n++; t += c; } }));
+    return n ? t / n : 0;
+  }
+  function coherence(s) {
+    const res = CHECKS.map(c => { let ok = false; try { ok = !!c.test(s); } catch (e) { ok = false; } return { c, ok }; });
+    return { res, score: res.filter(r => r.ok).length / res.length };
+  }
+  const earnedBadges = s => BADGES.filter(b => { try { return b.test(s); } catch (e) { return false; } }).map(b => b.id);
+  return { FIELDS, isFilled, tableRows, tableCols, customCols, dataCols, colLabel, linkedKeys, linkedRows, mapActors, fieldCompletion, stepCompletion, chapterCompletion, overall, coherence, earnedBadges, BADGES, CHECKS };
+})();
+
+;
+/* ==========================================================
+   EXPORT WORD (.docx) sans bibliothèque externe
+   ========================================================== */
+
+const DOCX = (() => {
+  const C = { pine: '1F4D45', ochre: 'C9861A', ink: '1C2321', grey: '6B7470', light: 'EAF1EE', line: 'B9C8C2' };
+
+  const x = s => String(s == null ? '' : s)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  function run(text, o = {}) {
+    let rpr = '';
+    if (o.b) rpr += '<w:b/>';
+    if (o.i) rpr += '<w:i/>';
+    if (o.color) rpr += `<w:color w:val="${o.color}"/>`;
+    if (o.sz) rpr += `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`;
+    const parts = String(text == null ? '' : text).split(/\r?\n/);
+    const body = parts.map((p, i) => (i ? '<w:br/>' : '') + `<w:t xml:space="preserve">${x(p)}</w:t>`).join('');
+    return `<w:r>${rpr ? `<w:rPr>${rpr}</w:rPr>` : ''}${body}</w:r>`;
+  }
+  function para(runs, o = {}) {
+    let ppr = '';
+    if (o.style) ppr += `<w:pStyle w:val="${o.style}"/>`;
+    if (o.keep) ppr += '<w:keepNext/>';
+    if (o.pageBreak) ppr += '<w:pageBreakBefore/>';
+    if (o.border) ppr += `<w:pBdr><w:left w:val="single" w:sz="24" w:space="8" w:color="${o.border}"/></w:pBdr>`;
+    if (o.shade) ppr += `<w:shd w:val="clear" w:color="auto" w:fill="${o.shade}"/>`;
+    if (o.after != null || o.before != null) ppr += `<w:spacing${o.before != null ? ` w:before="${o.before}"` : ''}${o.after != null ? ` w:after="${o.after}"` : ''}/>`;
+    if (o.border) ppr += '<w:ind w:left="200"/>';
+    if (o.align) ppr += `<w:jc w:val="${o.align}"/>`;
+    return `<w:p>${ppr ? `<w:pPr>${ppr}</w:pPr>` : ''}${Array.isArray(runs) ? runs.join('') : runs}</w:p>`;
+  }
+  const filled = v => v != null && String(v).trim() !== '';
+  const P = (t, o) => para(run(t, o), o);
+  const H1 = (t, pb = true) => para(run(t), { style: 'Heading1', pageBreak: pb });
+  const H2 = t => para(run(t), { style: 'Heading2', keep: true });
+  const H3 = t => para(run(t), { style: 'Heading3', keep: true });
+  const empty = () => P('À compléter', { i: true, color: C.grey });
+  const textOrEmpty = v => filled(v) ? P(v) : empty();
+
+  function table(headers, rows, widths) {
+    const total = 9638;
+    if (!widths) widths = headers.map(() => Math.floor(total / headers.length));
+    const sum = widths.reduce((a, b) => a + b, 0);
+    widths = widths.map(w => Math.round(w / sum * total));
+    const cell = (content, w, head) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${head ? `<w:shd w:val="clear" w:color="auto" w:fill="${C.pine}"/>` : ''}<w:tcMar><w:top w:w="60" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/></w:tcMar></w:tcPr>${para(run(content, head ? { b: true, color: 'FFFFFF', sz: 19 } : { sz: 19, color: filled(content) ? null : C.grey, i: !filled(content) }), { after: 0 })}</w:tc>`;
+    const grid = `<w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>`;
+    const b = `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="4" w:space="0" w:color="${C.line}"/>`).join('')}</w:tblBorders>`;
+    const hr = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${headers.map((h, i) => cell(h, widths[i], true)).join('')}</w:tr>`;
+    const br = rows.map(r => `<w:tr><w:trPr><w:cantSplit/></w:trPr>${r.map((c, i) => cell(filled(c) ? c : '–', widths[i], false)).join('')}</w:tr>`).join('');
+    return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/>${b}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr>${grid}${hr}${br}</w:tbl>` + para('', { after: 120 });
+  }
+
+  /* ---------- rendu générique d'un champ ---------- */
+  function renderField(f, s) {
+    const v = s.values[f.id];
+    const out = [];
+    switch (f.type) {
+      case 'preview': case 'import': case 'importdocx': case 'range': return '';
+      case 'game': { const x = f.doc ? f.doc(s, Dh()) : ''; if (x) out.push(H3(f.label), x); break; }
+      case 'report': { const x = f.doc ? f.doc(s, Dh()) : ''; if (x) out.push(H3(f.label), x); break; }
+      case 'canvas': { const c = v || {}; out.push(H3(f.label)); out.push(table(['Bloc', 'Contenu'], f.blocks.map(b => [b.l, c[b.k] || '']), [1.6, 5])); break; }
+      case 'number': out.push(H3(f.label), textOrEmpty(v)); break;
+      case 'text': case 'area': case 'select': case 'radio':
+        out.push(H3(f.label), textOrEmpty(v)); break;
+      case 'checks':
+        out.push(H3(f.label), (v && v.length) ? P(v.join(', ')) : empty()); break;
+      case 'linked': {
+        const rows = L.linkedRows(f, s);
+        out.push(H3(f.label));
+        if (!rows.length) out.push(empty());
+        else out.push(table([''].concat(f.cols.map(c => c.l)), rows.map(r => [r.__k].concat(f.cols.map(c => r[c.k]))), [2.2].concat(f.cols.map(() => 2))));
+        break;
+      }
+      case 'table': {
+        let rows = L.tableRows(f, s);
+        if (!f.fixedRows) rows = rows.filter(r => L.tableCols(f, s).some(c => filled(r[c.k])));
+        out.push(H3(f.label));
+        if (!rows.length) { out.push(empty()); break; }
+        const cs = L.tableCols(f, s);
+        rows = rows.filter(r => !r.__extra || cs.some(c => filled(r[c.k])));
+        const headers = cs.map(c => L.colLabel(c, s.values) || '');
+        const widths = cs.map((c, i) => (f.fixedRows && i === 0) ? 1.4 : (c.type === 'select' || c.type === 'number' ? 1.2 : c.k === 'src' ? 1.6 : 2.2));
+        out.push(table(headers, rows.map(r => cs.map(c => r[c.k])), widths));
+        break;
+      }
+      case 'calc': {
+        const c = v || {}, r = f.compute(c);
+        out.push(H3(f.label));
+        out.push(table(['Élément', 'Valeur'], f.docRows(c, r), [3, 2]));
+        break;
+      }
+      case 'map': {
+        const m = v || {}, pts = m.pts || {};
+        out.push(H3(f.label));
+        if (!filled(m.ax) && !filled(m.ay)) { out.push(empty()); break; }
+        out.push(P(`Axe horizontal : ${m.ax || '?'} (de « ${m.axLo || 'faible'} » à « ${m.axHi || 'fort'} »). Axe vertical : ${m.ay || '?'} (de « ${m.ayLo || 'faible'} » à « ${m.ayHi || 'fort'} »). Positions notées de 0 à 10.`));
+        const names = L.mapActors(f, s).filter(a => pts[a]);
+        const rows = names.map(a => [a, String(pts[a].x), String(pts[a].y)]);
+        if (pts.__moi) rows.push([(s.values.p_nom || 'Mon projet') + ' (moi)', String(pts.__moi.x), String(pts.__moi.y)]);
+        out.push(rows.length ? table(['Acteur', m.ax || 'Axe horizontal', m.ay || 'Axe vertical'], rows, [3, 1.5, 1.5]) : empty());
+        out.push(mapGrid(m, names.map(a => ({ n: a, x: pts[a].x, y: pts[a].y })).concat(pts.__moi ? [{ n: (s.values.p_nom || 'Moi') + ' ★', x: pts.__moi.x, y: pts.__moi.y }] : [])));
+        break;
+      }
+    }
+    return out.join('');
+  }
+
+  const Dh = () => ({ H1, H2, H3, P, para, run, table, empty, textOrEmpty, filled, C });
+
+  /* carte en grille 11 × 11 (tableau Word) */
+  function mapGrid(m, actors) {
+    if (!actors.length) return '';
+    const cellW = 800, size = 11;
+    const cells = {};
+    actors.forEach((a, i) => { const k = Math.round(a.x) + ',' + Math.round(a.y); (cells[k] = cells[k] || []).push(a.n); });
+    let rows = '';
+    for (let y = 10; y >= 0; y--) {
+      let r = '';
+      for (let x = 0; x <= 10; x++) {
+        const names = cells[x + ',' + y] || [];
+        const txt = names.join('\n');
+        const isMe = names.some(n => n.endsWith('★'));
+        const fill = isMe ? C.ochre : names.length ? C.pine : (x === 5 || y === 5 ? 'F1F4F2' : 'FFFFFF');
+        r += `<w:tc><w:tcPr><w:tcW w:w="${cellW}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${fill}"/></w:tcPr>${para(run(txt, { sz: 12, b: true, color: names.length ? 'FFFFFF' : null }), { after: 0 })}</w:tc>`;
+      }
+      rows += `<w:tr><w:trPr><w:trHeight w:val="380"/><w:cantSplit/></w:trPr>${r}</w:tr>`;
+    }
+    const b = `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="2" w:space="0" w:color="DDE5E1"/>`).join('')}</w:tblBorders>`;
+    const grid = `<w:tblGrid>${Array.from({ length: size }, () => `<w:gridCol w:w="${cellW}"/>`).join('')}</w:tblGrid>`;
+    return P(`↑ ${m.ay || 'Axe vertical'} (${m.ayHi || 'fort'})`, { b: true, sz: 18, color: C.pine, after: 40 }) +
+      `<w:tbl><w:tblPr><w:tblW w:w="${cellW * size}" w:type="dxa"/><w:jc w:val="center"/>${b}<w:tblLayout w:type="fixed"/></w:tblPr>${grid}${rows}</w:tbl>` +
+      P(`${m.axLo || 'faible'} ← ${m.ax || 'Axe horizontal'} → ${m.axHi || 'fort'}   |   bas de la carte : ${m.ayLo || 'faible'}`, { sz: 18, color: C.pine, align: 'center', before: 60 });
+  }
+
+  /* ---------- document ---------- */
+  function documentXml(s) {
+    const v = s.values, b = [];
+    const nom = filled(v.p_nom) ? v.p_nom : 'Mon projet';
+    const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Couverture
+    b.push(para('', { before: 2400 }));
+    b.push(P(APP.docSub, { style: 'Title' }));
+    b.push(P(nom, { sz: 40, b: true, color: C.ochre }));
+    if (filled(v.p_porteur)) b.push(P('Porté par ' + v.p_porteur, { sz: 24 }));
+    if (filled(v.p_activite)) b.push(para(run(v.p_activite, { i: true }), { before: 360, border: C.ochre }));
+    b.push(para('', { before: 1600 }));
+    b.push(P('Document généré le ' + date, { color: C.grey, sz: 20 }));
+    const co = L.coherence(s);
+    b.push(P(`Complétude ${Math.round(L.overall(s) * 100)} %   |   Cohérence ${Math.round(co.score * 100)} %`, { color: C.grey, sz: 20 }));
+    b.push(P('Jeu Création d’entreprise, mission « ' + APP.docTitle + ' »', { color: C.grey, sz: 20 }));
+
+    b.push(docSynthesis(s, Dh()));
+
+    // Chapitres
+    CHAPTERS.forEach(ch => {
+      b.push(H1(`${ch.n}. ${ch.title}`));
+      STEPS.filter(st => st.chap === ch.id).forEach(st => {
+        b.push(H2(st.title));
+        st.fields.forEach(f => b.push(renderField(f, s)));
+      });
+    });
+
+    // Annexe cohérence
+    b.push(H1('Annexe : contrôle de cohérence'));
+    b.push(P(`Score de cohérence : ${co.res.filter(x => x.ok).length} critères validés sur ${co.res.length}.`));
+    b.push(table(['Critère', 'Statut', 'Piste d’amélioration'], co.res.map(x => [x.c.label, x.ok ? 'Validé' : 'À reprendre', x.ok ? '' : x.c.advice]), [4, 1.4, 4]));
+    const earned = L.earnedBadges(s);
+    b.push(H2('Badges obtenus'));
+    b.push(earned.length ? P(L.BADGES.filter(bd => earned.includes(bd.id)).map(bd => bd.name).join(', ')) : P('Aucun badge pour le moment.', { i: true, color: C.grey }));
+
+    b.push(H2('Ressources et contact'));
+    b.push(para([run('Cours complet : ', { b: true }), run('https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link')]));
+    b.push(para([run('Pierrick Frottier', { b: true }), run(', formateur indépendant en marketing, digital et création d’entreprise\n06 31 79 59 36  |  pierrick.frottier.pro@gmail.com\npierrickfrottier.fr  |  linkedin.com/in/pierrick-frottier')]));
+
+    const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="454" w:gutter="0"/></w:sectPr>';
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${b.join('')}${sect}</w:body></w:document>`;
+  }
+
+  function footerXml(nom) {
+    const g = { sz: 16, color: C.grey };
+    const fld = (instr) => `<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:instrText xml:space="preserve"> ${instr} </w:instrText></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:t>1</w:t></w:r><w:r><w:rPr><w:sz w:val="16"/><w:color w:val="${C.grey}"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>`;
+    const p1 = `<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="6" w:color="${C.line}"/></w:pBdr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run('Pierrick Frottier', { sz: 16, b: true, color: C.pine })}${run(', formateur indépendant en marketing, digital et création d’entreprise', g)}</w:p>`;
+    const p2 = `<w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run('06 31 79 59 36  |  pierrick.frottier.pro@gmail.com  |  pierrickfrottier.fr  |  linkedin.com/in/pierrick-frottier', g)}</w:p>`;
+    const p3 = `<w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="center"/></w:pPr>${run(nom + '  |  page ', g)}${fld('PAGE')}${run(' sur ', g)}${fld('NUMPAGES')}</w:p>`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${p1}${p2}${p3}</w:ftr>`;
+  }
+
+  const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="21"/><w:szCs w:val="21"/><w:color w:val="${C.ink}"/><w:lang w:val="fr-FR"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>
+<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>
+<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:after="240"/></w:pPr><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="56"/><w:szCs w:val="56"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${C.ochre}"/></w:pBdr><w:spacing w:before="0" w:after="240"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="320" w:after="120"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:color w:val="${C.pine}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="200" w:after="60"/><w:outlineLvl w:val="2"/></w:pPr><w:rPr><w:b/><w:color w:val="${C.ochre}"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:style>
+</w:styles>`;
+
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>';
+  const docRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>';
+  const core = title => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${x(title)}</dc:title><dc:creator>Parcours stratégie commerciale</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString().slice(0, 19)}Z</dcterms:created></cp:coreProperties>`;
+
+  /* ---------- ZIP (méthode « stored ») ---------- */
+  const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = d => { let c = 0xFFFFFFFF; for (let i = 0; i < d.length; i++) c = CRC[(c ^ d[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  function zip(files) {
+    const enc = new TextEncoder(), chunks = [], central = []; let off = 0;
+    files.forEach(f => {
+      const name = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+      const h = new DataView(new ArrayBuffer(30));
+      h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+      h.setUint16(10, 0, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true);
+      h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+      chunks.push(new Uint8Array(h.buffer), name, data);
+      const c = new DataView(new ArrayBuffer(46));
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+      c.setUint16(10, 0, true); c.setUint16(12, 0, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true);
+      c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true);
+      c.setUint32(42, off, true);
+      central.push(new Uint8Array(c.buffer), name);
+      off += 30 + name.length + data.length;
+    });
+    const cSize = central.reduce((a, u) => a + u.length, 0);
+    const e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true);
+    e.setUint32(12, cSize, true); e.setUint32(16, off, true);
+    const all = chunks.concat(central, [new Uint8Array(e.buffer)]);
+    const out = new Uint8Array(all.reduce((a, u) => a + u.length, 0)); let p = 0;
+    all.forEach(u => { out.set(u, p); p += u.length; });
+    return out;
+  }
+
+  function build(s) {
+    const nom = (s.values.p_nom || 'Mon projet').trim() || 'Mon projet';
+    return zip([
+      { name: '[Content_Types].xml', data: contentTypes },
+      { name: '_rels/.rels', data: rootRels },
+      { name: 'docProps/core.xml', data: core(APP.docTitle + ' – ' + nom) },
+      { name: 'word/_rels/document.xml.rels', data: docRels },
+      { name: 'word/document.xml', data: documentXml(s) },
+      { name: 'word/styles.xml', data: stylesXml },
+      { name: 'word/footer1.xml', data: footerXml(nom) }
+    ]);
+  }
+  return { build };
+})();
+
+;
+/* ==========================================================
+   APPLICATION
+   ========================================================== */
+(() => {
+  const APP_ID = APP.id;
+  let S = { values: {}, cur: 's0' };
+  let dirty = false, lastSaved = null, coachTab = 'theory';
+  const hintLvl = {};
+  let earned = new Set();
+
+  const $ = sel => document.querySelector(sel);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const chapterOf = id => CHAPTERS.find(c => c.id === id);
+  const stepIndex = id => STEPS.findIndex(s => s.id === id);
+  const pct = x => Math.round(x * 100);
+  const slug = t => (String(t || 'projet').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'projet').slice(0, 40);
+  const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; };
+
+  function toast(msg, cls = '') {
+    const t = document.createElement('div'); t.className = 'toast ' + cls; t.textContent = msg;
+    $('#toasts').appendChild(t); setTimeout(() => t.remove(), cls === 'badge-toast' ? 4200 : 3200);
+  }
+  function download(name, data, type) {
+    const blob = data instanceof Blob ? data : new Blob([data], { type });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }
+  const hasData = () => Object.keys(S.values).some(k => { const v = S.values[k]; return Array.isArray(v) ? v.length : (v && typeof v === 'object' ? Object.keys(v).length : L.isFilled(v)); });
+
+  /* ---------------- rendu des champs ---------------- */
+  function hintsHtml(f) {
+    if (!f.hints || !f.hints.length) return '';
+    const n = hintLvl[f.id] || 0;
+    const list = f.hints.slice(0, n).map((h, i) => `<li><b>Indice ${i + 1}</b>${esc(h)}</li>`).join('');
+    return `<ul class="hints" id="h_${f.id}">${list}</ul>`;
+  }
+  function hintBtn(f) {
+    if (!f.hints || !f.hints.length) return '';
+    const n = hintLvl[f.id] || 0, max = f.hints.length;
+    return `<button type="button" class="hint-btn" data-hint="${f.id}" ${n >= max ? 'disabled' : ''}>${n >= max ? 'Tous les indices affichés' : `Indice ${n + 1}/${max}`}</button>`;
+  }
+  function fieldWrap(f, inner, forId) {
+    const lab = forId ? `<label for="${forId}">${esc(f.label)}</label>` : `<span class="lbl">${esc(f.label)}</span>`;
+    return `<div class="field" data-field="${f.id}"><div class="field-top">${lab}${hintBtn(f)}</div>${hintsHtml(f)}${inner}</div>`;
+  }
+  function cellInput(attrs, col, val) {
+    const v = val == null ? '' : val;
+    if (col.type === 'select') return `<select ${attrs} aria-label="${esc(col.l)}">${col.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+    if (col.type === 'number') return `<input type="number" step="any" min="0" ${attrs} value="${esc(v)}" aria-label="${esc(col.l)}">`;
+    if (col.list) return `<input type="text" ${attrs} value="${esc(v)}" list="dl_${col.k}" aria-label="${esc(col.l)}" placeholder="Choisir ou écrire">`;
+    return `<textarea rows="${col.type === 'area' ? 3 : 1}" ${attrs} aria-label="${esc(col.l || 'Valeur')}">${esc(v)}</textarea>`;
+  }
+  function renderTable(f) {
+    const fixed = !!f.fixedRows, nFix = fixed ? f.fixedRows.length : 0;
+    let rows = L.tableRows(f, S);
+    if (!fixed) { const min = f.minRows || 1; while (rows.length < min) rows = rows.concat([{}]); }
+    const cols = L.tableCols(f, S);
+    const canDel = !fixed || f.addRows;
+    const th = c => c.custom
+      ? `<th class="th-custom"><div><input type="text" class="th-in" data-colname="${f.id}" data-ck="${c.k}" value="${esc(c.l || '')}" placeholder="Nouveau critère" aria-label="Nom du critère ajouté"><button type="button" class="del-btn" data-delcol="${f.id}" data-ck="${c.k}" title="Supprimer ce critère" aria-label="Supprimer ce critère">×</button></div></th>`
+      : `<th>${esc(L.colLabel(c, S.values))}</th>`;
+    const head = `<tr>${cols.map(th).join('')}${canDel ? '<th aria-label="Supprimer"></th>' : ''}</tr>`;
+    const body = rows.map((r, i) => {
+      const extra = fixed && i >= nFix;
+      const cells = cols.map(c => {
+        if (fixed && c.k === 'f') return extra
+          ? `<td class="rowlab"><textarea rows="1" data-t="${f.id}" data-r="${i}" data-c="f" placeholder="Nouveau critère" aria-label="Nom du critère ajouté">${esc(r.f || '')}</textarea></td>`
+          : `<td class="rowlab">${esc(r.f)}</td>`;
+        return `<td>${cellInput(`data-t="${f.id}" data-r="${i}" data-c="${c.k}"`, c, r[c.k])}</td>`;
+      }).join('');
+      const del = canDel ? `<td class="del">${(!fixed || extra) ? `<button type="button" class="del-btn" data-delrow="${f.id}" data-r="${i}" title="Supprimer la ligne" aria-label="Supprimer la ligne ${i + 1}">×</button>` : ''}</td>` : '';
+      return `<tr>${cells}${del}</tr>`;
+    }).join('');
+    let btns = '';
+    if (!fixed) btns += `<button type="button" class="btn small" data-addrow="${f.id}">+ ${esc(f.addLabel || 'Ajouter une ligne')}</button>`;
+    if (fixed && f.addRows) btns += `<button type="button" class="btn small" data-addrow="${f.id}">+ ${esc(f.addRowLabel || 'Ajouter un critère')}</button>`;
+    if (f.addCols) btns += `<button type="button" class="btn small" data-addcol="${f.id}">+ ${esc(f.addColLabel || 'Ajouter un critère (colonne)')}</button>`;
+    const dls = cols.filter(c => c.list).map(c => `<datalist id="dl_${c.k}">${c.list.map(o => `<option value="${esc(o)}">`).join('')}</datalist>`).join('');
+    return fieldWrap(f, `<div class="tbl-wrap"><table class="grid">${head}${body}</table></div>${dls}${btns ? `<div class="add-row">${btns}</div>` : ''}`);
+  }
+  function renderLinked(f) {
+    const rows = L.linkedRows(f, S);
+    if (!rows.length) return fieldWrap(f, `<div class="tbl-wrap"><p class="empty-note">${esc(f.empty || 'Rien à afficher pour le moment.')}</p></div>`);
+    const head = `<tr><th></th>${f.cols.map(c => `<th>${esc(c.l)}</th>`).join('')}</tr>`;
+    const body = rows.map(r => `<tr><td class="rowlab wrap">${esc(r.__k)}</td>${f.cols.map(c => `<td>${cellInput(`data-ln="${f.id}" data-key="${esc(r.__k)}" data-c="${c.k}"`, c, r[c.k])}</td>`).join('')}</tr>`).join('');
+    return fieldWrap(f, `<div class="tbl-wrap"><table class="grid">${head}${body}</table></div>`);
+  }
+  const itemV = i => typeof i === 'string' ? i : i.v;
+  function renderChecks(f) {
+    const sel = S.values[f.id] || [];
+    const groups = f.groups.map(g => `<fieldset><legend${g.d ? ` class="has-tip" tabindex="0" data-tip="${esc(g.d)}"` : ''}>${esc(g.g)}${g.d ? ' <span class="tip-i" aria-hidden="true">i</span>' : ''}</legend><div class="chips">${g.items.map(i => { const v = itemV(i), d = typeof i === 'string' ? '' : (i.d || ''); return `<label${d ? ` data-tip="${esc(d)}"` : ''}><input type="checkbox" data-chk="${f.id}" value="${esc(v)}" ${sel.includes(v) ? 'checked' : ''}>${esc(v)}${d ? ' <span class="tip-i" aria-hidden="true">i</span>' : ''}</label>`; }).join('')}</div></fieldset>`).join('');
+    return fieldWrap(f, `<div class="checks">${groups}</div>`);
+  }
+  function renderCalc(f) {
+    const c = S.values[f.id] || {};
+    const inp = i => `<div><label for="calc_${f.id}_${i.k}">${esc(i.l)}</label><input type="number" step="any" min="0" id="calc_${f.id}_${i.k}" data-calc="${f.id}" data-k="${i.k}" value="${esc(c[i.k] || '')}" placeholder="${esc(i.ph || '')}"></div>`;
+    return fieldWrap(f, `<div class="calc">${f.inputs.map(inp).join('')}</div><div id="calcout_${f.id}">${f.render(f.compute(c), c)}</div>`);
+  }
+
+  /* ---------- carte de positionnement ---------- */
+  function mapSvg(f) {
+    const m = S.values[f.id] || {}, pts = m.pts || {};
+    const W = 440, H = 440, pad = 46, sx = x => pad + x / 10 * (W - 2 * pad), sy = y => H - pad - y / 10 * (H - 2 * pad);
+    const actors = L.mapActors(f, S).filter(a => pts[a]).map(a => ({ n: a, x: pts[a].x, y: pts[a].y, me: false }));
+    if (pts.__moi) actors.push({ n: S.values.p_nom || 'Mon projet', x: pts.__moi.x, y: pts.__moi.y, me: true });
+    const dots = actors.map(a => `<g><circle cx="${sx(a.x)}" cy="${sy(a.y)}" r="${a.me ? 10 : 8}" class="${a.me ? 'mp-me' : 'mp-dot'}"/><text x="${sx(a.x) + (a.x >= 8 ? 6 : a.x <= 2 ? -6 : 0)}" y="${sy(a.y) - 14}" text-anchor="${a.x >= 8 ? 'end' : a.x <= 2 ? 'start' : 'middle'}" class="mp-lab${a.me ? ' me' : ''}">${esc(a.n.length > 24 ? a.n.slice(0, 23) + '…' : a.n)}</text></g>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="mapsvg" role="img" aria-label="Carte de positionnement">
+      <rect x="${pad}" y="${pad}" width="${W - 2 * pad}" height="${H - 2 * pad}" class="mp-bg"/>
+      <line x1="${W / 2}" y1="${pad}" x2="${W / 2}" y2="${H - pad}" class="mp-axis"/><line x1="${pad}" y1="${H / 2}" x2="${W - pad}" y2="${H / 2}" class="mp-axis"/>
+      <text x="${W / 2}" y="${H - 12}" text-anchor="middle" class="mp-title">${esc(m.ax || 'Axe horizontal')}</text>
+      <text x="${pad}" y="${H - pad + 16}" class="mp-end">${esc(m.axLo || '')}</text><text x="${W - pad}" y="${H - pad + 16}" text-anchor="end" class="mp-end">${esc(m.axHi || '')}</text>
+      <text transform="translate(16 ${H / 2}) rotate(-90)" text-anchor="middle" class="mp-title">${esc(m.ay || 'Axe vertical')}</text>
+      <text transform="translate(32 ${H - pad}) rotate(-90)" class="mp-end">${esc(m.ayLo || '')}</text><text transform="translate(32 ${pad}) rotate(-90)" text-anchor="end" class="mp-end">${esc(m.ayHi || '')}</text>
+      ${dots}</svg>`;
+  }
+  function renderMap(f) {
+    const m = S.values[f.id] || {}, pts = m.pts || {};
+    const ax = (k, l, ph) => `<div><label for="map_${k}">${l}</label><input type="text" id="map_${k}" data-map="${f.id}" data-k="${k}" value="${esc(m[k] || '')}" placeholder="${ph}"></div>`;
+    const actors = L.mapActors(f, S).map(a => ({ k: a, n: a })).concat([{ k: '__moi', n: (S.values.p_nom || 'Mon projet') + ' (moi)', me: true }]);
+    const slider = (a, d) => { const p = pts[a.k]; return `<input type="range" min="0" max="10" step="1" value="${p ? p[d] : 5}" data-mapp="${f.id}" data-a="${esc(a.k)}" data-d="${d}" aria-label="${esc(a.n)} : ${d === 'x' ? 'axe horizontal' : 'axe vertical'}" class="${p ? '' : 'unset'}">`; };
+    const rows = actors.map(a => `<tr class="${a.me ? 'me' : ''}"><td class="rowlab wrap">${esc(a.n)}${pts[a.k] ? '' : ' <small>non placé</small>'}</td><td>${slider(a, 'x')}</td><td>${slider(a, 'y')}</td></tr>`).join('');
+    const none = L.mapActors(f, S).length ? '' : `<p class="empty-note">Ajoutez vos concurrents à l’étape « Repérer mes concurrents » : ils apparaîtront ici.</p>`;
+    return fieldWrap(f, `<div class="map-wrap">
+      <div class="map-ctrl">
+        <div class="map-axes">${ax('ax', 'Axe horizontal', 'Ex. Prix')}${ax('axLo', 'à gauche', 'Ex. Bon marché')}${ax('axHi', 'à droite', 'Ex. Cher')}
+        ${ax('ay', 'Axe vertical', 'Ex. Fait maison')}${ax('ayLo', 'en bas', 'Ex. Industriel')}${ax('ayHi', 'en haut', 'Ex. Fait maison')}</div>
+        ${none}<p class="map-help">Déplacez les curseurs pour placer chaque acteur (0 à 10).</p>
+        <div class="tbl-wrap"><table class="grid map-tab"><tr><th>Acteur</th><th>Horizontal</th><th>Vertical</th></tr>${rows}</table></div>
+      </div>
+      <div class="map-view" id="mapview_${f.id}">${mapSvg(f)}</div>
+    </div>`);
+  }
+
+  function renderField(f) {
+    const v = S.values[f.id];
+    const id = 'f_' + f.id;
+    switch (f.type) {
+      case 'text': return fieldWrap(f, `<input type="text" id="${id}" data-f="${f.id}" value="${esc(v || '')}" placeholder="${esc(f.ph || '')}">`, id);
+      case 'area': return fieldWrap(f, `<textarea id="${id}" data-f="${f.id}" rows="${f.rows || 3}" placeholder="${esc(f.ph || '')}">${esc(v || '')}</textarea>${f.counter ? `<div class="counter" id="cnt_${f.id}">${counterTxt(f, v)}</div>` : ''}`, id);
+      case 'importdocx': return `<div class="field import-box"><div><strong>${esc(f.label)}</strong><p>Chargez le document Word exporté par la mission « Business plan » : les chiffres clés, le pitch et les points faibles se remplissent automatiquement. Vous pouvez aussi tout saisir à la main.</p></div><button type="button" class="btn ochre" data-act="importdocx" data-fid="${f.id}">Importer mon business plan (.docx)</button></div>`;
+      case 'game': return `<div class="field game" data-field="${f.id}"><div id="game_${f.id}">${f.render(S.values)}</div></div>`;
+      case 'select': return fieldWrap(f, `<select id="${id}" data-f="${f.id}"><option value="">Choisir…</option>${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`, id);
+      case 'radio': return fieldWrap(f, `<div class="radios" role="radiogroup">${f.options.map(o => `<label><input type="radio" name="${f.id}" data-f="${f.id}" value="${esc(o.v)}" ${o.v === v ? 'checked' : ''}><span>${esc(o.v)}<small>${esc(o.d)}</small></span></label>`).join('')}</div>`);
+      case 'table': return renderTable(f);
+      case 'checks': return renderChecks(f);
+      case 'linked': return renderLinked(f);
+      case 'calc': return renderCalc(f);
+      case 'map': return renderMap(f);
+      case 'number': return fieldWrap(f, `<input type="number" step="any" id="${id}" data-f="${f.id}" value="${esc(v || '')}" placeholder="${esc(f.ph || '')}" class="num-in">`, id);
+      case 'range': return fieldWrap(f, `<div class="range-row"><input type="range" id="${id}" data-f="${f.id}" min="${f.min}" max="${f.max}" step="${f.step}" value="${esc(v || f.min)}"><output id="rv_${f.id}">${esc(v || f.min)} ${esc(f.unit || '')}</output></div>`, id);
+      case 'report': return `<div class="field report" data-field="${f.id}"><span class="lbl">${esc(f.label)}</span><div id="report_${f.id}" class="report-body">${f.render(S.values)}</div></div>`;
+      case 'canvas': { const c = v || {}; return fieldWrap(f, `<div class="bmc">${f.blocks.map(b => `<div class="bmc-b bmc-${b.a}"><label for="cv_${b.k}">${esc(b.l)}</label><small>${esc(b.q)}</small><textarea id="cv_${b.k}" data-cv="${f.id}" data-k="${b.k}" rows="4">${esc(c[b.k] || '')}</textarea></div>`).join('')}</div>`); }
+      case 'import': return `<div class="field import-box"><div><strong>${esc(f.label)}</strong><p>Chargez le brouillon (.json) de vos missions ${Object.values(APP.importFrom).map(x => '« ' + x + ' »').join(' ou ')} : les champs communs encore vides se remplissent automatiquement.</p></div><button type="button" class="btn ochre" data-act="import">Importer un brouillon de mission</button></div>`;
+      case 'preview': return `<div class="field"><span class="lbl">${esc(f.label)}</span><div class="preview" id="prev_${f.id}">${esc(f.render(S.values))}</div></div>`;
+    }
+    return '';
+  }
+
+  function counterTxt(f, v) {
+    const w = (String(v || '').trim().match(/\S+/g) || []).length, min = Math.round(w / 140 * 10) / 10;
+    if (!w) return `Visez ${f.counter.min} à ${f.counter.max} mots.`;
+    return `${w} mots, environ ${String(min).replace('.', ',')} minute${min >= 2 ? 's' : ''} à l’oral. ${w < f.counter.min ? 'Un peu court.' : w > f.counter.max ? 'Trop long : coupez.' : 'Bonne longueur.'}`;
+  }
+
+  /* ---------------- exemple fil rouge ---------------- */
+  function exampleHtml(st) {
+    const EX = { values: EXAMPLE };
+    const mini = (heads, rows) => `<div class="tbl-wrap" style="background:transparent;border-color:transparent"><table class="mini"><tr>${heads.map(h => `<th>${esc(h)}</th>`).join('')}</tr>${rows.map(r => '<tr>' + r.map(c => `<td>${esc(c == null ? '' : c)}</td>`).join('') + '</tr>').join('')}</table></div>`;
+    const parts = st.fields.map(f => {
+      const v = EXAMPLE[f.id];
+      if (v == null) return '';
+      let body = '';
+      if (f.type === 'table') { const cs = L.tableCols(f, EX); body = mini(cs.map(c => L.colLabel(c, EXAMPLE)), L.tableRows(f, EX).filter(r => cs.some(c => c.k !== 'f' && r[c.k])).map(r => cs.map(c => r[c.k]))); }
+      else if (f.type === 'linked') body = mini([''].concat(f.cols.map(c => c.l)), L.linkedRows(f, EX).map(r => [r.__k].concat(f.cols.map(c => r[c.k]))));
+      else if (f.type === 'checks') body = `<p>${esc(v.join(', '))}</p>`;
+      else if (f.type === 'calc') body = mini(['Élément', 'Valeur'], f.docRows(v, f.compute(v)));
+      else if (f.type === 'map') { const pts = v.pts || {}; body = `<p>Axes : ${esc(v.ax)} (horizontal) et ${esc(v.ay)} (vertical).</p>` + mini(['Acteur', v.ax, v.ay], Object.keys(pts).map(k => [k === '__moi' ? EXAMPLE.p_nom + ' (moi)' : k, pts[k].x, pts[k].y])); }
+      else body = `<p>${esc(v)}</p>`;
+      return `<div class="ex-f"><b>${esc(f.label)}</b>${body}</div>`;
+    }).join('');
+    return `<details class="example"><summary>Voir l’exemple : La Roulotte Gourmande (entreprise fictive)</summary><div class="ex-body">${parts}</div></details>`;
+  }
+
+  /* ---------------- panneau méthode ---------------- */
+  function coachHtml(st) {
+    const tabs = [['theory', 'Comprendre'], ['tips', 'Astuces'], ['tools', 'Outils']];
+    let body = '';
+    if (coachTab === 'theory') body = st.theory.map((t, i) => `<details ${i === 0 ? 'open' : ''}><summary>${esc(t.t)}</summary>${t.b}</details>`).join('');
+    if (coachTab === 'tips') body = `<ul class="tips">${st.tips.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
+    if (coachTab === 'tools') body = st.tools.map(t => `<div class="tool"><b>${t.u ? `<a href="${t.u}" target="_blank" rel="noopener">${esc(t.n)}</a>` : esc(t.n)}</b><span>${esc(t.d)}</span></div>`).join('');
+    return `<aside class="coach" aria-label="Méthode"><div class="coach-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" aria-selected="${coachTab === k}" class="${coachTab === k ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div><div class="coach-body">${body}</div></aside>`;
+  }
+
+  /* ---------------- étape ---------------- */
+  function renderStep(st) {
+    const i = stepIndex(st.id), ch = chapterOf(st.chap);
+    const prev = STEPS[i - 1], next = STEPS[i + 1];
+    const comp = L.stepCompletion(st, S);
+    $('#main').innerHTML = `
+      <header class="step-head">
+        <div class="step-kicker"><span>Chapitre ${ch.n}, ${esc(ch.title)}</span><span>Étape ${i + 1} sur ${STEPS.length}</span><span>Durée indicative : ${esc(st.time)}</span></div>
+        <h2>${esc(st.title)}</h2>
+        <div class="step-progress" title="Complétude de l’étape"><i id="stepbar" style="width:${pct(comp)}%"></i></div>
+        <div class="produce"><strong>Ce que vous allez produire</strong>${esc(st.produce)}</div>
+      </header>
+      <div class="step-grid${st.wide ? ' wide' : ''}">
+        <section>
+          ${exampleHtml(st)}
+          ${st.fields.map(renderField).join('')}
+          <nav class="step-nav">
+            ${prev ? `<button type="button" class="btn" data-go="${prev.id}">← ${esc(prev.title)}</button>` : '<span></span>'}
+            ${next ? `<button type="button" class="btn primary" data-go="${next.id}">${esc(next.title)} →</button>` : `<button type="button" class="btn primary" data-go="bilan">Voir mon bilan et exporter</button>`}
+          </nav>
+        </section>
+        ${coachHtml(st)}
+      </div>`;
+    autosizeAll();
+  }
+
+  /* ---------------- bilan ---------------- */
+  function renderBilan() {
+    const co = L.coherence(S), ov = L.overall(S), ear = L.earnedBadges(S);
+    $('#main').innerHTML = `<div class="bilan">
+      <div class="step-kicker"><span>Fin du parcours</span></div>
+      <h2>Mon bilan</h2>
+      <div class="big-scores">
+        <div class="big-score"><b>${pct(ov)} %</b><p>Complétude : part des champs remplis dans tout le parcours.</p></div>
+        <div class="big-score coh"><b>${pct(co.score)} %</b><p>Cohérence : ${co.res.filter(r => r.ok).length} critères validés sur ${co.res.length}. Vos choix se répondent-ils d’une étape à l’autre ?</p></div>
+        <div class="big-score"><b>${ear.length}/${L.BADGES.length}</b><p>Badges obtenus.</p></div>
+      </div>
+      <h3>Avancement par chapitre</h3>
+      <div class="chap-bars">${CHAPTERS.map(c => { const p = pct(L.chapterCompletion(c.id, S)); return `<div class="chap-bar"><span>${c.n}. ${esc(c.title)}</span><b>${p} %</b><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('')}</div>
+      <h3>Contrôle de cohérence</h3>
+      <ul class="checks-list">${co.res.map(r => `<li class="${r.ok ? 'ok' : 'ko'}"><span class="st">${r.ok ? '✓' : '!'}</span><div><strong>${esc(r.c.label)}</strong>${r.ok ? '' : `<p>${esc(r.c.advice)}</p>`}</div>${r.ok ? '' : `<button type="button" class="btn small" data-go="${r.c.step}">Reprendre</button>`}</li>`).join('')}</ul>
+      <h3>Badges</h3>
+      <div class="badges">${L.BADGES.map(b => `<div class="badge ${ear.includes(b.id) ? 'on' : ''}" tabindex="0" data-tip="${esc((ear.includes(b.id) ? 'Obtenu ! ' : 'Pour l’obtenir : ') + b.how)}"><div class="ic" aria-hidden="true">${b.icon}</div><b>${esc(b.name)}</b><small>${esc(b.cond)}</small></div>`).join('')}</div>
+      <div class="export-box"><div><h3>${esc(APP.exportTitle)}</h3><p>${esc(APP.exportText)}</p></div><button type="button" class="btn ochre" data-act="export">Télécharger le Word</button></div>
+      ${APP.nextMission ? `<div class="next-box"><h3>${esc(APP.nextMission.title)}</h3><p>${esc(APP.nextMission.text)}</p></div>` : ''}
+    </div>`;
+  }
+
+  /* ---------------- barre latérale ---------------- */
+  function renderSide() {
+    const ov = L.overall(S), co = L.coherence(S), ear = L.earnedBadges(S);
+    const trail = CHAPTERS.map(c => `<li class="ch"><div class="ch-title"><span>${c.n}. ${esc(c.title)}</span><small>${esc(c.time)}</small></div><ol>${STEPS.filter(s => s.chap === c.id).map(st => {
+      const p = L.stepCompletion(st, S); const cls = p >= 0.999 ? 'done' : p > 0 ? 'part' : '';
+      return `<li><button type="button" data-go="${st.id}" class="${S.cur === st.id ? 'cur' : ''}" ${S.cur === st.id ? 'aria-current="step"' : ''}><span class="dot ${cls}" style="--p:${pct(p)}%"></span>${esc(st.title)}</button></li>`;
+    }).join('')}</ol></li>`).join('');
+    const saved = dirty ? 'Modifications non enregistrées' : (lastSaved ? `Brouillon enregistré à ${lastSaved}` : 'Aucun brouillon enregistré');
+    $('#side').innerHTML = `
+      <div class="proj-name">${esc(S.values.p_nom || 'Mon projet')}</div>
+      <div class="proj-sub">${esc(S.values.p_porteur || APP.docTitle)}</div>
+      <div class="scores">
+        <div class="score"><b>${pct(ov)} %</b><span>Complétude</span><div class="bar"><i style="width:${pct(ov)}%"></i></div></div>
+        <div class="score coh"><b>${pct(co.score)} %</b><span>Cohérence</span><div class="bar"><i style="width:${pct(co.score)}%"></i></div></div>
+      </div>
+      <div class="badge-strip">${L.BADGES.map(b => `<button type="button" class="b ${ear.includes(b.id) ? 'on' : ''}" data-go="bilan" data-tip="${esc((ear.includes(b.id) ? 'Obtenu ! ' : '') + b.name + ' : ' + b.how)}" aria-label="${esc(b.name + ', ' + (ear.includes(b.id) ? 'obtenu' : 'à obtenir') + '. ' + b.how)}">${b.icon}</button>`).join('')}<small>${ear.length}/${L.BADGES.length}</small></div>
+      <ul class="trail">${trail}<li class="ch bilan-link"><ol><li><button type="button" data-go="bilan" class="${S.cur === 'bilan' ? 'cur' : ''}"><span class="dot ${co.score >= .8 ? 'done' : ''}"></span>Bilan et export Word</button></li></ol></li></ul>
+      <div class="side-block">
+        <h3>Brouillon</h3>
+        <div class="save-status ${dirty ? 'dirty' : ''}">${saved}</div>
+        <button type="button" class="btn" data-act="save">Enregistrer un brouillon</button>
+        <button type="button" class="btn" data-act="restore">Restaurer un brouillon</button>
+      </div>
+      <div class="side-block">
+        <button type="button" class="btn primary" data-act="export">Exporter en Word</button>
+        <a class="btn" href="https://drive.google.com/drive/folders/11DahIaekLNOmhGwmejWq_Q0q9fcPyZQ2?usp=drive_link" target="_blank" rel="noopener">Ouvrir le cours complet</a>
+        <button type="button" class="btn ghost small" data-act="new">Recommencer à zéro</button>
+      </div>`;
+    $('#topt').textContent = S.values.p_nom || APP.docTitle;
+  }
+
+  function render() {
+    renderSide();
+    if (S.cur === 'bilan') renderBilan(); else renderStep(STEPS.find(s => s.id === S.cur) || STEPS[0]);
+  }
+  function go(id) {
+    S.cur = id; closeSide(); render(); window.scrollTo(0, 0);
+    const h = $('#main h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+  }
+
+  /* ---------------- mises à jour légères ---------------- */
+  function refreshLive() {
+    const st = STEPS.find(s => s.id === S.cur);
+    if (st) { const b = $('#stepbar'); if (b) b.style.width = pct(L.stepCompletion(st, S)) + '%'; }
+    if (st) st.fields.forEach(f => {
+      if (f.type === 'report') { const o = $('#report_' + f.id); if (o) o.innerHTML = f.render(S.values); }
+      if (f.type === 'area' && f.counter) { const o = $('#cnt_' + f.id); if (o) o.textContent = counterTxt(f, S.values[f.id]); }
+      if (f.type === 'range') { const o = $('#rv_' + f.id); if (o) o.textContent = (S.values[f.id] || f.min) + ' ' + (f.unit || ''); }
+      if (f.type === 'calc') { const o = $('#calcout_' + f.id); if (o) o.innerHTML = f.render(f.compute(S.values[f.id] || {}), S.values[f.id] || {}); }
+      if (f.type === 'map') { const o = $('#mapview_' + f.id); if (o) o.innerHTML = mapSvg(f); }
+      if (f.type === 'preview') { const o = $('#prev_' + f.id); if (o) o.textContent = f.render(S.values); }
+    });
+    renderSide();
+    checkBadges();
+  }
+  function checkBadges(silent) {
+    const now = new Set(L.earnedBadges(S));
+    if (!silent) L.BADGES.forEach(b => { if (now.has(b.id) && !earned.has(b.id)) toast(`Badge obtenu : ${b.icon} ${b.name}`, 'badge-toast'); });
+    earned = now;
+  }
+  function markDirty() { dirty = true; }
+  function autosize(el) { if (el && el.tagName === 'TEXTAREA' && el.closest('table.grid')) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; } }
+  function autosizeAll() { document.querySelectorAll('table.grid textarea').forEach(autosize); }
+
+  function ensureRows(f) {
+    let rows = S.values[f.id];
+    if (!Array.isArray(rows)) rows = [];
+    if (f.fixedRows) {
+      const base = f.fixedRows.map((lab, i) => Object.assign({}, rows[i] || {}, { f: lab }));
+      rows = f.addRows ? base.concat(rows.slice(f.fixedRows.length)) : base;
+    }
+    S.values[f.id] = rows; return rows;
+  }
+
+  /* ---------------- événements ---------------- */
+  function onInput(e) {
+    const t = e.target;
+    if (e.type === 'input' && (t.type === 'checkbox' || t.type === 'radio')) return;
+    if (t.dataset.f) {
+      S.values[t.dataset.f] = t.value;
+    } else if (t.dataset.t) {
+      const f = L.FIELDS[t.dataset.t], rows = ensureRows(f), r = +t.dataset.r;
+      while (rows.length <= r) rows.push({});
+      rows[r][t.dataset.c] = t.value; autosize(t);
+    } else if (t.dataset.colname) {
+      const c = (S.values[t.dataset.colname + '__cols'] || []).find(x => x.k === t.dataset.ck); if (c) c.l = t.value;
+    } else if (t.dataset.ln) {
+      const m = S.values[t.dataset.ln] = S.values[t.dataset.ln] || {};
+      const k = t.dataset.key; m[k] = m[k] || {}; m[k][t.dataset.c] = t.value; autosize(t);
+    } else if (t.dataset.gj) {
+      const fld = t.closest('.field.game'); L.FIELDS[fld.dataset.field].input(S.values, t.value);
+    } else if (t.dataset.cv) {
+      const m = S.values[t.dataset.cv] = S.values[t.dataset.cv] || {}; m[t.dataset.k] = t.value;
+    } else if (t.dataset.map) {
+      const m = S.values[t.dataset.map] = S.values[t.dataset.map] || {}; m[t.dataset.k] = t.value;
+    } else if (t.dataset.mapp) {
+      const m = S.values[t.dataset.mapp] = S.values[t.dataset.mapp] || {}; m.pts = m.pts || {};
+      const a = t.dataset.a, p = m.pts[a] = m.pts[a] || { x: 5, y: 5 }; p[t.dataset.d] = +t.value;
+      if (t.classList.contains('unset')) {
+        t.closest('tr').querySelectorAll('input[type=range]').forEach(r => r.classList.remove('unset'));
+        const sm = t.closest('tr').querySelector('small'); if (sm) sm.remove();
+      }
+    } else if (t.dataset.calc) {
+      const c = S.values[t.dataset.calc] = S.values[t.dataset.calc] || {}; c[t.dataset.k] = t.value;
+    } else if (t.dataset.chk) {
+      const id = t.dataset.chk, sel = new Set(S.values[id] || []);
+      t.checked ? sel.add(t.value) : sel.delete(t.value);
+      const order = []; L.FIELDS[id].groups.forEach(g => g.items.forEach(i => { const v = itemV(i); if (sel.has(v)) order.push(v); }));
+      S.values[id] = order;
+      markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y);
+      const again = document.querySelector(`[data-chk="${id}"][value="${CSS.escape(t.value)}"]`); if (again) again.focus({ preventScroll: true });
+      refreshLive(); return;
+    } else return;
+    markDirty(); refreshLive();
+  }
+
+  function onClick(e) {
+    const b = e.target.closest('button,[data-go]'); if (!b) return;
+    const d = b.dataset;
+    if (d.gact) {
+      const fld = b.closest('.field.game'); const f = L.FIELDS[fld.dataset.field];
+      f.act(S.values, d); markDirty();
+      $('#game_' + f.id).innerHTML = f.render(S.values); refreshLive();
+      const card = $('#game_' + f.id); if (card) { const top = card.getBoundingClientRect().top + window.scrollY - 20; if (window.scrollY > top) window.scrollTo(0, top); }
+      return;
+    }
+    if (d.act === 'importdocx') { $('#fileDocx').dataset.fid = d.fid; return $('#fileDocx').click(); }
+    if (d.go) { go(d.go); return; }
+    if (d.tab) { coachTab = d.tab; const st = STEPS.find(s => s.id === S.cur); const c = document.querySelector('.coach'); c.outerHTML = coachHtml(st); return; }
+    if (d.hint) {
+      const f = L.FIELDS[d.hint]; hintLvl[f.id] = Math.min((hintLvl[f.id] || 0) + 1, f.hints.length);
+      const w = document.querySelector(`.field[data-field="${f.id}"]`);
+      w.querySelector('.hints').outerHTML = hintsHtml(f);
+      const nb = document.createElement('div'); nb.innerHTML = hintBtn(f); const nbtn = nb.firstChild;
+      b.replaceWith(nbtn); nbtn.focus(); return;
+    }
+    if (d.addrow) {
+      const f = L.FIELDS[d.addrow], rows = ensureRows(f);
+      if (!f.fixedRows) { const min = f.minRows || 1; while (rows.length < min) rows.push({}); }
+      rows.push(f.fixedRows ? { f: '' } : {}); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      const last = document.querySelectorAll(`[data-t="${f.id}"][data-r="${rows.length - 1}"]`)[0]; if (last) last.focus();
+      return;
+    }
+    if (d.addcol) {
+      const id = d.addcol, cc = S.values[id + '__cols'] = S.values[id + '__cols'] || [];
+      const k = 'x' + Date.now().toString(36); cc.push({ k, l: '' }); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      const inp = document.querySelector(`[data-colname="${id}"][data-ck="${k}"]`); if (inp) inp.focus();
+      return;
+    }
+    if (d.delcol) {
+      const id = d.delcol, k = d.ck, rows = Array.isArray(S.values[id]) ? S.values[id] : [];
+      if (rows.some(r => r && L.isFilled(r[k])) && !confirm('Supprimer ce critère et son contenu ?')) return;
+      S.values[id + '__cols'] = (S.values[id + '__cols'] || []).filter(c => c.k !== k);
+      rows.forEach(r => { if (r) delete r[k]; }); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      return;
+    }
+    if (d.delrow) {
+      const f = L.FIELDS[d.delrow], rows = ensureRows(f), r = +d.r;
+      const row = rows[r] || {};
+      if (L.tableCols(f, S).some(c => L.isFilled(row[c.k])) && !confirm('Supprimer cette ligne et son contenu ?')) return;
+      rows.splice(r, 1); markDirty();
+      const y = window.scrollY; renderStep(STEPS.find(s => s.id === S.cur)); window.scrollTo(0, y); refreshLive();
+      return;
+    }
+    if (d.act === 'save') return saveDraft();
+    if (d.act === 'restore') return $('#fileIn').click();
+    if (d.act === 'import') return $('#fileImp').click();
+    if (d.act === 'export') return exportWord();
+    if (d.act === 'new') {
+      if (!confirm('Recommencer à zéro ? Tout le contenu non enregistré sera perdu. Pensez à enregistrer un brouillon avant.')) return;
+      S = { values: {}, cur: 's0' }; dirty = false; lastSaved = null; checkBadges(true); go('s0'); return;
+    }
+  }
+
+  /* ---------------- brouillon ---------------- */
+  function saveDraft() {
+    const data = { app: APP_ID, version: 1, savedAt: new Date().toISOString(), state: { values: S.values, cur: S.cur } };
+    download(`brouillon_${APP.slugPrefix}_${slug(S.values.p_nom)}_${stamp()}.json`, JSON.stringify(data, null, 2), 'application/json');
+    dirty = false; lastSaved = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    renderSide(); toast('Brouillon enregistré dans vos téléchargements.');
+  }
+  function migrate(v) {
+    if (typeof v.ma_tend === 'string') v.ma_tend = v.ma_tend.trim() ? [{ t: v.ma_tend }] : [];
+    return v;
+  }
+  function loadState(st, msg) {
+    st.values = migrate(st.values || {});
+    S = { values: st.values || {}, cur: st.cur && (st.cur === 'bilan' || stepIndex(st.cur) >= 0) ? st.cur : 's0' };
+    dirty = false; checkBadges(true); showApp(); render(); window.scrollTo(0, 0); if (msg) toast(msg);
+  }
+  function restoreFile(file) {
+    const rd = new FileReader();
+    rd.onload = () => {
+      let data;
+      try { data = JSON.parse(rd.result); } catch (e) { toast('Ce fichier n’est pas un brouillon lisible (JSON invalide).', 'err'); return; }
+      if (!data || data.app !== APP_ID || !data.state || typeof data.state.values !== 'object') { toast('Ce fichier n’est pas un brouillon de ce parcours.', 'err'); return; }
+      if (hasData() && dirty && !confirm('Remplacer votre travail en cours par ce brouillon ? Les modifications non enregistrées seront perdues.')) return;
+      lastSaved = data.savedAt ? new Date(data.savedAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : null;
+      loadState(data.state, 'Brouillon restauré : vous reprenez là où vous vous étiez arrêté.');
+    };
+    rd.readAsText(file);
+  }
+
+  /* ---------------- lecture d'un document Word (.docx) ---------------- */
+  async function readDocx(buf) {
+    const u8 = new Uint8Array(buf), dv = new DataView(buf);
+    let eocd = -1;
+    for (let i = u8.length - 22; i >= Math.max(0, u8.length - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error('fichier non reconnu');
+    const n = dv.getUint16(eocd + 10, true); let p = dv.getUint32(eocd + 16, true);
+    const dec = new TextDecoder();
+    let entry = null;
+    for (let i = 0; i < n; i++) {
+      const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+      const name = dec.decode(u8.subarray(p + 46, p + 46 + nl));
+      if (name === 'word/document.xml') entry = { method, csize, off };
+      p += 46 + nl + xl + cl;
+    }
+    if (!entry) throw new Error('document Word introuvable');
+    const lo = entry.off, start = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true);
+    const data = u8.subarray(start, start + entry.csize);
+    let xml;
+    if (entry.method === 0) xml = dec.decode(data);
+    else if (entry.method === 8) {
+      if (typeof DecompressionStream === 'undefined') throw new Error('navigateur trop ancien pour lire ce fichier');
+      const out = await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+      xml = dec.decode(out);
+    } else throw new Error('compression non prise en charge');
+    return parseDocXml(xml);
+  }
+  function parseDocXml(xml) {
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    const body = [...doc.getElementsByTagName('*')].find(e => e.localName === 'body');
+    if (!body) throw new Error('contenu illisible');
+    const kids = el => [...el.childNodes].filter(x => x.nodeType === 1);
+    const pText = p => { let s = ''; p.querySelectorAll('*').forEach(e => { if (e.localName === 't') s += e.textContent; else if (e.localName === 'br') s += '\n'; else if (e.localName === 'tab') s += '\t'; }); return s; };
+    const pStyle = p => { const ps = [...p.getElementsByTagName('*')].find(e => e.localName === 'pStyle'); return ps ? (ps.getAttribute('w:val') || [...ps.attributes].map(a => a.value)[0] || '') : ''; };
+    const blocks = [];
+    kids(body).forEach(el => {
+      if (el.localName === 'p') blocks.push({ k: 'p', s: pStyle(el), t: pText(el).trim() });
+      else if (el.localName === 'tbl') blocks.push({ k: 't', rows: kids(el).filter(x => x.localName === 'tr').map(tr => kids(tr).filter(x => x.localName === 'tc').map(tc => kids(tc).filter(x => x.localName === 'p').map(pText).join('\n').trim())) });
+    });
+    const norm = s => String(s || '').replace(/[\u00a0\u202f]/g, ' ').replace(/[’']/g, '’').trim().toLowerCase();
+    const isH = b => b.k === 'p' && /(heading|titre)\s*3$/i.test(b.s);
+    const tables = blocks.filter(b => b.k === 't');
+    return {
+      text: label => { const i = blocks.findIndex(b => isH(b) && norm(b.t) === norm(label)); if (i < 0) return ''; const out = []; for (let j = i + 1; j < blocks.length && blocks[j].k === 'p' && !/heading|titre/i.test(blocks[j].s); j++) if (blocks[j].t && blocks[j].t !== 'À compléter') out.push(blocks[j].t); return out.join('\n'); },
+      row: label => { for (const t of tables) for (const r of t.rows) if (norm(r[0]) === norm(label)) return r; return null; },
+      rowStart: label => { for (const t of tables) for (const r of t.rows) if (norm(r[0]).startsWith(norm(label))) return r; return null; },
+      tableByHead: h => { const t = tables.find(t => t.rows[0] && norm(t.rows[0][0]) === norm(h)); return t ? t.rows : null; },
+      para: start => { const b = blocks.find(b => b.k === 'p' && norm(b.t).startsWith(norm(start))); return b ? b.t : '' }
+    };
+  }
+  async function importDocx(file, fid) {
+    try {
+      const D = await readDocx(await file.arrayBuffer());
+      const vals = L.FIELDS[fid].map(D); let n = 0;
+      Object.keys(vals).forEach(k => {
+        const cur = S.values[k];
+        const empty = cur == null || (Array.isArray(cur) ? !cur.some(r => r && Object.keys(r).some(x => L.isFilled(r[x]))) : !L.isFilled(cur));
+        if (empty) { S.values[k] = vals[k]; n++; }
+      });
+      markDirty(); checkBadges(); render();
+      toast(n ? `${n} élément${n > 1 ? 's' : ''} repris de votre business plan. Vérifiez chaque chiffre.` : 'Aucun élément reconnu ou déjà rempli : complétez la fiche à la main.', n ? '' : 'err');
+    } catch (e) { toast('Import impossible : ' + e.message + '. Saisissez vos chiffres à la main.', 'err'); }
+  }
+
+  /* ---------------- import des missions précédentes ---------------- */
+  function importPrev(file) {
+    const rd = new FileReader();
+    rd.onload = () => {
+      let data;
+      try { data = JSON.parse(rd.result); } catch (e) { toast('Ce fichier n’est pas lisible (JSON invalide).', 'err'); return; }
+      const from = data && APP.importFrom && APP.importFrom[data.app];
+      if (!from || !data.state || typeof data.state.values !== 'object') { toast('Ce fichier n’est pas un brouillon des missions ' + Object.values(APP.importFrom || {}).join(' ou ') + '.', 'err'); return; }
+      const src = data.state.values; let n = 0;
+      const empty = x => x == null || (Array.isArray(x) ? !x.some(r => r && Object.keys(r).some(k => k !== 'f' && L.isFilled(r[k]))) : (typeof x === 'object' ? !Object.keys(x).length : !L.isFilled(x)));
+      Object.keys(src).forEach(k => {
+        const known = L.FIELDS[k] || (k.endsWith('__cols') && L.FIELDS[k.slice(0, -6)]) || (APP.importExtra || []).includes(k);
+        if (!known || empty(src[k]) || !empty(S.values[k])) return;
+        const f = L.FIELDS[k];
+        if (f && f.type === 'table' && f.fixedRows && Array.isArray(src[k]) && src[k].some((r, i) => r && r.f && f.fixedRows[i] && r.f !== f.fixedRows[i])) return;
+        S.values[k] = JSON.parse(JSON.stringify(src[k])); n++;
+      });
+      markDirty(); checkBadges(); render();
+      toast(n ? `${n} élément${n > 1 ? 's' : ''} repris de votre mission « ${from} ».` : `Rien à reprendre : les champs communs sont déjà remplis.`);
+    };
+    rd.readAsText(file);
+  }
+
+  /* ---------------- export Word ---------------- */
+  function exportWord() {
+    try {
+      const bytes = DOCX.build(S);
+      download(`${APP.slugPrefix}_${slug(S.values.p_nom)}_${stamp()}.docx`, new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
+      toast('Document Word téléchargé.' + (dirty ? ' Pensez aussi à enregistrer un brouillon pour pouvoir le modifier plus tard.' : ''));
+    } catch (e) { console.error(e); toast('L’export a échoué : ' + e.message, 'err'); }
+  }
+
+  /* ---------------- info-bulles ---------------- */
+  function showTip(el) {
+    const tip = $('#tip'); tip.textContent = el.dataset.tip; tip.hidden = false;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2; left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    let top = r.bottom + 8; if (top + th > window.innerHeight - 8) top = r.top - th - 8;
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  }
+  function hideTip() { $('#tip').hidden = true; }
+
+  /* ---------------- coque ---------------- */
+  function openSide() { $('#side').classList.add('open'); $('#scrim').classList.remove('hidden'); }
+  function closeSide() { $('#side').classList.remove('open'); $('#scrim').classList.add('hidden'); }
+  function showApp() { $('#boot').classList.add('hidden'); $('#shell').classList.remove('hidden'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if (f) restoreFile(f); e.target.value = ''; });
+    $('#fileImp').addEventListener('change', e => { const f = e.target.files[0]; if (f) importPrev(f); e.target.value = ''; });
+    $('#fileDocx').addEventListener('change', e => { const f = e.target.files[0]; if (f) importDocx(f, e.target.dataset.fid || 'imp_docx'); e.target.value = ''; });
+    if ($('#bDocx')) $('#bDocx').addEventListener('click', () => { S = { values: {}, cur: 's0' }; checkBadges(true); showApp(); render(); $('#fileDocx').dataset.fid = 'imp_docx'; $('#fileDocx').click(); });
+    if ($('#bImport')) $('#bImport').addEventListener('click', () => { S = { values: {}, cur: 's0' }; checkBadges(true); showApp(); render(); $('#fileImp').click(); });
+    $('#bStart').addEventListener('click', () => { S = { values: {}, cur: 's0' }; checkBadges(true); showApp(); render(); });
+    $('#bRestore').addEventListener('click', () => $('#fileIn').click());
+    $('#bExample').addEventListener('click', () => { loadState({ values: JSON.parse(JSON.stringify(EXAMPLE)), cur: 's0' }, 'Exemple chargé : La Roulotte Gourmande. Vous pouvez le parcourir, le modifier et l’exporter.'); dirty = false; });
+    $('#main').addEventListener('input', onInput);
+    $('#main').addEventListener('change', e => { if (e.target.type === 'radio' || e.target.type === 'checkbox') onInput(e); });
+    document.addEventListener('click', e => { hideTip(); onClick(e); });
+    document.addEventListener('mouseover', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+    document.addEventListener('focusin', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+    document.addEventListener('scroll', hideTip, true);
+    $('#menuBtn').addEventListener('click', openSide);
+    $('#scrim').addEventListener('click', closeSide);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSide(); $('#leave').classList.add('hidden'); } });
+    window.addEventListener('beforeunload', e => {
+      if (!dirty) return;
+      const msg = 'Pensez à enregistrer votre brouillon avant de quitter : rien n’est sauvegardé automatiquement.';
+      e.preventDefault(); e.returnValue = msg; return msg;
+    });
+    // rappel quand la souris quitte la fenêtre vers le haut (onglets, bouton fermer)
+    let lastLeave = 0;
+    document.addEventListener('mouseout', e => {
+      if (!dirty || e.relatedTarget || e.clientY > 0 || $('#shell').classList.contains('hidden')) return;
+      if (Date.now() - lastLeave < 90000) return;
+      lastLeave = Date.now(); $('#leave').classList.remove('hidden'); $('#leaveSave').focus();
+    });
+    $('#leaveSave').addEventListener('click', () => { $('#leave').classList.add('hidden'); saveDraft(); });
+    $('#leaveStay').addEventListener('click', () => $('#leave').classList.add('hidden'));
+    $('#leave').addEventListener('click', e => { if (e.target.id === 'leave') $('#leave').classList.add('hidden'); });
+    // tout lien externe s'ouvre dans un nouvel onglet
+    const extLinks = root => root.querySelectorAll('a[href^="http"]').forEach(l => { l.target = '_blank'; l.rel = 'noopener noreferrer'; });
+    extLinks(document);
+    new MutationObserver(() => extLinks(document)).observe(document.body, { childList: true, subtree: true });
+  });
+
+  window.__app = { get state() { return S; }, get dirty() { return dirty; } };
+})();
+</script>
+<!-- Bouton retour vers l'accueil du jeu (ajouté par l'espace formateur) -->
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>
+</body>
+</html>
