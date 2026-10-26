@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 3,
+  "version": 4,
   "site": {
     "titre": "Jeux pédagogiques",
     "intro": "Des jeux de rôle en équipe pour mettre en pratique le marketing et la supply chain. Choisissez votre jeu, puis la mission du jour."
@@ -103,6 +103,18 @@ window.CATALOGUE = {
           "bouton": "Ouvrir"
         }
       ]
+    },
+    {
+      "id": "creation-d-entreprise",
+      "titre": "Création d'entreprise",
+      "titrePage": "Création d'entreprise : construisez votre projet mission après mission",
+      "resume": "Une série de missions guidées pour faire avancer votre projet de création d'entreprise. Chaque mission se joue sur votre propre projet et se termine par un document prêt à présenter.",
+      "intro": "Vous avez un projet de création ou de reprise d'entreprise ? Ce jeu vous accompagne étape par étape pour le structurer, le rendre solide et convaincant.\n\nChaque mission correspond à une grande étape de la création. Vous travaillez directement sur votre propre projet : vous ne répondez pas à un exercice, vous construisez votre entreprise. Les missions peuvent être jouées dans l'ordre ou séparément, selon l'avancement de votre projet.\n\nDans chaque mission, vous trouverez :\n- ce qu'il faut produire à chaque étape ;\n- les notions clés expliquées simplement ;\n- des astuces de terrain et des outils, souvent gratuits ;\n- des indices progressifs si vous bloquez ;\n- un exemple complet pour voir à quoi ressemble une réponse réussie.\n\nDes scores et des badges vous indiquent où vous en êtes et ce qui reste à renforcer. À la fin de chaque mission, vous exportez votre travail en document Word, prêt à être présenté à un banquier, un financeur, un partenaire ou à votre accompagnateur.\n\nImportant : rien n'est enregistré automatiquement. Pensez à enregistrer votre brouillon à la fin de chaque séance pour reprendre plus tard, sur cet ordinateur ou un autre.",
+      "categorie": "Création d'entreprise",
+      "emoji": "🧠",
+      "couleur": "#be95be",
+      "retourCss": "",
+      "elements": []
     }
   ]
 };
