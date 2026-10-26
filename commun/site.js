@@ -103,7 +103,10 @@
     var auteur = lien("Pierrick Frottier", "https://pierrickfrottier.fr"); auteur.target = "_blank"; auteur.rel = "noopener";
     credit.appendChild(auteur); credit.appendChild(document.createTextNode(", formateur indépendant."));
     mentions.appendChild(credit);
-    mentions.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
+    var liens = el("nav", "pied-liens"); liens.setAttribute("aria-label", "Informations");
+    liens.appendChild(lien("Mentions légales", BASE + "mentions-legales.html"));
+    liens.appendChild(lien("Espace formateur", BASE + "formateur/index.html"));
+    mentions.appendChild(liens);
     f.appendChild(mentions);
     bas.appendChild(f);
   }
@@ -240,11 +243,12 @@
     if (!haut) { haut = el("div"); haut.id = "haut"; main.parentNode.insertBefore(haut, main); }
     var bas = document.getElementById("bas");
     if (!bas) { bas = el("div"); bas.id = "bas"; main.parentNode.insertBefore(bas, main.nextSibling); }
-    haut.innerHTML = ""; main.innerHTML = ""; bas.innerHTML = "";
+    haut.innerHTML = ""; bas.innerHTML = "";
+    if (page !== "texte") main.innerHTML = ""; // page « texte » (mentions légales) : contenu écrit dans le HTML
     var ancien = document.querySelector("body > header.entete"); if (ancien) ancien.remove();
     main.parentNode.insertBefore(entete(), haut); // directement dans <body> pour rester collé en haut au défilement
     var cat = catalogue();
-    if (page === "accueil") rendreAccueil(haut, main, cat); else rendreJeu(haut, main, cat);
+    if (page === "accueil") rendreAccueil(haut, main, cat); else if (page === "jeu") rendreJeu(haut, main, cat);
     pied(bas, cat);
     if (SITE.apresRendu) SITE.apresRendu();
   };

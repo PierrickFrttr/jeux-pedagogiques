@@ -14,7 +14,7 @@
 
   function demarrer() {
     var N = window.NOYAU, el = SITE.el, s = N.session();
-    var RETOUR_A = '<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .6rem;font:600 .8rem/1.2 system-ui,sans-serif;color:#ece8dc;background:rgba(20,33,61,.92);border:1px solid rgba(236,232,220,.35);border-radius:6px;text-decoration:none">&larr; Tous les jeux</a>\n';
+    var RETOUR_A = '<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .75rem;font:700 .8rem/1.2 system-ui,sans-serif;color:#fff;background:rgba(16,26,48,.95);border:1px solid #f0a23c;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">&larr; Tous les jeux</a>\n';
 
     // ---------- Barre « mode formateur » ----------
     var barre = el("div", "barre-admin");
@@ -153,7 +153,7 @@
     }
     function gabaritJeu(id) {
       return '<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
-        '<title>Entreprise en Jeu</title>\n<link rel="icon" type="image/png" href="../favicon.png">\n<link rel="apple-touch-icon" href="../commun/logo-180.png">\n<link rel="stylesheet" href="../commun/site.css">\n</head>\n' +
+        '<title>Entreprise en Jeu</title>\n<link rel="icon" type="image/png" href="../favicon.png">\n<link rel="apple-touch-icon" href="../commun/logo-180.png">\n<meta property="og:title" content="Entreprise en Jeu">\n<meta property="og:image" content="https://pierrickfrottier.github.io/jeux-pedagogiques/commun/partage.jpg">\n<meta name="twitter:card" content="summary_large_image">\n<link rel="stylesheet" href="../commun/site.css">\n</head>\n' +
         '<body data-page="jeu" data-jeu="' + id + '">\n<main class="wrap" id="contenu"><noscript>Cette page nécessite JavaScript.</noscript></main>\n' +
         '<script src="../donnees/catalogue.js"></script>\n<script src="../commun/site.js"></script>\n</body>\n</html>\n';
     }
