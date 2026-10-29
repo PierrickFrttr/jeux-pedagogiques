@@ -225,6 +225,97 @@ a.btn{text-decoration:none}
 @media (max-width:560px){.idgrid,.cgrid{grid-template-columns:1fr}.content{padding:1rem 1rem 4rem}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{.side,.top,.stepfoot,.topbtn{display:none}.shell{display:block}}
+
+/* ---------------- activités dynamiques ---------------- */
+.act h2{margin-top:0}
+.cardpool{display:flex;flex-wrap:wrap;gap:.6rem;min-height:3.2rem;padding:.7rem;border:1.5px dashed var(--line-strong);border-radius:10px;background:var(--ardoise);margin:.8rem 0}
+.cardpool.over{border-color:var(--ambre)}
+.cardpool:empty::before{content:"Toutes les marques sont placées.";color:var(--craie-faint);font-size:.9rem}
+.dcard{background:var(--ardoise-3);border:1.5px solid var(--line-strong);border-radius:8px;padding:.45rem .7rem;cursor:grab;user-select:none;max-width:15rem;touch-action:manipulation}
+.dcard b{display:block;font-size:.95rem}
+.dcard small{display:block;color:var(--craie-dim);font-size:.78rem;line-height:1.25}
+.dcard.sel{border-color:var(--ambre);box-shadow:0 0 0 2px rgba(232,160,32,.35)}
+.dcard.dragging{opacity:.45}
+.dcard.ok{border-color:var(--houblon);background:rgba(147,185,95,.12);cursor:default}
+.dcard.ko{border-color:var(--brique);background:rgba(228,122,92,.12);cursor:default}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.dcol{border:1.5px dashed var(--line-strong);border-radius:10px;padding:.7rem;min-height:9rem;background:rgba(36,49,57,.6)}
+.dcol.over{border-color:var(--ambre);background:rgba(232,160,32,.07)}
+.dcol h4{margin:0 0 .15rem;font-family:var(--f-craie);font-weight:400;color:var(--ambre-soft);font-size:1.05rem}
+.dcol .dcards{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem}
+.dcol.target{cursor:pointer}
+.corrige{margin-top:1rem}
+.corrige li{margin:.35rem 0}
+.okmark{color:var(--houblon);font-weight:700}.komark{color:var(--brique);font-weight:700}
+
+.ranklist{list-style:none;padding:0;margin:.8rem 0;max-width:46rem}
+.rank-item{display:grid;grid-template-columns:2.2rem 1fr auto;gap:.7rem;align-items:center;background:var(--ardoise);border:1.5px solid var(--line-strong);border-radius:10px;padding:.5rem .8rem;margin:.4rem 0;cursor:grab}
+.rank-item.dragging{opacity:.45}
+.rank-item .n{font-family:var(--f-craie);font-size:1.4rem;color:var(--ambre);text-align:center}
+.rank-item b{display:block}.rank-item small{color:var(--craie-dim)}
+.rank-item .mv{display:flex;gap:.3rem}
+.rank-item.ok{border-color:var(--houblon)}.rank-item.near{border-color:var(--ambre)}.rank-item.ko{border-color:var(--brique)}
+.iconbtn{background:var(--ardoise-3);border:1px solid var(--line-strong);border-radius:6px;color:var(--craie);width:2rem;height:2rem;cursor:pointer;font-size:1rem}
+.iconbtn:hover{background:var(--ardoise-4)}.iconbtn[disabled]{opacity:.35;cursor:not-allowed}
+
+.srow{display:grid;grid-template-columns:minmax(10rem,16rem) 1fr 5.5rem;gap:.9rem;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.srow input[type=range]{width:100%;accent-color:var(--ambre)}
+.srow .val{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.srow small{display:block;color:var(--craie-dim)}
+.livebox{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1rem 0}
+.livebox .cell{border:1px solid var(--line-strong);border-radius:10px;padding:.6rem .8rem;background:var(--ardoise)}
+.livebox .cell b{display:block;font-size:1.3rem;font-family:var(--f-craie);font-weight:400}
+.livebox .cell.warn{border-color:var(--brique)}.livebox .cell.warn b{color:var(--brique)}
+.meter{height:12px;background:var(--ardoise-3);border-radius:6px;overflow:hidden;margin-top:.4rem;border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:var(--houblon);transition:width .3s}
+
+.match{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:.8rem 0}
+.mcol h4{margin:0 0 .5rem;font-family:var(--f-craie);font-weight:400;color:var(--ambre-soft)}
+.mitem{display:grid;grid-template-columns:2rem 1fr;gap:.6rem;align-items:center;width:100%;text-align:left;background:var(--ardoise);border:1.5px solid var(--line-strong);border-radius:10px;padding:.55rem .7rem;margin:.4rem 0;color:var(--craie);cursor:pointer}
+.mitem.sel{border-color:var(--ambre);box-shadow:0 0 0 2px rgba(232,160,32,.35)}
+.mitem .bd{width:1.6rem;height:1.6rem;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;border:1.5px dashed var(--craie-faint);color:var(--craie-faint)}
+.mitem.linked .bd{border-style:solid;color:#10181c}
+.mitem.ok{border-color:var(--houblon)}.mitem.ko{border-color:var(--brique)}
+.c1 .bd{background:var(--ambre);border-color:var(--ambre)}.c2 .bd{background:var(--mer);border-color:var(--mer)}.c3 .bd{background:var(--houblon);border-color:var(--houblon)}.c4 .bd{background:var(--rose);border-color:var(--rose)}.c5 .bd{background:var(--brique);border-color:var(--brique)}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;margin:.15rem 0 .35rem 2.6rem}
+.seg button{background:var(--ardoise);border:0;color:var(--craie-dim);padding:.25rem .8rem;cursor:pointer;font-size:.9rem}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--ambre);color:#211a08;font-weight:700}
+.seg button[disabled]{cursor:default}
+
+.mapwrap{display:grid;grid-template-columns:auto 1fr;gap:.4rem;max-width:44rem;margin:.8rem 0}
+.mapy{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;color:var(--craie-dim);font-size:.85rem}
+.mapbox{position:relative;width:100%;aspect-ratio:4/3;background:var(--ardoise);border:1.5px solid var(--line-strong);border-radius:10px;overflow:hidden;touch-action:none;cursor:crosshair}
+.mapbox::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:25% 25%}
+.mapbox.ro{cursor:default}
+.mapx{grid-column:2;text-align:center;color:var(--craie-dim);font-size:.85rem}
+.fcell{position:absolute;background:rgba(147,185,95,.16);pointer-events:none}
+.mp{position:absolute;transform:translate(-50%,50%);width:1.15rem;height:1.15rem;border-radius:50%;border:2px solid #10181c;background:var(--mer);cursor:ns-resize;z-index:2}
+.mp.me{width:1.6rem;height:1.6rem;background:var(--ambre);cursor:grab;z-index:3;box-shadow:0 0 0 3px rgba(232,160,32,.35)}
+.mp.me.unplaced{opacity:.5;border-style:dashed}
+.mp .lb{position:absolute;left:50%;bottom:1.45rem;transform:translateX(-50%);white-space:nowrap;max-width:10rem;overflow:hidden;text-overflow:ellipsis;font-size:.76rem;color:var(--craie);background:rgba(29,41,47,.9);padding:0 .3rem;border-radius:4px;pointer-events:none}
+.mp .lb.b{bottom:auto;top:1.45rem}
+.mp .lb.lr{left:auto;right:-.3rem;transform:none}
+.rzone{position:absolute;left:0;bottom:0;width:25%;height:50%;background:rgba(228,122,92,.13);border-right:1px dashed rgba(228,122,92,.5);border-top:1px dashed rgba(228,122,92,.5);pointer-events:none;font-size:.72rem;color:var(--brique);padding:.25rem .4rem}
+.mp.me .lb{font-weight:700;color:var(--ambre-soft);bottom:2rem}
+.mp:focus-visible{outline:3px solid var(--ambre-soft)}
+.mapopt{display:flex;gap:.6rem;align-items:center;margin:.3rem 0 .6rem;color:var(--craie-dim);font-size:.92rem}
+
+.sentlist{list-style:none;padding:0;margin:.8rem 0;max-width:50rem}
+.sent{display:block;width:100%;text-align:left;background:var(--ardoise);border:1.5px solid var(--line-strong);border-radius:10px;padding:.6rem .9rem;margin:.45rem 0;color:var(--craie);cursor:pointer}
+.sent.sel{border-color:var(--brique);background:rgba(228,122,92,.12)}
+.sent.found{border-color:var(--houblon);background:rgba(147,185,95,.12)}
+.sent.missed{border-color:var(--ambre);background:rgba(232,160,32,.1)}
+.sent.fp{border-color:var(--brique);background:rgba(228,122,92,.12)}
+.sent small{display:block;margin-top:.25rem;color:var(--craie-dim)}
+
+.tbl4{display:grid;gap:.5rem;margin:.6rem 0}
+.trow{display:grid;grid-template-columns:8rem repeat(5,minmax(0,1fr));gap:.5rem;align-items:center}
+.trow.head{color:var(--craie-dim);font-size:.82rem;font-weight:600}
+.trow .tl{font-family:var(--f-craie);color:var(--ambre-soft);font-size:.98rem}
+.trow input,.trow select{padding:.4rem .5rem;font-size:.9rem}
+.actfoot{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:1rem}
+@media (max-width:900px){.cols{grid-template-columns:1fr}.match{grid-template-columns:1fr}.srow{grid-template-columns:1fr}.srow .val{text-align:left}.livebox{grid-template-columns:1fr}.trow{grid-template-columns:1fr 1fr}.trow.head{display:none}.trow .tl{grid-column:1/-1}}
 </style></head>
 <body><div id="app"></div>
 <noscript>Cette interface nécessite JavaScript.</noscript>
@@ -637,7 +728,7 @@ M4.studio = {
   welcome: [
     { t: 'say', who: 'Solène Marchand', role: 'Directrice du Studio Vigie', x: 'Vous avez une cible, un persona. Reste à savoir contre qui vous jouez.' },
     { t: 'p', x: 'Cette fois, **le Studio ne vous fournit pas de fiches toutes prêtes.** Vous allez devoir chercher vous-mêmes, sur internet, de vrais concurrents qui existent réellement sur le marché français des boissons sans alcool : des sites de marques, des cavistes spécialisés, des articles de presse, des réseaux sociaux.' },
-    { t: 'p', x: 'Vous choisirez d’abord vos critères de comparaison, puis vous partirez en recherche, puis vous construirez le benchmark, évaluerez la pression du secteur avec le modèle de Porter, et conclurez sur le positionnement à défendre.' },
+    { t: 'p', x: 'Vous classerez d’abord des marques, puis vous hiérarchiserez vos critères, partirez en recherche avec un budget à répartir, évaluerez la pression du secteur avec Porter, placerez Marée Basse sur une carte et terminerez en relisant le travail d’un stagiaire.' },
     { t: 'p', x: 'Cette mission ne recollecte rien côté demande : elle regarde l’offre, celle qui existe déjà sur le marché des boissons sans alcool.' },
   ],
   poste: [
@@ -662,14 +753,14 @@ M4.studio = {
     'Je positionne Marée Basse sur ce qui la différencie, pas seulement sur le prix.',
   ],
   pilote: [
-    { t: 'p', x: 'Le Pilote reste votre appui méthodologique : deux niveaux d’indice par décision, un verdict après chaque choix, une relecture de cohérence avant l’export.' },
+    { t: 'p', x: 'Le Pilote reste votre appui méthodologique : deux niveaux d’indice par activité, un verdict après chaque réponse validée, une relecture de cohérence avant l’export.' },
   ],
   interface: [
     { t: 'table', head: ['Élément', 'À quoi ça sert'], rows: [
-      ['Les 4 jauges (en haut)', '**Budget d’analyse**, **Délai**, **Fiabilité des données**, **Confiance du client**. Elles repartent de valeurs propres à cette mission.'],
-      ['Décisions', 'Quatre décisions, trois options chacune. Le choix est définitif une fois validé.'],
+      ['Les 4 jauges (en haut)', '**Budget d’analyse**, **Délai**, **Fiabilité des données**, **Confiance du client**. Elles réagissent à la qualité de chaque activité.'],
+      ['Activités', 'Chaque étape propose une activité différente : glisser-déposer, classement, curseurs, liens, carte, repérage d’erreurs. Une réponse validée est définitive.'],
       ['Méthode de recherche', 'Des pistes concrètes pour chercher de vrais concurrents sur internet, et un exemple travaillé.'],
-      ['À compléter', 'Les formulaires de l’étape, qui composent le chapitre 4 du dossier.'],
+      ['À compléter', 'Un tableau ou un court texte, après certaines activités : ils composent le chapitre 4 du dossier.'],
       ['Indice', 'Sur chaque encart : une piste et des raccourcis vers l’endroit où chercher.'],
       ['Brouillon', 'Le bouton « Brouillon » télécharge une sauvegarde. « Restaurer » la recharge.'],
       ['Exports', 'À la fin : le dossier d’étude (Word) et le journal de mission (PDF).'],
@@ -706,7 +797,7 @@ M4.mission = {
     { t: 'p', x: 'Le chapitre 3 a identifié une cible : les sportifs abstinents, incarnés par Camille. **Reste à savoir à qui Marée Basse va se frotter** pour convaincre cette cible plutôt qu’un concurrent déjà installé.' },
     { t: 'p', x: 'Karim veut un positionnement défendable, pas seulement une liste de rivaux. Gwen veut savoir ce qui rendrait Marée Basse différente, pas une copie de plus.' },
   ],
-  role: 'Vous sélectionnez les concurrents à étudier, vous choisissez vos sources, vous construisez un benchmark, vous évaluez les cinq forces de Porter, puis vous concluez sur le positionnement à défendre. **Vous ne revenez pas sur la demande : elle est acquise.**',
+  role: 'Vous classez des marques, hiérarchisez vos critères, répartissez un budget de recherche, trouvez de vrais concurrents, évaluez les cinq forces de Porter, placez Marée Basse sur une carte, puis concluez. **Vous ne revenez pas sur la demande : elle est acquise.**',
   competences: [
     'Rechercher de vrais concurrents (directs et indirects) et choisir le bon périmètre à étudier (RMO bloc 1).',
     'Benchmarker : comparer méthodiquement son offre à celle de concurrents de référence (RMO bloc 1).',
@@ -714,29 +805,29 @@ M4.mission = {
   ],
   notions: 'Concurrent direct et indirect · cinq forces de Porter · benchmark · carte de positionnement · océan rouge et océan bleu.',
   livrable: [
-    { t: 'table', head: ['Section', 'Contenu attendu', 'Forme'], rows: [
-      ['4.1 Préparer la recherche', 'Le périmètre de concurrents visé et les sources envisagées.', 'Deux textes courts'],
-      ['4.2 Les critères du benchmark', 'Les critères de comparaison retenus et pourquoi.', 'Deux textes courts'],
-      ['4.3 Les concurrents réels', 'Quatre vrais concurrents (deux directs, deux indirects), trouvés sur internet, sourcés.', 'Tableau'],
-      ['4.4 Les cinq forces de Porter', 'Le niveau de chaque force et sa justification.', 'Tableau'],
-      ['4.5 Positionnement', 'Océan rouge ou bleu, le positionnement retenu, ce qui différencie.', 'Trois textes courts'],
-      ['4.6 Conclusion de l’étude de la concurrence', 'Réponse à Q3, synthèse pour le dossier.', 'Deux textes courts'],
+    { t: 'table', head: ['Section', 'Contenu attendu', 'Produit par'], rows: [
+      ['4.1 Le périmètre des concurrents', 'Dix marques réelles classées : directs, indirects, hors périmètre.', 'Activité de classement'],
+      ['4.2 Les critères du benchmark', 'Les six critères hiérarchisés pour la cible, et la justification du n°1.', 'Classement + deux phrases'],
+      ['4.3 Les concurrents réels', 'Budget de recherche réparti ; quatre vrais concurrents sourcés, avec prix, canal et goût perçu.', 'Curseurs + tableau à compléter'],
+      ['4.4 Les cinq forces de Porter', 'Chaque force reliée à un fait et notée.', 'Activité de liens et de notation'],
+      ['4.5 Positionnement', 'La carte prix × goût perçu et la promesse de Marée Basse.', 'Carte + une phrase'],
+      ['4.6 Conclusion de l’étude de la concurrence', 'Réponse à Q3, synthèse pour le dossier.', 'Repérage d’erreurs + deux textes'],
     ] },
   ],
   criteres: [
-    '**Réalité des concurrents** : les quatre concurrents cités existent vraiment et sont correctement classés (direct ou indirect).',
-    '**Traçabilité des sources** : chaque concurrent est relié à une source identifiée (site, article, page).',
-    '**Pertinence des critères** : les critères de comparaison reflètent ce qui compte pour la cible du chapitre 3.',
-    '**Complétude de Porter** : les cinq forces sont évaluées, pas seulement la rivalité directe.',
-    '**Positionnement différenciant** : la conclusion s’appuie sur autre chose que le seul prix.',
+    '**Justesse des classements** : les concurrents sont bien rangés (direct, indirect, hors périmètre) et les forces de Porter bien reliées.',
+    '**Réalité et traçabilité des concurrents** : les quatre concurrents du tableau existent vraiment et sont reliés à une source.',
+    '**Pertinence des critères** : la hiérarchie reflète ce qui compte pour la cible du chapitre 3.',
+    '**Arbitrage du budget** : la recherche couvre plusieurs angles sans dépasser l’enveloppe.',
+    '**Positionnement différenciant** : Marée Basse est placée dans une zone libre, avec une promesse qui s’appuie sur autre chose que le prix.',
   ],
   deroule: [
-    ['Préparer', 'Cadrer la recherche : quel périmètre, quelles sources.'],
-    ['Les critères', 'Choisir les critères de comparaison, puis les justifier.'],
-    ['Les concurrents', 'Choisir la méthode de recherche, puis trouver quatre vrais concurrents sur internet.'],
-    ['Porter', 'Évaluer les cinq forces, puis les noter et les justifier.'],
-    ['Positionner', 'Conclure sur le positionnement, puis le détailler.'],
-    ['Conclure', 'Répondre à la question de recherche Q3 et synthétiser.'],
+    ['Classer', 'Glisser dix marques réelles dans la bonne colonne.'],
+    ['Les critères', 'Hiérarchiser six critères pour la cible, puis justifier le premier.'],
+    ['La recherche', 'Répartir le budget avec des curseurs, puis trouver quatre vrais concurrents sur internet.'],
+    ['Porter', 'Relier cinq forces à cinq faits de marché, puis les noter.'],
+    ['Positionner', 'Placer concurrents et Marée Basse sur la carte prix × goût, puis écrire la promesse.'],
+    ['Conclure', 'Repérer les erreurs d’un stagiaire, puis rédiger sa propre conclusion.'],
     ['Relecture', 'Faire relire le chapitre par le Pilote, puis exporter.'],
   ],
 };
@@ -764,175 +855,185 @@ M4.exampleFiche = {
 
 ;
 /* ==========================================================================
-   MISSION 4 — CONTENU B : décisions, verdicts, indices
-   Bonnes réponses : D1 = A · D2 = B · D3 = C · D4 = A
+   MISSION 4 — CONTENU B : les six activités dynamiques
+   A1 classer (glisser-déposer) · A2 hiérarchiser (classement)
+   A3 répartir un budget (curseurs) · A4 relier + noter (Porter)
+   A5 placer sur une carte · A6 repérer les erreurs
    ========================================================================== */
 var M4 = (typeof M4 === 'undefined') ? {} : M4;
 
-M4.decisions = [
+/* Effets : [valeur au score 0, valeur au score 1], interpolés selon le score */
+var STD_EFFECTS = { fiab: [-4, 5], confiance: [-2, 3] };
 
-/* ----------------------------------------------------------------- D1 : critères du benchmark */
-{
-  id: 'D1', step: 2, title: 'Les critères du benchmark',
-  sceneTitle: 'Lundi, au Studio : sur quoi allez-vous comparer ?',
-  scene: [
-    { t: 'say', who: 'Solène', x: 'Avant de chercher qui que ce soit, il faut savoir sur quoi on va comparer. Un benchmark, c’est un tableau : les colonnes sont les concurrents, les lignes sont vos critères.' },
-    { t: 'say', who: 'Gwen', x: 'Et n’oubliez pas Camille : qu’est-ce qui compte pour elle quand elle choisit une bière sans alcool ?' },
+M4.activities = {
+
+/* ----------------------------------------------------------------- A1 : classer */
+A1: {
+  id: 'A1', step: 1, type: 'classify', section: 's41', title: 'Classer les marques',
+  intro: 'Avant de chercher des concurrents, entraînez votre œil. Dix marques réelles sont posées sur la table : **glissez chacune dans la bonne colonne** (ou touchez une carte, puis une colonne).',
+  columns: [
+    { id: 'direct', label: 'Concurrent direct', sub: 'Même besoin, même type de produit : une bière sans alcool.' },
+    { id: 'indirect', label: 'Concurrent indirect', sub: 'Même besoin (boire sans alcool lors d’un moment social), produit différent.' },
+    { id: 'hors', label: 'Hors périmètre', sub: 'Ne répond pas au même besoin.' },
   ],
-  question: 'Quels critères retenez-vous pour comparer vos concurrents ?',
-  options: [
-    { key: 'A', label: 'Le prix, le goût perçu, le canal de distribution et l’image',
-      text: 'Croiser quatre critères complémentaires : combien ça coûte, ce que les clients en pensent côté goût, où on le trouve, et l’image que la marque projette.',
-      effects: { budget: -600, delai: -2, fiab: 7, confiance: 4 }, tone: 'positive',
-      vTitle: 'Des critères qui reflètent ce qui compte pour la cible',
-      rationale: 'En croisant prix, goût perçu, canal et image, vous couvrez à la fois ce qui compte pour Camille (le goût, premier frein identifié au chapitre 3) et ce qui conditionne l’accès au marché (le canal, le prix). C’est un tableau comparatif qui permet vraiment de se situer.',
-      notions: 'Critères de benchmark · Lien avec la cible',
-      alt: 'L’option B oublie le goût ; l’option C ne regarde que le prix.',
-      consequence: [{ t: 'say', who: 'Solène', x: 'Voilà des critères qui parlent de votre cible, pas seulement du marché en général.' }] },
-    { key: 'B', label: 'Le prix et l’image, sans le goût',
-      text: 'Comparer ce qui se voit facilement depuis un écran : le prix affiché et l’image de marque.',
-      effects: { budget: 0, delai: -1, fiab: -2, confiance: 0 }, tone: 'mixed',
-      vTitle: 'Un tableau facile à remplir, mais à côté du principal',
-      rationale: 'Le prix et l’image se trouvent vite sur internet, mais le goût perçu est précisément le frein numéro un de la cible : l’écarter, c’est comparer sur ce qui est facile plutôt que sur ce qui compte.',
-      notions: 'Critères de benchmark · Facilité vs pertinence',
-      alt: 'L’option A intègre le goût perçu, central pour la cible.',
-      consequence: [{ t: 'say', who: 'Gwen', x: 'Et le goût ? C’est quand même ce dont Camille a peur.' }] },
-    { key: 'C', label: 'Uniquement le prix',
-      text: 'Comparer les concurrents sur un seul critère simple, objectif et facile à vérifier : le prix.',
-      effects: { budget: 0, delai: -1, fiab: -5, confiance: -2 }, tone: 'risky',
-      vTitle: 'Un critère unique pour un marché qui n’en a pas qu’un',
-      rationale: 'Le prix est un critère objectif, mais il ne dit rien du goût, de l’image ni de l’accessibilité. Un benchmark sur le seul prix pousse mécaniquement vers une conclusion de guerre des prix, que la brasserie ne peut pas gagner.',
-      notions: 'Critères de benchmark · Critère unique',
-      alt: 'L’option A croise quatre critères complémentaires.',
-      consequence: [{ t: 'say', who: 'Karim', x: 'Si on ne compare que les prix, on va forcément conclure qu’il faut être moins cher. Ce n’est pas notre métier.' }] },
+  cards: [
+    { id: 'evian', label: 'Evian', sub: 'Eau minérale', answer: 'hors', why: 'Une eau minérale étanche la soif, mais n’est pas une alternative à une boisson alcoolisée lors d’un moment social ou sportif.' },
+    { id: 'heineken', label: 'Heineken 0.0', sub: 'Bière sans alcool (groupe Heineken)', answer: 'direct', why: 'Une bière sans alcool : même besoin, même type de produit.' },
+    { id: 'ciao', label: 'Ciao Kombucha', sub: 'Boisson fermentée en canette', answer: 'indirect', why: 'Une boisson sans alcool que la cible peut choisir à la place d’une bière : même besoin, produit différent.' },
+    { id: 'nespresso', label: 'Nespresso', sub: 'Café en capsules', answer: 'hors', why: 'Le café répond à un autre besoin (se réveiller, se concentrer), pas à celui de remplacer un verre d’alcool.' },
+    { id: 'tourtel', label: 'Tourtel Twist', sub: 'Bière sans alcool aromatisée (Kronenbourg)', answer: 'direct', why: 'Une bière sans alcool aromatisée : c’est le leader du segment, donc un concurrent direct.' },
+    { id: 'bloom', label: 'French Bloom', sub: 'Vin effervescent sans alcool premium', answer: 'indirect', why: 'Un substitut festif haut de gamme : même besoin, produit différent.' },
+    { id: 'corona', label: 'Corona Cero', sub: 'Bière sans alcool (AB InBev)', answer: 'direct', why: 'Une bière sans alcool : concurrent direct.' },
+    { id: 'lactel', label: 'Lactel', sub: 'Lait', answer: 'hors', why: 'Le lait n’est pas une alternative à une boisson alcoolisée.' },
+    { id: 'koko', label: 'KOKO Kombucha', sub: 'Kombucha bio français', answer: 'indirect', why: 'Une boisson fermentée sans alcool : concurrent indirect.' },
+    { id: 'celta', label: 'Celta (Brasserie Goudale)', sub: 'Bière sans alcool vendue depuis les années 1970', answer: 'direct', why: 'Une bière sans alcool, même artisanale et ancienne : concurrent direct.' },
   ],
-  hint1: 'Un bon benchmark compare sur ce qui compte pour la cible. Relisez le persona du chapitre 3 : qu’est-ce qui la freine, qu’est-ce qui la décide ?',
-  hint2: 'Cherchez l’option qui croise plusieurs critères complémentaires, dont le goût perçu, plutôt qu’un critère unique ou uniquement ceux qui se voient facilement.',
+  effects: { budget: [0, 0], delai: [-1, -1], fiab: STD_EFFECTS.fiab, confiance: STD_EFFECTS.confiance },
+  verdict: {
+    high: { title: 'Un périmètre net', text: 'Vous distinguez bien ce qui répond au même besoin (concurrents directs et indirects) de ce qui n’y répond pas. C’est la base d’un benchmark pertinent.' },
+    mid: { title: 'Un périmètre à affiner', text: 'Une partie des marques est bien classée, mais plusieurs frontières restent floues. Relisez la définition : un concurrent se définit par le besoin satisfait, pas par le produit.' },
+    low: { title: 'Un périmètre confus', text: 'Trop de marques sont mal classées : votre benchmark risque de comparer des offres qui ne se concurrencent pas. Reprenez la distinction direct / indirect / hors périmètre.' },
+  },
+  notions: 'Concurrent direct et indirect · Besoin satisfait · Périmètre',
+  hint1: 'Posez-vous une seule question pour chaque marque : « Est-ce qu’on peut la choisir à la place d’une bière, lors d’un moment entre amis ? »',
+  hint2: 'Si c’est une bière sans alcool, c’est un concurrent direct. Si c’est une autre boisson qu’on boit pour le même moment, c’est un indirect. Sinon, c’est hors périmètre.',
 },
 
-/* ----------------------------------------------------------------- D2 : méthode de recherche */
-{
-  id: 'D2', step: 3, title: 'La méthode de recherche des concurrents',
-  sceneTitle: 'Mardi, au Studio : à vous de trouver les concurrents',
-  scene: [
-    { t: 'say', who: 'Solène', x: 'Vous avez vos critères. Maintenant, il faut trouver de vrais concurrents : deux directs, deux indirects. Ils existent, ils sont sur internet, à vous de les dénicher.' },
-    { t: 'say', who: 'Karim', x: 'Et je veux pouvoir vérifier chaque information que vous me donnez. Une source, à chaque fois.' },
+/* ----------------------------------------------------------------- A2 : hiérarchiser */
+A2: {
+  id: 'A2', step: 2, type: 'rank', section: 's42', title: 'Hiérarchiser les critères',
+  intro: 'Votre benchmark va comparer des concurrents sur plusieurs critères. **Classez ces six critères du plus important (en haut) au moins important (en bas) pour Camille**, la cliente cible du chapitre 3. Utilisez les flèches ou glissez les lignes.',
+  items: [
+    { id: 'prix', label: 'Le prix', sub: 'Ce que coûte une bouteille de 33 cl' },
+    { id: 'notoriete', label: 'La notoriété publicitaire', sub: 'Le budget de communication et la visibilité de la marque' },
+    { id: 'image', label: 'L’image de la marque', sub: 'Authentique, healthy, premium, grand public…' },
+    { id: 'local', label: 'L’ancrage local', sub: 'L’origine, les producteurs, l’histoire' },
+    { id: 'gout', label: 'Le goût perçu', sub: 'Ce que les consommateurs en disent' },
+    { id: 'canal', label: 'Le canal de distribution', sub: 'Où la cible peut l’acheter' },
   ],
-  question: 'Comment cherchez-vous vos concurrents sur internet ?',
-  options: [
-    { key: 'A', label: 'Les deux premiers résultats d’une recherche Google',
-      text: 'Taper « bière sans alcool » dans un moteur de recherche et retenir les deux premiers résultats, pour aller vite.',
-      effects: { budget: 0, delai: -1, fiab: -6, confiance: -3 }, tone: 'risky',
-      vTitle: 'Un classement de moteur de recherche n’est pas un classement du marché',
-      rationale: 'Les premiers résultats d’une recherche dépendent du référencement et de la publicité, pas du poids réel des acteurs sur le marché. Vous risquez de retenir des concurrents qui ont surtout payé pour être visibles.',
-      notions: 'Biais de source · Référencement payant',
-      alt: 'L’option B croise plusieurs sources avant de retenir un concurrent.',
-      consequence: [{ t: 'say', who: 'Karim', x: 'Les premiers résultats, ce sont souvent ceux qui paient pour l’être. Ça ne dit rien de leur poids.' }] },
-    { key: 'B', label: 'Croiser plusieurs sources avant de retenir un concurrent',
-      text: 'Pour chaque candidat, recouper le site de la marque, un caviste ou une plateforme spécialisée, la presse professionnelle et les avis clients, avant de le retenir.',
-      effects: { budget: -900, delai: -3, fiab: 7, confiance: 4 }, tone: 'positive',
-      vTitle: 'Des concurrents vérifiés, pas seulement trouvés',
-      rationale: 'En croisant plusieurs sources, vous vérifiez que le concurrent existe vraiment, qu’il pèse sur le marché et que les informations concordent. C’est la triangulation vue en cours, appliquée à la recherche de concurrents.',
-      notions: 'Triangulation des sources · Fiabilité du benchmark',
-      alt: 'L’option A se fie au classement d’un moteur ; l’option C se limite à ce que l’équipe connaît déjà.',
-      consequence: [{ t: 'say', who: 'Solène', x: 'Voilà un benchmark qu’on peut défendre : chaque concurrent est vérifié, pas seulement cité.' }] },
-    { key: 'C', label: 'Se limiter aux marques que l’équipe connaît déjà',
-      text: 'Partir des marques de bière sans alcool que les membres de l’équipe ont déjà vues en magasin ou bues.',
-      effects: { budget: 0, delai: -1, fiab: -2, confiance: 0 }, tone: 'mixed',
-      vTitle: 'Un panel limité par ce que l’équipe sait déjà',
-      rationale: 'Partir de ce qu’on connaît est confortable, mais votre expérience personnelle ne couvre pas tout le marché : vous risquez de rater des acteurs importants, en particulier chez les concurrents indirects que vous ne consommez peut-être pas.',
-      notions: 'Biais de connaissance · Étendue du périmètre',
-      alt: 'L’option B va chercher au-delà de ce que l’équipe connaît déjà.',
-      consequence: [{ t: 'say', who: 'Gwen', x: 'On ne connaît pas tout le marché, loin de là. Il doit y avoir des acteurs qu’on ne soupçonne même pas.' }] },
-  ],
-  hint1: 'Une seule source peut tromper : un classement de moteur de recherche, ou votre propre expérience. Que fait un cabinet d’études pour se prémunir de ça ?',
-  hint2: 'Cherchez l’option qui recoupe plusieurs sources différentes (site de la marque, caviste, presse, avis) avant de retenir chaque concurrent.',
+  reference: ['gout', 'canal', 'image', 'prix', 'local', 'notoriete'],
+  referenceWhy: 'Camille craint avant tout une bière « sans goût » (1er critère) ; elle achète en cave ou en épicerie de quartier (2e) ; elle veut une bière qui « ne se prend pas pour de la bière » donc l’image compte (3e) ; le prix n’est pas son frein principal (4e) ; elle se fie au bouche-à-oreille plus qu’à la publicité (dernier).',
+  effects: { budget: [-300, -300], delai: [-1, -1], fiab: STD_EFFECTS.fiab, confiance: STD_EFFECTS.confiance },
+  verdict: {
+    high: { title: 'Des critères alignés sur la cible', text: 'Votre ordre reflète ce qui compte réellement pour Camille : le goût et l’accès d’abord. Votre benchmark comparera sur ce qui pèse dans sa décision.' },
+    mid: { title: 'Un ordre en partie cohérent', text: 'Certains critères sont bien placés, d’autres reflètent plutôt ce qui se mesure facilement que ce qui compte pour la cible. Relisez son persona.' },
+    low: { title: 'Des critères déconnectés de la cible', text: 'Votre classement privilégie des critères faciles à relever (prix, notoriété) au détriment de ceux qui décident Camille (goût, canal). Le benchmark risque de comparer à côté du sujet.' },
+  },
+  notions: 'Critères de benchmark · Lien avec la cible · Persona',
+  hint1: 'Relisez le persona du chapitre 3 : qu’est-ce qui la freine ? où achète-t-elle ? comment découvre-t-elle une marque ?',
+  hint2: 'Mettez en haut ce qui peut faire basculer Camille (le goût, l’accès), et en bas ce qui l’influence peu (la publicité, l’ancrage local).',
 },
 
-/* ----------------------------------------------------------------- D3 : Porter */
-{
-  id: 'D3', step: 4, title: 'L’évaluation des cinq forces de Porter',
-  sceneTitle: 'Mercredi, au Studio : évaluer la pression du secteur',
-  scene: [
-    { t: 'say', who: 'Karim', x: 'Le benchmark, c’est bien, mais je veux comprendre la pression globale sur ce secteur : pas seulement qui sont nos rivaux directs.' },
-    { t: 'say', who: 'Solène', x: 'C’est exactement à ça que sert Porter. Cinq forces, pas une seule.' },
+/* ----------------------------------------------------------------- A3 : répartir un budget */
+A3: {
+  id: 'A3', step: 3, type: 'sliders', section: 's43', title: 'Répartir le budget de recherche',
+  intro: 'Vous disposez de **7 000 €** pour l’ensemble de la mission, mais vous ne pouvez pas engager plus de **4 000 €** dans la recherche de concurrents. **Réglez les curseurs** : l’indicateur de fiabilité se met à jour en direct.',
+  cap: 4000,
+  methods: [
+    { id: 'doc', label: 'Recherche documentaire', sub: 'Sites des marques, presse, plateformes spécialisées', max: 1000, step: 100, target: 500, weight: 0.20, why: 'Peu coûteuse et indispensable : elle donne prix, canal et image affichée.' },
+    { id: 'degust', label: 'Dégustation comparative', sub: 'Acheter et goûter les produits', max: 1500, step: 100, target: 900, weight: 0.30, why: 'La seule façon de juger le goût, premier critère de la cible.' },
+    { id: 'etude', label: 'Étude de marché achetée', sub: 'Panels, chiffres de parts de marché', max: 3000, step: 250, target: 1500, weight: 0.25, why: 'Utile pour les poids réels des acteurs, mais coûteuse : un investissement à doser.' },
+    { id: 'entretiens', label: 'Entretiens avec des cavistes', sub: 'Prix pratiqués, rotation, avis des clients', max: 1500, step: 100, target: 700, weight: 0.25, why: 'Apporte le terrain : ce qui se vend vraiment et pourquoi.' },
   ],
-  question: 'Comment évaluez-vous les cinq forces de Porter ?',
-  options: [
-    { key: 'A', label: 'Une estimation rapide, à l’instinct',
-      text: 'Noter chaque force en quelques minutes, sans détailler ni justifier.',
-      effects: { budget: 0, delai: -1, fiab: -5, confiance: -2 }, tone: 'risky',
-      vTitle: 'Une notation qui ne convainc personne',
-      rationale: 'Une note sans justification ne permet à personne de vérifier si elle est juste, ni de comprendre ce qui pourrait la faire changer. Karim ne pourra pas défendre cette analyse devant le conseil.',
-      notions: 'Les cinq forces de Porter · Argumentation',
-      alt: 'L’option C justifie chaque force par un exemple concret.',
-      consequence: [{ t: 'say', who: 'Karim', x: 'Une note sans explication, ça ne vaut pas grand-chose face au conseil.' }] },
-    { key: 'B', label: 'Se concentrer sur la seule rivalité directe',
-      text: 'Ne noter que la rivalité entre concurrents directs, en laissant de côté les quatre autres forces.',
-      effects: { budget: 0, delai: -1, fiab: -2, confiance: 0 }, tone: 'mixed',
-      vTitle: 'Une moitié du diagnostic',
-      rationale: 'La rivalité directe n’est qu’une force parmi cinq. En laissant de côté la menace des nouveaux entrants, le pouvoir des fournisseurs et des clients, et la menace des substituts, vous obtenez une vision incomplète de la pression réelle sur le secteur.',
-      notions: 'Les cinq forces de Porter · Analyse incomplète',
-      alt: 'L’option C évalue les cinq forces, pas seulement la rivalité.',
-      consequence: [{ t: 'say', who: 'Gwen', x: 'Et les nouveaux qui pourraient arriver demain, on n’en parle pas ?' }] },
-    { key: 'C', label: 'Une notation argumentée des cinq forces',
-      text: 'Noter chaque force (faible, moyenne, forte) et justifier chaque note par un exemple concret issu du secteur.',
-      effects: { budget: -500, delai: -2, fiab: 7, confiance: 4 }, tone: 'positive',
-      vTitle: 'Une analyse qu’on peut vérifier et défendre',
-      rationale: 'En justifiant chaque force par un exemple concret, vous donnez à Karim une analyse qu’il peut vérifier et présenter au conseil. C’est ce qui distingue une évaluation sérieuse d’une simple impression.',
-      notions: 'Les cinq forces de Porter · Diagnostic sectoriel',
-      alt: 'L’option A ne justifie rien ; l’option B n’évalue qu’une seule force sur cinq.',
-      consequence: [{ t: 'say', who: 'Solène', x: 'Voilà un diagnostic qu’on peut présenter sans rougir.' }] },
-  ],
-  hint1: 'Porter a identifié cinq forces, pas une seule. Une analyse qui n’en traite qu’une est une analyse à moitié faite, et une note sans preuve ne se défend pas.',
-  hint2: 'Cherchez l’option qui note et justifie les cinq forces, avec un exemple concret pour chacune, plutôt qu’une estimation sans preuve ou un focus sur une seule force.',
+  effects: { budget: [0, 0], delai: [0, 0], fiab: STD_EFFECTS.fiab, confiance: STD_EFFECTS.confiance },
+  verdict: {
+    high: { title: 'Un budget bien réparti', text: 'Vous couvrez les quatre angles (documentaire, goût, marché, terrain) sans dépasser l’enveloppe ni dépenser pour rien. C’est un dispositif de recherche équilibré.' },
+    mid: { title: 'Un budget déséquilibré', text: 'Un ou deux angles sont insuffisamment couverts, ou une ligne est dotée au-delà de ce qui est utile. Votre benchmark aura des zones d’ombre.' },
+    low: { title: 'Un budget mal pensé', text: 'Votre répartition laisse des angles essentiels sans moyens, ou dépasse l’enveloppe autorisée. La fiabilité du benchmark s’en ressent fortement.' },
+  },
+  notions: 'Triangulation des sources · Arbitrage budget / fiabilité',
+  hint1: 'Aucune méthode ne suffit seule : visez un peu de chaque, en dosant selon l’utilité (le goût compte plus que la presse pour Camille).',
+  hint2: 'Pour chaque curseur, la cible utile est indiquée dans le corrigé après validation : au-delà, vous dépensez sans gagner en fiabilité. Restez sous 4 000 € au total.',
 },
 
-/* ----------------------------------------------------------------- D4 : positionnement */
-{
-  id: 'D4', step: 5, title: 'La conclusion de positionnement',
-  sceneTitle: 'Jeudi, au Studio : il faut conclure',
-  scene: [
-    { t: 'p', x: 'Le benchmark est fait, les cinq forces sont notées. Reste à trancher : où Marée Basse doit-elle se positionner ?' },
-    { t: 'say', who: 'Solène', x: 'Rappelez-vous la distinction entre océan rouge et océan bleu. La réponse la plus facile n’est pas toujours la bonne.' },
+/* ----------------------------------------------------------------- A4 : relier + noter (Porter) */
+A4: {
+  id: 'A4', step: 4, type: 'match', section: 's44', title: 'Relier et noter les cinq forces de Porter',
+  intro: 'Chaque force de Porter s’appuie sur un fait de marché. **Reliez chaque force au fait qui l’illustre** (touchez une force, puis un fait), puis **notez son niveau** : faible, moyenne ou forte.',
+  forces: [
+    { id: 'ne', label: 'Menace des nouveaux entrants', fact: 'f_ne', level: 'Moyen' },
+    { id: 'fo', label: 'Pouvoir de négociation des fournisseurs', fact: 'f_fo', level: 'Moyen' },
+    { id: 'cl', label: 'Pouvoir de négociation des clients', fact: 'f_cl', level: 'Fort' },
+    { id: 'su', label: 'Menace des produits de substitution', fact: 'f_su', level: 'Fort' },
+    { id: 'ri', label: 'Intensité de la rivalité entre concurrents', fact: 'f_ri', level: 'Moyen' },
   ],
-  question: 'Quel positionnement retenez-vous pour Marée Basse ?',
-  options: [
-    { key: 'A', label: 'Un espace différenciant, sur le goût et l’ancrage local',
-      text: 'Se positionner sur ce que les concurrents trouvés ne proposent pas encore pleinement : un goût travaillé pour les sportifs abstinents, avec un ancrage local fort.',
-      effects: { budget: -600, delai: -2, fiab: 7, confiance: 4 }, tone: 'positive',
-      vTitle: 'Un espace encore peu disputé',
-      rationale: 'En s’appuyant sur le goût (le premier frein identifié pour la cible) et sur l’ancrage local, Marée Basse vise un espace que les concurrents de votre benchmark n’occupent pas pleinement. C’est un océan plus bleu, cohérent avec le persona du chapitre 3.',
-      notions: 'Océan bleu · Positionnement différenciant',
-      alt: 'L’option B copie un concurrent ; l’option C se bat sur le prix.',
-      consequence: [{ t: 'say', who: 'Gwen', x: 'Voilà qui nous ressemble, et qui parle à Camille.' }] },
-    { key: 'B', label: 'Copier le positionnement du concurrent artisanal le plus proche',
-      text: 'Reprendre le positionnement du concurrent artisanal direct que vous avez identifié, qui a déjà réussi son lancement sans alcool.',
-      effects: { budget: 0, delai: -1, fiab: -2, confiance: 0 }, tone: 'mixed',
-      vTitle: 'Une position seconde, pas une position propre',
-      rationale: 'Copier un concurrent déjà installé et reconnu place Marée Basse en position de suiveur, sans raison claire de préférer la nouvelle marque à celle qui a l’antériorité. Un positionnement doit distinguer, pas imiter.',
-      notions: 'Positionnement propre · Différenciation',
-      alt: 'L’option A construit un positionnement propre à partir du persona de Marée Basse.',
-      consequence: [{ t: 'say', who: 'Solène', x: 'Pourquoi un client choisirait Marée Basse plutôt que ce concurrent, si vous dites la même chose ?' }] },
-    { key: 'C', label: 'Moins cher que tous les concurrents artisanaux',
-      text: 'Fixer un prix inférieur à celui des autres brasseries artisanales pour attirer les clients sur le critère du prix.',
-      effects: { budget: 0, delai: -1, fiab: -5, confiance: -3 }, tone: 'risky',
-      vTitle: 'Une entrée dans un océan rouge',
-      rationale: 'Se positionner sur le prix revient à affronter directement les industriels, qui peuvent produire à un coût bien plus bas. C’est entrer dans un océan rouge où une brasserie artisanale ne peut pas gagner.',
-      notions: 'Océan rouge · Guerre des prix',
-      alt: 'L’option A cherche un espace différenciant, pas une bataille de prix.',
-      consequence: [{ t: 'say', who: 'Karim', x: 'On ne peut pas lutter sur le prix face à des industriels. Ce serait perdu d’avance.' }] },
+  facts: [
+    { id: 'f_cl', text: 'Les grandes enseignes imposent leurs conditions de prix et de référencement aux brasseurs.' },
+    { id: 'f_ri', text: 'Brasseries Kronenbourg revendique 60,4 % du marché français des bières sans alcool (hors panachés).' },
+    { id: 'f_ne', text: 'Heineken 0.0, Corona Cero… : de nouvelles marques de bière sans alcool arrivent en rayon chaque année.' },
+    { id: 'f_su', text: 'Kombucha, vins effervescents sans alcool et mocktails répondent au même besoin.' },
+    { id: 'f_fo', text: 'Peu de prestataires maîtrisent les procédés de désalcoolisation à grande échelle.' },
   ],
-  hint1: 'Un positionnement qui se bat uniquement sur le prix affronte ceux qui peuvent produire moins cher. Un positionnement qui copie un concurrent ne donne aucune raison de le préférer.',
-  hint2: 'Cherchez l’option qui s’appuie sur le persona du chapitre 3 (le goût, l’ancrage local) pour viser un espace que les concurrents de votre benchmark n’occupent pas encore pleinement.',
+  levels: ['Faible', 'Moyen', 'Fort'],
+  levelWhy: {
+    ne: 'Moyen : le marché attire des entrants, mais la désalcoolisation demande un savoir-faire technique.',
+    fo: 'Moyen : peu de prestataires spécialisés, mais les brasseries peuvent en changer.',
+    cl: 'Fort : la grande distribution et les CHR peuvent imposer leurs marges.',
+    su: 'Fort : de nombreuses alternatives existent déjà pour le même besoin.',
+    ri: 'Moyen : un grand groupe domine largement, mais peu d’artisans sont encore positionnés sur le sans alcool.',
+  },
+  effects: { budget: [-300, -300], delai: [-1, -1], fiab: STD_EFFECTS.fiab, confiance: STD_EFFECTS.confiance },
+  verdict: {
+    high: { title: 'Un diagnostic juste et complet', text: 'Vous reliez chaque force à son fait de marché et vos niveaux sont défendables. Karim pourra présenter cette analyse au conseil.' },
+    mid: { title: 'Un diagnostic à consolider', text: 'Certains liens ou certains niveaux sont discutables. Reprenez les faits un par un : à quelle force répondent-ils vraiment ?' },
+    low: { title: 'Un diagnostic fragile', text: 'Plusieurs faits sont rattachés à la mauvaise force, ou les niveaux ne s’appuient sur rien. L’analyse ne se défendrait pas devant le conseil.' },
+  },
+  notions: 'Les cinq forces de Porter · Diagnostic sectoriel',
+  hint1: 'Pour chaque fait, demandez-vous : qui exerce une pression sur la brasserie ici ? (un nouvel arrivant, un fournisseur, un client, une autre boisson, un rival ?)',
+  hint2: 'Un niveau « fort » signifie une pression forte sur la rentabilité du secteur : plus les alternatives et les acheteurs puissants sont nombreux, plus la force est élevée.',
 },
 
-];
+/* ----------------------------------------------------------------- A5 : carte de positionnement */
+A5: {
+  id: 'A5', step: 5, type: 'map', section: 's45', title: 'Placer Marée Basse sur la carte',
+  intro: 'Voici la carte **prix × goût perçu**. Vos quatre concurrents sont placés selon **le prix que vous avez relevé** ; **ajustez leur goût perçu** en les faisant glisser verticalement, puis **placez Marée Basse** là où vous voulez la positionner. La carte affiche les zones libres.',
+  axes: { x: 'Prix (de moins cher à plus cher)', y: 'Goût perçu (de moins bon à meilleur)' },
+  priceMin: 1, priceMax: 6,
+  prixMB: 3.2,
+  effects: { budget: [-300, -300], delai: [-1, -1], fiab: STD_EFFECTS.fiab, confiance: STD_EFFECTS.confiance },
+  verdict: {
+    high: { title: 'Un espace encore peu disputé', text: 'Marée Basse se place dans une zone libre, avec un goût travaillé : un océan plus bleu, cohérent avec le persona du chapitre 3.' },
+    mid: { title: 'Un positionnement à clarifier', text: 'Votre position est en partie défendable, mais elle empiète sur un concurrent ou ne s’appuie pas assez sur le goût, le critère décisif de la cible.' },
+    low: { title: 'Une entrée dans un océan rouge', text: 'Marée Basse se place sur un concurrent, ou dans la zone « pas cher et goût moyen » où les industriels sont imbattables. Ce positionnement ne se défend pas.' },
+  },
+  notions: 'Carte de positionnement · Océan rouge, océan bleu · Différenciation',
+  hint1: 'Une zone libre est un endroit de la carte où aucun concurrent ne se trouve. Regardez où se concentrent les points.',
+  hint2: 'Camille veut avant tout du goût : visez le haut de la carte, à distance des concurrents, plutôt que le coin « pas cher, goût moyen » où se battent les industriels.',
+},
+
+/* ----------------------------------------------------------------- A6 : repérer les erreurs */
+A6: {
+  id: 'A6', step: 6, type: 'spot', section: 's46', title: 'Repérer les erreurs du chapitre d’un stagiaire',
+  intro: 'Un stagiaire a rédigé la conclusion de son étude de la concurrence. **Touchez les phrases qui contiennent une erreur de méthode** : il y en a quatre. Attention : toucher une phrase juste vous fait perdre des points.',
+  sentences: [
+    { id: 's1', text: 'Le goût perçu est le premier frein de la cible identifiée au chapitre 3.', err: false },
+    { id: 's2', text: 'Nous avons retenu quatre concurrents, tous des brasseries artisanales bretonnes.', err: true, why: 'Périmètre trop proche : il oublie les industriels (qui pèsent le plus) et les concurrents indirects.' },
+    { id: 's3', text: 'Chaque concurrent du benchmark est relié à une source identifiée.', err: false },
+    { id: 's4', text: 'Le prix moyen du marché est de 1,50 €, comme chacun le sait.', err: true, why: 'Un chiffre sans source n’est pas recevable : « comme chacun le sait » ne vaut pas une référence.' },
+    { id: 's5', text: 'Les cinq forces de Porter ont été évaluées, pas seulement la rivalité directe.', err: false },
+    { id: 's6', text: 'Tourtel Twist, qui vend une bière sans alcool, est un concurrent indirect.', err: true, why: 'Une bière sans alcool est un concurrent direct : même besoin, même type de produit.' },
+    { id: 's7', text: 'Le plus sûr est de se positionner moins cher que tous les concurrents, industriels compris.', err: true, why: 'Une guerre des prix avec les industriels est un océan rouge où une brasserie artisanale ne peut pas gagner.' },
+    { id: 's8', text: 'Marée Basse vise un espace différenciant, sur le goût et l’ancrage local.', err: false },
+  ],
+  effects: { budget: [0, 0], delai: [-1, -1], fiab: STD_EFFECTS.fiab, confiance: STD_EFFECTS.confiance },
+  verdict: {
+    high: { title: 'Un œil d’expert', text: 'Vous repérez les erreurs de méthode sans condamner les phrases justes. C’est exactement le réflexe de relecture que le client attend.' },
+    mid: { title: 'Un œil à aiguiser', text: 'Vous avez repéré une partie des erreurs, mais certaines vous ont échappé ou vous avez contesté des phrases justes.' },
+    low: { title: 'Une relecture passée à côté', text: 'La plupart des erreurs vous ont échappé. Relisez les règles du Studio : périmètre, sources, direct / indirect, positionnement.' },
+  },
+  notions: 'Relecture critique · Périmètre · Sources · Positionnement',
+  hint1: 'Quatre erreurs, quatre thèmes : le périmètre des concurrents, une source manquante, une classification direct/indirect, un positionnement.',
+  hint2: 'Cherchez la phrase qui généralise sans preuve, celle qui classe mal une marque, celle qui oublie une catégorie de concurrents, celle qui recommande la guerre des prix.',
+},
+
+};
+
+M4.activityOrder = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'];
 
 M4.levels = [
-  { min: 140, key: 'reference', name: 'Analyse de référence', tone: 'positive' },
-  { min: 112, key: 'solide', name: 'Analyse solide', tone: 'positive' },
-  { min: 82, key: 'fragile', name: 'Analyse fragile', tone: 'mixed' },
+  { min: 136, key: 'reference', name: 'Analyse de référence', tone: 'positive' },
+  { min: 120, key: 'solide', name: 'Analyse solide', tone: 'positive' },
+  { min: 96, key: 'fragile', name: 'Analyse fragile', tone: 'mixed' },
   { min: -999, key: 'reprendre', name: 'Analyse à reprendre', tone: 'risky' },
 ];
 
@@ -945,158 +1046,128 @@ var M4 = (typeof M4 === 'undefined') ? {} : M4;
 
 M4.forms = {};
 
-/* ------------------------------------------------------------- 4.1 */
+/* Les sections 4.1 et 4.4 n'ont pas de texte libre : elles sont produites par une activité. */
 M4.forms.s41 = {
-  id: 's41', section: '4.1', step: 1, title: 'Préparer la recherche',
-  intro: 'Avant de chercher quoi que ce soit, cadrez votre recherche : quels types de concurrents visez-vous, et où allez-vous chercher ?',
-  methode: [
-    'Ouvrez la page « Méthode de recherche » pour voir où chercher et un exemple de concurrent documenté.',
-    'Un concurrent direct répond au même besoin avec le même type de produit ; un concurrent indirect répond au même besoin avec un produit différent.',
-    'Pensez à couvrir des poids différents sur le marché : un grand acteur n’a pas les mêmes moyens qu’un petit.',
-  ],
-  fields: [
-    { id: 'perimetre', type: 'area', label: 'Quels types de concurrents allez-vous chercher (directs, indirects), et pourquoi ?' },
-    { id: 'sourcesEnvisagees', type: 'area', label: 'Où comptez-vous chercher ces informations (quelles sources) ?' },
-  ],
+  id: 's41', section: '4.1', step: 1, title: 'Le périmètre des concurrents', activity: 'A1', fields: [],
+  intro: 'Cette section est produite par l’activité de classement : elle reprend le périmètre que vous avez défini.',
+  methode: [],
   grille: [
-    { crit: 'Périmètre argumenté', ok: 'Le texte distingue concurrents directs et indirects, en lien avec le besoin satisfait.', top: 'Le périmètre cherche des poids différents (grand acteur, petit acteur).', alerte: 'Périmètre non justifié ou limité aux seuls concurrents qui ressemblent à la brasserie.' },
-    { crit: 'Sources variées', ok: 'Au moins deux types de sources différents sont envisagés (site de marque, presse, caviste, avis…).', top: 'Chaque source est reliée à l’information qu’elle peut apporter.', alerte: 'Une seule source envisagée, ou sources trop vagues (« internet »).' },
-    { crit: 'Lien avec la cible', ok: 'Le texte tient compte de ce que cherche la cible du chapitre 3.', top: '—', alerte: 'Recherche sans lien avec la cible.' },
-    { crit: 'Rédaction et clarté', ok: 'Phrases courtes, compréhensibles sans contexte.', top: '—', alerte: 'Texte confus ou trop vague.' },
+    { crit: 'Classement juste', ok: 'Au moins huit marques sur dix sont dans la bonne colonne.', top: 'Les dix marques sont bien classées.', alerte: 'Plus de trois marques mal classées.' },
+    { crit: 'Frontière direct / indirect comprise', ok: 'Les trois concurrents indirects (boissons autres que la bière) sont repérés.', top: '—', alerte: 'Des bières rangées en indirect, ou des kombuchas rangés en direct.' },
+    { crit: 'Hors périmètre repéré', ok: 'Eau, café et lait sont écartés du benchmark.', top: '—', alerte: 'Des marques hors périmètre retenues comme concurrentes.' },
   ],
   reference: [
-    { t: 'p', x: '**Types de concurrents.** Des concurrents directs (marques de bière sans alcool, un grand industriel et un artisan) et des concurrents indirects (d’autres boissons qui répondent au même besoin de boire sans alcool lors d’un moment social : boissons fermentées, vins effervescents sans alcool, mocktails).' },
-    { t: 'p', x: '**Sources envisagées.** Les sites des marques pour le prix et le positionnement, la presse professionnelle (Brasseurs de France, communiqués des groupes) pour les parts de marché, des cavistes ou plateformes spécialisées pour les prix pratiqués, et les réseaux sociaux pour l’image.' },
+    { t: 'table', head: ['Colonne', 'Marques'], rows: [
+      ['Concurrent direct', 'Heineken 0.0, Tourtel Twist, Corona Cero, Celta (Brasserie Goudale)'],
+      ['Concurrent indirect', 'Ciao Kombucha, French Bloom, KOKO Kombucha'],
+      ['Hors périmètre', 'Evian, Nespresso, Lactel'],
+    ] },
   ],
 };
 
-/* ------------------------------------------------------------- 4.2 */
 M4.forms.s42 = {
-  id: 's42', section: '4.2', step: 2, title: 'Les critères du benchmark',
-  intro: 'Détaillez les critères de comparaison que vous avez retenus à la décision précédente, et pourquoi ils comptent pour la cible.',
+  id: 's42', section: '4.2', step: 2, title: 'Les critères du benchmark', activity: 'A2',
+  intro: 'Vous avez hiérarchisé vos critères. Justifiez maintenant, en deux phrases, **le critère que vous avez placé en premier** par rapport à Camille.',
   methode: [
-    'Un critère se choisit parce qu’il compte pour la cible, pas parce qu’il est facile à trouver.',
-    'Relisez le persona du chapitre 3 : son frein, sa motivation, ses canaux.',
-    'Indiquez aussi comment vous allez mesurer chaque critère (par exemple : le prix en euros pour 33 cl).',
+    'Citez un élément précis du persona du chapitre 3 (son frein, sa routine, sa citation).',
+    'Dites ce que ce critère changerait dans le choix de Camille.',
   ],
   fields: [
-    { id: 'criteresRetenus', type: 'area', label: 'Quels critères retenez-vous pour comparer vos concurrents ?' },
-    { id: 'pourquoiCriteres', type: 'area', label: 'Pourquoi ces critères, et comment allez-vous les mesurer ?' },
+    { id: 'justification', type: 'area', label: 'Pourquoi votre critère n°1 est-il décisif pour Camille ?' },
   ],
   grille: [
-    { crit: 'Cohérence avec D1', ok: 'Les critères cités correspondent à la décision D1 prise.', top: '—', alerte: 'Critères contredisant la décision D1.' },
-    { crit: 'Lien avec la cible', ok: 'Au moins un critère est relié explicitement au persona ou au frein du chapitre 3.', top: 'Chaque critère est relié à une raison propre à la cible.', alerte: 'Critères sans lien avec ce qui compte pour la cible.' },
-    { crit: 'Mesurabilité', ok: 'Chaque critère s’accompagne d’une façon concrète de le mesurer ou de le relever.', top: '—', alerte: 'Critères vagues, impossibles à relever.' },
-    { crit: 'Rédaction et clarté', ok: 'Phrases courtes et précises.', top: '—', alerte: 'Texte vague.' },
+    { crit: 'Cohérence avec le classement', ok: 'La justification porte bien sur le critère placé en premier.', top: '—', alerte: 'Justification d’un autre critère que celui classé premier.' },
+    { crit: 'Lien avec le persona', ok: 'Un élément précis du persona est cité (frein, routine, canal).', top: 'Le critère est relié à une conséquence concrète sur son choix.', alerte: 'Justification générale, sans lien avec Camille.' },
+    { crit: 'Rédaction et clarté', ok: 'Deux phrases courtes et claires.', top: '—', alerte: 'Texte confus.' },
   ],
   reference: [
-    { t: 'p', x: '**Critères retenus.** Le prix (en euros pour 33 cl), le goût perçu (d’après les avis de consommateurs et la presse spécialisée), le canal de distribution (grande distribution, cavistes, CHR, e-commerce) et l’image de la marque (grand public, artisanale, premium, healthy).' },
-    { t: 'p', x: '**Pourquoi.** Le goût perçu est le premier frein de Camille (chapitre 3) ; le canal détermine si la brasserie peut réellement rencontrer la cible ; le prix et l’image situent l’offre par rapport à ce que la cible est prête à payer et à ce qu’elle attend.' },
+    { t: 'p', x: 'Le goût perçu passe en premier : Camille craint qu’une bière « sans alcool » rime avec « sans goût » (« si c’est fade, autant boire de l’eau »). Une marque qui échoue sur ce point sera écartée quel que soit son prix.' },
   ],
 };
 
-/* ------------------------------------------------------------- 4.3 */
 M4.forms.s43 = {
-  id: 's43', section: '4.3', step: 3, title: 'Les concurrents réels',
-  intro: 'Trouvez sur internet quatre vrais concurrents qui existent sur le marché français : deux directs et deux indirects. Pour chacun, indiquez où vous l’avez trouvé et ce que vous avez relevé sur vos critères.',
+  id: 's43', section: '4.3', step: 3, title: 'Les concurrents réels', activity: 'A3',
+  intro: 'Trouvez sur internet **quatre vrais concurrents** présents sur le marché français : deux directs et deux indirects. Complétez le tableau : le jeu calcule le prix moyen et l’écart avec le prix envisagé pour Marée Basse (3,20 €).',
   methode: [
     'Les quatre concurrents doivent exister réellement : une marque, un produit, un site que l’on peut retrouver.',
     'Un concurrent direct vend une bière sans alcool ; un concurrent indirect répond au même besoin avec un autre produit.',
-    'Dans « source », indiquez le site, l’article ou la page où vous avez trouvé l’information (un lien ou un titre précis).',
-    'Dans « ce que vous avez relevé », donnez des faits sur vos critères : prix, goût perçu, canal, image.',
+    'Dans « Source », indiquez le site, l’article ou la page où vous avez trouvé l’information.',
+    'Le prix est celui d’une bouteille ou canette de 33 cl (ou ramené à 33 cl).',
   ],
   fields: [
-    { id: 'concurrents', type: 'rows', label: 'Quatre concurrents réels', n: 4,
+    { id: 'concurrents', type: 'table', label: 'Quatre concurrents réels', n: 4,
       labels: ['Concurrent direct n°1', 'Concurrent direct n°2', 'Concurrent indirect n°1', 'Concurrent indirect n°2'],
       cols: [
-        { id: 'nom', kind: 'area', label: 'Nom de la marque ou du produit (réel)', ph: 'Le nom exact tel qu’on le trouve en ligne…' },
-        { id: 'source', kind: 'area', label: 'Où l’avez-vous trouvé ? (site, article, lien)', ph: 'Titre de la page ou adresse du site…' },
-        { id: 'releve', kind: 'area', label: 'Ce que vous avez relevé sur vos critères', ph: 'Prix, goût perçu, canal de distribution, image…' },
+        { id: 'nom', kind: 'text', label: 'Marque ou produit', ph: 'Nom exact…' },
+        { id: 'source', kind: 'text', label: 'Source (site, article)', ph: 'Où l’avez-vous trouvé ?' },
+        { id: 'prix', kind: 'number', label: 'Prix 33 cl (€)', min: 0, max: 30, step: 0.05 },
+        { id: 'canal', kind: 'select', label: 'Canal principal', options: [['', 'Choisir'], ['Grande distribution', 'Grande distribution'], ['Cavistes / CHR', 'Cavistes / CHR'], ['Bio / épiceries', 'Bio / épiceries'], ['En ligne', 'En ligne']] },
+        { id: 'gout', kind: 'select', label: 'Goût perçu', options: [['', 'Choisir'], ['Bon', 'Bon'], ['Moyen', 'Moyen'], ['Faible', 'Faible'], ['Non évalué', 'Non évalué']] },
       ] },
   ],
   grille: [
     { crit: 'Concurrents réels et vérifiables', ok: 'Les quatre concurrents existent vraiment et peuvent être retrouvés en ligne.', top: 'Au moins un concurrent est documenté par une source de marché (presse professionnelle, communiqué).', alerte: 'Concurrent inventé, introuvable ou sans lien avec le marché des boissons sans alcool.' },
     { crit: 'Classement direct / indirect juste', ok: 'Les deux directs vendent de la bière sans alcool ; les deux indirects répondent au même besoin avec un autre produit.', top: '—', alerte: 'Un concurrent indirect classé en direct, ou inversement.' },
     { crit: 'Sources identifiées', ok: 'Chaque concurrent est relié à une source précise (site, article, page).', top: 'Les sources sont variées d’un concurrent à l’autre.', alerte: 'Source absente ou trop vague (« internet », « Google »).' },
-    { crit: 'Faits relevés', ok: 'Les relevés s’appuient sur les critères choisis en 4.2 (prix, goût perçu, canal, image).', top: 'Les chiffres cités sont datés ou sourcés.', alerte: 'Relevés vagues, sans fait précis ni lien avec les critères.' },
-    { crit: 'Diversité du panel', ok: 'Les quatre concurrents ont des profils différents (poids, positionnement).', top: '—', alerte: 'Quatre concurrents quasi identiques.' },
+    { crit: 'Prix vérifiables', ok: 'Les prix relevés sont plausibles et correspondent aux sources citées.', top: 'Les prix sont datés ou accompagnés de leur point de vente.', alerte: 'Prix incohérents ou invérifiables.' },
+    { crit: 'Diversité du panel', ok: 'Les quatre concurrents ont des profils différents (poids, canal, positionnement).', top: '—', alerte: 'Quatre concurrents quasi identiques.' },
   ],
   reference: [
-    { t: 'p', x: '*Exemple de réponse possible : d’autres concurrents réels, correctement sourcés, sont tout aussi valables. Les faits cités sont à vérifier à la date de la recherche.*' },
-    { t: 'table', head: ['Concurrent', 'Source', 'Ce qui est relevé'], rows: [
-      ['Direct n°1 : Tourtel Twist (Brasseries Kronenbourg, groupe Carlsberg)', 'Communiqué Kronenbourg « Dry January », kronenbourg.com (janvier 2026).', 'Leader des bières sans alcool aromatisées (45,2 % de part de marché sur ce segment) ; grande distribution ; image grand public.'],
-      ['Direct n°2 : Brasserie La Débauche', 'Site de la brasserie (brasserie-ladebauche.com) et fiche artisanat.fr.', 'Brasserie artisanale pionnière du mouvement craft en France (fondée en 2013), propose aussi des boissons pétillantes sans alcool aux fruits ; image créative et qualitative.'],
-      ['Indirect n°1 : Ciao Kombucha', 'Article de presse sur le lancement de la marque (woo.paris).', 'Boisson fermentée en canette, prix conseillé de 2,79 € ; ciblée sur un public jeune, forte visibilité par l’influence ; image « healthy ».'],
-      ['Indirect n°2 : French Bloom', 'Étude Xerfi sur le marché des boissons NoLo (xerfi.com).', 'Vin effervescent sans alcool ultra-premium ; positionnement festif haut de gamme ; occasions spéciales.'],
+    { t: 'p', x: '*Exemple de réponse possible : d’autres concurrents réels, correctement sourcés, sont tout aussi valables. Les prix sont à relever en magasin ou en ligne à la date de la recherche.*' },
+    { t: 'table', head: ['Concurrent', 'Source', 'Ce qui peut être relevé'], rows: [
+      ['Direct n°1 : Tourtel Twist (Brasseries Kronenbourg)', 'Communiqué Kronenbourg « Dry January » (kronenbourg.com, janvier 2026)', 'Leader des bières sans alcool aromatisées (45,2 % du segment) ; grande distribution ; prix à relever en rayon.'],
+      ['Direct n°2 : Brasserie La Débauche ou Celta (Goudale)', 'Site de la brasserie ; fiche artisanat.fr ; presse régionale', 'Brasserie artisanale proposant du sans alcool ; canal caviste / CHR ; prix à relever.'],
+      ['Indirect n°1 : Ciao Kombucha', 'Article woo.paris sur le lancement', 'Canette à 2,79 € (prix conseillé) ; public jeune ; image healthy.'],
+      ['Indirect n°2 : French Bloom', 'Étude Xerfi sur le marché NoLo (xerfi.com)', 'Vin effervescent sans alcool premium ; occasions festives ; prix à relever (bouteille).'],
     ] },
   ],
 };
 
-/* ------------------------------------------------------------- 4.4 */
 M4.forms.s44 = {
-  id: 's44', section: '4.4', step: 4, title: 'Les cinq forces de Porter',
-  intro: 'Notez chaque force (faible, moyenne, forte) et justifiez votre note par un exemple concret du secteur.',
-  methode: [
-    'Une force élevée signifie une pression forte sur la rentabilité du secteur.',
-    'La justification doit citer un fait concret, pas une impression générale.',
-  ],
-  fields: [
-    { id: 'forces', type: 'rows', label: 'Les cinq forces', n: 5,
-      labels: ['Menace des nouveaux entrants', 'Pouvoir de négociation des fournisseurs', 'Pouvoir de négociation des clients', 'Menace des produits de substitution', 'Intensité de la rivalité entre concurrents'],
-      cols: [
-        { id: 'niveau', kind: 'select', label: 'Niveau', options: [['', 'Choisir'], ['Faible', 'Faible'], ['Moyen', 'Moyen'], ['Fort', 'Fort']] },
-        { id: 'justification', kind: 'area', label: 'Justification (un fait concret)', ph: 'Parce que…' },
-      ] },
-  ],
+  id: 's44', section: '4.4', step: 4, title: 'Les cinq forces de Porter', activity: 'A4', fields: [],
+  intro: 'Cette section est produite par l’activité Porter : elle reprend vos liens et vos niveaux.',
+  methode: [],
   grille: [
-    { crit: 'Cinq forces notées', ok: 'Les cinq forces ont une note, pas seulement la rivalité directe.', top: '—', alerte: 'Une ou plusieurs forces non notées ou non justifiées.' },
-    { crit: 'Justifications concrètes', ok: 'Chaque justification cite un fait du secteur ou des fiches concurrentes.', top: '—', alerte: 'Justification générale, sans fait précis.' },
-    { crit: 'Cohérence des niveaux', ok: 'Les niveaux choisis sont défendables au regard des faits cités.', top: '—', alerte: 'Niveau contredit par sa propre justification.' },
-    { crit: 'Vision d’ensemble', ok: 'La notation donne une image cohérente de la pression globale sur le secteur.', top: '—', alerte: 'Notations contradictoires entre elles sans explication.' },
+    { crit: 'Liens force / fait justes', ok: 'Au moins quatre faits sur cinq sont reliés à la bonne force.', top: 'Les cinq liens sont justes.', alerte: 'Plusieurs faits rattachés à la mauvaise force.' },
+    { crit: 'Niveaux défendables', ok: 'Les niveaux choisis sont cohérents avec les faits reliés.', top: 'Les cinq niveaux correspondent au corrigé.', alerte: 'Niveaux contredits par leur propre fait.' },
+    { crit: 'Vision d’ensemble', ok: 'La notation donne une image cohérente de la pression globale sur le secteur.', top: '—', alerte: 'Notations contradictoires entre elles.' },
   ],
   reference: [
-    { t: 'table', head: ['Force', 'Niveau', 'Justification'], rows: [
-      ['Nouveaux entrants', 'Moyen', 'Le marché attire de nouveaux acteurs chaque année, mais la désalcoolisation demande un savoir-faire technique.'],
-      ['Fournisseurs', 'Moyen', 'Les procédés de désalcoolisation sont proposés par peu de prestataires spécialisés.'],
-      ['Clients', 'Fort', 'Les grandes surfaces, puissantes, peuvent imposer des marges serrées ; les CHR négocient aussi âprement.'],
-      ['Substituts', 'Fort', 'Kombucha, sodas premium, mocktails : de nombreuses alternatives existent déjà pour le même besoin.'],
-      ['Rivalité directe', 'Moyen', 'Deux industriels dominent largement, mais peu d’acteurs artisanaux sont encore positionnés sur le sans alcool.'],
+    { t: 'table', head: ['Force', 'Niveau', 'Fait'], rows: [
+      ['Nouveaux entrants', 'Moyen', 'De nouvelles marques de bière sans alcool arrivent chaque année.'],
+      ['Fournisseurs', 'Moyen', 'Peu de prestataires maîtrisent la désalcoolisation à grande échelle.'],
+      ['Clients', 'Fort', 'Les grandes enseignes imposent leurs conditions.'],
+      ['Substituts', 'Fort', 'Kombucha, vins et mocktails sans alcool répondent au même besoin.'],
+      ['Rivalité', 'Moyen', 'Un groupe revendique 60,4 % du marché des bières sans alcool.'],
     ] },
   ],
 };
 
-/* ------------------------------------------------------------- 4.5 */
 M4.forms.s45 = {
-  id: 's45', section: '4.5', step: 5, title: 'Positionnement',
-  intro: 'Détaillez le positionnement retenu à la décision précédente : océan rouge ou bleu, le positionnement choisi, ce qui le différencie.',
+  id: 's45', section: '4.5', step: 5, title: 'Positionnement', activity: 'A5',
+  intro: 'Vous avez placé Marée Basse sur la carte. Formulez maintenant **votre promesse en une phrase** : ce que Marée Basse offre que les concurrents de la carte ne proposent pas.',
   methode: [
-    'Un positionnement se justifie par ce qu’il offre de différent, pas seulement par son prix.',
-    'Reliez votre positionnement au persona du chapitre 3 : à qui parle-t-il vraiment ?',
+    'Une promesse se justifie par ce qu’elle offre de différent, pas seulement par son prix.',
+    'Reliez-la au persona du chapitre 3 : à qui parle-t-elle ?',
   ],
   fields: [
-    { id: 'oceanRougeOuBleu', type: 'area', label: 'Océan rouge ou bleu : où se situe votre positionnement, et pourquoi ?' },
-    { id: 'positionnementRetenu', type: 'area', label: 'Le positionnement retenu pour Marée Basse' },
-    { id: 'differenciation', type: 'area', label: 'Ce qui le différencie des concurrents étudiés' },
+    { id: 'promesse', type: 'area', label: 'Votre promesse en une phrase' },
   ],
   grille: [
-    { crit: 'Cohérence avec D4', ok: 'Le texte correspond à la décision D4 prise.', top: '—', alerte: 'Texte contredisant la décision D4.' },
-    { crit: 'Océan bien qualifié', ok: 'La qualification rouge ou bleu est justifiée par référence aux concurrents étudiés.', top: '—', alerte: 'Qualification sans lien avec le benchmark.' },
-    { crit: 'Lien avec le persona', ok: 'Le positionnement s’appuie explicitement sur le persona ou le segment du chapitre 3.', top: '—', alerte: 'Positionnement déconnecté de la cible.' },
-    { crit: 'Différenciation réelle', ok: 'La différenciation cite au moins un élément absent chez les concurrents étudiés.', top: '—', alerte: 'Différenciation vague ou déjà présente chez un concurrent.' },
+    { crit: 'Cohérence avec la carte', ok: 'La promesse correspond à la zone où Marée Basse a été placée.', top: '—', alerte: 'Promesse contredisant le placement sur la carte.' },
+    { crit: 'Lien avec la cible', ok: 'La promesse s’appuie explicitement sur le persona ou son frein.', top: '—', alerte: 'Promesse déconnectée de la cible.' },
+    { crit: 'Différenciation réelle', ok: 'La promesse cite au moins un élément absent chez les concurrents de la carte.', top: '—', alerte: 'Promesse vague ou déjà portée par un concurrent.' },
   ],
   reference: [
-    { t: 'p', x: '**Océan rouge ou bleu.** Le marché de la bière sans alcool industrielle est un océan rouge : deux acteurs s’y livrent une bataille de prix et de distribution. L’artisanal sans alcool, en revanche, reste peu occupé (un seul concurrent bien installé, un autre encore confidentiel) : c’est un océan plus bleu.' },
-    { t: 'p', x: '**Positionnement retenu.** Une bière sans alcool artisanale au goût travaillé, pensée pour les sportifs abstinents comme Camille, avec un ancrage local fort (ingrédients bretons, histoire de la brasserie).' },
-    { t: 'p', x: '**Différenciation.** Ni Tourtel Twist (grand public, positionnement accessible) ni les marques de kombucha ou de vins sans alcool étudiées ne combinent goût de vraie bière artisanale, ancrage local et positionnement tourné vers l’activité physique.' },
+    { t: 'p', x: 'Une bière sans alcool artisanale au vrai goût de bière, pensée pour les sportifs abstinents comme Camille, brassée avec un ancrage local fort.' },
   ],
 };
 
-/* ------------------------------------------------------------- 4.6 */
 M4.forms.s46 = {
-  id: 's46', section: '4.6', step: 6, title: 'Conclusion de l’étude de la concurrence',
-  intro: 'Refermez le chapitre en répondant à la question de recherche Q3 du chapitre 1, puis en synthétisant pour le dossier.',
+  id: 's46', section: '4.6', step: 6, title: 'Conclusion de l’étude de la concurrence', activity: 'A6',
+  intro: 'Après avoir relu le chapitre du stagiaire, rédigez votre propre conclusion : la réponse à la question de recherche Q3, puis une synthèse pour le dossier.',
   methode: [
-    'Q3 demande quelle place reste-t-il face à l’offre existante : votre benchmark et votre positionnement contiennent déjà la réponse.',
+    'Q3 demande quelle place reste-t-il face à l’offre existante : votre carte et vos cinq forces contiennent déjà la réponse.',
     'La synthèse doit rester courte et se relier à la décision que le conseil doit prendre.',
   ],
   fields: [
@@ -1104,14 +1175,14 @@ M4.forms.s46 = {
     { id: 'syntheseConcurrence', type: 'area', label: 'Synthèse de l’étude de la concurrence pour le dossier' },
   ],
   grille: [
-    { crit: 'Q3 traitée', ok: 'Une réponse claire et justifiée par le benchmark et Porter.', top: '—', alerte: 'Réponse non justifiée par les sections précédentes.' },
-    { crit: 'Synthèse utile à la décision', ok: 'La synthèse relie l’étude de la concurrence à la décision du conseil (chapitre 1).', top: '—', alerte: 'Synthèse déconnectée de la décision à prendre.' },
-    { crit: 'Cohérence d’ensemble', ok: 'La conclusion est cohérente avec la sélection, le benchmark, Porter et le positionnement.', top: '—', alerte: 'Contradiction avec les sections précédentes.' },
+    { crit: 'Q3 traitée', ok: 'Une réponse claire et justifiée par la carte et Porter.', top: '—', alerte: 'Réponse non justifiée par les sections précédentes.' },
+    { crit: 'Synthèse utile à la décision', ok: 'La synthèse relie l’étude à la décision du conseil (chapitre 1).', top: '—', alerte: 'Synthèse déconnectée de la décision à prendre.' },
+    { crit: 'Absence des erreurs du stagiaire', ok: 'Le texte évite les erreurs repérées (périmètre trop étroit, chiffre sans source, mauvaise classification, guerre des prix).', top: '—', alerte: 'Le texte reproduit l’une des erreurs du stagiaire.' },
     { crit: 'Rédaction et clarté', ok: 'Phrases courtes, compréhensibles sans relire tout le chapitre.', top: '—', alerte: 'Texte confus.' },
   ],
   reference: [
-    { t: 'p', x: '**Réponse à Q3.** Une place existe entre l’offre industrielle, peu différenciée, et les rares brasseries artisanales déjà positionnées sur le sans alcool : celle d’une bière au goût travaillé, à l’ancrage local assumé, pensée pour un usage sportif et social plutôt que comme un simple succédané.' },
-    { t: 'p', x: '**Synthèse.** L’étude de la concurrence confirme qu’un positionnement différenciant est possible sans affronter directement les industriels sur le prix. Le principal risque identifié reste la pression des distributeurs (clients) et la multiplication des substituts, à surveiller dans la suite de l’étude.' },
+    { t: 'p', x: '**Réponse à Q3.** Une place existe entre l’offre industrielle, peu différenciée, et les rares brasseries artisanales positionnées sur le sans alcool : celle d’une bière au goût travaillé, à l’ancrage local assumé, pensée pour un usage sportif et social.' },
+    { t: 'p', x: '**Synthèse.** L’étude confirme qu’un positionnement différenciant est possible sans affronter les industriels sur le prix. Le principal risque reste la pression des distributeurs et la multiplication des substituts.' },
   ],
 };
 
@@ -1126,7 +1197,7 @@ M4.synthese = {
   intro: {
     positive: 'Votre étude de la concurrence est cohérente de bout en bout : la sélection, le benchmark, Porter et le positionnement se répondent les uns aux autres.',
     mixed: 'Votre étude tient globalement, mais certains maillons restent fragiles : le positionnement retenu demandera des précautions pour la suite.',
-    risky: 'Votre étude comporte des failles sérieuses : plusieurs décisions ont fragilisé la lecture de la concurrence.',
+    risky: 'Votre étude comporte des failles sérieuses : plusieurs activités ont fragilisé la lecture de la concurrence.',
   },
   jauges: {
     fiab: { low: 'La **fiabilité des données** est basse : le positionnement retenu sera difficile à défendre.', ok: 'La **fiabilité des données** est solide : l’analyse a été menée avec rigueur.' },
@@ -1134,8 +1205,8 @@ M4.synthese = {
     budget: { low: 'Le **budget d’analyse** restant est serré.', ok: 'Le **budget d’analyse** est bien tenu.' },
     delai: { low: 'Le **délai** restant est court avant la Mission 5.', ok: 'Le **délai** est bien tenu.' },
   },
-  incoh: 'Le Pilote a détecté **{n}** incohérence(s) entre vos décisions et vos textes. Les deux premières coûtent chacune **4 points** de fiabilité.',
-  noIncoh: 'Le Pilote n’a détecté aucune incohérence entre vos décisions et vos textes.',
+  incoh: 'Le Pilote a détecté **{n}** incohérence(s) entre vos résultats et votre tableau. Les deux premières coûtent chacune **4 points** de fiabilité.',
+  noIncoh: 'Le Pilote n’a détecté aucune incohérence entre vos résultats et votre tableau.',
   reactions: {
     reference: { gwen: 'On sait enfin ce qui nous rend différents. Ça donne envie d’y aller.', karim: 'Un positionnement que je peux défendre devant le conseil, avec un diagnostic complet derrière. Très bon travail.' },
     solide: { gwen: 'Ça me parle. On tient quelque chose.', karim: 'C’est du sérieux. Je garde un œil sur les points les plus fragiles.' },
@@ -1175,35 +1246,25 @@ M4.toolbox = [
 
 /* ------------------------------------------------------------- Indices par encart */
 M4.hints = (function () {
-  var cadre = { v: 'cadre', tab: 'cadre', label: 'Cadre validé › Le cadre du chapitre 1' };
+  var cadre = { v: 'cadre', tab: 'cadre', label: 'Cadre validé › La cible du chapitre 3' };
   var rech = { v: 'recherche', label: 'Méthode de recherche › Où chercher et exemple' };
   var tb = function (id, label) { return { v: 'toolbox', open: id, label: 'Boîte à outils › ' + label }; };
   return {
-    's41.perimetre': { tip: 'Repensez à la distinction direct/indirect : un bon périmètre couvre les deux, et cherche des poids différents sur le marché.', where: [tb('t1', 'Qu’est-ce qu’un concurrent ?')] },
-    's41.sourcesEnvisagees': { tip: 'Pensez à plusieurs types de sources : le site de la marque, la presse professionnelle, un caviste ou une plateforme spécialisée, les réseaux sociaux.', where: [rech, tb('t6', 'Comment trouver un vrai concurrent')] },
-    's42.criteresRetenus': { tip: 'Reprenez la décision D1 : quels critères compareront vraiment ce qui compte pour la cible ?', where: [cadre, tb('t3', 'Qu’est-ce qu’un benchmark ?')] },
-    's42.pourquoiCriteres': { tip: 'Reliez chaque critère au persona du chapitre 3 (son frein, sa motivation, ses canaux), et dites comment vous le relèverez (en euros, d’après les avis…).', where: [cadre] },
-    's43.concurrents': { tip: 'Pour chaque ligne, un concurrent qui existe vraiment : une marque ou un produit qu’on peut retrouver en ligne, avec un prix ou un positionnement vérifiable.', where: [rech, tb('t6', 'Comment trouver un vrai concurrent')] },
-    's43.concurrents.0': { tip: 'Un concurrent direct vend une bière sans alcool. Pensez à un grand acteur présent en grande distribution : la presse professionnelle donne ses parts de marché.', where: [rech] },
-    's43.concurrents.1': { tip: 'Un second concurrent direct, de préférence d’un autre poids : une brasserie artisanale qui propose du sans alcool. Regardez le site de la brasserie et la presse spécialisée.', where: [rech] },
-    's43.concurrents.2': { tip: 'Un concurrent indirect répond au même besoin (boire sans alcool lors d’un moment social) avec un autre produit : boisson fermentée, soda premium, mocktail…', where: [tb('t1', 'Qu’est-ce qu’un concurrent ?')] },
-    's43.concurrents.3': { tip: 'Un second concurrent indirect, d’un autre profil que le premier : pensez aux alternatives festives ou haut de gamme (vins effervescents sans alcool, spiritueux sans alcool).', where: [rech] },
-    's44.forces': { tip: 'Pour chaque force, cherchez un fait précis dans ce que vous avez trouvé sur le marché, pas une impression générale.', where: [rech, tb('t2', 'Les cinq forces de Porter')] },
-    's45.oceanRougeOuBleu': { tip: 'Regardez où se concentrent les concurrents que vous avez trouvés : beaucoup d’acteurs sur les mêmes critères, c’est rouge ; un espace encore peu occupé, c’est bleu.', where: [tb('t5', 'Océan rouge, océan bleu')] },
-    's45.positionnementRetenu': { tip: 'Reliez-vous au persona du chapitre 3 : qu’est-ce qui parlerait vraiment à Camille ?', where: [cadre] },
-    's45.differenciation': { tip: 'Comparez votre positionnement à chacun des quatre concurrents trouvés : qu’est-ce qu’aucun d’eux ne propose ?', where: [cadre] },
-    's46.reponseQ3': { tip: 'Relisez vos sections 4.2 à 4.5 : la réponse à Q3 s’y trouve déjà, il s’agit de la formuler clairement.', where: [cadre] },
+    's42.justification': { tip: 'Citez le frein de Camille ou une phrase de son persona : qu’est-ce que ce critère change dans son choix ?', where: [cadre] },
+    's43.concurrents': { tip: 'Pour chaque ligne, un concurrent qui existe vraiment : une marque qu’on peut retrouver en ligne, avec un prix et une source vérifiables.', where: [rech, tb('t6', 'Comment trouver un vrai concurrent')] },
+    's43.concurrents.0': { tip: 'Un concurrent direct vend une bière sans alcool. Pensez à un grand acteur de la grande distribution : la presse professionnelle donne ses parts de marché.', where: [rech] },
+    's43.concurrents.1': { tip: 'Un second concurrent direct, d’un autre poids : une brasserie artisanale qui propose du sans alcool.', where: [rech] },
+    's43.concurrents.2': { tip: 'Un concurrent indirect répond au même besoin avec un autre produit : boisson fermentée, soda premium, mocktail…', where: [tb('t1', 'Qu’est-ce qu’un concurrent ?')] },
+    's43.concurrents.3': { tip: 'Un second concurrent indirect, d’un autre profil : pensez aux alternatives festives ou haut de gamme (vin ou spiritueux sans alcool).', where: [rech] },
+    's45.promesse': { tip: 'Reliez-vous au persona : qu’est-ce qui parlerait vraiment à Camille et qu’aucun concurrent de la carte ne propose ?', where: [cadre] },
+    's46.reponseQ3': { tip: 'Relisez votre carte et vos cinq forces : la réponse à Q3 s’y trouve déjà, il s’agit de la formuler clairement.', where: [cadre] },
     's46.syntheseConcurrence': { tip: 'Reliez votre étude à la décision que le conseil doit prendre (chapitre 1) : qu’apporte-t-elle à la question du Go ?', where: [cadre] },
-    'D1': { tip: 'Un bon benchmark compare sur ce qui compte pour la cible. Relisez son persona : qu’est-ce qui la freine ?', where: [tb('t3', 'Qu’est-ce qu’un benchmark ?')] },
-    'D2': { tip: 'Une seule source peut tromper. Que fait un cabinet d’études pour se prémunir de ça ?', where: [tb('t6', 'Comment trouver un vrai concurrent')] },
-    'D3': { tip: 'Porter, c’est cinq forces, pas une seule.', where: [tb('t2', 'Les cinq forces de Porter')] },
-    'D4': { tip: 'Un positionnement sur le seul prix affronte ceux qui produisent moins cher. Cherchez un positionnement qui différencie.', where: [tb('t5', 'Océan rouge, océan bleu')] },
   };
 })();
 
 ;
 /* ==========================================================================
-   MOTEUR — MISSION 4
+   MOTEUR — MISSION 4 (activités dynamiques)
    ========================================================================== */
 var Engine = (function () {
   'use strict';
@@ -1212,15 +1273,16 @@ var Engine = (function () {
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function len(v) { return String(v || '').trim().length; }
+  function lerp(pair, s) { return Math.round(pair[0] + (pair[1] - pair[0]) * s); }
 
   function newState() {
     return {
-      v: 1, mission: 'M4',
+      v: 2, mission: 'M4',
       team: { name: '', members: '' },
       charte: [false, false, false, false],
       stepsDone: {},
       gauges: clone(M4.meta.startGauges),
-      decisions: {}, hints: {}, forms: {}, validated: {},
+      act: {}, hints: {}, forms: {}, validated: {},
       history: [], fieldHints: {},
       relecture: { coherenceRun: false, self: {}, validated: false },
       createdAt: new Date().toISOString(),
@@ -1239,59 +1301,160 @@ var Engine = (function () {
     return out.join('\n');
   }
 
-  /* ---------- décisions ---------- */
-  function decisionDef(id) { return M4.decisions.filter(function (d) { return d.id === id; })[0]; }
+  /* ---------- activités ---------- */
+  function activityDef(id) { return M4.activities[id]; }
+  function actState(state, id) { if (!state.act[id]) state.act[id] = {}; return state.act[id]; }
+  function tierOf(score) { return score >= 0.8 ? 'high' : (score >= 0.5 ? 'mid' : 'low'); }
+  var TIER_TONE = { high: 'positive', mid: 'mixed', low: 'risky' };
+
+  /* points de la carte : x = prix relevé, y = goût (par défaut celui du tableau) */
+  var GOUT_Y = { 'Bon': 0.75, 'Moyen': 0.5, 'Faible': 0.25, 'Non évalué': 0.5 };
+  function mapPoints(state) {
+    var def = M4.activities.A5, rows = ((state.forms.s43 || {}).concurrents) || [], out = [];
+    for (var i = 0; i < 4; i++) {
+      var r = rows[i] || {}, p = parseFloat(String(r.prix).replace(',', '.'));
+      var x = isNaN(p) ? 0.5 : clamp((p - def.priceMin) / (def.priceMax - def.priceMin), 0.04, 0.96);
+      out.push({ id: 'c' + i, label: String(r.nom || ('Concurrent ' + (i + 1))).trim() || ('Concurrent ' + (i + 1)), x: x, y: GOUT_Y[r.gout] || 0.5 });
+    }
+    return out;
+  }
+  function mapState(state) {
+    var st = actState(state, 'A5'); var d = st.draft;
+    var base = mapPoints(state);
+    if (!d) d = st.draft = { ys: base.map(function (p) { return p.y; }), me: { x: 0.5, y: 0.5, placed: false } };
+    return { points: base.map(function (p, i) { return { id: p.id, label: p.label, x: p.x, y: d.ys[i] != null ? d.ys[i] : p.y }; }), me: d.me };
+  }
+
+  function scoreClassify(def, data) {
+    var ok = 0, wrong = [];
+    def.cards.forEach(function (c) { if (data[c.id] === c.answer) ok++; else wrong.push(c.id); });
+    return { score: ok / def.cards.length, summary: ok + ' marques bien classées sur ' + def.cards.length, extra: { ok: ok, wrong: wrong } };
+  }
+  function scoreRank(def, data) {
+    var order = data.order || [], n = def.reference.length, sum = 0;
+    def.reference.forEach(function (id, refPos) { var pos = order.indexOf(id); sum += Math.abs((pos < 0 ? n : pos) - refPos); });
+    var maxSum = Math.floor(n * n / 2);
+    var labels = order.map(function (id) { return def.items.filter(function (i) { return i.id === id; })[0].label; });
+    return { score: clamp(1 - sum / maxSum, 0, 1), summary: 'Ordre retenu : ' + labels.join(' › '), extra: { distance: sum } };
+  }
+  function sliderTotals(def, v) {
+    var total = 0, cov = 0, waste = 0, k = 0;
+    def.methods.forEach(function (m) {
+      var x = Number(v[m.id]) || 0; total += x; if (x > 0) k++;
+      cov += m.weight * Math.min(1, x / m.target); waste += Math.max(0, x - m.target);
+    });
+    var score = cov - waste / 8000; if (total > def.cap) score *= 0.5;
+    return { total: total, cov: cov, k: k, over: total > def.cap, score: clamp(score, 0, 1) };
+  }
+  function scoreSliders(def, data) {
+    var t = sliderTotals(def, data.values || {});
+    return { score: t.score, summary: 'Budget engagé : ' + t.total + ' € sur ' + def.cap + ' € autorisés ; fiabilité estimée ' + Math.round(t.score * 100) + ' %', extra: t,
+      override: { budget: -t.total, delai: -(1 + Math.ceil(t.k / 2)) } };
+  }
+  function scoreMatch(def, data) {
+    var links = data.links || {}, levels = data.levels || {}, lk = 0, lv = 0;
+    def.forces.forEach(function (f) {
+      if (links[f.id] === f.fact) lk++;
+      var a = def.levels.indexOf(levels[f.id]), b = def.levels.indexOf(f.level);
+      if (a >= 0) lv += (a === b ? 1 : (Math.abs(a - b) === 1 ? 0.5 : 0));
+    });
+    var n = def.forces.length;
+    return { score: 0.6 * lk / n + 0.4 * lv / n, summary: lk + ' liens justes sur ' + n + ' ; niveaux : ' + (Math.round(lv * 10) / 10) + ' / ' + n, extra: { links: lk, levels: lv } };
+  }
+  function scoreMap(def, data, state) {
+    var ms = mapStateFrom(def, state, data), me = ms.me, dmin = 9;
+    ms.points.forEach(function (p) { dmin = Math.min(dmin, Math.sqrt(Math.pow(p.x - me.x, 2) + Math.pow(p.y - me.y, 2))); });
+    var free = dmin > 0.18;
+    var sc = (free ? 0.4 : 0) + (me.y >= 0.6 ? 0.4 : (me.y >= 0.45 ? 0.2 : 0)) + (me.x >= 0.25 ? 0.2 : 0);
+    var red = me.x < 0.25 && me.y < 0.5;
+    if (red) sc = Math.min(sc, 0.1);
+    var where = red ? 'dans la zone « pas cher, goût moyen » (océan rouge)' : (free ? 'dans une zone libre' : 'sur un concurrent');
+    return { score: clamp(sc, 0, 1), summary: 'Marée Basse placée ' + where + ' (goût ' + Math.round(me.y * 100) + ' %, distance au plus proche concurrent ' + Math.round(dmin * 100) / 100 + ')', extra: { free: free, red: red, dmin: dmin } };
+  }
+  function mapStateFrom(def, state, data) {
+    var base = mapPoints(state);
+    return { points: base.map(function (p, i) { return { id: p.id, label: p.label, x: p.x, y: (data.ys && data.ys[i] != null) ? data.ys[i] : p.y }; }), me: data.me || { x: 0.5, y: 0.5 } };
+  }
+  function scoreSpot(def, data) {
+    var sel = data.selected || [], errs = def.sentences.filter(function (s) { return s.err; }), found = 0, falsep = 0;
+    def.sentences.forEach(function (s) { if (sel.indexOf(s.id) >= 0) { if (s.err) found++; else falsep++; } });
+    var sc = clamp((found - 0.5 * falsep) / errs.length, 0, 1);
+    return { score: sc, summary: found + ' erreurs repérées sur ' + errs.length + (falsep ? ', ' + falsep + ' phrase(s) juste(s) contestée(s)' : ''), extra: { found: found, falsep: falsep } };
+  }
+
+  function scoreFor(def, data, state) {
+    switch (def.type) {
+      case 'classify': return scoreClassify(def, data);
+      case 'rank': return scoreRank(def, data);
+      case 'sliders': return scoreSliders(def, data);
+      case 'match': return scoreMatch(def, data);
+      case 'map': return scoreMap(def, data, state);
+      case 'spot': return scoreSpot(def, data);
+    }
+  }
   function applyEffects(g, e) {
     g.budget = Math.max(0, g.budget + (e.budget || 0));
     g.delai = Math.max(0, g.delai + (e.delai || 0));
     g.fiab = clamp(g.fiab + (e.fiab || 0), 0, 100);
     g.confiance = clamp(g.confiance + (e.confiance || 0), 0, 100);
   }
-  function applyDecision(state, id, key) {
-    var def = decisionDef(id), opt = def.options.filter(function (o) { return o.key === key; })[0];
-    var before = clone(state.gauges);
-    applyEffects(state.gauges, opt.effects);
-    state.decisions[id] = { key: key };
-    state.history.push({
-      id: id, title: def.title, choice: key, label: opt.label, effects: clone(opt.effects), tone: opt.tone,
-      vTitle: opt.vTitle, rationale: opt.rationale, notions: opt.notions, gauges: clone(state.gauges), before: before,
-    });
-    return opt;
+  function effectsFor(def, res) {
+    var e = {};
+    G.forEach(function (k) { e[k] = lerp(def.effects[k], res.score); });
+    if (res.override) { e.budget = res.override.budget; e.delai = res.override.delai; }
+    return e;
   }
+  function completeActivity(state, id, data) {
+    var def = activityDef(id), res = scoreFor(def, data, state), tier = tierOf(res.score), v = def.verdict[tier];
+    var e = effectsFor(def, res), before = clone(state.gauges);
+    applyEffects(state.gauges, e);
+    var st = actState(state, id); st.done = true; st.data = clone(data); st.score = res.score; st.summary = res.summary;
+    var entry = { id: id, title: def.title, choice: Math.round(res.score * 100) + ' %', label: res.summary, effects: e, tone: TIER_TONE[tier], tier: tier,
+      vTitle: v.title, rationale: v.text, notions: def.notions, gauges: clone(state.gauges), before: before, score: res.score };
+    state.history.push(entry);
+    return entry;
+  }
+  function histOf(state, id) { return state.history.filter(function (h) { return h.id === id; })[0]; }
 
   /* ---------- validation des formulaires ---------- */
   function getForm(state, id) { if (!state.forms[id]) state.forms[id] = {}; return state.forms[id]; }
   function shortLabel(l) { return String(l).split(':')[0].replace(/\s*\(.*\)$/, ''); }
+  function numOk(v) { var n = parseFloat(String(v).replace(',', '.')); return !isNaN(n) && n > 0; }
 
   function formMissing(state, formId) {
     var def = M4.forms[formId], f = getForm(state, formId), miss = [];
     def.fields.forEach(function (fd) {
       var v = f[fd.id];
-      switch (fd.type) {
-        case 'area':
-          if (len(v) < 1) miss.push(shortLabel(fd.label) + ' : à compléter');
-          break;
-        case 'rows': {
-          var rr = v || [], badr = 0;
-          for (var j = 0; j < fd.n; j++) {
-            var row = rr[j] || {};
-            fd.cols.forEach(function (c) {
-              var cv = row[c.id];
-              if (c.kind === 'area' && len(cv) < 1) badr++;
-              else if (c.kind === 'select' && !cv) badr++;
-            });
-          }
-          if (badr) miss.push(shortLabel(fd.label) + ' : ' + badr + ' champ(s) à compléter');
-          break;
+      if (fd.type === 'area') { if (len(v) < 1) miss.push(shortLabel(fd.label) + ' : à compléter'); }
+      else if (fd.type === 'table') {
+        var rr = v || [], bad = 0;
+        for (var j = 0; j < fd.n; j++) {
+          var row = rr[j] || {};
+          fd.cols.forEach(function (c) {
+            var cv = row[c.id];
+            if (c.kind === 'text' && len(cv) < 1) bad++;
+            else if (c.kind === 'number' && !numOk(cv)) bad++;
+            else if (c.kind === 'select' && !cv) bad++;
+          });
         }
+        if (bad) miss.push(shortLabel(fd.label) + ' : ' + bad + ' case(s) à compléter');
       }
     });
     return miss;
   }
 
+  /* ---------- calculs du tableau ---------- */
+  function tableStats(state) {
+    var rows = ((state.forms.s43 || {}).concurrents) || [], ps = [];
+    rows.forEach(function (r) { var p = parseFloat(String((r || {}).prix).replace(',', '.')); if (!isNaN(p) && p > 0) ps.push(p); });
+    var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
+    var mb = M4.activities.A5.prixMB;
+    return { n: ps.length, avg: avg, mb: mb, gapPct: avg ? Math.round((mb - avg) / avg * 100) : null };
+  }
+
   /* ---------- cohérence ---------- */
-  var RX_INDIRECT = /kombucha|kéfir|kefir|soda|cocktail|mocktail|spiritueux|vin\b|vins\b|effervescent|champagne|jus\b|thé\b|limonade|eau\b/i;
-  var RX_DIRECT = /bi[èe]re|brasserie|brewery|beer|ipa\b|blonde|lager|\b0[.,]0\b/i;
+  var RX_INDIRECT = /kombucha|k[ée]fir|soda|cocktail|mocktail|spiritueux|\bvins?\b|effervescent|champagne|\bjus\b|\bth[ée]\b|limonade|\beau\b/i;
+  var RX_DIRECT = /bi[èe]re|brasserie|brewery|beer|\bipa\b|blonde|lager|\b0[.,]0\b|tourtel|heineken|1664|corona|celta|goudale|kronenbourg|carlsberg|desperados/i;
   function coherence(state) {
     var found = [];
     var rows = ((state.forms.s43 || {}).concurrents) || [];
@@ -1306,12 +1469,12 @@ var Engine = (function () {
   /* ---------- niveau, synthèse ---------- */
   function levelOf(g) { var s = g.fiab + g.confiance; return M4.levels.filter(function (l) { return s >= l.min; })[0]; }
   function toneScore(state) { return state.history.reduce(function (a, h) { return a + (TONE_VAL[h.tone] || 0); }, 0); }
-  function aggregateTone(score) { return score >= 2 ? 'positive' : (score <= -2 ? 'risky' : 'mixed'); }
+  function aggregateTone(score, n) { return score >= Math.ceil(n * 0.4) ? 'positive' : (score <= -Math.ceil(n * 0.3) ? 'risky' : 'mixed'); }
 
   function finalize(state) {
     var inc = coherence(state), pen = Math.min(2, inc.length);
     var g = clone(state.gauges); g.fiab = clamp(g.fiab - 4 * pen, 0, 100);
-    var level = levelOf(g), score = toneScore(state), tone = aggregateTone(score);
+    var level = levelOf(g), score = toneScore(state), tone = aggregateTone(score, Math.max(1, state.history.length));
     var S = M4.synthese, par = [];
     par.push(S.intro[tone]);
     par.push(g.fiab >= 70 ? S.jauges.fiab.ok : (g.fiab < 55 ? S.jauges.fiab.low : ''));
@@ -1322,21 +1485,28 @@ var Engine = (function () {
     return { incoherences: inc, penaltyCount: pen, gauges: g, level: level, toneScore: score, tone: tone, paragraphs: par.filter(Boolean), reactions: S.reactions[level.key] };
   }
 
-  function simulate(path) {
+  /* Simulation indicative pour l'annexe : scores donnés, valeurs standard pour l'activité A3 */
+  function simulateScores(scores) {
     var st = newState();
-    ['D1', 'D2', 'D3', 'D4'].forEach(function (d) { applyDecision(st, d, path[d]); });
+    M4.activityOrder.forEach(function (id, i) {
+      var def = activityDef(id), s = scores[i], e = {};
+      G.forEach(function (k) { e[k] = lerp(def.effects[k], s); });
+      if (id === 'A3') { e.budget = -Math.round(2000 + 1600 * s); e.delai = -3; }
+      applyEffects(st.gauges, e);
+    });
     var g = clone(st.gauges);
-    return { gauges: g, level: levelOf(g), tone: aggregateTone(toneScore(st)) };
+    return { gauges: g, level: levelOf(g) };
   }
 
   return {
     G: G, clone: clone, clamp: clamp, newState: newState, blocksToText: blocksToText, inlineText: inlineText,
-    decisionDef: decisionDef, applyDecision: applyDecision,
-    formMissing: formMissing, getForm: getForm, coherence: coherence,
-    levelOf: levelOf, toneScore: toneScore, aggregateTone: aggregateTone, finalize: finalize, simulate: simulate,
+    activityDef: activityDef, actState: actState, completeActivity: completeActivity, histOf: histOf, tierOf: tierOf,
+    sliderTotals: sliderTotals, mapPoints: mapPoints, mapState: mapState, scoreFor: scoreFor,
+    mapStateFrom: function (state, data) { return mapStateFrom(M4.activities.A5, state, data); },
+    formMissing: formMissing, getForm: getForm, tableStats: tableStats, coherence: coherence,
+    levelOf: levelOf, toneScore: toneScore, finalize: finalize, simulateScores: simulateScores,
   };
 })();
-
 
 ;
 /* ==========================================================================
@@ -1345,51 +1515,64 @@ var Engine = (function () {
 var EMPTY = '(à compléter)';
 function esc(s) { return String(s || '').replace(/\*/g, '\u2217'); }
 function or(v) { var t = String(v || '').trim(); return t ? esc(t) : '*' + EMPTY + '*'; }
+function fmtPrix(v) { var n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? EMPTY : n.toFixed(2).replace('.', ',') + ' €'; }
 
 function chapterModel(S) {
-  var F = S.forms, f41 = F.s41 || {}, f42 = F.s42 || {}, f43 = F.s43 || {}, f44 = F.s44 || {}, f45 = F.s45 || {}, f46 = F.s46 || {};
-  var secs = [];
+  var F = S.forms, f42 = F.s42 || {}, f43 = F.s43 || {}, f45 = F.s45 || {}, f46 = F.s46 || {};
+  var A = M4.activities, secs = [];
   function status(id) {
-    var miss = Engine.formMissing(S, id);
-    if (S.validated[id] && !miss.length) return 'done';
-    var f = F[id] || {};
-    return Object.keys(f).length ? 'started' : 'todo';
+    var def = M4.forms[id], miss = Engine.formMissing(S, id);
+    var actDone = !def.activity || (S.act[def.activity] && S.act[def.activity].done);
+    if (S.validated[id] && !miss.length && actDone) return 'done';
+    return (actDone || Object.keys(F[id] || {}).length) ? 'started' : 'todo';
   }
 
+  /* 4.1 */
+  var a1 = (S.act.A1 && S.act.A1.done) ? S.act.A1.data : null;
+  var colLabel = {}; A.A1.columns.forEach(function (c) { colLabel[c.id] = c.label; });
   secs.push({ no: '4.1', title: M4.forms.s41.title, status: status('s41'), blocks: [
-    { t: 'h', l: 3, x: 'Types de concurrents visés' }, { t: 'p', x: or(f41.perimetre) },
-    { t: 'h', l: 3, x: 'Sources envisagées' }, { t: 'p', x: or(f41.sourcesEnvisagees) },
+    { t: 'p', x: 'Périmètre défini à partir de dix marques réelles, classées selon le besoin qu’elles satisfont.' },
+    { t: 'table', head: ['Marque', 'Classée comme'], rows: A.A1.cards.map(function (c) { return [c.label, a1 ? (colLabel[a1[c.id]] || EMPTY) : EMPTY]; }) },
   ] });
 
-  var d1 = S.decisions.D1 ? M4.decisions.filter(function (d) { return d.id === 'D1'; })[0].options.filter(function (o) { return o.key === S.decisions.D1.key; })[0] : null;
+  /* 4.2 */
+  var a2 = (S.act.A2 && S.act.A2.done) ? S.act.A2.data : null;
   secs.push({ no: '4.2', title: M4.forms.s42.title, status: status('s42'), blocks: [
-    { t: 'p', x: '**Critères choisis :** ' + (d1 ? d1.label : EMPTY) + '.' },
-    { t: 'h', l: 3, x: 'Critères retenus' }, { t: 'p', x: or(f42.criteresRetenus) },
-    { t: 'h', l: 3, x: 'Pourquoi, et comment les mesurer' }, { t: 'p', x: or(f42.pourquoiCriteres) },
+    { t: 'p', x: '**Critères hiérarchisés pour la cible :**' },
+    { t: 'table', head: ['Rang', 'Critère'], rows: (a2 ? a2.order : A.A2.items.map(function (i) { return i.id; })).map(function (id, i) {
+      var it = A.A2.items.filter(function (x) { return x.id === id; })[0]; return [String(i + 1), a2 ? it.label : EMPTY]; }) },
+    { t: 'h', l: 3, x: 'Pourquoi le critère n°1 est décisif' }, { t: 'p', x: or(f42.justification) },
   ] });
 
-  var d2 = S.decisions.D2 ? M4.decisions.filter(function (d) { return d.id === 'D2'; })[0].options.filter(function (o) { return o.key === S.decisions.D2.key; })[0] : null;
-  var conc = f43.concurrents || [], clabels = M4.forms.s43.fields[0].labels;
+  /* 4.3 */
+  var a3 = (S.act.A3 && S.act.A3.done) ? S.act.A3.data : null;
+  var conc = f43.concurrents || [], clabels = M4.forms.s43.fields[0].labels, ts = Engine.tableStats(S);
+  var budgetLine = a3 ? A.A3.methods.map(function (m) { return m.label + ' : ' + ((a3.values || {})[m.id] || 0) + ' €'; }).join(' · ') : EMPTY;
   secs.push({ no: '4.3', title: M4.forms.s43.title, status: status('s43'), blocks: [
-    { t: 'p', x: '**Méthode de recherche :** ' + (d2 ? d2.label : EMPTY) + '.' },
-    { t: 'table', head: ['Concurrent', 'Source', 'Ce qui est relevé'], rows: [0, 1, 2, 3].map(function (i) { var r = conc[i] || {}; return [clabels[i] + ' : ' + (String(r.nom || '').trim() ? esc(r.nom) : EMPTY), or(r.source), or(r.releve)]; }) },
+    { t: 'p', x: '**Budget de recherche réparti :** ' + budgetLine + '.' },
+    { t: 'table', head: ['Concurrent', 'Source', 'Prix 33 cl', 'Canal', 'Goût perçu'], rows: [0, 1, 2, 3].map(function (i) {
+      var r = conc[i] || {};
+      return [clabels[i] + ' : ' + (String(r.nom || '').trim() ? esc(r.nom) : EMPTY), or(r.source), fmtPrix(r.prix), r.canal || EMPTY, r.gout || EMPTY]; }) },
+    { t: 'p', x: ts.avg ? '**Prix moyen du panel :** ' + fmtPrix(ts.avg) + '. **Écart du prix envisagé pour Marée Basse (' + fmtPrix(ts.mb) + ') :** ' + (ts.gapPct > 0 ? '+' : '') + ts.gapPct + ' %.' : '*Prix moyen : ' + EMPTY + '*' },
   ] });
 
-  var d3 = S.decisions.D3 ? M4.decisions.filter(function (d) { return d.id === 'D3'; })[0].options.filter(function (o) { return o.key === S.decisions.D3.key; })[0] : null;
-  var forces = f44.forces || [], labels = M4.forms.s44.fields[0].labels;
+  /* 4.4 */
+  var a4 = (S.act.A4 && S.act.A4.done) ? S.act.A4.data : null;
+  var factText = {}; A.A4.facts.forEach(function (f) { factText[f.id] = f.text; });
   secs.push({ no: '4.4', title: M4.forms.s44.title, status: status('s44'), blocks: [
-    { t: 'p', x: '**Méthode d’évaluation :** ' + (d3 ? d3.label : EMPTY) + '.' },
-    { t: 'table', head: ['Force', 'Niveau', 'Justification'], rows: [0, 1, 2, 3, 4].map(function (i) { var r = forces[i] || {}; return [labels[i], r.niveau || EMPTY, or(r.justification)]; }) },
+    { t: 'table', head: ['Force', 'Fait relié', 'Niveau'], rows: A.A4.forces.map(function (f) {
+      return [f.label, a4 ? (factText[(a4.links || {})[f.id]] || EMPTY) : EMPTY, a4 ? ((a4.levels || {})[f.id] || EMPTY) : EMPTY]; }) },
   ] });
 
-  var d4 = S.decisions.D4 ? M4.decisions.filter(function (d) { return d.id === 'D4'; })[0].options.filter(function (o) { return o.key === S.decisions.D4.key; })[0] : null;
+  /* 4.5 */
+  var a5 = (S.act.A5 && S.act.A5.done) ? S.act.A5.data : null;
+  var pts = a5 ? Engine.mapState(S).points : [];
   secs.push({ no: '4.5', title: M4.forms.s45.title, status: status('s45'), blocks: [
-    { t: 'p', x: '**Positionnement choisi :** ' + (d4 ? d4.label : EMPTY) + '.' },
-    { t: 'h', l: 3, x: 'Océan rouge ou bleu' }, { t: 'p', x: or(f45.oceanRougeOuBleu) },
-    { t: 'h', l: 3, x: 'Positionnement retenu' }, { t: 'p', x: or(f45.positionnementRetenu) },
-    { t: 'h', l: 3, x: 'Différenciation' }, { t: 'p', x: or(f45.differenciation) },
+    { t: 'p', x: a5 ? '**Carte prix × goût perçu :** ' + pts.map(function (p, i) { return esc(p.label) + ' (goût ' + Math.round(((a5.ys && a5.ys[i] != null) ? a5.ys[i] : p.y) * 100) + ' %)'; }).join(', ') + '. **Marée Basse** est placée à ' + Math.round((a5.me.y) * 100) + ' % de goût perçu et à ' + fmtPrix(A.A5.priceMin + a5.me.x * (A.A5.priceMax - A.A5.priceMin)) + ' environ.' : '*' + EMPTY + '*' },
+    { t: 'h', l: 3, x: 'Promesse de Marée Basse' }, { t: 'p', x: or(f45.promesse) },
   ] });
 
+  /* 4.6 */
   secs.push({ no: '4.6', title: M4.forms.s46.title, status: status('s46'), blocks: [
     { t: 'h', l: 3, x: 'Q3 : quelle place reste-t-il face à l’offre existante ?' }, { t: 'p', x: or(f46.reponseQ3) },
     { t: 'h', l: 3, x: 'Synthèse' }, { t: 'p', x: or(f46.syntheseConcurrence) },
@@ -1397,7 +1580,6 @@ function chapterModel(S) {
 
   return { secs: secs };
 }
-
 
 ;
 /* ==========================================================================
@@ -1539,7 +1721,7 @@ function flashDeltas() {
 }
 
 /* ---------- coquille ---------- */
-var STEP_TITLES = ['Reprise', 'Préparer', 'Les critères', 'Les concurrents', 'Porter', 'Positionner', 'Conclure', 'Relecture et export'];
+var STEP_TITLES = ['Reprise', 'Classer', 'Les critères', 'La recherche', 'Porter', 'Positionner', 'Conclure', 'Relecture et export'];
 var ANCHOR = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.2"/><path d="M12 7.2V21M8 11h8M5 14c0 3.6 3 7 7 7s7-3.400 7-7"/></svg>';
 function svgEl(html) { var d = document.createElement('div'); d.innerHTML = html; return d.firstChild; }
 
@@ -1755,35 +1937,38 @@ function viewToolbox() {
 
 ;
 /* ==========================================================================
-   INTERFACE — étapes, reprise de campagne, décisions, formulaires, bilan
+   INTERFACE — étapes, activités dynamiques, formulaires, bilan
    ========================================================================== */
 var TONE_LABEL = { positive: 'Positif', mixed: 'Mitigé', risky: 'Risqué' };
 var GLAB = { budget: 'Budget', delai: 'Délai', fiab: 'Fiabilité', confiance: 'Confiance' };
-var STEP_FORM = { 2: 's42', 3: 's43', 4: 's44', 5: 's45' };
-var STEP_DEC = { 2: 'D1', 3: 'D2', 4: 'D3', 5: 'D4' };
+var STEP_SAY = {
+  1: ['Solène', 'Avant de chercher des concurrents, assurons-nous que vous savez qui compte… et qui ne compte pas. Dix marques réelles sont sur la table.'],
+  2: ['Gwen', 'Vos critères de comparaison, ce sont ceux de Camille. Dites-moi ce qui compte le plus pour elle.'],
+  3: ['Karim', 'Sept mille euros pour toute la mission, quatre mille au maximum pour la recherche. Dosez bien : je veux des concurrents réels, avec des sources.'],
+  4: ['Solène', 'Porter, c’est cinq forces, et chacune repose sur un fait. Reliez, puis notez.'],
+  5: ['Gwen', 'Montrez-moi où se place Marée Basse. Je veux voir la place qui reste.'],
+  6: ['Karim', 'Notre stagiaire a rédigé une conclusion. Avant d’écrire la vôtre, trouvez ce qui cloche dans la sienne.'],
+};
 
-function decDef(id) { return Engine.decisionDef(id); }
 function fxChips(e) {
   return h('div', { class: 'fx' }, Engine.G.map(function (k) {
     var v = e[k] || 0, txt = k === 'budget' ? sgn(v) + '\u00a0€' : (k === 'delai' ? sgn(v) + '\u00a0j' : sgn(v));
     return h('span', { class: v === 0 ? 'z' : ((k === 'budget' || k === 'delai') ? 'z' : (v > 0 ? 'p' : 'n')) }, GLAB[k] + ' ' + (v === 0 ? '0' : txt));
   }));
 }
-function histOf(id) { return S.history.filter(function (x) { return x.id === id; })[0]; }
+function histOf(id) { return Engine.histOf(S, id); }
 function len(v) { return String(v || '').trim().length; }
+function jclone(o) { return JSON.parse(JSON.stringify(o)); }
+function actDone(id) { return !!(S.act[id] && S.act[id].done); }
+function stepAct(i) { return M4.activityOrder[i - 1]; }
 
 function stepMissing(i) {
   var m = [];
-  if (i === 0) {
-    if (!S.charte.every(Boolean)) m.push('Cochez les quatre engagements de la charte du Studio.');
-    return m;
-  }
-  if (i === 1) { if (!S.validated.s41 || Engine.formMissing(S, 's41').length) m.push('Complétez la section 4.1 et soumettez-la au Pilote.'); return m; }
-  if (i === 6) { if (!S.validated.s46 || Engine.formMissing(S, 's46').length) m.push('Complétez la section 4.6 et soumettez-la au Pilote.'); return m; }
+  if (i === 0) { if (!S.charte.every(Boolean)) m.push('Cochez les quatre engagements de la charte du Studio.'); return m; }
   if (i === 7) { if (!S.relecture.validated) m.push('Validez le chapitre après la relecture du Pilote.'); return m; }
-  var dec = STEP_DEC[i], form = STEP_FORM[i];
-  if (!S.decisions[dec]) m.push('Prenez la décision de cette étape.');
-  else if (!S.validated[form] || Engine.formMissing(S, form).length) m.push('Complétez la section ' + M4.forms[form].section + ' et soumettez-la au Pilote.');
+  var id = stepAct(i), def = M4.activities[id], form = M4.forms[def.section];
+  if (!actDone(id)) m.push('Terminez l’activité de cette étape.');
+  else if (form.fields.length && (!S.validated[form.id] || Engine.formMissing(S, form.id).length)) m.push('Complétez la section ' + form.section + ' et soumettez-la au Pilote.');
   return m;
 }
 function finishStep(i) {
@@ -1800,16 +1985,14 @@ function stepFoot(i) {
 function updateFoot() {
   var f = document.getElementById('stepfoot'); if (!f) return;
   var i = parseInt(UI.view.slice(4), 10); if (isNaN(i)) return;
-  var nf = stepFoot(i); f.replaceWith(nf);
+  f.replaceWith(stepFoot(i));
 }
 
 function viewStep(i) {
   if (i > 0 && !S.stepsDone[i - 1]) return h('div', { class: 'panel' }, h('p', {}, 'Terminez l’étape précédente pour ouvrir celle-ci.'));
   if (i === 0) return viewStep0();
-  if (i === 1) return viewStep1();
-  if (i === 6) return viewStep6();
   if (i === 7) return viewStep7();
-  return viewDecisionStep(i);
+  return viewActivityStep(i);
 }
 
 /* ---------- étape 0 : accueil et charte ---------- */
@@ -1825,36 +2008,17 @@ function viewStep0() {
     stepFoot(0));
 }
 
-/* ---------- étape 1 (pas de décision) ---------- */
-function viewStep1() {
-  return h('div', {},
-    pageHead('Étape 1', 'Préparer la recherche', 'Avant de chercher des concurrents sur internet, cadrez votre recherche.'),
-    h('div', { class: 'panel' },
-      h('div', { class: 'say' }, h('span', { class: 'who solene' }, 'Solène'), h('p', {}, 'Je ne vous donne aucune fiche : vous allez chercher de vrais concurrents vous-mêmes. Commencez par la page « Méthode de recherche » : elle vous dit où chercher et vous montre un exemple de concurrent documenté.')),
-      h('p', {}, h('button', { class: 'btn sea', onclick: function () { UI.view = 'recherche'; render(); window.scrollTo(0, 0); } }, 'Ouvrir la méthode de recherche'))),
-    formPanel('s41'),
-    stepFoot(1));
-}
-
-/* ---------- étape 6 (conclusion, pas de décision) ---------- */
-function viewStep6() {
-  return h('div', {},
-    pageHead('Étape 6', 'Conclure', 'Refermez le chapitre en répondant à la question de recherche Q3 du chapitre 1.'),
-    h('div', { class: 'panel' }, h('div', { class: 'say' }, h('span', { class: 'who solene' }, 'Solène'), h('p', {}, 'Relisez vos sections précédentes avant de conclure : la réponse à Q3 doit s’appuyer sur ce que vous avez déjà écrit, pas sur une nouvelle impression.'))),
-    formPanel('s46'),
-    stepFoot(6));
-}
-
-/* ---------- étapes à décision ---------- */
-function viewDecisionStep(i) {
-  var did = STEP_DEC[i], def = decDef(did), chosen = S.decisions[did], fid = STEP_FORM[i];
+/* ---------- étapes 1 à 6 : une activité, puis (parfois) un court texte ---------- */
+function viewActivityStep(i) {
+  var id = stepAct(i), def = M4.activities[id], form = M4.forms[def.section], say = STEP_SAY[i];
   var out = h('div', {});
   out.append(pageHead('Étape ' + i, STEP_TITLES[i], def.title));
-  out.append(h('div', { class: 'panel' }, h('h2', {}, def.sceneTitle), blocks(def.scene)));
-  out.append(decisionCard(def));
-  if (chosen) {
-    out.append(verdictPanel(did));
-    out.append(formPanel(fid));
+  out.append(h('div', { class: 'panel' }, h('div', { class: 'say' }, h('span', { class: 'who ' + whoClass(say[0]) }, say[0]), h('p', {}, say[1])),
+    i === 1 ? h('p', {}, h('button', { class: 'btn ghost small', onclick: function () { UI.view = 'recherche'; render(); window.scrollTo(0, 0); } }, 'Voir la méthode de recherche')) : null));
+  out.append(actPanel(id));
+  if (actDone(id)) {
+    out.append(verdictPanel(id));
+    if (form.fields.length) out.append(formPanel(form.id));
   }
   out.append(stepFoot(i));
   return out;
@@ -1871,38 +2035,262 @@ function hintBar(id, def) {
   }
   var b1 = h('button', { class: 'btn ghost small', onclick: function () { S.hints[id] = Object.assign({}, S.hints[id], { h1: true }); touch(); draw(); } }, 'Indice du Pilote (niveau 1)');
   var b2 = h('button', { class: 'btn ghost small', onclick: function () { S.hints[id] = Object.assign({}, S.hints[id], { h2: true }); touch(); draw(); } }, 'Indice plus explicite (niveau 2)');
-  bar.append(b1, b2);
-  draw();
+  bar.append(b1, b2); draw();
   return h('div', {}, bar, box);
 }
 
-function decisionCard(def) {
-  var id = def.id, chosen = S.decisions[id], pick = chosen ? chosen.key : null;
-  var btn = h('button', { class: 'btn', disabled: !pick || !!chosen, onclick: function () {
-    var opt = Engine.applyDecision(S, id, pick); UI.deltas = opt.effects; UI.scrollTo = '.verdict'; touch(); render();
-  } }, 'Valider ce choix');
-  var opts = h('div', { class: 'opts' + (chosen ? ' done' : ''), role: 'radiogroup', 'aria-label': def.question });
-  def.options.forEach(function (o) {
-    var inp = h('input', { type: 'radio', name: 'opt-' + id, value: o.key, checked: pick === o.key, disabled: !!chosen, class: 'sr', onchange: function () {
-      pick = o.key; opts.querySelectorAll('.opt').forEach(function (x) { x.classList.toggle('sel', x.dataset.k === pick); }); btn.disabled = false;
-    } });
-    opts.append(h('label', { class: 'opt' + (pick === o.key ? ' sel ' + (chosen ? o.tone : '') : ''), 'data-k': o.key }, inp,
-      h('span', { class: 'key' }, o.key), h('span', {}, h('b', {}, o.label), h('span', { class: 'tx' }, inl(o.text)))));
-  });
-  return h('div', { class: 'panel' }, h('h2', {}, 'Décision ' + id.slice(1) + ' : ' + def.title), h('p', { class: 'qtxt' }, def.question), opts,
-    chosen ? null : hintBar(id, def), chosen ? null : h('div', { class: 'stepfoot' }, h('span', { class: 'mini' }, 'Un choix validé est définitif.'), btn));
+function verdictPanel(id) {
+  var e = histOf(id);
+  return h('div', { class: 'verdict ' + e.tone },
+    h('div', { class: 'vt' }, h('span', { class: 'tone ' + e.tone }, TONE_LABEL[e.tone]), h('h3', {}, 'Verdict du Pilote : ' + e.vTitle)),
+    h('p', {}, e.rationale), h('p', { class: 'mini' }, h('b', {}, 'Résultat : ' + e.choice + '. '), e.label), fxChips(e.effects),
+    e.notions ? h('p', { class: 'mini' }, h('b', {}, 'Notions : '), e.notions) : null);
 }
 
-function verdictPanel(id) {
-  var entry = histOf(id), def = decDef(id);
-  var opt = def.options.filter(function (o) { return o.key === entry.choice; })[0];
-  var v = h('div', { class: 'verdict ' + entry.tone },
-    h('div', { class: 'vt' }, h('span', { class: 'tone ' + entry.tone }, TONE_LABEL[entry.tone]), h('h3', {}, 'Verdict du Pilote : ' + entry.vTitle)),
-    h('p', {}, entry.rationale), fxChips(entry.effects),
-    entry.notions ? h('p', { class: 'mini' }, h('b', {}, 'Notions : '), entry.notions) : null,
-    h('p', { class: 'mini' }, h('b', {}, 'À comparer : '), opt.alt));
-  return h('div', {}, v, h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Ce qui se passe ensuite'), blocks(opt.consequence)));
+function actPanel(id) {
+  var def = M4.activities[id], st = Engine.actState(S, id), done = !!st.done;
+  var panel = h('div', { class: 'panel act', id: 'act-' + id });
+  panel.append(h('h2', {}, 'Activité · ' + def.title), h('p', {}, inl(def.intro)));
+  var btn = h('button', { class: 'btn', id: 'validate-' + id, onclick: function () {
+    var entry = Engine.completeActivity(S, id, ui.data());
+    UI.deltas = entry.effects;
+    if (!M4.forms[def.section].fields.length) S.validated[def.section] = true;
+    touch(); UI.scrollTo = '.verdict'; render();
+  } }, 'Valider ma réponse');
+  var ui = ACT_UI[def.type](def, st, done, function () { btn.disabled = !ui.ready(); });
+  panel.append(ui.el);
+  if (!done) { panel.append(hintBar(id, def), h('div', { class: 'actfoot' }, h('span', { class: 'mini' }, 'Une réponse validée est définitive.'), btn)); btn.disabled = !ui.ready(); }
+  return panel;
 }
+
+/* ---------- A1 : glisser-déposer pour classer ---------- */
+function classifyUI(def, st, done, onChange) {
+  var data = done ? st.data : (st.draft = st.draft || {});
+  var sel = null, el = h('div', {}), pool = h('div', { class: 'cardpool' }), cols = h('div', { class: 'cols' });
+  el.append(pool, cols);
+  function place(cardId, colId) { if (done) return; if (colId) data[cardId] = colId; else delete data[cardId]; sel = null; touch(); draw(); onChange(); }
+  function cardEl(c) {
+    var cls = 'dcard' + (sel === c.id ? ' sel' : '');
+    if (done) cls += data[c.id] === c.answer ? ' ok' : ' ko';
+    var d = h('div', { class: cls, draggable: !done, tabindex: 0, role: 'button', 'data-card': c.id }, h('b', {}, c.label), h('small', {}, c.sub));
+    if (!done) {
+      d.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (sel && sel !== c.id && data[c.id]) { place(sel, data[c.id]); return; }
+        sel = (sel === c.id) ? null : c.id; draw();
+      });
+      d.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sel = (sel === c.id) ? null : c.id; draw(); } });
+      d.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', c.id); e.dataTransfer.effectAllowed = 'move'; d.classList.add('dragging'); });
+      d.addEventListener('dragend', function () { d.classList.remove('dragging'); });
+    }
+    return d;
+  }
+  function zone(node, colId) {
+    node.addEventListener('dragover', function (e) { if (done) return; e.preventDefault(); node.classList.add('over'); });
+    node.addEventListener('dragleave', function () { node.classList.remove('over'); });
+    node.addEventListener('drop', function (e) { e.preventDefault(); node.classList.remove('over'); var id = e.dataTransfer.getData('text/plain'); if (id) place(id, colId); });
+    node.addEventListener('click', function () { if (sel) place(sel, colId); });
+  }
+  zone(pool, null);
+  function draw() {
+    pool.innerHTML = ''; cols.innerHTML = '';
+    def.cards.filter(function (c) { return !data[c.id]; }).forEach(function (c) { pool.append(cardEl(c)); });
+    def.columns.forEach(function (col) {
+      var box = h('div', { class: 'dcards' });
+      def.cards.filter(function (c) { return data[c.id] === col.id; }).forEach(function (c) { box.append(cardEl(c)); });
+      var z = h('div', { class: 'dcol' + (sel && !done ? ' target' : ''), 'data-col': col.id }, h('h4', {}, col.label), h('div', { class: 'mini' }, col.sub), box);
+      if (!done) zone(z, col.id);
+      cols.append(z);
+    });
+  }
+  draw();
+  if (done) {
+    var lab = {}; def.columns.forEach(function (c) { lab[c.id] = c.label; });
+    el.append(h('details', { class: 'corrige', open: true }, h('summary', { class: 'mini' }, 'Corrigé marque par marque'),
+      h('ul', {}, def.cards.map(function (c) {
+        var ok = data[c.id] === c.answer;
+        return h('li', {}, h('span', { class: ok ? 'okmark' : 'komark' }, ok ? '✓ ' : '✗ '), h('b', {}, c.label), ' : ' + lab[c.answer] + '. ' + c.why);
+      }))));
+  }
+  return { el: el, data: function () { return jclone(data); }, ready: function () { return def.cards.every(function (c) { return data[c.id]; }); } };
+}
+
+/* ---------- A2 : hiérarchiser (flèches ou glisser) ---------- */
+function rankUI(def, st, done, onChange) {
+  var order = done ? st.data.order.slice() : ((st.draft && st.draft.order) ? st.draft.order.slice() : def.items.map(function (i) { return i.id; }));
+  var el = h('div', {}), ol = h('ol', { class: 'ranklist' }), dragIdx = null;
+  el.append(ol);
+  function item(id) { return def.items.filter(function (i) { return i.id === id; })[0]; }
+  function move(a, b) { if (b < 0 || b >= order.length || a === b) return; var x = order.splice(a, 1)[0]; order.splice(b, 0, x); st.draft = { order: order.slice() }; touch(); draw(); onChange(); }
+  function draw() {
+    ol.innerHTML = '';
+    order.forEach(function (id, idx) {
+      var it = item(id), cls = 'rank-item';
+      if (done) { var d = Math.abs(def.reference.indexOf(id) - idx); cls += d === 0 ? ' ok' : (d === 1 ? ' near' : ' ko'); }
+      var li = h('li', { class: cls, draggable: !done, 'data-id': id },
+        h('span', { class: 'n' }, String(idx + 1)), h('span', {}, h('b', {}, it.label), h('small', {}, it.sub)),
+        done ? h('span', { class: 'mini' }, 'Corrigé : n°' + (def.reference.indexOf(id) + 1)) :
+          h('span', { class: 'mv' },
+            h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Monter ' + it.label, disabled: idx === 0, onclick: function () { move(idx, idx - 1); } }, '↑'),
+            h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Descendre ' + it.label, disabled: idx === order.length - 1, onclick: function () { move(idx, idx + 1); } }, '↓')));
+      if (!done) {
+        li.addEventListener('dragstart', function (e) { dragIdx = idx; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); li.classList.add('dragging'); });
+        li.addEventListener('dragend', function () { li.classList.remove('dragging'); });
+        li.addEventListener('dragover', function (e) { e.preventDefault(); });
+        li.addEventListener('drop', function (e) { e.preventDefault(); if (dragIdx !== null) move(dragIdx, idx); dragIdx = null; });
+      }
+      ol.append(li);
+    });
+  }
+  draw();
+  if (done) el.append(h('aside', { class: 'note' }, h('b', {}, 'Pourquoi cet ordre ? '), def.referenceWhy));
+  return { el: el, data: function () { return { order: order.slice() }; }, ready: function () { return true; } };
+}
+
+/* ---------- A3 : curseurs et budget ---------- */
+function slidersUI(def, st, done, onChange) {
+  var vals = done ? st.data.values : ((st.draft && st.draft.values) ? jclone(st.draft.values) : {});
+  var el = h('div', {}), totalEl = h('b', {}), capCell = h('div', { class: 'cell' }), relEl = h('b', {}), meter = h('i', {}), remEl = h('b', {});
+  var live = h('div', { class: 'livebox' },
+    h('div', { class: 'cell' }, h('span', { class: 'mini' }, 'Recherche engagée'), totalEl, h('span', { class: 'mini' }, 'sur ' + eur(def.cap) + ' autorisés')),
+    h('div', { class: 'cell' }, h('span', { class: 'mini' }, 'Budget restant pour la mission'), remEl),
+    h('div', { class: 'cell' }, h('span', { class: 'mini' }, 'Fiabilité estimée du benchmark'), relEl, h('div', { class: 'meter' }, meter)));
+  capCell = live.children[0];
+  function update() {
+    var t = Engine.sliderTotals(def, vals);
+    totalEl.textContent = eur(t.total); remEl.textContent = eur(M4.meta.startGauges.budget - t.total);
+    relEl.textContent = Math.round(t.score * 100) + ' %'; meter.style.width = Math.round(t.score * 100) + '%';
+    capCell.classList.toggle('warn', t.over);
+    meter.style.background = t.over ? 'var(--brique)' : 'var(--houblon)';
+  }
+  def.methods.forEach(function (m) {
+    var out = h('span', { class: 'val' }, eur(vals[m.id] || 0));
+    var inp = h('input', { type: 'range', min: 0, max: m.max, step: m.step, value: vals[m.id] || 0, disabled: done, 'aria-label': m.label, id: 'sl-' + m.id });
+    inp.addEventListener('input', function () { vals[m.id] = Number(inp.value); out.textContent = eur(vals[m.id]); if (!done) { st.draft = { values: jclone(vals) }; touch(); } update(); onChange(); });
+    el.append(h('div', { class: 'srow' }, h('div', {}, h('b', {}, m.label), h('small', {}, m.sub)), inp, out));
+  });
+  el.append(live); update();
+  if (done) el.append(h('details', { class: 'corrige', open: true }, h('summary', { class: 'mini' }, 'Corrigé ligne par ligne'),
+    h('ul', {}, def.methods.map(function (m) { return h('li', {}, h('b', {}, m.label), ' : vous avez engagé ' + eur(vals[m.id] || 0) + ' ; niveau utile ≈ ' + eur(m.target) + '. ' + m.why); }))));
+  return { el: el, data: function () { return { values: jclone(vals) }; }, ready: function () { return Engine.sliderTotals(def, vals).total > 0; } };
+}
+
+/* ---------- A4 : relier les forces aux faits, puis les noter ---------- */
+function matchUI(def, st, done, onChange) {
+  var d = done ? st.data : (st.draft = st.draft || { links: {}, levels: {} });
+  d.links = d.links || {}; d.levels = d.levels || {};
+  var sel = null, el = h('div', {}), left = h('div', { class: 'mcol' }), right = h('div', { class: 'mcol' });
+  el.append(h('div', { class: 'match' }, left, right));
+  function num(fid) { return def.forces.map(function (f) { return f.id; }).indexOf(fid) + 1; }
+  function factOwner(factId) { var k = null; Object.keys(d.links).forEach(function (fid) { if (d.links[fid] === factId) k = fid; }); return k; }
+  function save() { if (!done) { touch(); onChange(); } }
+  function draw() {
+    left.innerHTML = ''; right.innerHTML = '';
+    left.append(h('h4', {}, 'Les cinq forces'));
+    right.append(h('h4', {}, 'Les faits de marché'));
+    def.forces.forEach(function (f) {
+      var linked = !!d.links[f.id], cls = 'mitem c' + num(f.id) + (linked ? ' linked' : '') + (sel === f.id ? ' sel' : '');
+      if (done) cls += d.links[f.id] === f.fact ? ' ok' : ' ko';
+      var b = h('button', { type: 'button', class: cls, 'data-force': f.id, disabled: done, onclick: function () { sel = (sel === f.id) ? null : f.id; draw(); } }, h('span', { class: 'bd' }, String(num(f.id))), h('span', {}, f.label));
+      left.append(b);
+      left.append(h('div', { class: 'seg', role: 'group', 'aria-label': 'Niveau : ' + f.label }, def.levels.map(function (lv) {
+        return h('button', { type: 'button', class: d.levels[f.id] === lv ? 'on' : '', disabled: done, 'data-level': f.id + ':' + lv, onclick: function () { d.levels[f.id] = lv; save(); draw(); } }, lv);
+      })));
+    });
+    def.facts.forEach(function (fa) {
+      var owner = factOwner(fa.id), cls = 'mitem' + (owner ? ' linked c' + num(owner) : '');
+      if (done && owner) { var f = def.forces.filter(function (x) { return x.id === owner; })[0]; cls += f.fact === fa.id ? ' ok' : ' ko'; }
+      right.append(h('button', { type: 'button', class: cls, 'data-fact': fa.id, disabled: done, onclick: function () {
+        if (!sel) return;
+        var prev = factOwner(fa.id); if (prev) delete d.links[prev];
+        d.links[sel] = fa.id; sel = null; save(); draw();
+      } }, h('span', { class: 'bd' }, owner ? String(num(owner)) : ''), h('span', {}, fa.text)));
+    });
+  }
+  draw();
+  if (done) {
+    var ft = {}; def.facts.forEach(function (x) { ft[x.id] = x.text; });
+    el.append(h('details', { class: 'corrige', open: true }, h('summary', { class: 'mini' }, 'Corrigé force par force'),
+      h('ul', {}, def.forces.map(function (f) {
+        var okL = d.links[f.id] === f.fact;
+        return h('li', {}, h('span', { class: okL ? 'okmark' : 'komark' }, okL ? '✓ ' : '✗ '), h('b', {}, f.label), ' → ' + ft[f.fact] + ' ', h('em', {}, '(votre niveau : ' + (d.levels[f.id] || '—') + ') '), def.levelWhy[f.id]);
+      }))));
+  }
+  return { el: el, data: function () { return jclone({ links: d.links, levels: d.levels }); },
+    ready: function () { return def.forces.every(function (f) { return d.links[f.id] && d.levels[f.id]; }); } };
+}
+
+/* ---------- A5 : carte de positionnement ---------- */
+function mapLabel(i) { var r = ((S.forms.s43 || {}).concurrents || [])[i] || {}; return (String(r.nom || '').trim() || ('Concurrent ' + (i + 1))) + (r.prix ? ' · ' + fmtPrix(r.prix) : ''); }
+function mapUI(def, st, done, onChange) {
+  var ms = done ? Engine.mapStateFrom(S, st.data) : Engine.mapState(S);
+  var me = ms.me, showFree = true;
+  var el = h('div', {}), box = h('div', { class: 'mapbox' + (done ? ' ro' : ''), id: 'mapbox' });
+  var opt = h('label', { class: 'mapopt' }, h('input', { type: 'checkbox', checked: true, onchange: function (e) { showFree = e.target.checked; draw(); } }), 'Afficher les zones libres');
+  el.append(opt, h('div', { class: 'mapwrap' }, h('div', { class: 'mapy' }, def.axes.y), box, h('div', { class: 'mapx' }, def.axes.x + ' · de ' + def.priceMin + ' € à ' + def.priceMax + ' €')));
+  function save() { if (done) return; st.draft = { ys: ms.points.map(function (p) { return p.y; }), me: { x: me.x, y: me.y, placed: !!me.placed } }; touch(); onChange(); }
+  function setPos(n, x, y) { n.style.left = (x * 100) + '%'; n.style.bottom = (y * 100) + '%'; }
+  function drag(node, onmove) {
+    node.addEventListener('pointerdown', function (e) {
+      if (done) return; e.preventDefault(); e.stopPropagation(); node.setPointerCapture(e.pointerId);
+      function mv(ev) { var r = box.getBoundingClientRect(); onmove(Engine.clamp((ev.clientX - r.left) / r.width, 0.03, 0.97), Engine.clamp(1 - (ev.clientY - r.top) / r.height, 0.03, 0.97)); }
+      function up() { node.removeEventListener('pointermove', mv); node.removeEventListener('pointerup', up); save(); draw(); }
+      node.addEventListener('pointermove', mv); node.addEventListener('pointerup', up);
+    });
+    node.addEventListener('click', function (e) { e.stopPropagation(); });
+  }
+  function free(cx, cy) { var x = (cx + 0.5) / 10, y = (cy + 0.5) / 10; return ms.points.every(function (p) { return Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2)) > 0.2; }); }
+  function draw() {
+    box.innerHTML = '';
+    box.append(h('div', { class: 'rzone' }, 'Océan rouge : pas cher, goût moyen'));
+    if (showFree) for (var cx = 0; cx < 10; cx++) for (var cy = 0; cy < 10; cy++) if (free(cx, cy)) { var c = h('div', { class: 'fcell' }); c.style.left = (cx * 10) + '%'; c.style.bottom = (cy * 10) + '%'; c.style.width = '10%'; c.style.height = '10%'; box.append(c); }
+    ms.points.forEach(function (p, i) {
+      var n = h('div', { class: 'mp', tabindex: done ? -1 : 0, role: 'slider', 'aria-label': 'Goût perçu de ' + mapLabel(i), 'aria-valuenow': Math.round(p.y * 100), 'data-pt': String(i) }, h('span', { class: 'lb' + (i % 2 ? ' b' : '') + (p.x > 0.78 ? ' lr' : '') }, mapLabel(i)));
+      setPos(n, p.x, p.y); box.append(n);
+      drag(n, function (x, y) { p.y = y; setPos(n, p.x, p.y); });
+      n.addEventListener('keydown', function (e) { if (done) return; var dy = e.key === 'ArrowUp' ? 0.03 : (e.key === 'ArrowDown' ? -0.03 : 0); if (dy) { e.preventDefault(); p.y = Engine.clamp(p.y + dy, 0.03, 0.97); save(); draw(); box.querySelector('[data-pt="' + i + '"]').focus(); } });
+    });
+    var m = h('div', { class: 'mp me' + (me.placed || done ? '' : ' unplaced'), tabindex: done ? -1 : 0, role: 'slider', 'aria-label': 'Position de Marée Basse', id: 'mp-me' }, h('span', { class: 'lb' }, 'Marée Basse'));
+    setPos(m, me.x, me.y); box.append(m);
+    drag(m, function (x, y) { me.x = x; me.y = y; me.placed = true; setPos(m, x, y); });
+    m.addEventListener('keydown', function (e) {
+      if (done) return; var dx = e.key === 'ArrowRight' ? 0.03 : (e.key === 'ArrowLeft' ? -0.03 : 0), dy = e.key === 'ArrowUp' ? 0.03 : (e.key === 'ArrowDown' ? -0.03 : 0);
+      if (dx || dy) { e.preventDefault(); me.x = Engine.clamp(me.x + dx, 0.03, 0.97); me.y = Engine.clamp(me.y + dy, 0.03, 0.97); me.placed = true; save(); draw(); document.getElementById('mp-me').focus(); }
+    });
+  }
+  box.addEventListener('click', function (e) {
+    if (done) return; var r = box.getBoundingClientRect();
+    me.x = Engine.clamp((e.clientX - r.left) / r.width, 0.03, 0.97); me.y = Engine.clamp(1 - (e.clientY - r.top) / r.height, 0.03, 0.97); me.placed = true; save(); draw();
+  });
+  draw();
+  el.append(h('p', { class: 'mini' }, 'Cliquez sur la carte pour placer Marée Basse, puis ajustez en glissant. Au clavier : flèches.'));
+  return { el: el, data: function () { return { ys: ms.points.map(function (p) { return p.y; }), me: { x: me.x, y: me.y } }; }, ready: function () { return !!me.placed; } };
+}
+
+/* ---------- A6 : repérer les erreurs ---------- */
+function spotUI(def, st, done, onChange) {
+  var sel = done ? st.data.selected.slice() : ((st.draft && st.draft.selected) ? st.draft.selected.slice() : []);
+  var el = h('div', {}), list = h('div', { class: 'sentlist' });
+  el.append(list);
+  function draw() {
+    list.innerHTML = '';
+    def.sentences.forEach(function (s) {
+      var on = sel.indexOf(s.id) >= 0, cls = 'sent';
+      if (done) cls += s.err ? (on ? ' found' : ' missed') : (on ? ' fp' : ''); else cls += on ? ' sel' : '';
+      var note = null;
+      if (done && s.err) note = h('small', {}, (on ? '✓ Erreur repérée. ' : 'Erreur non repérée. ') + s.why);
+      if (done && !s.err && on) note = h('small', {}, '✗ Cette phrase était juste : vous l’avez contestée à tort.');
+      list.append(h('button', { type: 'button', class: cls, 'data-sent': s.id, disabled: done, 'aria-pressed': String(on), onclick: function () {
+        var k = sel.indexOf(s.id); if (k >= 0) sel.splice(k, 1); else sel.push(s.id);
+        st.draft = { selected: sel.slice() }; touch(); draw(); onChange();
+      } }, s.text, note));
+    });
+  }
+  draw();
+  return { el: el, data: function () { return { selected: sel.slice() }; }, ready: function () { return sel.length > 0; } };
+}
+
+var ACT_UI = { classify: classifyUI, rank: rankUI, sliders: slidersUI, match: matchUI, map: mapUI, spot: spotUI };
 
 /* ==========================================================================
    FORMULAIRES
@@ -1988,6 +2376,35 @@ function fieldEl(def, fd, f, refresh) {
       wrap.append(areaEl(fd, f[fd.id], function (v) { f[fd.id] = v; touch(); refresh(); }));
       return wrap;
     }
+    case 'table': {
+      wrap = fieldWrap(fd, fd.label, fd.help); f[fd.id] = f[fd.id] || [];
+      var grid = h('div', { class: 'tbl4' }), stats = h('div', { class: 'livebox' });
+      grid.append(h('div', { class: 'trow head' }, h('span', {}, ''), fd.cols.map(function (c) { return h('span', {}, c.label); })));
+      function cellBox(label, val, warn) { return h('div', { class: 'cell' + (warn ? ' warn' : '') }, h('span', { class: 'mini' }, label), h('b', {}, val)); }
+      function updateStats() {
+        var t = Engine.tableStats(S); stats.innerHTML = '';
+        stats.append(cellBox('Prix moyen du panel', t.avg ? fmtPrix(t.avg) : '—'), cellBox('Prix envisagé pour Marée Basse', fmtPrix(t.mb)),
+          cellBox('Écart avec la moyenne', t.avg ? ((t.gapPct > 0 ? '+' : '') + t.gapPct + ' %') : '—', t.avg && Math.abs(t.gapPct) > 30));
+      }
+      for (var j = 0; j < fd.n; j++) (function (k) {
+        var r = (f[fd.id][k] = f[fd.id][k] || {});
+        var row = h('div', { class: 'trow', 'data-row': String(k) }, h('span', { class: 'tl' }, fd.labels[k]));
+        fd.cols.forEach(function (c) {
+          var input;
+          if (c.kind === 'select') input = selectEl(c.options, r[c.id] || '', function (v) { r[c.id] = v; touch(); updateStats(); refresh(); }, c.label + ' ' + fd.labels[k]);
+          else {
+            input = h('input', { type: c.kind === 'number' ? 'number' : 'text', placeholder: c.ph || '', value: r[c.id] == null ? '' : r[c.id], 'aria-label': c.label + ' ' + fd.labels[k] });
+            if (c.kind === 'number') { input.setAttribute('step', c.step || 0.05); input.setAttribute('min', c.min || 0); input.setAttribute('max', c.max || 30); }
+            input.addEventListener('input', function () { r[c.id] = input.value; touch(); updateStats(); refresh(); });
+          }
+          row.append(input);
+        });
+        grid.append(row);
+        var rh = hintUI(def.id + '.' + fd.id + '.' + k, '#form-' + def.id); if (rh) grid.append(rh);
+      })(j);
+      wrap.append(grid, stats); updateStats();
+      return wrap;
+    }
     case 'rows': {
       wrap = fieldWrap(fd, fd.label, fd.help); f[fd.id] = f[fd.id] || [];
       for (var j = 0; j < fd.n; j++) (function (k) {
@@ -2015,13 +2432,14 @@ function fieldEl(def, fd, f, refresh) {
 var INC_STEP = { N1: 3, N2: 3 };
 function viewStep7() {
   var forms = ['s41', 's42', 's43', 's44', 's45', 's46'];
-  var allOk = forms.every(function (fid) { return S.validated[fid] && !Engine.formMissing(S, fid).length; });
+  function secOk(fid) { var d = M4.forms[fid]; return S.validated[fid] && !Engine.formMissing(S, fid).length && (!d.activity || actDone(d.activity)); }
+  var allOk = forms.every(secOk);
   var R = S.relecture, out = h('div', {});
-  out.append(pageHead('Étape 7', 'Relecture et export', 'Le Pilote relit votre chapitre, vérifie qu’il est cohérent avec vos décisions, puis vous l’exportez.'));
-  out.append(h('div', { class: 'panel' }, h('div', { class: 'say' }, h('span', { class: 'who solene' }, 'Solène'), h('p', {}, 'Relisez votre chapitre comme un client le lirait : sans connaître vos décisions, seulement votre texte.'))));
+  out.append(pageHead('Étape 7', 'Relecture et export', 'Le Pilote relit votre chapitre, vérifie qu’il est cohérent avec vos résultats, puis vous l’exportez.'));
+  out.append(h('div', { class: 'panel' }, h('div', { class: 'say' }, h('span', { class: 'who solene' }, 'Solène'), h('p', {}, 'Relisez votre chapitre comme un client le lirait : sans connaître vos manipulations, seulement ce qui est écrit.'))));
   var stepOf = { s41: 1, s42: 2, s43: 3, s44: 4, s45: 5, s46: 6 };
   var rows = forms.map(function (fid) {
-    var def = M4.forms[fid], ok = S.validated[fid] && !Engine.formMissing(S, fid).length;
+    var def = M4.forms[fid], ok = secOk(fid);
     R.self[fid] = R.self[fid] || [];
     var cnt = h('span', { class: 'chip' });
     function cn() { var n = R.self[fid].filter(Boolean).length; cnt.textContent = 'Autoévaluation ' + n + '/' + def.grille.length; }
@@ -2031,7 +2449,7 @@ function viewStep7() {
       h('div', { class: 'selfchk' }, def.grille.map(function (g, gi) {
         var cb = h('input', { type: 'checkbox', checked: !!R.self[fid][gi] });
         cb.addEventListener('change', function () { R.self[fid][gi] = cb.checked; touch(); cn(); });
-        return h('label', {}, cb, h('span', {}, h('b', {}, g.crit + ' : '), 'mon texte respecte « ' + g.ok + ' »'));
+        return h('label', {}, cb, h('span', {}, h('b', {}, g.crit + ' : '), 'mon travail respecte « ' + g.ok + ' »'));
       })),
       h('button', { class: 'btn ghost small', onclick: function () { UI.view = 'step' + stepOf[fid]; render(); window.scrollTo(0, 0); } }, 'Modifier cette section'));
   });
@@ -2039,9 +2457,9 @@ function viewStep7() {
   var inc = R.coherenceRun ? Engine.coherence(S) : null;
   var runBtn = h('button', { class: 'btn', disabled: !allOk, onclick: function () { R.coherenceRun = true; touch(); rerender(); } }, R.coherenceRun ? 'Relancer la relecture du Pilote' : 'Lancer la relecture du Pilote');
   var relBox = h('div', { class: 'panel' }, h('h2', {}, 'Relecture du Pilote'),
-    h('p', {}, allOk ? 'Les six sections sont complètes. Le Pilote peut vérifier la cohérence entre vos décisions et vos textes.' : 'Complétez et soumettez les six sections pour lancer la relecture.'), runBtn);
+    h('p', {}, allOk ? 'Les six sections sont complètes. Le Pilote peut vérifier la cohérence entre vos résultats et votre tableau.' : 'Complétez et soumettez les six sections pour lancer la relecture.'), runBtn);
   if (inc) {
-    if (!inc.length) relBox.append(h('div', { class: 'verdict positive' }, h('b', {}, 'Aucune incohérence détectée. '), 'Vos textes et vos décisions racontent la même histoire.'));
+    if (!inc.length) relBox.append(h('div', { class: 'verdict positive' }, h('b', {}, 'Aucune incohérence détectée. '), 'Vos textes et vos résultats racontent la même histoire.'));
     else relBox.append(h('div', { class: 'verdict mixed' }, h('p', { style: 'margin-top:0' }, inl(M4.synthese.incoh.replace('{n}', inc.length))), h('ul', {}, inc.map(function (i) {
       return h('li', {}, i.text + ' ', h('button', { class: 'btn ghost small', onclick: function () { UI.view = 'step' + INC_STEP[i.id]; render(); window.scrollTo(0, 0); } }, 'Aller corriger'));
     }))));
@@ -2061,18 +2479,17 @@ function coursePanel() {
 }
 
 function positioningCardEl() {
-  var f = S.forms.s45 || {};
-  var row = function (label, value) {
-    return h('div', { style: 'padding:.6rem 0;border-bottom:1px solid var(--line)' },
-      h('div', { style: 'font-weight:700;color:var(--mer);margin-bottom:.15rem' }, label), h('div', {}, inl(value)));
-  };
-  return h('div', { class: 'panel' }, h('h2', {}, 'Votre positionnement'),
-    h('p', { class: 'mini' }, 'Voici la conclusion construite à partir de vos réponses de la section 4.5, telle qu’elle figure dans votre dossier.'),
-    h('div', { style: 'background:var(--ardoise);border:1px solid var(--line-strong);border-radius:10px;padding:1.2rem 1.4rem;margin-top:.6rem' },
-      row('Océan rouge ou bleu', f.oceanRougeOuBleu), row('Positionnement retenu', f.positionnementRetenu),
-      h('div', { style: 'padding-top:.6rem' },
-        h('div', { style: 'font-weight:700;color:var(--mer);margin-bottom:.15rem' }, 'Ce qui différencie Marée Basse'),
-        h('div', { style: 'background:var(--encre);color:var(--ambre-soft);border-radius:8px;padding:.8rem 1rem;margin-top:.3rem;font-weight:700' }, inl(f.differenciation || '(non renseigné)')))));
+  var f = S.forms.s45 || {}, def = M4.activities.A5, st = S.act.A5;
+  var card = h('div', { class: 'panel' }, h('h2', {}, 'Votre positionnement'),
+    h('p', { class: 'mini' }, 'Voici votre carte prix × goût perçu et votre promesse, telles qu’elles figurent dans votre dossier.'));
+  if (st && st.done) {
+    var ms = Engine.mapStateFrom(S, st.data), box = h('div', { class: 'mapbox ro' });
+    ms.points.forEach(function (p, i) { var n = h('div', { class: 'mp' }, h('span', { class: 'lb' + (i % 2 ? ' b' : '') + (p.x > 0.78 ? ' lr' : '') }, mapLabel(i))); n.style.left = (p.x * 100) + '%'; n.style.bottom = (p.y * 100) + '%'; box.append(n); });
+    var m = h('div', { class: 'mp me' }, h('span', { class: 'lb' }, 'Marée Basse')); m.style.left = (ms.me.x * 100) + '%'; m.style.bottom = (ms.me.y * 100) + '%'; box.append(m);
+    card.append(h('div', { class: 'mapwrap' }, h('div', { class: 'mapy' }, def.axes.y), box, h('div', { class: 'mapx' }, def.axes.x)));
+  }
+  card.append(h('div', { style: 'background:var(--encre);color:var(--ambre-soft);border-radius:8px;padding:.8rem 1rem;margin-top:.6rem;font-weight:700' }, inl(f.promesse || '(promesse non renseignée)')));
+  return card;
 }
 
 function bilanEl() {
@@ -2116,7 +2533,7 @@ function viewCahier() {
   var list = h('div', { class: 'panel' }, h('h2', {}, 'Plan du dossier d’étude'), chapters.map(function (c) {
     return h('div', { class: 'cah-row' + (c[3] ? '' : ' off') }, h('span', {}, h('b', {}, 'Chapitre ' + c[0] + ' · '), c[1]), h('span', { class: 'chip' }, c[2] + (c[3] ? '' : ' · ' + (Number(c[0]) < 4 ? 'déjà remis' : 'à venir'))));
   }));
-  var sec = h('div', { class: 'panel' }, h('h2', {}, 'Chapitre 3 : où en êtes-vous ?'), model.secs.map(function (s) {
+  var sec = h('div', { class: 'panel' }, h('h2', {}, 'Chapitre 4 : où en êtes-vous ?'), model.secs.map(function (s) {
     var lbl = { done: 'Soumise', started: 'En cours', todo: 'À faire' }[s.status];
     return h('div', { class: 'cah-row' }, h('span', {}, h('b', {}, s.no + ' '), s.title), h('span', { class: 'chip' + (s.status === 'done' ? ' ok' : '') }, lbl));
   }));
@@ -2358,19 +2775,19 @@ function exportPdf() {
   y += bh + 4;
   if (fin.penaltyCount) para('Dont ' + (4 * fin.penaltyCount) + ' points de penalite de coherence sur la fiabilite (voir la synthese).', { size: 8.5, color: MIST });
 
-  h2('Vos decisions et leurs effets');
+  h2('Vos activites et leurs effets');
   var hints = 0; Object.keys(S.hints).forEach(function (k) { hints += (S.hints[k].h1 ? 1 : 0) + (S.hints[k].h2 ? 1 : 0); });
   S.history.forEach(function (e) {
     ensure(30); h3(e.id + ' - ' + e.title);
-    para('Votre choix : ' + e.choice + '. ' + e.label, { size: 9.5, after: 0.5 });
+    para('Resultat : ' + e.choice + '. ' + e.label, { size: 9.5, after: 0.5 });
     var ef = e.effects;
     para('Effets : budget ' + pdfSgn(ef.budget || 0) + ' EUR | delai ' + pdfSgn(ef.delai || 0) + ' j | fiabilite ' + pdfSgn(ef.fiab || 0) + ' | confiance ' + pdfSgn(ef.confiance || 0), { size: 9.5, after: 0.5 });
-    para('Jauges apres la decision : ' + pdfNb(e.gauges.budget) + ' EUR | ' + e.gauges.delai + ' j | fiabilite ' + e.gauges.fiab + ' | confiance ' + e.gauges.confiance, { size: 9, color: MIST, after: 3 });
+    para('Jauges apres l\'activite : ' + pdfNb(e.gauges.budget) + ' EUR | ' + e.gauges.delai + ' j | fiabilite ' + e.gauges.fiab + ' | confiance ' + e.gauges.confiance, { size: 9, color: MIST, after: 3 });
   });
   var selfN = 0, selfT = 0; ['s41', 's42', 's43', 's44', 's45', 's46'].forEach(function (f) { var a = (S.relecture.self[f] || []); selfN += a.filter(Boolean).length; selfT += M4.forms[f].grille.length; });
-  para('Suivi de la mission : ' + hints + ' indice(s) de decision utilise(s) ; ' + Object.keys(S.fieldHints || {}).length + ' indice(s) d\'encart ouvert(s) ; autoevaluation cochee : ' + selfN + ' criteres sur ' + selfT + '.', { size: 9, color: MIST });
+  para('Suivi de la mission : ' + hints + ' indice(s) d\'activite utilise(s) ; ' + Object.keys(S.fieldHints || {}).length + ' indice(s) d\'encart ouvert(s) ; autoevaluation cochee : ' + selfN + ' criteres sur ' + selfT + '.', { size: 9, color: MIST });
 
-  h2('Verdicts du Pilote, decision par decision');
+  h2('Verdicts du Pilote, activite par activite');
   S.history.forEach(function (e) {
     ensure(26); var tc = TONE_COL[e.tone];
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setC(tc); doc.text(({ positive: 'POSITIF', mixed: 'MITIGE', risky: 'RISQUE' })[e.tone] + '  -  ' + e.id, M, y);
