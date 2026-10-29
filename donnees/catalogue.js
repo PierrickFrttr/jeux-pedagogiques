@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 17,
+  "version": 18,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -39,6 +39,15 @@ window.CATALOGUE = {
           "description": "Analysez la demande et rédigez le chapitre « Analyse de la demande ».",
           "emoji": "👥",
           "couleur": "#6f8f4e"
+        },
+        {
+          "type": "mission",
+          "fichier": "jeux/les-eaux-voisines.html",
+          "auteur": "PierrickFrttr",
+          "titre": "Les eaux voisines",
+          "description": "Mission 4 « Les eaux voisines » : en équipe, les étudiants choisissent leurs critères de comparaison, partent chercher sur internet de vrais concurrents directs et indirects, puis évaluent la pression du secteur avec les cinq forces de Porter. Ils concluent sur le positionnement de la Brasserie des Marées, dans un jeu de décisions où chaque choix modifie le budget, le délai, la fiabilité des données et la confiance du client.",
+          "emoji": "🤼",
+          "couleur": "#1d4f63"
         }
       ]
     },
