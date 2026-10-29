@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 21,
+  "version": 22,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -171,7 +171,17 @@ window.CATALOGUE = {
       "couleur": "#17256e",
       "auteur": "PierrickFrttr",
       "retourCss": "",
-      "elements": []
+      "elements": [
+        {
+          "type": "mission",
+          "fichier": "jeux/l-epreuve-de-compagnonnage.html",
+          "auteur": "PierrickFrttr",
+          "titre": "L'épreuve de compagnonnage",
+          "description": "En une journée, apprivoisez les familiers d'un quartier de la Maison Vélocis avant la Grande Foire : décisions, crises, ateliers sur de vrais outils d'IA et Grimoire à la clé.",
+          "emoji": "🎯",
+          "couleur": "#1d4f63"
+        }
+      ]
     }
   ]
 };
