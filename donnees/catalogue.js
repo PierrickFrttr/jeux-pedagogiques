@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 20,
+  "version": 21,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -159,6 +159,19 @@ window.CATALOGUE = {
           "couleur": "#e7f42f"
         }
       ]
+    },
+    {
+      "id": "la-guilde-des-prompteurs",
+      "titre": "La Guilde des prompteurs",
+      "titrePage": "La Guilde des prompteurs",
+      "resume": "Apprivoisez les « familiers » de la Maison Vélocis : les outils d'IA de l'entreprise. Un jeu de rôle en équipe pour apprendre à choisir ses outils, rédiger de bons prompts, déjouer les pièges de l'IA et repartir avec sa propre promptothèque.",
+      "intro": "Bienvenue à Port-Mercure, cité des marchands.\n\nDes créatures étranges, les familiers, se sont installées dans tous les ateliers de la cité. Elles écrivent, calculent, cherchent et agissent sans jamais se fatiguer. Mais mal dressées, elles inventent avec aplomb et répètent à qui veut l'entendre les secrets qu'on leur confie. La Maison Vélocis, qui doit présenter sa nouvelle monture à la Grande Foire, appelle la Guilde des Prompteurs à l'aide.\n\nVotre équipe d'apprentis Dresseurs prend en charge un quartier de la Maison : marketing, commercial, ressources humaines, finance, juridique ou production. Votre mission : y faire entrer les familiers intelligemment, d'ici la Foire.\n\nAu fil de la journée, vous prendrez des décisions en équipe, vous affronterez des crises et vous travaillerez sur de vrais outils d'IA. Cinq fioles mesurent l'état de votre quartier : temps gagné, fiabilité, conformité, budget et confiance des équipes. Chaque incantation réussie rejoint votre Grimoire, la bibliothèque de prompts que vous garderez.\n\nAvant de commencer :\n- Votre animateur vous indique votre Cercle (niveau de difficulté).\n- Aucune donnée réelle, personnelle ou confidentielle dans les outils d'IA : tout le matériel du jeu est fictif.\n- Il n'y a pas de sauvegarde automatique. Enregistrez votre partie (fichier .json) avant de fermer la page.\n- À la fin, envoyez votre fichier de fin de partie à l'animateur.\n\nPrêts à prêter serment ?",
+      "categorie": "Intelligence artificielle",
+      "emoji": "🎲",
+      "couleur": "#17256e",
+      "auteur": "PierrickFrttr",
+      "retourCss": "",
+      "elements": []
     }
   ]
 };
