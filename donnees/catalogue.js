@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 24,
+  "version": 25,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -146,8 +146,7 @@ window.CATALOGUE = {
           "titre": "Rédiger son business plan",
           "description": "Construisez pas à pas votre business plan, du modèle économique au prévisionnel sur trois ans, avec une aide au choix du statut, un diagnostic de faisabilité et un dossier exportable en Word.",
           "emoji": "✍🏼",
-          "couleur": "#67d22d",
-          "masque": true
+          "couleur": "#67d22d"
         },
         {
           "type": "mission",
