@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 22,
+  "version": 23,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -182,6 +182,19 @@ window.CATALOGUE = {
           "couleur": "#1d4f63"
         }
       ]
+    },
+    {
+      "id": "operation-mousse-redaction-web-seo",
+      "titre": "Opération Mousse – Rédaction web & SEO",
+      "titrePage": "Opération Mousse : une semaine pour sauver Bulles d'Ici",
+      "resume": "Stagiaire dans une agence web, tu as 5 jours pour rendre visible une savonnerie artisanale face à un concurrent sans scrupules. 10 missions pour maîtriser l'écriture web, les intentions de recherche, le SEO on-page, les piliers de contenu et l'E-E-A-T.",
+      "intro": "Lundi, 8 h 45. Premier jour de stage chez Pétillante, une agence web d'Annecy. Ta cliente s'appelle Inès : elle fabrique d'excellents savons à froid, mais sur Google, c'est comme si elle n'existait pas. Pire, Mousse Express, un site de bons plans aux promesses douteuses, lui vole ses clients.\n\nVendredi, tu présenteras ta stratégie de contenu à Inès et à son associée. D'ici là, 10 missions t'attendent : remettre un texte en pyramide inversée, démasquer les idées reçues, classer des requêtes, composer un title, auditer une page concurrente, construire un pilier de contenu et trancher des dilemmes juridiques.\n\nChaque mission fait évoluer le tableau de bord de la savonnerie. Joue seul ou en équipe, télécharge ton brouillon pour reprendre plus tard, et vise les 30 étoiles.\n\nDurée : 45 à 75 minutes. Prérequis : le cours « Rédiger pour le web et le SEO ».",
+      "categorie": "Rédaction web & SEO",
+      "emoji": "🫧",
+      "couleur": "#5b3fd9",
+      "auteur": "PierrickFrttr",
+      "retourCss": "",
+      "elements": []
     }
   ]
 };
