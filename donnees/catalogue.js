@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 23,
+  "version": 24,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -194,7 +194,17 @@ window.CATALOGUE = {
       "couleur": "#5b3fd9",
       "auteur": "PierrickFrttr",
       "retourCss": "",
-      "elements": []
+      "elements": [
+        {
+          "type": "mission",
+          "fichier": "jeux/operation-mousse-une-semaine-pour-sauver-bulles-d-ici.html",
+          "auteur": "PierrickFrttr",
+          "titre": "Opération Mousse : une semaine pour sauver Bulles d'Ici",
+          "description": "Cinq jours de stage, dix missions et une savonnerie à rendre visible sur Google face à un concurrent sans scrupules.",
+          "emoji": "🫧",
+          "couleur": "#5b3fd9"
+        }
+      ]
     }
   ]
 };

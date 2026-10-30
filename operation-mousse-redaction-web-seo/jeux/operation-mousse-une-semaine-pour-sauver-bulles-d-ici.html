@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opération Mousse : le jeu de la rédaction web et du SEO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=DM+Sans:wght@400..700&display=swap">
+<style>
+:root{
+  --bg:#FBF8F3; --surface:#FFFFFF; --soft:#F1EDF9; --text:#16163F; --muted:#565676;
+  --line:#16163F; --shadow:#16163F;
+  --coral:#FF5B3A; --violet:#5B3FD9; --yellow:#FFD23F; --mint:#3DDC97; --sky:#8FD3FF;
+  --good:#18865A; --bad:#C8361A; --goodbg:#DDF7EA; --badbg:#FDE4DC;
+  --on-color:#16163F;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121230; --surface:#1E1E4A; --soft:#2A2760; --text:#F3F0FA; --muted:#BDB9DD;
+    --line:#F3F0FA; --shadow:#05051A; --good:#5BE3A4; --bad:#FF8A6B; --goodbg:#163D33; --badbg:#46201A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121230; --surface:#1E1E4A; --soft:#2A2760; --text:#F3F0FA; --muted:#BDB9DD;
+  --line:#F3F0FA; --shadow:#05051A; --good:#5BE3A4; --bad:#FF8A6B; --goodbg:#163D33; --badbg:#46201A;
+  color-scheme: dark;
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+body{ margin:0; background:var(--bg); color:var(--text); font-family:'DM Sans', 'Trebuchet MS', Arial, sans-serif; font-size:17px; line-height:1.5; }
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--violet); }
+h1,h2,h3{ font-family:'Space Grotesk', 'Trebuchet MS', Arial, sans-serif; line-height:1.1; margin:0; }
+p{ margin:0; }
+button{ font:inherit; color:inherit; }
+:focus-visible{ outline:3px solid var(--coral); outline-offset:3px; }
+
+/* Barre du haut */
+.top{ position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--violet); color:#FBF8F3; border-bottom:3px solid var(--line); }
+.top-in{ max-width:960px; margin:0 auto; padding:12px 18px; display:flex; align-items:center; gap:14px; }
+.logo{ font-family:'Space Grotesk', Arial, sans-serif; font-weight:700; font-size:20px; display:flex; align-items:center; gap:8px; background:none; border:0; color:inherit; cursor:pointer; padding:0; }
+.logo-dot{ width:22px; height:22px; border-radius:50%; background:var(--yellow); border:3px solid #16163F; }
+.xp{ margin-left:auto; display:flex; align-items:center; gap:10px; font-weight:700; }
+.xp-bar{ width:120px; height:12px; border-radius:99px; background:rgba(255,255,255,.25); overflow:hidden; border:2px solid #16163F; }
+.xp-fill{ height:100%; background:var(--yellow); width:0; transition:width .5s; }
+.theme-btn{ background:none; border:2px solid #FBF8F3; color:#FBF8F3; border-radius:99px; padding:4px 10px; cursor:pointer; font-size:14px; }
+
+main{ max-width:960px; margin:0 auto; padding:28px 18px 64px; }
+
+/* Briques communes */
+.card{ background:var(--surface); border:3px solid var(--line); border-radius:22px; box-shadow:6px 6px 0 var(--shadow); padding:24px; }
+.btn{ display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:3px solid var(--line); border-radius:14px; padding:12px 20px; font-weight:700; background:var(--yellow); color:var(--on-color); box-shadow:4px 4px 0 var(--shadow); transition:transform .08s, box-shadow .08s; }
+.btn:hover{ transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--shadow); }
+.btn:active{ transform:translate(3px,3px); box-shadow:1px 1px 0 var(--shadow); }
+.btn.coral{ background:var(--coral); } .btn.mint{ background:var(--mint); } .btn.ghost{ background:var(--surface); color:var(--text); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+.row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.muted{ color:var(--muted); }
+.mt{ margin-top:18px; } .mt2{ margin-top:28px; }
+
+/* Accueil */
+.hero{ display:grid; grid-template-columns:1.2fr 1fr; gap:28px; align-items:center; }
+.hero h1{ font-size:clamp(40px,7vw,72px); letter-spacing:-1px; }
+.hero h1 span{ display:block; }
+.bubbles{ position:relative; aspect-ratio:1; }
+.bub{ position:absolute; border-radius:50%; border:3px solid var(--line); box-shadow:6px 6px 0 var(--shadow); }
+.bub::after{ content:""; position:absolute; left:20%; top:16%; width:22%; height:22%; border-radius:50%; background:rgba(255,255,255,.7); }
+@media (prefers-reduced-motion:no-preference){
+  .bub{ animation:float 6s ease-in-out infinite; }
+  .bub:nth-child(2){ animation-delay:-2s; } .bub:nth-child(3){ animation-delay:-4s; }
+  @keyframes float{ 50%{ transform:translateY(-14px); } }
+}
+.brief{ display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:start; }
+.avatar{ width:64px; height:64px; border-radius:50%; border:3px solid var(--line); display:grid; place-items:center; font-family:'Space Grotesk', Arial, sans-serif; font-weight:700; font-size:24px; color:#16163F; }
+.input{ font:inherit; padding:12px 14px; border:3px solid var(--line); border-radius:12px; background:var(--surface); color:var(--text); min-width:220px; }
+.fiche{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.fiche div{ border:3px solid var(--line); border-radius:16px; padding:14px; color:#16163F; }
+
+/* Carte des missions */
+.map{ display:grid; grid-template-columns:repeat(5,1fr); gap:22px 14px; margin-top:24px; }
+.node{ display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; background:none; border:0; cursor:pointer; padding:0; color:var(--text); }
+.node:nth-child(even){ transform:translateY(34px); }
+.node .ball{ width:min(110px,17vw); aspect-ratio:1; border-radius:50%; border:3px solid var(--line); box-shadow:5px 5px 0 var(--shadow); display:grid; place-items:center; font-family:'Space Grotesk', Arial, sans-serif; font-weight:700; font-size:clamp(22px,4vw,34px); color:#16163F; position:relative; }
+.node .ball::after{ content:""; position:absolute; left:18%; top:14%; width:22%; height:22%; border-radius:50%; background:rgba(255,255,255,.7); }
+.node.locked{ cursor:not-allowed; } .node.locked .ball{ background:var(--soft)!important; color:var(--muted); box-shadow:none; border-style:dashed; }
+.node .t{ font-weight:700; font-size:14px; line-height:1.25; }
+.node .s{ font-size:14px; color:var(--coral); letter-spacing:2px; min-height:20px; }
+
+/* Mission */
+.m-head{ display:flex; gap:16px; align-items:center; margin-bottom:18px; }
+.m-num{ width:56px; height:56px; flex:none; border-radius:50%; border:3px solid var(--line); display:grid; place-items:center; font-family:'Space Grotesk', Arial, sans-serif; font-weight:700; font-size:22px; color:#16163F; }
+.m-head h2{ font-size:clamp(26px,4.5vw,38px); }
+.tag{ display:inline-block; font-size:14px; font-weight:700; padding:3px 12px; border-radius:99px; border:2px solid var(--line); background:var(--surface); }
+.say{ background:var(--soft); border-radius:18px; padding:16px 18px; border:2px solid var(--line); }
+
+/* Réordonner */
+.order{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
+.order li{ display:flex; gap:12px; align-items:center; background:var(--surface); border:3px solid var(--line); border-radius:16px; padding:12px 14px; }
+.order .pos{ width:34px; height:34px; flex:none; border-radius:50%; background:var(--yellow); border:2px solid var(--line); display:grid; place-items:center; font-weight:700; color:#16163F; }
+.order .txt{ flex:1; }
+.arrows{ display:flex; flex-direction:column; gap:4px; }
+.arrows button{ width:40px; height:32px; border:2px solid var(--line); border-radius:8px; background:var(--soft); cursor:pointer; font-weight:700; }
+.order li.ok{ border-color:var(--good); background:var(--goodbg); } .order li.ko{ border-color:var(--bad); background:var(--badbg); }
+
+/* Cartes à trier (swipe) */
+.deck{ position:relative; height:300px; max-width:520px; margin:10px auto 0; }
+.swipe{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:14px; text-align:center; touch-action:pan-y; user-select:none; cursor:grab; }
+.swipe .q{ font-family:'Space Grotesk', Arial, sans-serif; font-size:clamp(22px,3.6vw,30px); font-weight:700; line-height:1.2; }
+.swipe.behind{ transform:rotate(-3deg) translateY(10px); background:var(--yellow); }
+.swipe.behind2{ transform:rotate(3deg) translateY(18px); background:var(--mint); }
+.fly-left{ transition:transform .35s, opacity .35s; transform:translateX(-140%) rotate(-20deg)!important; opacity:0; }
+.fly-right{ transition:transform .35s, opacity .35s; transform:translateX(140%) rotate(20deg)!important; opacity:0; }
+.vf{ display:flex; justify-content:center; gap:16px; margin-top:22px; }
+.vf .btn{ min-width:140px; justify-content:center; font-size:20px; }
+.flash{ text-align:center; min-height:52px; margin-top:14px; font-weight:600; }
+
+/* Relier */
+.link-zone{ position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px 22%; }
+.link-zone svg{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+.col{ display:flex; flex-direction:column; gap:12px; }
+.pill{ border:3px solid var(--line); border-radius:14px; padding:12px 14px; background:var(--surface); cursor:pointer; text-align:left; font-weight:600; position:relative; z-index:1; min-height:58px; }
+.pill.sel{ background:var(--yellow); color:#16163F; box-shadow:4px 4px 0 var(--shadow); }
+.pill.linked{ background:var(--soft); }
+.pill.ok{ background:var(--goodbg); border-color:var(--good); } .pill.ko{ background:var(--badbg); border-color:var(--bad); }
+
+/* Bacs */
+.pool{ display:flex; flex-wrap:wrap; gap:10px; min-height:60px; padding:14px; border:3px dashed var(--line); border-radius:18px; }
+.chip{ border:3px solid var(--line); border-radius:99px; padding:8px 14px; background:var(--surface); cursor:grab; font-weight:600; font-size:15px; }
+.chip.sel{ background:var(--yellow); color:#16163F; box-shadow:3px 3px 0 var(--shadow); }
+.chip.ok{ background:var(--goodbg); border-color:var(--good); } .chip.ko{ background:var(--badbg); border-color:var(--bad); }
+.bins{ display:grid; gap:14px; margin-top:16px; }
+.bins.b4{ grid-template-columns:repeat(4,1fr); } .bins.b2{ grid-template-columns:1.4fr 1fr; }
+.bin{ border:3px solid var(--line); border-radius:18px; padding:12px; min-height:150px; display:flex; flex-direction:column; gap:8px; cursor:pointer; color:#16163F; }
+.bin h3{ font-size:18px; } .bin .hint{ font-size:13px; opacity:.85; }
+.bin.over{ outline:4px dashed var(--line); outline-offset:3px; }
+.bin .chip{ background:rgba(255,255,255,.85); color:#16163F; border-color:#16163F; font-size:14px; }
+
+/* Curseurs */
+.slider{ margin-top:16px; }
+.slider label{ font-weight:700; display:block; }
+.slider .val{ font-family:'Space Grotesk', Arial, sans-serif; font-size:40px; font-weight:700; color:var(--violet); }
+input[type=range]{ width:100%; accent-color:var(--coral); height:30px; }
+.reveal{ margin-top:8px; padding:10px 14px; border-radius:12px; border:2px solid var(--line); background:var(--soft); }
+
+/* Constructeur de title */
+.serp{ background:#FFFFFF; color:#202124; border:3px solid var(--line); border-radius:16px; padding:16px 18px; font-family:Arial, sans-serif; }
+.serp .u{ color:#1E6B3A; font-size:14px; } .serp .ti{ color:#1A0DAB; font-size:20px; margin:4px 0; min-height:26px; } .serp .d{ color:#4D5156; font-size:14px; min-height:20px; }
+.slot{ min-height:62px; border:3px dashed var(--line); border-radius:16px; padding:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.slot:empty::before{ content:"Touche des étiquettes pour composer ton titre"; color:var(--muted); }
+.count{ font-weight:700; }
+.choices{ display:flex; flex-direction:column; gap:10px; }
+.choice{ text-align:left; border:3px solid var(--line); border-radius:14px; padding:12px 14px; background:var(--surface); cursor:pointer; }
+.choice.sel{ background:var(--yellow); color:#16163F; }
+.choice.ok{ background:var(--goodbg); border-color:var(--good); } .choice.ko{ background:var(--badbg); border-color:var(--bad); }
+
+/* Chasse aux signaux */
+.fake{ background:#FFFFFF; color:#202124; border:3px solid var(--line); border-radius:18px; padding:22px; font-family:Georgia, 'Times New Roman', serif; }
+.fake .site{ font-family:Arial, sans-serif; font-size:13px; color:#666; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:12px; }
+.fake h3{ font-family:Georgia, serif; font-size:24px; margin-bottom:10px; }
+.spot{ cursor:pointer; border-bottom:2px dotted #8a8aa8; padding:1px 2px; border-radius:4px; }
+.spot:hover{ background:#FFF3B8; }
+.spot.mark{ background:#FFD23F; border-bottom-color:#16163F; }
+.spot.ok{ background:#C9F2DD; } .spot.ko{ background:#F9C9BC; } .spot.miss{ outline:2px dashed #C8361A; }
+.counter{ font-weight:700; }
+
+/* Dilemmes */
+.dil .opt{ margin-top:10px; }
+
+/* Texte à trous */
+.boss p{ font-size:19px; line-height:2.1; }
+.boss select{ font:inherit; font-size:16px; padding:4px 8px; border:3px solid var(--line); border-radius:10px; background:var(--yellow); color:#16163F; max-width:100%; }
+.boss select.ok{ background:var(--mint); } .boss select.ko{ background:var(--coral); }
+
+/* Résultat */
+.result{ margin-top:22px; }
+.stars{ font-size:40px; letter-spacing:6px; color:var(--coral); }
+.score-bar{ height:18px; border-radius:99px; border:3px solid var(--line); overflow:hidden; background:var(--soft); }
+.score-fill{ height:100%; background:var(--mint); width:0; transition:width .7s; }
+.fb{ margin:12px 0 0; padding-left:20px; } .fb li{ margin-bottom:6px; }
+.retain{ margin-top:14px; border-left:8px solid var(--violet); padding:10px 14px; background:var(--soft); border-radius:10px; }
+
+/* Certificat */
+.cert{ text-align:center; padding:40px 24px; background:var(--yellow); color:#16163F; }
+.cert h2{ font-size:clamp(30px,5vw,52px); }
+.cert .name{ font-family:'Space Grotesk', Arial, sans-serif; font-size:clamp(28px,5vw,44px); font-weight:700; margin:12px 0; }
+.badge{ display:inline-block; background:#16163F; color:#FFD23F; border-radius:99px; padding:8px 18px; font-weight:700; }
+
+@media (max-width:760px){
+  .hero{ grid-template-columns:1fr; } .bubbles{ max-width:280px; margin:0 auto; order:-1; }
+  .map{ grid-template-columns:repeat(2,1fr); gap:18px; } .node:nth-child(even){ transform:translateY(24px); }
+  .bins.b4{ grid-template-columns:repeat(2,1fr); } .bins.b2{ grid-template-columns:1fr; }
+  .fiche{ grid-template-columns:1fr; } .link-zone{ gap:12px 14%; } .pill{ font-size:14px; padding:10px; }
+  .xp-bar{ width:70px; }
+}
+@media print{ .top, .noprint{ display:none!important; } body{ background:#fff; } }
+
+/* Histoire */
+.top-actions{ display:flex; gap:8px; }
+.top-actions button{ background:none; border:2px solid #FBF8F3; color:#FBF8F3; border-radius:99px; padding:4px 12px; cursor:pointer; font-size:14px; font-weight:600; }
+.notice{ position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); z-index:20; max-width:min(560px,92vw); background:var(--yellow); color:#16163F; border:3px solid #16163F; border-radius:16px; box-shadow:5px 5px 0 #16163F; padding:12px 18px; font-weight:600; }
+.when{ display:flex; flex-wrap:wrap; gap:8px; }
+.when span{ font-weight:700; font-size:14px; border:2px solid var(--line); border-radius:99px; padding:4px 12px; background:var(--surface); }
+.when span:first-child{ background:var(--violet); color:#FBF8F3; }
+.kicker{ margin-top:18px; font-weight:700; color:var(--coral); font-size:16px; }
+.after .kicker{ margin-top:0; }
+.scene-title{ font-size:clamp(28px,5vw,46px); margin-top:6px; }
+.dialog{ display:flex; flex-direction:column; gap:14px; margin-top:24px; max-width:760px; }
+.line{ display:grid; grid-template-columns:64px 1fr; gap:14px; align-items:start; }
+.line.me{ grid-template-columns:1fr 64px; } .line.me .avatar{ order:2; } .line.me .bubble{ background:var(--yellow); color:#16163F; }
+.line.me .bubble .muted{ color:#4A4A6A; }
+.bubble{ background:var(--surface); border:3px solid var(--line); border-radius:4px 20px 20px 20px; box-shadow:4px 4px 0 var(--shadow); padding:12px 16px; }
+.line.me .bubble{ border-radius:20px 4px 20px 20px; }
+.bubble .who{ font-weight:700; font-size:15px; margin-bottom:2px; } .bubble .who .muted{ font-weight:500; }
+.line.narr{ display:block; }
+.line.narr p{ font-style:italic; color:var(--muted); border-left:4px solid var(--coral); padding:4px 0 4px 14px; font-size:18px; }
+@media (prefers-reduced-motion:no-preference){ .line{ animation:pop .35s ease-out; } @keyframes pop{ from{ opacity:0; transform:translateY(8px); } } }
+.avatar{ font-size:16px; }
+.story{ font-size:19px; line-height:1.55; }
+.dash{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.gauge{ border:3px solid var(--line); border-radius:16px; padding:12px 14px; background:var(--surface); display:flex; flex-direction:column; gap:8px; }
+.g-top{ display:flex; justify-content:space-between; gap:8px; font-size:14px; font-weight:600; }
+.g-bar{ height:14px; border-radius:99px; border:2px solid var(--line); overflow:hidden; background:var(--soft); }
+.g-fill{ height:100%; transition:width 1s ease-out; }
+.up{ color:var(--good); }
+.gauge.pos{ background:var(--yellow); color:#16163F; font-size:14px; font-weight:600; justify-content:center; }
+.gauge.pos b{ font-family:'Space Grotesk', Arial, sans-serif; font-size:26px; }
+.gauge.pos .muted{ color:#4A4A6A; }
+.small{ font-size:12px; }
+.chap h3{ font-size:24px; } .chap .map{ grid-template-columns:repeat(3,1fr); }
+.node .d{ font-size:13px; color:var(--muted); }
+@media (max-width:760px){ .dash{ grid-template-columns:1fr 1fr; } .chap .map{ grid-template-columns:repeat(2,1fr); } .top-actions button span{ display:none; } }
+
+/* Menu latéral */
+.top-in{ max-width:1280px; }
+.layout{ max-width:1280px; margin:0 auto; display:grid; grid-template-columns:272px minmax(0,1fr); }
+.layout main{ max-width:960px; width:100%; }
+.nav{ position:sticky; top:calc(64px + env(safe-area-inset-top,0px)); align-self:start; height:calc(100vh - 64px - env(safe-area-inset-top,0px)); overflow-y:auto; padding:16px 12px 32px; border-right:3px solid var(--line); background:var(--surface); }
+.nav h4{ font-family:'DM Sans', Arial, sans-serif; font-size:13px; color:var(--muted); margin:18px 10px 6px; font-weight:700; }
+.nav h4:first-child{ margin-top:4px; }
+.nav-i{ display:flex; width:100%; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; border:2px solid transparent; background:none; text-align:left; cursor:pointer; font-weight:600; font-size:15px; line-height:1.25; color:var(--text); }
+.nav-i:hover{ background:var(--soft); }
+.nav-i.active{ background:var(--yellow); color:#16163F; border-color:var(--line); box-shadow:3px 3px 0 var(--shadow); }
+.nav-i[disabled]{ opacity:.5; cursor:not-allowed; background:none; }
+.nav-i .ic{ width:26px; flex:none; text-align:center; font-size:17px; }
+.nd{ width:26px; height:26px; flex:none; border-radius:50%; border:2px solid var(--line); display:grid; place-items:center; font-size:13px; font-weight:700; color:#16163F; }
+.nst{ margin-left:auto; color:var(--coral); font-size:12px; letter-spacing:1px; white-space:nowrap; }
+.nav-i.active .nst{ color:#16163F; }
+.nav-progress{ margin:6px 10px 0; font-size:13px; color:var(--muted); }
+.menu-btn{ display:none; background:none; border:2px solid #FBF8F3; color:#FBF8F3; border-radius:10px; width:40px; height:36px; font-size:20px; cursor:pointer; }
+.scrim{ position:fixed; inset:0; background:rgba(10,10,30,.45); z-index:25; }
+.tools-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.tools-grid .card{ padding:18px; }
+.tools-grid h3{ font-size:20px; margin-bottom:6px; }
+.gl{ display:grid; grid-template-columns:220px 1fr; gap:10px 18px; }
+.gl dt{ font-weight:700; } .gl dd{ margin:0; }
+.cast{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.cast .card{ display:grid; grid-template-columns:64px 1fr; gap:14px; align-items:start; padding:18px; }
+@media (max-width:900px){
+  .layout{ grid-template-columns:1fr; }
+  .menu-btn{ display:inline-grid; place-items:center; }
+  .nav{ position:fixed; z-index:30; left:0; top:0; bottom:0; height:auto; width:min(300px,86vw); padding-top:calc(18px + env(safe-area-inset-top,0px)); padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translateX(-105%); transition:transform .25s ease; box-shadow:6px 0 0 var(--shadow); }
+  .nav.open{ transform:none; }
+  .tools-grid, .cast{ grid-template-columns:1fr; } .gl{ grid-template-columns:1fr; } .gl dd{ margin-bottom:8px; }
+}
+@media (prefers-reduced-motion:reduce){ .nav{ transition:none; } }
+.support{ display:grid; grid-template-columns:64px 1fr; gap:16px; align-items:start; }
+.sup-ic{ width:64px; height:64px; border-radius:18px; border:3px solid var(--line); background:var(--sky); display:grid; place-items:center; font-size:30px; }
+a.btn{ text-decoration:none; }
+@media (max-width:600px){ .support{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <button class="menu-btn noprint" id="menuBtn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav">☰</button>
+    <button class="logo" id="home" aria-label="Retour à l’accueil"><span class="logo-dot"></span>Pétillante</button>
+    <div class="xp" aria-live="polite"><span id="xpTxt">0 XP</span><div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div></div>
+    <button class="theme-btn" id="theme" aria-label="Changer de thème">☾</button>
+  </div>
+</header>
+<input type="file" id="draftFile" accept=".json,application/json" hidden>
+<div class="layout">
+  <nav id="nav" class="nav noprint" aria-label="Navigation du jeu"></nav>
+  <main id="app"></main>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<div id="notice" class="notice" role="status" hidden></div>
+<script>
+/* ---------- État et sauvegarde ---------- */
+const KEY = 'operation-mousse-v2';
+let S = { name:'', score:{}, prologue:false };
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} updateXP(); }
+const app = document.getElementById('app');
+const totalXP = () => Object.values(S.score).reduce((a,b)=>a+b,0);
+function updateXP(){ const x = totalXP(); document.getElementById('xpTxt').textContent = x + ' XP'; document.getElementById('xpFill').style.width = (x/10) + '%'; }
+const stars = s => s>=90 ? 3 : s>=60 ? 2 : s>0 ? 1 : 0;
+const starTxt = n => '★'.repeat(n) + '☆'.repeat(3-n);
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COLORS = ['var(--coral)','var(--yellow)','var(--mint)','var(--sky)','var(--violet)'];
+
+/* Thème */
+const themeBtn = document.getElementById('theme');
+function applyTheme(t){ if (t) document.documentElement.setAttribute('data-theme', t); try{ localStorage.setItem(KEY+'-theme', t||''); }catch(e){} }
+try { const t = localStorage.getItem(KEY+'-theme'); if (t) applyTheme(t); } catch(e) {}
+themeBtn.onclick = () => {
+  const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+};
+
+/* ---------- Missions ---------- */
+const M = [];
+
+/* 1. Réordonner : pyramide inversée */
+M.push({ title:'La pyramide inversée', format:'Remettre dans l’ordre', color:'var(--coral)',
+  brief:'Inès a écrit le texte de la page « Atelier » dans le désordre. Remets les phrases dans l’ordre de la pyramide inversée : l’essentiel en haut, le contexte en bas.',
+  render(el, done){
+    const items = [
+      { id:'a', t:'Fabriquez votre propre savon en 2 heures, dans notre atelier d’Annecy, dès 45 € par personne.' },
+      { id:'b', t:'Vous repartez avec 4 savons, la recette et les bons gestes de la saponification à froid.' },
+      { id:'c', t:'Les ateliers ont lieu le mercredi et le samedi, en groupe de 6 personnes maximum.' },
+      { id:'d', t:'Tout le matériel est fourni, y compris les gants et les lunettes de protection.' },
+      { id:'e', t:'Inès a fondé Bulles d’Ici en 2021, après une formation de savonnière.' },
+    ];
+    let order = shuffle(items);
+    if (order[0].id === 'a' && order[4].id === 'e') order = [order[4], ...order.slice(1,4), order[0]];
+    const ul = document.createElement('ol'); ul.className = 'order';
+    const draw = () => {
+      ul.innerHTML = '';
+      order.forEach((it,i) => {
+        const li = document.createElement('li'); li.dataset.id = it.id;
+        li.innerHTML = `<span class="pos">${i+1}</span><span class="txt">${esc(it.t)}</span><span class="arrows"><button aria-label="Monter">▲</button><button aria-label="Descendre">▼</button></span>`;
+        const [up, dn] = li.querySelectorAll('button');
+        up.disabled = i===0; dn.disabled = i===order.length-1;
+        up.onclick = () => { [order[i-1],order[i]]=[order[i],order[i-1]]; draw(); ul.children[i-1].querySelector('button').focus(); };
+        dn.onclick = () => { [order[i+1],order[i]]=[order[i],order[i+1]]; draw(); ul.children[i+1].querySelectorAll('button')[1].focus(); };
+        ul.appendChild(li);
+      });
+    };
+    draw(); el.appendChild(ul);
+    const b = button('Valider l’ordre', 'coral'); el.appendChild(wrap(b));
+    b.onclick = () => {
+      const ids = order.map(o=>o.id);
+      const ok = [ids[0]==='a', ids[1]==='b', ['c','d'].includes(ids[2]), ['c','d'].includes(ids[3]), ids[4]==='e'];
+      [...ul.children].forEach((li,i) => { li.classList.add(ok[i]?'ok':'ko'); li.querySelectorAll('button').forEach(x=>x.disabled=true); });
+      b.disabled = true;
+      const score = Math.round(ok.filter(Boolean).length/5*100);
+      done(score, [
+        'En haut : l’offre et son prix, ce que cherche l’internaute.',
+        'Ensuite : le bénéfice (ce qu’on emporte), puis les infos pratiques (jours, groupe, matériel), dans l’ordre que tu préfères.',
+        'En bas : l’histoire d’Inès. Elle est utile, mais pour la confiance, sur la page « Qui sommes-nous ».'
+      ], 'Si le lecteur s’arrête après la première phrase, il doit avoir l’essentiel.');
+    };
+  }
+});
+
+/* 2. Swipe : Mythbusters */
+M.push({ title:'Mythbusters SEO', format:'Trier des cartes', color:'var(--yellow)',
+  brief:'Le neveu d’Inès « s’y connaît en SEO ». Il a laissé 8 conseils sur un post-it. Pour chaque carte : vrai ou faux ? Glisse la carte ou utilise les boutons.',
+  render(el, done){
+    const cards = [
+      { q:'Un article doit faire au moins 1 500 mots pour se classer.', a:false, e:'Pour Google, il n’y a pas de longueur « magique ».' },
+      { q:'Google ignore la balise meta « keywords ».', a:true, e:'Google indique ne pas l’utiliser.' },
+      { q:'L’E-E-A-T est un score unique qui classe les pages.', a:false, e:'C’est un ensemble de signaux, pas un facteur de classement spécifique.' },
+      { q:'On peut utiliser l’IA pour aider à rédiger.', a:true, e:'Oui, ce qui est sanctionné, c’est la production de masse pour manipuler le classement.' },
+      { q:'Un fichier llms.txt est indispensable pour les Aperçus IA.', a:false, e:'Google indique ne pas l’utiliser pour sa recherche.' },
+      { q:'La plupart des internautes balaient les pages plutôt que de les lire.', a:true, e:'C’est le motif de lecture en F de Nielsen Norman Group.' },
+      { q:'Changer la date d’un article suffit à le rendre « frais ».', a:false, e:'Google cite cette pratique parmi celles à éviter.' },
+      { q:'Un mot-clé dans le nom de domaine booste fortement le classement.', a:false, e:'Effet pratiquement nul, selon Google.' },
+    ];
+    let i = 0, good = 0; const log = [];
+    const deck = document.createElement('div'); deck.className = 'deck';
+    const flash = document.createElement('p'); flash.className = 'flash'; flash.setAttribute('aria-live','polite');
+    const vf = document.createElement('div'); vf.className = 'vf';
+    const bF = button('Faux','coral'), bV = button('Vrai','mint'); vf.append(bF, bV);
+    const prog = document.createElement('p'); prog.className = 'muted'; prog.style.textAlign = 'center';
+    el.append(prog, deck, vf, flash);
+    const draw = () => {
+      deck.innerHTML = '';
+      prog.textContent = `Carte ${Math.min(i+1,cards.length)} sur ${cards.length}`;
+      if (i+2 < cards.length) deck.appendChild(Object.assign(document.createElement('div'),{className:'card swipe behind2'}));
+      if (i+1 < cards.length) deck.appendChild(Object.assign(document.createElement('div'),{className:'card swipe behind'}));
+      const c = document.createElement('div'); c.className = 'card swipe'; c.innerHTML = `<p class="q">${esc(cards[i].q)}</p><p class="muted">← Faux   ·   Vrai →</p>`;
+      deck.appendChild(c); enableSwipe(c);
+    };
+    const answer = v => {
+      if (i >= cards.length) return;
+      const c = cards[i], ok = v === c.a; if (ok) good++;
+      log.push((ok?'✔ ':'✘ ') + c.q + ' → ' + (c.a?'Vrai':'Faux') + '. ' + c.e);
+      flash.innerHTML = `<span style="color:${ok?'var(--good)':'var(--bad)'}">${ok?'Bien vu !':'Raté.'}</span> ${esc(c.e)}`;
+      const top = deck.lastElementChild; top.classList.add(v?'fly-right':'fly-left');
+      i++;
+      setTimeout(() => {
+        if (i < cards.length) draw();
+        else { bF.disabled = bV.disabled = true; deck.innerHTML=''; prog.textContent=''; done(Math.round(good/cards.length*100), log, 'Avant de suivre un conseil SEO, cherche sa source : la documentation de Google Search Central d’abord.'); }
+      }, 380);
+    };
+    function enableSwipe(c){
+      let x0 = null, dx = 0;
+      c.addEventListener('pointerdown', e => { x0 = e.clientX; c.setPointerCapture(e.pointerId); c.style.transition='none'; });
+      c.addEventListener('pointermove', e => { if (x0===null) return; dx = e.clientX - x0; c.style.transform = `translateX(${dx}px) rotate(${dx/18}deg)`; });
+      const end = () => { if (x0===null) return; x0 = null; c.style.transition='transform .2s'; if (Math.abs(dx) > 90) { c.style.transform=''; answer(dx > 0); } else c.style.transform=''; dx = 0; };
+      c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+    }
+    bF.onclick = () => answer(false); bV.onclick = () => answer(true);
+    el.tabIndex = -1;
+    el.addEventListener('keydown', e => { if (e.key==='ArrowLeft') answer(false); if (e.key==='ArrowRight') answer(true); });
+    draw();
+  }
+});
+
+/* 3. Relier : éléments on-page */
+M.push({ title:'L’anatomie d’une page', format:'Relier les éléments', color:'var(--mint)',
+  brief:'Inès confond tous les termes techniques. Relie chaque élément de la page à son rôle : touche un élément à gauche, puis son rôle à droite.',
+  render(el, done){
+    const pairs = [
+      ['Balise title','Le titre cliquable affiché dans les résultats'],
+      ['Meta description','L’extrait qui donne envie de cliquer'],
+      ['H1','Le titre visible en haut de la page'],
+      ['Attribut alt','La description d’une image pour les moteurs et les lecteurs d’écran'],
+      ['Ancre de lien','Le texte cliquable qui annonce la page de destination'],
+      ['URL','L’adresse de la page, lisible et courte'],
+    ];
+    const zone = document.createElement('div'); zone.className = 'link-zone';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    const L = document.createElement('div'), R = document.createElement('div'); L.className = R.className = 'col';
+    zone.append(svg, L, R); el.appendChild(zone);
+    const links = {}; let sel = null;
+    const left = pairs.map((p,i)=>{ const b = document.createElement('button'); b.className='pill'; b.textContent=p[0]; b.dataset.i=i; L.appendChild(b); return b; });
+    const right = shuffle(pairs.map((p,i)=>({t:p[1],i}))).map(o=>{ const b = document.createElement('button'); b.className='pill'; b.textContent=o.t; b.dataset.i=o.i; R.appendChild(b); return b; });
+    const col = i => ['#FF5B3A','#5B3FD9','#18865A','#E0A800','#2B8FD6','#C2185B'][i];
+    function drawLines(){
+      const z = zone.getBoundingClientRect(); svg.innerHTML = '';
+      Object.entries(links).forEach(([li, ri]) => {
+        const a = left[li].getBoundingClientRect(), b = right.find(x=>x.dataset.i==ri).getBoundingClientRect();
+        const x1=a.right-z.left, y1=a.top+a.height/2-z.top, x2=b.left-z.left, y2=b.top+b.height/2-z.top;
+        const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p.setAttribute('d',`M${x1},${y1} C${(x1+x2)/2},${y1} ${(x1+x2)/2},${y2} ${x2},${y2}`);
+        p.setAttribute('stroke', col(+li)); p.setAttribute('stroke-width','5'); p.setAttribute('fill','none'); p.setAttribute('stroke-linecap','round');
+        svg.appendChild(p);
+      });
+      left.forEach((b,i)=>b.classList.toggle('linked', i in links));
+      right.forEach(b=>b.classList.toggle('linked', Object.values(links).includes(b.dataset.i)));
+      v.disabled = Object.keys(links).length < pairs.length;
+    }
+    left.forEach((b,i)=> b.onclick = () => { if (locked) return; if (i in links){ delete links[i]; } left.forEach(x=>x.classList.remove('sel')); sel = i; b.classList.add('sel'); drawLines(); });
+    right.forEach(b=> b.onclick = () => {
+      if (locked || sel===null) return;
+      for (const k in links) if (links[k]===b.dataset.i) delete links[k];
+      links[sel] = b.dataset.i; left[sel].classList.remove('sel'); sel = null; drawLines();
+    });
+    let locked = false;
+    const v = button('Valider les liens','mint'); el.appendChild(wrap(v)); v.disabled = true;
+    addEventListener('resize', drawLines);
+    v.onclick = () => {
+      locked = true; v.disabled = true; let good = 0; const fb = [];
+      left.forEach((b,i)=>{ const ok = links[i]==String(i); if (ok) good++; b.classList.add(ok?'ok':'ko'); if(!ok) fb.push(`${pairs[i][0]} : ${pairs[i][1].toLowerCase()}.`); });
+      right.forEach(b=>{ const li = Object.keys(links).find(k=>links[k]===b.dataset.i); b.classList.add(li==b.dataset.i?'ok':'ko'); });
+      if (!fb.length) fb.push('Tout est juste : tu parles déjà le langage du SEO on-page.');
+      fb.push('Bon à savoir : Google peut réécrire le titre et l’extrait affichés à partir d’autres éléments de la page.');
+      done(Math.round(good/pairs.length*100), fb, 'Title et meta servent d’abord à obtenir le clic : rédige-les comme une promesse tenue.');
+    };
+    requestAnimationFrame(drawLines);
+  }
+});
+
+/* 4. Bacs : intentions de recherche */
+M.push({ title:'Que veut l’internaute ?', format:'Glisser-déposer', color:'var(--sky)',
+  brief:'Voici 10 requêtes tapées par de futurs clients. Classe chacune dans son intention dominante. Glisse les étiquettes, ou touche une étiquette puis un bac.',
+  render(el, done){
+    const Q = [
+      ['bulles d’ici horaires','nav'], ['comment faire un savon à froid','info'], ['meilleur shampoing solide cheveux bouclés','com'],
+      ['acheter savon surgras annecy','tra'], ['réserver atelier savon annecy','tra'], ['savon saponification à froid avis','com'],
+      ['pourquoi mon savon ne mousse pas','info'], ['bulles d’ici boutique en ligne','nav'], ['shampoing solide ou liquide','com'], ['combien de temps sèche un savon','info'],
+    ];
+    const BINS = [ ['info','Information­nelle','apprendre, résoudre','var(--violet)'], ['nav','Navigation­nelle','aller sur un site précis','var(--mint)'], ['com','Commerciale','comparer avant d’acheter','var(--yellow)'], ['tra','Transaction­nelle','agir maintenant','var(--coral)'] ];
+    const NAMES = { info:'informationnelle', nav:'navigationnelle', com:'commerciale', tra:'transactionnelle' };
+    const { pool, bins, chips } = buildBins(el, Q.map(q=>q[0]), BINS, 'b4');
+    bins.info.querySelector('h3').style.color = '#FBF8F3'; bins.info.querySelector('.hint').style.color = '#FBF8F3';
+    const v = button('Valider le tri','coral'); el.appendChild(wrap(v));
+    v.onclick = () => {
+      if (pool.querySelector('.chip')) { toast(v, 'Place toutes les requêtes avant de valider.'); return; }
+      let good = 0; const fb = [];
+      chips.forEach((c,i)=>{ const where = c.parentElement.dataset.bin; const ok = where===Q[i][1]; if (ok) good++; c.classList.add(ok?'ok':'ko'); c.draggable=false; if(!ok) fb.push(`« ${Q[i][0]} » : intention ${NAMES[Q[i][1]]}.`); });
+      v.disabled = true; lockBins(bins);
+      if (!fb.length) fb.push('Sans faute : tu lis les requêtes comme Google.');
+      fb.push('Indices à retenir : comment, pourquoi = information ; meilleur, avis, ou, vs = comparaison ; acheter, réserver, prix + ville = action ; nom de la marque = navigation.');
+      done(Math.round(good/Q.length*100), fb, 'En cas de doute, tape la requête et observe ce que Google affiche déjà : c’est lui qui révèle l’intention.');
+    };
+  }
+});
+
+/* 5. Curseurs : chiffres clés */
+M.push({ title:'Le juste chiffre', format:'Estimer avec un curseur', color:'var(--violet)',
+  brief:'Inès se demande si Google vaut encore la peine, avec l’arrivée des IA. Estime ces trois chiffres vus en cours avec les curseurs.',
+  render(el, done){
+    const Q = [
+      { l:'Part de Google dans les recherches en France (mai 2026)', a:88.69, max:100, src:'88,69 %, StatCounter, mai 2026.' },
+      { l:'Part des visites avec un clic sur un résultat, quand un résumé IA s’affiche', a:8, max:50, src:'8 %, Pew Research Center, 2025.' },
+      { l:'La même part, sans résumé IA', a:15, max:50, src:'15 %, Pew Research Center, 2025. Google conteste la méthode de cette étude.' },
+    ];
+    const inputs = Q.map(q=>{
+      const d = document.createElement('div'); d.className = 'card slider';
+      const mid = Math.round(q.max/2);
+      d.innerHTML = `<label>${esc(q.l)}<span class="val" aria-hidden="true"> ${mid} %</span><input type="range" min="0" max="${q.max}" step="1" value="${mid}" aria-label="${esc(q.l)}"></label><div class="reveal" hidden></div>`;
+      const r = d.querySelector('input'), val = d.querySelector('.val'); r.oninput = () => val.textContent = ' ' + r.value + ' %';
+      el.appendChild(d); return d;
+    });
+    const v = button('Révéler les réponses','coral'); el.appendChild(wrap(v));
+    v.onclick = () => {
+      v.disabled = true; let pts = 0; const fb = [];
+      inputs.forEach((d,i)=>{ const r = d.querySelector('input'); r.disabled = true; const diff = Math.abs(+r.value - Q[i].a); const s = Math.max(0, 1 - diff/15); pts += s;
+        const rv = d.querySelector('.reveal'); rv.hidden = false; rv.innerHTML = `Réponse : <b>${esc(Q[i].src)}</b> Tu étais à ${Math.round(diff)} point${diff>=2?'s':''} près.`; });
+      fb.push('Google reste incontournable en France, mais les résumés IA réduisent les clics sur les questions simples.');
+      fb.push('Les chiffres sur les résumés IA viennent de données américaines, et Google les conteste : cite toujours la source, la date et la méthode.');
+      done(Math.round(pts/Q.length*100), fb, 'Le contenu générique est le plus exposé au « zéro clic » ; l’expérience et le local résistent mieux.');
+    };
+  }
+});
+
+/* 6. Constructeur : title et meta */
+M.push({ title:'Le title parfait', format:'Composer un titre', color:'var(--coral)',
+  brief:'Compose la balise title de la page « Savon surgras » en touchant les étiquettes dans l’ordre, puis choisis la meilleure meta description. L’aperçu Google se met à jour en direct.',
+  render(el, done){
+    const CH = ['Savon surgras','artisanal','à Annecy','| Bulles d’Ici','Accueil','savon savon pas cher','Le meilleur savon du monde','– Bienvenue sur notre site'];
+    const BAD = ['Accueil','savon savon pas cher','Le meilleur savon du monde','– Bienvenue sur notre site'];
+    const METAS = [
+      { t:'Bienvenue sur le site de Bulles d’Ici, une savonnerie.', ok:false, why:'générique, elle ne dit rien du produit' },
+      { t:'Savon Annecy savon artisanal savon bio savon pas cher savon Annecy.', ok:false, why:'bourrage de mots-clés, contraire aux règles anti-spam' },
+      { t:'Savons surgras fabriqués à la main à Annecy, saponifiés à froid. Livraison en 48 h ou retrait à l’atelier.', ok:true, why:'précise, utile, elle donne envie de cliquer' },
+    ];
+    let title = [], meta = null;
+    el.insertAdjacentHTML('beforeend', `<div class="serp" aria-live="polite"><div class="u">bullesdici.fr › savons › savon-surgras</div><div class="ti"></div><div class="d"></div></div>
+      <p class="mt"><b>Ton titre</b> <span class="count muted"></span></p><div class="slot"></div><p class="mt"><b>Étiquettes</b></p><div class="pool"></div>
+      <p class="mt"><b>Meta description</b></p><div class="choices"></div>`);
+    const ti = el.querySelector('.ti'), d = el.querySelector('.d'), slot = el.querySelector('.slot'), pool = el.querySelector('.pool'), choices = el.querySelector('.choices'), count = el.querySelector('.count');
+    let locked = false;
+    const draw = () => {
+      slot.innerHTML = ''; pool.innerHTML = '';
+      title.forEach((t,i)=>{ const c = chipBtn(t); c.onclick = () => { if(locked) return; title.splice(i,1); draw(); }; slot.appendChild(c); });
+      CH.filter(t=>!title.includes(t)).forEach(t=>{ const c = chipBtn(t); c.onclick = () => { if(locked) return; title.push(t); draw(); }; pool.appendChild(c); });
+      const str = title.join(' '); ti.textContent = str || 'Ton titre apparaîtra ici';
+      count.textContent = `(${str.length} caractères)`;
+      d.textContent = meta!==null ? METAS[meta].t : 'Choisis une meta description ci-dessous.';
+    };
+    shuffle(METAS.map((m,i)=>i)).forEach(i=>{ const b = document.createElement('button'); b.className='choice'; b.textContent = METAS[i].t; b.dataset.i=i;
+      b.onclick = () => { if(locked) return; meta = i; choices.querySelectorAll('.choice').forEach(x=>x.classList.toggle('sel', x===b)); draw(); }; choices.appendChild(b); });
+    draw();
+    const v = button('Publier la page','coral'); el.appendChild(wrap(v));
+    v.onclick = () => {
+      if (!title.length || meta===null) { toast(v,'Compose un titre et choisis une meta avant de publier.'); return; }
+      locked = true; v.disabled = true;
+      const str = title.join(' ');
+      const rules = [
+        [title[0]==='Savon surgras', 'Le sujet principal ouvre le titre'],
+        [title.includes('à Annecy'), 'La localisation est présente (requête locale)'],
+        [title[title.length-1]==='| Bulles d’Ici', 'La marque est à la fin'],
+        [!title.some(t=>BAD.includes(t)), 'Aucun mot parasite : ni « Accueil », ni superlatif, ni répétition'],
+        [str.length<=60, 'Le titre reste court (repère de praticien : environ 60 caractères, la troncature dépend de la largeur affichée)'],
+      ];
+      let s = rules.filter(r=>r[0]).length*14;
+      const m = METAS[meta]; if (m.ok) s += 30;
+      choices.querySelectorAll('.choice').forEach(b=>{ const mm = METAS[b.dataset.i]; b.classList.add(mm.ok?'ok':(+b.dataset.i===meta?'ko':'')); });
+      const fb = rules.map(r=>(r[0]?'✔ ':'✘ ')+r[1]+'.');
+      fb.push((m.ok?'✔ ':'✘ ') + 'Meta description : ' + (m.ok? 'la bonne, ' : 'pas celle-ci, ') + m.why + '.');
+      if (!m.ok) fb.push('La meilleure : « ' + METAS[2].t + ' »');
+      done(Math.min(100,s), fb, 'Une page = un sujet = une intention. Exemple attendu : « Savon surgras artisanal à Annecy | Bulles d’Ici ».');
+    };
+  }
+});
+
+/* 7. Chasse aux signaux : audit E-E-A-T */
+M.push({ title:'La chasse aux signaux', format:'Repérer dans une page', color:'var(--yellow)',
+  brief:'Un concurrent surclasse Inès avec cet article. Repère les 6 signaux qui ruinent sa fiabilité selon l’E-E-A-T. Touche un passage pour le marquer, retouche pour annuler.',
+  render(el, done){
+    const parts = [
+      ['site','beaute-promos-deals.net › maison › auto › beauté','bad','Site généraliste « bons plans » : aucune cohérence entre le sujet et l’activité.'],
+      ['h','Le savon au lait de chèvre <span>guérit l’eczéma en 7 jours</span> : notre top 10','bad','Promesse santé non fondée sur un sujet YMYL : l’exactitude et le consensus des experts sont exigés.'],
+      ['p','<span>Par La Rédaction</span>, avec <span>notre experte dermatologue Clara (photo générée par IA)</span>.','bad|bad','Auteur anonyme : on ne sait pas qui parle.|Faux profil d’expert : Google qualifie cette pratique de tromperie.'],
+      ['p','<span>Mis à jour aujourd’hui</span> · Sélection 2023 inchangée.','bad','Date modifiée sans vraie mise à jour : pratique citée par Google comme à éviter.'],
+      ['p','<span>Un sommaire cliquable</span> permet d’aller directement à chaque savon, et <span>la liste des ingrédients</span> est donnée pour chacun.','good|good','Bonne pratique de lisibilité.|Information utile et vérifiable.'],
+      ['p','<span>Selon une étude</span>, 9 personnes sur 10 voient leur peau transformée.','bad','Chiffre sans source : impossible à vérifier.'],
+      ['p','<span>Conseil : faites un essai sur une petite zone de peau avant la première utilisation.</span>','good','Conseil prudent et utile au lecteur.'],
+      ['p','<span>Un lien vers la page Contact</span> figure en bas de l’article.','good','Signal de transparence.'],
+    ];
+    const box = document.createElement('div'); box.className = 'fake'; const spots = [];
+    parts.forEach(([kind, html, flags, why])=>{
+      const node = document.createElement(kind==='h'?'h3':kind==='site'?'div':'p');
+      if (kind==='site'){ node.className='site'; node.innerHTML = `<span>${html}</span>`; } else { node.innerHTML = html; }
+      if (kind==='p') node.style.margin = '0 0 12px';
+      const F = flags.split('|'), W = why.split('|');
+      node.querySelectorAll('span').forEach((s,k)=>{ s.className='spot'; s.tabIndex=0; s.setAttribute('role','button'); s.dataset.bad = F[k]==='bad'; s.dataset.why = W[k];
+        const tog = () => { if(locked) return; s.classList.toggle('mark'); cnt(); }; s.onclick = tog; s.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tog(); } }; spots.push(s); });
+      box.appendChild(node);
+    });
+    const c = document.createElement('p'); c.className = 'counter mt'; c.setAttribute('aria-live','polite');
+    el.append(box, c); let locked = false;
+    const cnt = () => c.textContent = `Signaux marqués : ${spots.filter(s=>s.classList.contains('mark')).length} sur 6 à trouver`; cnt();
+    const v = button('Valider l’audit','coral'); el.appendChild(wrap(v));
+    v.onclick = () => {
+      locked = true; v.disabled = true; let hit = 0, wrong = 0; const fb = [];
+      spots.forEach(s=>{ const m = s.classList.contains('mark'), bad = s.dataset.bad==='true';
+        if (m && bad){ hit++; s.classList.add('ok'); fb.push('✔ ' + s.dataset.why); }
+        else if (m && !bad){ wrong++; s.classList.add('ko'); fb.push('✘ Ce passage était correct : ' + s.dataset.why); }
+        else if (!m && bad){ s.classList.add('miss'); fb.push('Manqué : ' + s.dataset.why); } });
+      done(Math.max(0, Math.round((hit - wrong)/6*100)), fb, 'Qui ? Comment ? Pourquoi ? Un auteur réel, une méthode visible, et l’intention d’aider, pas de capter des clics.');
+    };
+  }
+});
+
+/* 8. Bacs : construire le cluster */
+M.push({ title:'Le pilier de contenu', format:'Construire un cluster', color:'var(--mint)',
+  brief:'La page pilier sera « Le guide du savon artisanal à froid ». Parmi ces 10 idées d’articles, garde les 6 bons clusters et écarte les hors-sujet, les doublons et les promesses risquées.',
+  render(el, done){
+    const T = [
+      ['Comment se fabrique un savon à froid','in',''], ['Savon surgras : pour quelles peaux ?','in',''], ['Combien de temps dure un savon ?','in',''],
+      ['Bien utiliser un shampoing solide','in',''], ['Huiles végétales : le carnet d’atelier d’Inès','in',''], ['Atelier : fabrique ton savon à Annecy','in',''],
+      ['Les 10 films à voir en 2026','out','hors-sujet : aucun lien avec l’activité'], ['Notre avis sur les trottinettes électriques','out','hors-sujet : le site écrirait sur tout'],
+      ['Savon à froid : comment est-il fabriqué ?','out','doublon : même intention que « Comment se fabrique un savon à froid », les deux pages se concurrenceraient'],
+      ['Le savon guérit-il l’acné ?','out','promesse santé (YMYL) : hors de la légitimité d’une savonnerie et contraire au consensus des experts'],
+    ];
+    const { pool, bins, chips } = buildBins(el, T.map(t=>t[0]), [['in','Clusters du pilier','reliés au guide, dans les deux sens','var(--mint)'],['out','À écarter','hors-sujet, doublon, risque','var(--soft)']], 'b2');
+    bins.out.style.color = 'var(--text)';
+    const v = button('Valider le cluster','coral'); el.appendChild(wrap(v));
+    v.onclick = () => {
+      if (pool.querySelector('.chip')) { toast(v,'Classe toutes les idées avant de valider.'); return; }
+      let good = 0; const fb = [];
+      chips.forEach((c,i)=>{ const ok = c.parentElement.dataset.bin===T[i][1]; if (ok) good++; c.classList.add(ok?'ok':'ko'); c.draggable=false;
+        if (T[i][1]==='out') fb.push((ok?'✔ ':'✘ ') + `« ${T[i][0]} » : ${T[i][2]}.`); else if(!ok) fb.push(`✘ « ${T[i][0]} » est un vrai sous-sujet du guide.`); });
+      v.disabled = true; lockBins(bins);
+      fb.push('Maillage : chaque cluster renvoie au pilier avec une ancre descriptive, le pilier renvoie vers chaque cluster, et l’atelier mène à la page de réservation.');
+      done(Math.round(good/T.length*100), fb, 'Un cluster cohérent montre la profondeur sur un sujet ; des articles dispersés donnent l’image d’un site qui écrit sur tout.');
+    };
+  }
+});
+
+/* 9. Dilemmes */
+M.push({ title:'Les dilemmes d’Inès', format:'Choisir sa réponse', color:'var(--sky)',
+  brief:'Inès te pose quatre questions délicates, entre droit et IA. Choisis ta réponse : elle a des conséquences.',
+  render(el, done){
+    const D = [
+      { q:'« J’ai trouvé une superbe photo du lac d’Annecy sur Google Images. Je la mets sur la page Atelier ? »', o:[
+        ['Oui, en citant le nom du site d’où elle vient.', false, 'Citer la source ne suffit pas : l’image est protégée par le droit d’auteur dès sa création.'],
+        ['Non : on prend nos propres photos, ou une image sous licence dont on respecte les conditions.', true, 'Exact. Et tes propres photos d’atelier servent aussi l’Experience de l’E-E-A-T.'],
+        ['Oui, si on la recadre pour qu’elle soit méconnaissable.', false, 'Modifier une œuvre sans autorisation reste une contrefaçon.'] ] },
+      { q:'« Mon stagiaire propose de générer 200 articles beauté avec une IA cette semaine. Bonne idée ? »', o:[
+        ['Oui, plus on publie, plus Google nous voit.', false, 'Produire en masse, sans effort, pour manipuler le classement : c’est ce que Google sanctionne.'],
+        ['Non, Google interdit l’IA.', false, 'Faux : l’IA n’est pas interdite, c’est l’abus qui l’est.'],
+        ['L’IA peut aider sur les plans et la relecture, mais chaque article du cluster est vérifié, enrichi et signé par toi.', true, 'C’est la bonne posture : l’IA assiste, l’humain assume.'] ] },
+      { q:'« Mon site n’a pas de mentions légales. C’est grave ? »', o:[
+        ['Non, ce n’est obligatoire que pour les grandes entreprises.', false, 'Tout site édité à titre professionnel est concerné.'],
+        ['Oui : éditeur, directeur de la publication et hébergeur doivent être identifiés (LCEN, art. 6).', true, 'Exact. Et c’est aussi un signal de fiabilité pour le lecteur.'],
+        ['Seulement si tu vends en ligne.', false, 'Même un site vitrine doit en afficher. Et Inès vend en ligne, de toute façon.'] ] },
+      { q:'« J’ai écrit un article avec l’aide d’une IA, puis je l’ai relu et signé. L’AI Act m’oblige-t-il à l’étiqueter “généré par IA” ? »', o:[
+        ['Oui, toujours, dès qu’une IA a servi.', false, 'Pas automatiquement : l’article 50 prévoit une exception.'],
+        ['Pas automatiquement : relu et publié sous ta responsabilité éditoriale, il entre dans l’exception. La transparence reste une bonne pratique.', true, 'Exact, depuis le 2 août 2026. Les deepfakes, eux, doivent toujours être signalés.'],
+        ['Non, l’AI Act ne s’applique pas en France.', false, 'C’est un règlement européen : il s’applique en France.'] ] },
+    ];
+    let i = 0, good = 0; const fb = [];
+    const host = document.createElement('div'); el.appendChild(host);
+    const draw = () => {
+      const d = D[i]; host.innerHTML = `<div class="card dil"><p class="muted">Question ${i+1} sur ${D.length}</p><p class="mt" style="font-size:20px;font-weight:600">${esc(d.q)}</p><div class="choices mt"></div><div class="flash" style="text-align:left"></div></div>`;
+      const ch = host.querySelector('.choices'), fl = host.querySelector('.flash');
+      shuffle(d.o).forEach(o=>{ const b = document.createElement('button'); b.className='choice'; b.textContent=o[0];
+        b.onclick = () => { ch.querySelectorAll('button').forEach(x=>x.disabled=true); b.classList.add(o[1]?'ok':'ko'); if(o[1]) good++;
+          fl.innerHTML = `<span style="color:${o[1]?'var(--good)':'var(--bad)'}">${o[1]?'Bonne réponse.':'Pas tout à fait.'}</span> ${esc(o[2])}`;
+          fb.push((o[1]?'✔ ':'✘ ') + o[2]);
+          const n = button(i<D.length-1?'Question suivante':'Voir le bilan','coral'); n.classList.add('mt'); host.querySelector('.dil').appendChild(n); n.focus();
+          n.onclick = () => { i++; if (i<D.length) draw(); else { host.innerHTML=''; done(Math.round(good/D.length*100), fb, 'Juridique et SEO convergent : un humain identifié relit, vérifie, enrichit et assume chaque contenu.'); } };
+        }; ch.appendChild(b); });
+    };
+    draw();
+  }
+});
+
+/* 10. Texte à trous : le boss */
+M.push({ title:'La réunion client', format:'Compléter le texte', color:'var(--violet)',
+  brief:'Dernière épreuve : présenter ta stratégie à Inès. Complète ton compte rendu avec les bons choix. Une seule tentative !',
+  render(el, done){
+    const parts = [
+      'Pour Bulles d’Ici, je propose une page pilier sur ', ['le savon artisanal à froid','tous les produits de beauté du monde','la ville d’Annecy'],
+      '. Avant d’écrire chaque page, on ', ['tape la requête et on lit la SERP pour comprendre l’intention','vise 2 000 mots minimum','répète le mot-clé une quinzaine de fois'],
+      '. Chaque article commence par ', ['la réponse et le bénéfice pour le lecteur','l’histoire de l’entreprise depuis 2021','une citation inspirante'],
+      '. Chaque cluster renvoie vers le pilier par ', ['un lien avec une ancre descriptive','un lien « cliquez ici »','aucun lien, pour garder le lecteur'],
+      '. Les articles sont signés par ', ['Inès, avec une page auteur qui présente son parcours','« La Rédaction »','une experte imaginaire générée par IA'],
+      ' et illustrés par ', ['des photos prises à l’atelier','des images trouvées sur Google Images','des visuels IA présentés comme réels'],
+      '. Car au cœur de l’E-E-A-T, il y a ', ['la fiabilité','la longueur des textes','le nombre de mots-clés'], '.'
+    ];
+    const box = document.createElement('div'); box.className = 'card boss'; const p = document.createElement('p'); box.appendChild(p); el.appendChild(box);
+    const sels = [];
+    parts.forEach(x=>{ if (typeof x==='string') p.appendChild(document.createTextNode(x)); else { const s = document.createElement('select'); s.setAttribute('aria-label','Choix');
+      s.innerHTML = '<option value="">…choisir…</option>' + shuffle(x.map((t,k)=>({t,k}))).map(o=>`<option value="${o.k}">${esc(o.t)}</option>`).join(''); s.dataset.right = x[0]; p.appendChild(s); sels.push(s); } });
+    const v = button('Présenter à Inès','coral'); el.appendChild(wrap(v));
+    v.onclick = () => {
+      if (sels.some(s=>s.value==='')) { toast(v,'Complète tous les choix avant de présenter.'); return; }
+      v.disabled = true; let good = 0; const fb = [];
+      sels.forEach(s=>{ const ok = s.value==='0'; if (ok) good++; s.classList.add(ok?'ok':'ko'); s.disabled = true; if(!ok) fb.push(`✘ Il fallait : « ${s.dataset.right} ».`); });
+      if (!fb.length) fb.push('Inès est conquise : « Je signe ! »');
+      done(Math.round(good/sels.length*100), fb, 'Lire l’intention, écrire en pyramide inversée, structurer en piliers, prouver l’expérience : c’est toute la méthode du cours.');
+    };
+  }
+});
+
+/* ---------- Outils d’interface ---------- */
+function button(t, cls){ const b = document.createElement('button'); b.className = 'btn ' + (cls||''); b.textContent = t; return b; }
+function wrap(b){ const d = document.createElement('div'); d.className = 'row mt'; d.appendChild(b); return d; }
+function chipBtn(t){ const c = document.createElement('button'); c.className='chip'; c.textContent=t; return c; }
+function toast(anchor, msg){ let t = anchor.parentElement.querySelector('.tst'); if(!t){ t = document.createElement('span'); t.className='tst muted'; t.setAttribute('role','status'); anchor.parentElement.appendChild(t); } t.textContent = msg; }
+function lockBins(bins){ Object.values(bins).forEach(b=>{ b.onclick=null; b.ondrop=null; }); }
+function buildBins(el, labels, BINS, cls){
+  const pool = document.createElement('div'); pool.className = 'pool'; pool.dataset.bin = '';
+  const grid = document.createElement('div'); grid.className = 'bins ' + cls;
+  const bins = {}; let sel = null;
+  const chips = labels.map((t,i)=>{ const c = chipBtn(t); c.draggable = true; c.dataset.i = i;
+    c.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', i); });
+    c.onclick = e => { e.stopPropagation(); if (c.classList.contains('ok')||c.classList.contains('ko')) return; chips.forEach(x=>x.classList.remove('sel')); sel = (sel===c) ? null : c; if (sel) c.classList.add('sel'); };
+    return c; });
+  shuffle(chips).forEach(c=>pool.appendChild(c));
+  const target = (zone) => {
+    zone.onclick = () => { if (sel){ zone.appendChild(sel); sel.classList.remove('sel'); sel = null; } };
+    zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('over'); });
+    zone.addEventListener('dragleave', ()=>zone.classList.remove('over'));
+    zone.ondrop = e => { e.preventDefault(); zone.classList.remove('over'); const c = chips[+e.dataTransfer.getData('text/plain')]; if (c) zone.appendChild(c); };
+  };
+  BINS.forEach(([id,name,hint,color])=>{ const b = document.createElement('div'); b.className='bin'; b.dataset.bin = id; b.style.background = color;
+    b.innerHTML = `<h3>${name}</h3><p class="hint">${hint}</p>`; target(b); grid.appendChild(b); bins[id] = b; });
+  target(pool);
+  el.append(pool, grid);
+  return { pool, bins, chips };
+}
+
+/* ---------- Personnages et histoire ---------- */
+const CAST = {
+  max:    { n:'Max',     r:'cheffe de projet SEO chez Pétillante', bg:'var(--violet)', fg:'#FBF8F3' },
+  ines:   { n:'Inès',    r:'fondatrice de Bulles d’Ici',           bg:'var(--coral)',  fg:'#16163F' },
+  leo:    { n:'Léo',     r:'neveu d’Inès, « expert SEO » autoproclamé', bg:'var(--yellow)', fg:'#16163F' },
+  sami:   { n:'Sami',    r:'stagiaire chez Bulles d’Ici',          bg:'var(--mint)',   fg:'#16163F' },
+  camille:{ n:'Camille', r:'associée d’Inès, chiffres en main',    bg:'var(--sky)',    fg:'#16163F' },
+  you:    { n:'Toi',     r:'stagiaire chez Pétillante',            bg:'var(--surface)',fg:'var(--text)' },
+};
+const CHAPTERS = [
+  { t:'Chapitre 1 : Le diagnostic',  sub:'Comprendre pourquoi personne ne trouve Bulles d’Ici', from:0, to:2 },
+  { t:'Chapitre 2 : La stratégie',   sub:'Écouter ce que cherchent vraiment les clients',       from:3, to:5 },
+  { t:'Chapitre 3 : La confiance',   sub:'Faire face à Mousse Express',                          from:6, to:7 },
+  { t:'Chapitre 4 : Le grand oral',  sub:'Convaincre Inès et son associée',                      from:8, to:9 },
+];
+const chapOf = i => CHAPTERS.findIndex(c => i>=c.from && i<=c.to);
+
+const PROLOGUE = { when:'Lundi, 8 h 45', place:'Agence Pétillante, Annecy', lines:[
+  ['narr','Ton badge t’attend sur le bureau, à côté d’un mug encore tiède. Premier jour de stage.'],
+  ['max','Bienvenue ! Pas le temps de s’installer : ta première cliente arrive dans un quart d’heure.'],
+  ['max','Elle s’appelle Inès. Elle fabrique des savons à froid dans la vieille ville. Ses produits sont excellents. Son site, beaucoup moins.'],
+  ['narr','La porte s’ouvre. Une odeur de lavande entre avant Inès, un carton de savons dans les bras.'],
+  ['ines','Je vais être franche : sur internet, c’est comme si je n’existais pas. Quand on tape « atelier savon Annecy », on tombe sur Mousse Express.'],
+  ['ines','Un site de bons plans qui vend de tout, des savons aux pneus. Ils me volent mes clients.'],
+  ['max','On a une semaine. Vendredi, tu présenteras la nouvelle stratégie à Inès et à son associée, Camille. D’ici là, dix missions.'],
+  ['you','Dix missions, cinq jours. C’est parti.'],
+]};
+
+const SCENES = [
+  { when:'Lundi, 9 h 30', place:'L’atelier de Bulles d’Ici', lines:[
+    ['narr','L’atelier sent l’huile d’olive et le beurre de karité. Inès te tend une tablette ouverte sur sa page « Atelier ».'],
+    ['ines','J’ai tout écrit moi-même. J’y raconte mon parcours, ma passion… Pourtant, les gens m’appellent pour demander le prix.'],
+    ['max','Parce que personne ne lit un texte en entier sur un écran. On balaie. Si le prix n’est pas en haut, il n’existe pas.'],
+    ['max','À toi : remets ce texte dans le bon ordre.'] ],
+    after:{ 3:'Inès relit la page et éclate de rire : « On comprend tout en trois secondes ! » À 16 h, une cliente réserve un atelier pour samedi.',
+            2:'La page respire mieux. Inès hoche la tête, mais une info pratique traîne encore trop bas.',
+            1:'Inès plisse les yeux : « Je ne vois toujours pas le prix… » Max note dans son carnet : à retravailler.' } },
+  { when:'Lundi, 14 h', place:'L’arrière-boutique', lines:[
+    ['narr','Un jeune homme entre sans frapper, un post-it jaune collé sur le doigt.'],
+    ['leo','Salut tata ! J’ai lu des trucs sur un forum. Pour être premier sur Google, il faut 1 500 mots minimum et ton mot-clé partout. Je m’en occupe ?'],
+    ['ines','Léo s’y connaît, il a un compte TikTok à 3 000 abonnés.'],
+    ['max','Avant qu’il touche au site, on démêle le vrai du faux. Huit conseils, huit verdicts.'] ],
+    after:{ 3:'Léo décolle son post-it et le froisse : « Bon… je vais lire la doc de Google. » Inès retient un sourire.',
+            2:'Léo n’est qu’à moitié convaincu. Deux de ses conseils survivent dans ta tête, à vérifier.',
+            1:'Léo repart triomphant : « Tu vois, j’avais pas tout faux ! » Max soupire. Il faudra rejouer cette partie.' } },
+  { when:'Mardi, 9 h', place:'Café de la place Saint-François', lines:[
+    ['narr','Inès a apporté des croissants et un carnet couvert de mots barrés.'],
+    ['ines','Title, meta, H1, alt… Max m’a parlé de tout ça hier. Pour moi, c’est du chinois.'],
+    ['max','Si tu comprends les rôles, tu sauras vérifier notre travail. Notre stagiaire va te faire le schéma.'],
+    ['you','Je relie chaque élément à son rôle, et on n’en parle plus.'] ],
+    after:{ 3:'Inès recopie ton schéma au propre et l’épingle au-dessus de son plan de travail, entre deux moules à savon.',
+            2:'Inès a compris l’essentiel. Elle confond encore deux termes, mais elle pose les bonnes questions.',
+            1:'Inès referme son carnet, perdue. Un nouveau schéma s’impose.' } },
+  { when:'Mardi, 11 h', place:'Agence Pétillante, salle de réunion', lines:[
+    ['narr','Max projette la liste des requêtes tapées par les internautes autour de la savonnerie.'],
+    ['max','Voilà ce que les gens cherchent vraiment. Chaque requête cache une intention. Si on se trompe d’intention, la meilleure page du monde ne sera pas vue.'],
+    ['max','Inès a besoin de savoir quelles pages créer. Classe-les.'] ],
+    after:{ 3:'Max sourit : « Avec ce tri, on sait exactement quelles pages créer. » Elle ajoute trois post-it au plan du site.',
+            2:'Le plan du site prend forme, même si deux pages risquent de viser la mauvaise cible.',
+            1:'Max efface le tableau : « On recommence, sinon on va écrire pour les mauvaises personnes. »' } },
+  { when:'Mardi, 16 h', place:'Au téléphone', lines:[
+    ['narr','Le téléphone vibre. C’est Camille, l’associée d’Inès. Elle a mis le haut-parleur.'],
+    ['camille','Franchement, avec ChatGPT et compagnie, Google sert encore à quelque chose ? Je préfère mettre notre budget ailleurs.'],
+    ['max','Bonne question. Notre stagiaire a les chiffres. Enfin… va les retrouver.'] ],
+    after:{ 3:'Silence au bout du fil. Puis Camille : « D’accord. On garde le budget pour Google. » Point marqué.',
+            2:'Camille note tes chiffres, sans être totalement convaincue. Elle demandera des sources vendredi.',
+            1:'Camille raccroche, sceptique. Il faudra être plus précis vendredi.' } },
+  { when:'Mercredi, 9 h', place:'L’atelier, devant l’ordinateur', lines:[
+    ['narr','Sur l’écran, la page du best-seller d’Inès : le savon surgras. Dans l’onglet du navigateur, un seul mot : « Accueil ».'],
+    ['ines','C’est grave, ce « Accueil » ?'],
+    ['max','C’est la première chose que Google affiche. Et la seule chance de donner envie de cliquer. On compose un vrai titre.'] ],
+    after:{ 3:'Inès tape son titre dans Google le soir même. L’aperçu est net, précis, appétissant. Elle fait une capture pour sa mère.',
+            2:'Le titre est bien meilleur que « Accueil ». Quelques réglages, et il sera parfait.',
+            1:'Le titre ressemble encore à une liste de courses. Max propose de le reprendre ensemble.' } },
+  { when:'Mercredi, 14 h', place:'L’atelier, un orage dehors', lines:[
+    ['narr','Inès entre en trombe, son téléphone à la main.'],
+    ['ines','Regardez ça ! Mousse Express écrit que leur savon guérit l’eczéma en sept jours ! Et ils sont devant moi sur Google !'],
+    ['max','Calme. Leur article est fragile. Google valorise la fiabilité : on va le passer au crible et comprendre ce que toi, tu peux faire mieux.'],
+    ['max','Trouve les six signaux qui le rendent indigne de confiance.'] ],
+    after:{ 3:'Inès lit ton audit à voix haute. Sa colère se change en plan : « Nous, on a des vraies photos, une vraie savonnière, et zéro promesse bidon. »',
+            2:'Tu as repéré l’essentiel. Un ou deux signaux t’ont échappé, Mousse Express en profite encore.',
+            1:'Inès n’est pas rassurée : « Alors on ne peut rien contre eux ? » Reprends l’audit.' } },
+  { when:'Jeudi, 9 h', place:'Agence Pétillante, mur de post-it', lines:[
+    ['narr','Léo et Sami, la stagiaire d’Inès, ont couvert le mur d’idées d’articles. Certaines sont brillantes, d’autres… moins.'],
+    ['sami','On a eu plein d’idées ! Même une sur les trottinettes, pour attirer du monde.'],
+    ['max','La page pilier sera « Le guide du savon artisanal à froid ». Tout ce qui ne la sert pas sort du mur.'] ],
+    after:{ 3:'Le mur est net : un pilier, six satellites, des flèches partout. Sami prend une photo : « On dirait une vraie stratégie. »',
+            2:'La structure tient debout, mais une idée parasite brouille encore le message.',
+            1:'Le mur reste un patchwork. Max retire les post-it un par un : on reprend.' } },
+  { when:'Jeudi, 15 h', place:'L’atelier, avant la fermeture', lines:[
+    ['narr','Inès a préparé une liste de questions. Sami, derrière elle, a ouvert un outil d’IA.'],
+    ['sami','Et si je générais 200 articles d’un coup ? En une semaine, on écrase Mousse Express !'],
+    ['ines','Et j’ai d’autres questions qui m’empêchent de dormir. Les photos, les mentions légales, cette loi européenne sur l’IA…'],
+    ['max','Quatre dilemmes, quatre décisions. Pèse bien chaque réponse.'] ],
+    after:{ 3:'Inès range sa liste : « Pour la première fois, je sais ce que j’ai le droit de faire. » Sami ferme son onglet IA, un peu déçu.',
+            2:'La plupart des doutes sont levés. Il reste une zone grise à éclaircir avant vendredi.',
+            1:'Inès repart plus inquiète qu’en arrivant. Reprends les dilemmes avant la réunion.' } },
+  { when:'Vendredi, 10 h', place:'Agence Pétillante, la grande salle', lines:[
+    ['narr','Café, savons en démonstration sur la table. Camille est là, bras croisés, un tableur ouvert.'],
+    ['camille','Une semaine de travail. Convainquez-moi en cinq minutes.'],
+    ['max','C’est ton moment. Je suis juste à côté.'],
+    ['you','Je respire. Je présente.'] ],
+    after:{ 3:'Camille décroise les bras. « Je signe. » Inès te serre dans ses bras, Max lève son café.',
+            2:'Camille signe, avec deux points à revoir d’ici un mois. Une belle victoire quand même.',
+            1:'Camille demande une deuxième présentation la semaine prochaine. Rien n’est perdu.' } },
+];
+
+/* Tableau de bord : poids de chaque mission sur les indicateurs */
+const W = { vis:[0,1,1,2,1,2,0,2,0,1], conf:[1,0,0,0,0,0,3,1,3,1], resa:[2,0,0,2,0,2,0,1,0,2] };
+function metric(k){ const w = W[k]; const tot = w.reduce((a,b)=>a+b,0); return Math.round(w.reduce((a,x,i)=>a + x*(S.score[i]||0), 0) / tot); }
+function googlePos(){ return Math.max(1, Math.round(38 - metric('vis')*0.37)); }
+function dashHTML(prev){
+  const items = [['vis','Visibilité Google','var(--violet)'],['conf','Confiance','var(--mint)'],['resa','Réservations d’ateliers','var(--coral)']];
+  return `<div class="dash">${items.map(([k,l,c])=>{ const v = metric(k), p = prev ? prev[k] : v;
+    return `<div class="gauge"><div class="g-top"><span>${l}</span><b>${v} %${prev && v>p ? ` <span class="up">+${v-p}</span>`:''}</b></div>
+      <div class="g-bar"><div class="g-fill" style="width:${p}%;background:${c}" data-to="${v}"></div></div></div>`; }).join('')}
+    <div class="gauge pos"><span>« atelier savon annecy »</span><b>${googlePos()}<sup>${googlePos()===1?'re':'e'}</sup> position</b><span class="muted small">simulation</span></div></div>`;
+}
+function animateDash(root){ requestAnimationFrame(()=>requestAnimationFrame(()=> root.querySelectorAll('.g-fill').forEach(f=>f.style.width = f.dataset.to + '%'))); }
+
+/* ---------- Sauvegarde du brouillon ---------- */
+function downloadDraft(){
+  const data = { app:'operation-mousse', version:2, name:S.name, score:S.score, prologue:!!S.prologue, savedAt:new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  const slug = (S.name||'stagiaire').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+  a.href = URL.createObjectURL(blob); a.download = `operation-mousse-brouillon-${slug}-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  notify('Brouillon téléchargé. Garde ce fichier pour reprendre plus tard.');
+}
+function restoreDraft(file){
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (d.app !== 'operation-mousse' || typeof d.score !== 'object') throw new Error();
+      const sc = {}; Object.entries(d.score).forEach(([k,v])=>{ const i = +k, n = +v; if (i>=0 && i<10 && n>=0 && n<=100) sc[i] = Math.round(n); });
+      S.name = String(d.name||'Stagiaire').slice(0,30); S.score = sc; S.prologue = true; save();
+      notify(`Brouillon restauré : ${S.name}, ${Object.keys(sc).length} mission${Object.keys(sc).length>1?'s':''} jouée${Object.keys(sc).length>1?'s':''}.`);
+      showMap();
+    } catch(e) { notify('Ce fichier n’est pas un brouillon d’Opération Mousse. Choisis le fichier .json téléchargé depuis le jeu.'); }
+  };
+  r.readAsText(file);
+}
+function notify(msg){
+  const n = document.getElementById('notice'); n.textContent = msg; n.hidden = false;
+  clearTimeout(notify.t); notify.t = setTimeout(()=> n.hidden = true, 5000);
+}
+
+/* ---------- Scènes ---------- */
+function avatar(who, size){ const c = CAST[who]; return `<div class="avatar ${size||''}" style="background:${c.bg};color:${c.fg}" aria-hidden="true">${c.n}</div>`; }
+function playScene(scene, opts){
+  const { kicker, title, cta, onDone } = opts;
+  app.innerHTML = `
+  <div class="scene">
+    <p class="when"><span>${esc(scene.when)}</span><span>${esc(scene.place)}</span></p>
+    ${kicker ? `<p class="kicker">${esc(kicker)}</p>` : ''}
+    ${title ? `<h2 class="scene-title">${esc(title)}</h2>` : ''}
+    <div class="dialog" aria-live="polite"></div>
+    <div class="row mt2 noprint"><button class="btn" id="nextLine">Suite</button><button class="btn ghost" id="allLines">Tout afficher</button></div>
+  </div>`;
+  const dlg = app.querySelector('.dialog'), nx = document.getElementById('nextLine'), all = document.getElementById('allLines');
+  let k = 0;
+  const show = () => {
+    const [who, txt] = scene.lines[k++];
+    const el = document.createElement('div');
+    if (who === 'narr') { el.className = 'line narr'; el.innerHTML = `<p>${esc(txt)}</p>`; }
+    else { const c = CAST[who]; el.className = 'line' + (who==='you' ? ' me' : ''); el.innerHTML = `${avatar(who)}<div class="bubble"><p class="who">${c.n} <span class="muted">${esc(c.r)}</span></p><p>${esc(txt)}</p></div>`; }
+    dlg.appendChild(el);
+    if (k >= scene.lines.length) finish();
+  };
+  const finish = () => { nx.textContent = cta; nx.classList.add('coral'); all.remove(); nx.onclick = onDone; nx.focus(); };
+  nx.onclick = show; all.onclick = () => { while (k < scene.lines.length) show(); };
+  show(); scrollTo(0,0);
+}
+
+/* ---------- Écrans ---------- */
+function showIntro(){
+  const done = Object.keys(S.score).length;
+  const hasGame = !!S.name;
+  app.innerHTML = `
+  <section class="hero">
+    <div>
+      <h1><span>Opération</span><span>Mousse</span></h1>
+      <p class="mt" style="font-size:20px">Une semaine de stage, une savonnerie à sauver, dix missions pour maîtriser la rédaction web, le SEO et l’E-E-A-T.</p>
+      ${hasGame ? `
+      <div class="card mt2" style="padding:18px">
+        <p class="muted" style="font-size:14px;font-weight:700">Partie en cours</p>
+        <p style="font-size:22px;font-weight:700;margin-top:4px">${esc(S.name)}</p>
+        <p class="muted">${done} mission${done>1?'s':''} sur 10 · ${totalXP()} XP</p>
+        <div class="row mt"><button class="btn coral" id="cont">Continuer la partie</button><button class="btn ghost" id="newg">Nouvelle partie</button></div>
+      </div>` : ''}
+      <div id="startBox" ${hasGame?'hidden':''}>
+        <div class="row mt2"><label for="nm" style="font-weight:700">Ton prénom ou le nom de ton équipe</label></div>
+        <div class="row mt" style="margin-top:8px"><input id="nm" class="input" maxlength="30" autocomplete="off" placeholder="Ex. : Léa, ou Les Mousquetaires"></div>
+        <div class="row mt"><button class="btn coral" id="go">Commencer le stage</button><button class="btn ghost" id="rest">Reprendre un brouillon</button></div>
+      </div>
+    </div>
+    <div class="bubbles" aria-hidden="true">
+      <div class="bub" style="left:8%;top:10%;width:58%;height:58%;background:var(--coral)"></div>
+      <div class="bub" style="left:52%;top:46%;width:40%;height:40%;background:var(--yellow)"></div>
+      <div class="bub" style="left:14%;top:66%;width:26%;height:26%;background:var(--mint)"></div>
+    </div>
+  </section>`;
+  const nm = document.getElementById('nm'), box = document.getElementById('startBox');
+  document.getElementById('go').onclick = () => {
+    S.name = nm.value.trim() || 'Stagiaire'; S.score = {}; S.prologue = false; save(); showPrologue();
+  };
+  document.getElementById('rest').onclick = () => document.getElementById('draftFile').click();
+  nm.onkeydown = e => { if (e.key==='Enter') document.getElementById('go').click(); };
+  if (hasGame) {
+    document.getElementById('cont').onclick = () => S.prologue ? showMap() : showPrologue();
+    document.getElementById('newg').onclick = () => {
+      if (done && !confirm(`Démarrer une nouvelle partie ? La progression de « ${S.name} » sera effacée de ce navigateur. Pense à télécharger le brouillon avant.`)) return;
+      box.hidden = false; nm.focus();
+    };
+  } else nm.focus();
+  scrollTo(0,0);
+}
+function showBrief(){
+  S.prologue = true; save();
+  app.innerHTML = `
+  <div class="card">
+    <div class="brief">${avatar('max')}
+      <div><h2 style="font-size:30px">Ton dossier client, ${esc(S.name)}</h2>
+      <p class="mt">Chaque mission réussie fait évoluer le tableau de bord de Bulles d’Ici : visibilité, confiance, réservations. Ton objectif pour vendredi : faire passer Inès devant Mousse Express.</p></div></div>
+  </div>
+  <div class="card mt2">
+    <h2 style="font-size:26px">Bulles d’Ici</h2>
+    <div class="fiche mt">
+      <div style="background:var(--coral)"><b>Qui</b><br>Savonnerie artisanale fictive de la vieille ville d’Annecy, créée en 2021 par Inès, savonnière formée.</div>
+      <div style="background:var(--yellow)"><b>Quoi</b><br>Savons saponifiés à froid, shampoings solides, ateliers « fabrique ton savon », boutique en ligne.</div>
+      <div style="background:var(--mint)"><b>Le problème</b><br>Un site recopié de la plaquette, invisible sur Google, et un concurrent qui promet monts et merveilles.</div>
+    </div>
+    <h3 class="mt2" style="font-size:20px">Point de départ</h3>
+    <div class="mt">${dashHTML()}</div>
+  </div>
+  <div class="row mt2"><button class="btn coral" id="map">Ouvrir le planning de la semaine</button></div>`;
+  document.getElementById('map').onclick = showMap;
+  scrollTo(0,0);
+}
+function unlocked(i){ return i===0 || (i-1) in S.score; }
+function showMap(){
+  const done = Object.keys(S.score).length;
+  const nextI = M.findIndex((m,i)=>!(i in S.score));
+  app.innerHTML = `
+  <div class="row" style="justify-content:space-between;align-items:flex-end">
+    <div><h2 style="font-size:34px">La semaine de stage</h2><p class="muted"><b>${esc(S.name)}</b> · ${done} mission${done>1?'s':''} sur 10. ${nextI>=0 ? 'Prochain rendez-vous : ' + esc(SCENES[nextI].when.toLowerCase()) + '.' : 'Toutes les missions sont jouées.'}</p></div>
+    <div class="row noprint">${done===10?'<button class="btn coral" id="epi">Lire l’épilogue</button>':''}<button class="btn ghost" id="reset">Recommencer à zéro</button></div>
+  </div>
+  <div class="card mt">${dashHTML()}</div>
+  ${CHAPTERS.map((c,ci)=>`
+    <section class="chap mt2"><h3>${esc(c.t)}</h3><p class="muted">${esc(c.sub)}</p>
+    <div class="map">${M.slice(c.from, c.to+1).map((m,k)=>{ const i = c.from+k, sc = S.score[i], lock = !unlocked(i);
+      return `<button class="node ${lock?'locked':''}" data-i="${i}" ${lock?'aria-disabled="true"':''} aria-label="Mission ${i+1} : ${esc(m.title)}${lock?' (verrouillée)':''}">
+        <span class="ball" style="background:${m.color};${m.color==='var(--violet)'?'color:#FBF8F3':''}">${i+1}</span>
+        <span class="t">${esc(m.title)}</span><span class="d">${esc(SCENES[i].when)}</span><span class="s">${sc!==undefined?starTxt(stars(sc)):(lock?'':'à jouer')}</span></button>`; }).join('')}</div></section>`).join('')}`;
+  app.querySelectorAll('.node').forEach(n=> n.onclick = () => { const i = +n.dataset.i; if (unlocked(i)) startMission(i); });
+  document.getElementById('reset').onclick = () => { if (confirm('Effacer ta progression et recommencer ? Pense à télécharger ton brouillon avant.')) { S.score = {}; S.prologue = false; save(); showIntro(); } };
+  const e = document.getElementById('epi'); if (e) e.onclick = showEpilogue;
+  animateDash(app); scrollTo(0,0);
+}
+function startMission(i){
+  const ci = chapOf(i), c = CHAPTERS[ci];
+  const firstOfChap = i === c.from;
+  playScene(SCENES[i], { kicker: firstOfChap ? c.t : `Mission ${i+1} sur 10`, title: firstOfChap ? c.sub : M[i].title, cta:'Commencer la mission', onDone:()=>showMission(i) });
+}
+function showMission(i){
+  const m = M[i], sc = SCENES[i];
+  app.innerHTML = `
+  <p class="when"><span>${esc(sc.when)}</span><span>${esc(CHAPTERS[chapOf(i)].t)}</span></p>
+  <div class="m-head mt"><div class="m-num" style="background:${m.color};${m.color==='var(--violet)'?'color:#FBF8F3':''}">${i+1}</div>
+    <div><span class="tag">${esc(m.format)}</span><h2 style="margin-top:6px">${esc(m.title)}</h2></div></div>
+  <div class="brief">${avatar('max')}<p class="say">${esc(m.brief)}</p></div>
+  <div class="mt2" id="play"></div><div id="res"></div>`;
+  const before = { vis:metric('vis'), conf:metric('conf'), resa:metric('resa') };
+  m.render(document.getElementById('play'), (score, fb, tip) => {
+    if (score > (S.score[i] ?? -1)) S.score[i] = score; save();
+    const st = stars(score), best = stars(S.score[i]);
+    const res = document.getElementById('res');
+    res.innerHTML = `
+    <div class="card result" tabindex="-1">
+      <div class="brief">${avatar('max')}
+      <div><p class="stars" aria-label="${st} étoile${st>1?'s':''} sur 3">${starTxt(st)}</p><p style="font-size:20px;font-weight:700">${score} XP</p></div></div>
+      <div class="score-bar mt"><div class="score-fill"></div></div>
+      <ul class="fb">${fb.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>
+      <p class="retain"><b>À retenir :</b> ${esc(tip)}</p>
+    </div>
+    <div class="card mt2 after">
+      <p class="kicker">Pendant ce temps, chez Bulles d’Ici</p>
+      <p class="story">${esc(sc.after[st] || sc.after[1])}</p>
+      <div class="mt">${dashHTML(before)}</div>
+      ${best>st ? `<p class="muted mt">Ton meilleur score sur cette mission reste enregistré (${starTxt(best)}).</p>` : ''}
+      <div class="row mt noprint"><button class="btn ghost" id="again">Rejouer la mission</button>${i<M.length-1?'<button class="btn coral" id="next">Continuer l’histoire</button>':'<button class="btn coral" id="end">Lire l’épilogue</button>'}<button class="btn ghost" id="back">Planning de la semaine</button></div>
+    </div>`;
+    requestAnimationFrame(()=> res.querySelector('.score-fill').style.width = score + '%');
+    animateDash(res);
+    res.querySelector('.result').focus({preventScroll:true});
+    res.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+    document.getElementById('again').onclick = () => showMission(i);
+    document.getElementById('back').onclick = showMap;
+    const nx = document.getElementById('next'); if (nx) nx.onclick = () => startMission(i+1);
+    const en = document.getElementById('end'); if (en) en.onclick = showEpilogue;
+  });
+  scrollTo(0,0);
+}
+function showEpilogue(){
+  const x = totalXP();
+  const tier = x>=850 ? 3 : x>=600 ? 2 : 1;
+  const T = {
+    3:[['narr','Trois mois plus tard.'],
+       ['ines','Les ateliers du samedi affichent complet jusqu’en décembre. Des gens viennent de Genève parce qu’ils ont lu le carnet d’atelier en ligne.'],
+       ['camille','Et Mousse Express a disparu de nos requêtes. Je retire ce que j’ai dit sur Google.'],
+       ['max','La direction m’a demandé qui avait monté ce dossier. J’ai donné ton nom. On aimerait te garder.']],
+    2:[['narr','Trois mois plus tard.'],
+       ['ines','Les réservations ont nettement augmenté, surtout grâce aux pages Atelier et Savon surgras. On dépasse Mousse Express sur la plupart de nos requêtes.'],
+       ['camille','Il reste du travail sur la confiance, mais les chiffres suivent. On renouvelle le contrat.'],
+       ['max','Beau travail. Rejoue les missions où il te manque des étoiles, et tu seras prêt pour le prochain client.']],
+    1:[['narr','Trois mois plus tard.'],
+       ['ines','Le site est plus clair, c’est vrai. Mais Mousse Express reste devant sur les recherches qui comptent.'],
+       ['camille','On vous laisse une deuxième chance, avec un point d’étape le mois prochain.'],
+       ['max','Ce n’est pas un échec, c’est un brouillon. Télécharge-le, rejoue les missions les plus faibles, et on retente.']],
+  };
+  playScene({ when:'Trois mois plus tard', place:'Bulles d’Ici, vieille ville d’Annecy', lines:T[tier] },
+    { kicker:'Épilogue', title: tier===3 ? 'Mission accomplie' : tier===2 ? 'Le pari est gagné' : 'À suivre…', cta:'Voir mon certificat', onDone:showCert });
+}
+function showCert(){
+  const x = totalXP();
+  const rank = x>=850 ? 'Stratège de contenu' : x>=600 ? 'Rédactrice ou rédacteur web confirmé' : 'Stagiaire pétillant';
+  const all3 = M.every((m,i)=>stars(S.score[i]||0)===3);
+  app.innerHTML = `
+  <div class="card cert">
+    <p style="font-weight:700">L’agence Pétillante certifie que l’équipe ou le stagiaire</p>
+    <p class="name">${esc(S.name)}</p>
+    <h2>a mené l’Opération Mousse</h2>
+    <p class="mt" style="font-size:20px">${x} XP sur 1 000 et ${Object.keys(S.score).length} missions sur 10</p>
+    <p class="mt"><span class="badge">${rank}</span>${all3?' <span class="badge" style="background:var(--coral);color:#16163F">30 étoiles</span>':''}</p>
+    <p class="mt">Bulles d’Ici en ${googlePos()}<sup>${googlePos()===1?'re':'e'}</sup> position sur « atelier savon annecy » (simulation)</p>
+    <p class="mt">Rédaction web, intention de recherche, SEO on-page, piliers de contenu, E-E-A-T, cadre légal et IA</p>
+  </div>
+  <div class="mt2 noprint">${supportCard('Et maintenant, ancre tes acquis','Rejoue les missions où il te manque des étoiles, puis revois le diaporama du cours : chaque notion du jeu y est expliquée et sourcée.')}</div>
+  <div class="row mt2 noprint"><button class="btn" id="pr">Imprimer le certificat</button><button class="btn ghost" id="dl">Télécharger mon brouillon</button><button class="btn ghost" id="bk">Revenir au planning</button></div>`;
+  document.getElementById('pr').onclick = () => print();
+  document.getElementById('dl').onclick = downloadDraft;
+  document.getElementById('bk').onclick = showMap;
+  scrollTo(0,0);
+}
+
+
+/* ---------- Outils ---------- */
+const MEMO = [
+  ['Écrire pour l’écran','On balaie en F : l’essentiel en haut et à gauche, paragraphes courts, intertitres informatifs.'],
+  ['Pyramide inversée','La réponse et le bénéfice d’abord, les preuves ensuite, le contexte à la fin.'],
+  ['Explorer, indexer, classer','Une page non explorée ou non indexée ne peut pas se classer.'],
+  ['Intention de recherche','Informationnelle, navigationnelle, commerciale, transactionnelle : tape la requête et lis la SERP.'],
+  ['SEO on-page','Une page, un sujet, une intention. Title unique, sujet d’abord, marque à la fin ; meta qui promet ce que la page tient.'],
+  ['Idées reçues','Ni longueur magique, ni meta keywords, ni bourrage de mots-clés, ni llms.txt pour Google.'],
+  ['E-E-A-T','Experience, Expertise, Authoritativeness au service de la Trustworthiness, la fiabilité. Exigence renforcée sur les sujets YMYL.'],
+  ['Qui, comment, pourquoi','Un auteur réel, une méthode visible, une finalité d’aide. Jamais de faux profil d’expert.'],
+  ['Piliers de contenu','Un pilier large, des clusters approfondis, des liens dans les deux sens, aucun doublon d’intention.'],
+  ['Cadre légal et IA','Mentions légales obligatoires (LCEN), images sous licence, IA relue et assumée (AI Act, art. 50).'],
+];
+const GLOSS = [
+  ['Ancre','Texte cliquable d’un lien, qui annonce la page de destination.'],
+  ['Aperçu IA','Résumé généré par l’IA de Google en haut des résultats, avec des liens vers ses sources.'],
+  ['Balise title','Titre de la page, base du titre cliquable affiché dans les résultats.'],
+  ['Cluster','Page qui approfondit un sous-sujet du pilier et lui est reliée par des liens.'],
+  ['E-E-A-T','Cadre de Google pour décrire la qualité d’un contenu ; la fiabilité en est le cœur.'],
+  ['Indexation','Analyse et enregistrement d’une page dans la base du moteur.'],
+  ['Intention de recherche','Ce que l’internaute veut obtenir en tapant sa requête.'],
+  ['Maillage interne','Ensemble des liens entre les pages d’un même site.'],
+  ['Meta description','Résumé de la page, souvent repris sous le titre dans les résultats.'],
+  ['Page pilier','Page de référence sur un sujet large, qui renvoie vers des pages détaillées.'],
+  ['SERP','Page de résultats d’un moteur de recherche.'],
+  ['Texte alternatif (alt)','Description d’une image pour les moteurs et les lecteurs d’écran.'],
+  ['YMYL','« Your Money or Your Life » : santé, argent, sécurité ; exigence de qualité renforcée.'],
+  ['Zéro clic','Recherche qui se termine sans clic vers un site.'],
+];
+function toolHead(t, sub){ return `<p class="kicker" style="margin-top:0">Outils</p><h2 style="font-size:clamp(28px,5vw,40px)">${t}</h2>${sub?`<p class="muted mt" style="margin-top:8px">${sub}</p>`:''}`; }
+function showClient(){
+  app.innerHTML = `${toolHead('Fiche client et tableau de bord','Où en est Bulles d’Ici, mission après mission.')}
+  <div class="card mt2">${dashHTML()}</div>
+  <div class="card mt2"><h3 style="font-size:22px">Bulles d’Ici</h3>
+    <div class="fiche mt">
+      <div style="background:var(--coral)"><b>Qui</b><br>Savonnerie artisanale fictive de la vieille ville d’Annecy, créée en 2021 par Inès, savonnière formée.</div>
+      <div style="background:var(--yellow)"><b>Quoi</b><br>Savons saponifiés à froid, shampoings solides, ateliers « fabrique ton savon », boutique en ligne.</div>
+      <div style="background:var(--mint)"><b>Le rival</b><br>Mousse Express, site de bons plans généraliste aux promesses douteuses.</div>
+    </div>
+    <p class="muted mt">Les indicateurs et la position sont simulés à partir de tes scores : chaque mission pèse sur la visibilité, la confiance ou les réservations.</p></div>`;
+  animateDash(app); scrollTo(0,0);
+}
+function showCast(){
+  const D = { max:'Ta tutrice. Exigeante, bienveillante, elle ne jure que par les sources officielles.', ines:'Ta cliente. Savonnière passionnée, excellente artisane, perdue face au jargon du web.', leo:'Le neveu d’Inès. Il a « lu sur un forum ». Ses conseils sont à vérifier, toujours.', sami:'La stagiaire d’Inès. Pleine d’idées, un peu trop pressée de tout confier à l’IA.', camille:'L’associée d’Inès. Elle tient les comptes et veut des preuves chiffrées.', you:'Stagiaire chez Pétillante. Une semaine pour faire passer Bulles d’Ici devant Mousse Express.' };
+  app.innerHTML = `${toolHead('Les personnages','Qui est qui dans l’Opération Mousse.')}
+  <div class="cast mt2">${Object.keys(CAST).map(k=>`<div class="card">${avatar(k)}<div><h3 style="font-size:20px">${k==='you'?esc(S.name||'Toi'):CAST[k].n}</h3><p class="muted" style="font-size:14px">${esc(CAST[k].r)}</p><p class="mt" style="margin-top:8px">${esc(D[k])}</p></div></div>`).join('')}</div>`;
+  scrollTo(0,0);
+}
+function showMemo(){
+  app.innerHTML = `${toolHead('Aide-mémoire du cours','Les règles à avoir en tête avant chaque mission.')}
+  <div class="tools-grid mt2">${MEMO.map((m,i)=>`<div class="card" style="border-top:10px solid ${COLORS[i%COLORS.length]}"><h3>${esc(m[0])}</h3><p>${esc(m[1])}</p></div>`).join('')}</div>`;
+  scrollTo(0,0);
+}
+function showGloss(){
+  app.innerHTML = `${toolHead('Glossaire','Le vocabulaire du cours, en une phrase par terme.')}
+  <div class="card mt2"><dl class="gl">${GLOSS.map(g=>`<dt>${esc(g[0])}</dt><dd>${esc(g[1])}</dd>`).join('')}</dl></div>`;
+  scrollTo(0,0);
+}
+function showPrologue(){ playScene(PROLOGUE, { kicker:'Prologue', title:'Premier jour chez Pétillante', cta: S.prologue ? 'Retour au planning' : 'Découvrir la cliente', onDone: S.prologue ? showMap : showBrief }); }
+
+
+/* ---------- Support de cours ---------- */
+const SUPPORT = {
+  folder:'https://drive.google.com/drive/folders/1RyYVprx79oa-eNCJIQvNmnobxs66KlDs?usp=sharing',
+  deck:'https://drive.google.com/file/d/1EZp6zqYJ7V619J0OHysHM0wfvB3Cu7f8/view?usp=sharing',
+};
+function supportCard(title, sub){
+  return `<div class="card support">
+    <div class="sup-ic" aria-hidden="true">📚</div>
+    <div><h3 style="font-size:22px">${title}</h3><p class="mt" style="margin-top:6px">${sub}</p>
+    <div class="row mt">
+      <a class="btn coral" href="${SUPPORT.deck}" target="_blank" rel="noopener">Ouvrir le diaporama du cours</a>
+      <a class="btn ghost" href="${SUPPORT.folder}" target="_blank" rel="noopener">Dossier du cours sur Drive</a>
+    </div></div></div>`;
+}
+function showSupport(){
+  app.innerHTML = `${toolHead('Support de cours','Le diaporama « Rédiger pour le web et le SEO », à revoir avant ou après les missions.')}
+  <div class="mt2">${supportCard('Rédiger pour le web et le SEO — Bachelor 3','38 slides en deux séances : écriture web, fonctionnement de Google, intentions de recherche, SEO on-page, E-E-A-T, piliers de contenu, cadre légal et IA.')}</div>
+  <div class="card mt2"><h3 style="font-size:20px">Quelle partie revoir pour chaque mission ?</h3>
+  <dl class="gl mt">
+    <dt>Mission 1</dt><dd>Séance 1 : on ne lit pas, on balaie ; la pyramide inversée ; du papier au web.</dd>
+    <dt>Missions 2 et 3</dt><dd>Séance 1 : explorer, indexer, classer ; anatomie d’une page ; ce qui ne sert à rien.</dd>
+    <dt>Missions 4 et 5</dt><dd>Séance 1 : les intentions de recherche ; la SERP en 2026 et le zéro clic.</dd>
+    <dt>Mission 6</dt><dd>Séance 1 : anatomie d’une page optimisée.</dd>
+    <dt>Mission 7</dt><dd>Séance 2 : E-E-A-T, YMYL, Qui ? Comment ? Pourquoi ?</dd>
+    <dt>Mission 8</dt><dd>Séance 2 : un pilier, des clusters, des liens ; les 6 étapes.</dd>
+    <dt>Mission 9</dt><dd>Séance 2 : l’IA est un assistant ; publier en règle.</dd>
+    <dt>Mission 10</dt><dd>Les synthèses des deux séances.</dd>
+  </dl></div>`;
+  scrollTo(0,0);
+}
+
+/* ---------- Menu latéral ---------- */
+let ACTIVE = 'intro';
+const nav = document.getElementById('nav'), scrim = document.getElementById('scrim'), menuBtn = document.getElementById('menuBtn');
+function openNav(o){ nav.classList.toggle('open', o); scrim.hidden = !o; menuBtn.setAttribute('aria-expanded', o); }
+menuBtn.onclick = () => openNav(!nav.classList.contains('open'));
+scrim.onclick = () => openNav(false);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { openNav(false); menuBtn.focus(); } });
+function item(key, label, icon, opts){ opts = opts || {};
+  return `<button class="nav-i ${ACTIVE===key?'active':''}" data-k="${key}" ${opts.dis?'disabled':''} ${ACTIVE===key?'aria-current="page"':''}>${icon}<span>${label}</span>${opts.end||''}</button>`; }
+const ic = c => `<span class="ic" aria-hidden="true">${c}</span>`;
+function renderNav(){
+  if (!S.name) {
+    nav.innerHTML = `<h4>Bienvenue</h4>${item('intro','Accueil',ic('🫧'))}${item('load','Reprendre un brouillon',ic('📂'))}${item('support','Support de cours',ic('📚'))}${item('memo','Aide-mémoire du cours',ic('📌'))}${item('gloss','Glossaire',ic('📖'))}`;
+  } else {
+    const done = Object.keys(S.score).length;
+    let h = `<h4>Le stage</h4>${item('intro','Accueil',ic('🫧'))}${item('map','Planning de la semaine',ic('🗓️'))}${item('prologue','Prologue',ic('🎬'))}`;
+    h += `<p class="nav-progress">${done} mission${done>1?'s':''} sur 10 · ${totalXP()} XP</p>`;
+    CHAPTERS.forEach(c => {
+      h += `<h4>${esc(c.t)}</h4>`;
+      for (let i=c.from; i<=c.to; i++){ const m = M[i], lock = !unlocked(i), sc = S.score[i];
+        h += item('m'+i, esc(m.title), `<span class="nd" style="background:${lock?'var(--soft)':m.color};${m.color==='var(--violet)'&&!lock?'color:#FBF8F3':''}">${lock?'🔒':i+1}</span>`, { dis:lock, end: sc!==undefined?`<span class="nst" aria-label="${stars(sc)} étoiles">${starTxt(stars(sc))}</span>`:'' }); }
+    });
+    h += item('epi','Épilogue',ic('🌅'),{ dis: done<10 });
+    h += `<h4>Outils</h4>${item('support','Support de cours',ic('📚'))}${item('client','Fiche client et tableau de bord',ic('📊'))}${item('cast','Personnages',ic('👥'))}${item('memo','Aide-mémoire du cours',ic('📌'))}${item('gloss','Glossaire',ic('📖'))}`;
+    h += `<h4>Ma progression</h4>${item('save','Télécharger mon brouillon',ic('💾'))}${item('load','Restaurer un brouillon',ic('📂'))}${item('cert','Mon certificat',ic('🏅'),{ dis: done<10 })}${item('theme','Changer de thème',ic('🌓'))}${item('reset','Recommencer à zéro',ic('↺'))}`;
+    nav.innerHTML = h;
+  }
+  nav.querySelectorAll('.nav-i').forEach(b => b.onclick = () => go(b.dataset.k));
+}
+function go(k){
+  const close = !['save','load','theme'].includes(k);
+  if (k==='intro') showIntro(); else if (k==='map') showMap(); else if (k==='prologue') showPrologue();
+  else if (k[0]==='m' && /^m\d+$/.test(k)) startMission(+k.slice(1));
+  else if (k==='epi') showEpilogue(); else if (k==='client') showClient(); else if (k==='cast') showCast();
+  else if (k==='memo') showMemo(); else if (k==='support') showSupport(); else if (k==='gloss') showGloss(); else if (k==='cert') showCert();
+  else if (k==='save') downloadDraft(); else if (k==='load') document.getElementById('draftFile').click();
+  else if (k==='theme') document.getElementById('theme').click();
+  else if (k==='reset') { if (confirm('Effacer ta progression et recommencer ? Pense à télécharger ton brouillon avant.')) { S.score = {}; S.prologue = false; S.name=''; save(); showIntro(); } }
+  if (close) openNav(false);
+}
+function setActive(k){ ACTIVE = k; renderNav(); }
+const withNav = (fn, key) => function(...a){ const r = fn.apply(this, a); setActive(typeof key==='function' ? key(...a) : key); return r; };
+showIntro = withNav(showIntro,'intro'); showBrief = withNav(showBrief,'client'); showMap = withNav(showMap,'map');
+startMission = withNav(startMission, i=>'m'+i); showMission = withNav(showMission, i=>'m'+i);
+showEpilogue = withNav(showEpilogue,'epi'); showCert = withNav(showCert,'cert'); showClient = withNav(showClient,'client');
+showCast = withNav(showCast,'cast'); showMemo = withNav(showMemo,'memo'); showGloss = withNav(showGloss,'gloss'); showPrologue = withNav(showPrologue,'prologue'); showSupport = withNav(showSupport,'support');
+const _save = save; save = function(){ _save(); renderNav(); };
+
+document.getElementById('home').onclick = () => showIntro();
+document.getElementById('draftFile').onchange = e => { const f = e.target.files[0]; if (f) restoreDraft(f); e.target.value = ''; };
+updateXP();
+renderNav();
+showIntro();
+</script>
+<!-- Bouton retour vers l'accueil du jeu (ajouté par l'espace formateur) -->
+<a href="../index.html" id="retour-hub" style="position:fixed;top:.4rem;left:.4rem;z-index:1000;padding:.3rem .75rem;font:700 .8rem/1.2 system-ui,sans-serif;color:#fff;background:rgba(16,26,48,.95);border:1px solid #f0a23c;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">&larr; Tous les jeux</a>
+</body>
+</html>
