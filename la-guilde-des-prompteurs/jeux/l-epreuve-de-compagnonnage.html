@@ -351,6 +351,29 @@ summary{cursor:pointer;font-family:var(--caps);font-weight:700;font-size:15px;co
 #boot.compact .crest-top{width:46px;height:56px;margin-bottom:4px}
 #boot.compact .sigil,#boot.compact .boot-sub{display:none}
 #boot.compact .boot-title{font-size:clamp(28px,4vw,40px);margin-bottom:16px}
+
+/* Une seule lettrine par page */
+.read ~ .read p:first-child::first-letter{float:none;font-family:inherit;font-size:inherit;line-height:inherit;padding:0;margin:0;color:inherit;background:none;box-shadow:none}
+/* Leçon des runes */
+.runes-lesson{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start;margin:10px 0 20px}
+.rl-cards{display:grid;gap:12px}
+.rcard{background:#FFF8E6;border:1px solid #A68A5B;border-left:5px solid var(--lapis);padding:12px 16px;border-radius:2px;animation:unroll .5s ease}
+@keyframes unroll{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.rcard p{margin:4px 0}
+.rc-h{display:flex;align-items:center;gap:10px;font-family:var(--caps);font-size:17px;font-weight:700}
+.rbadge{display:inline-grid;place-items:center;width:34px;height:34px;font-family:var(--display);font-size:20px;color:#F6DE97;background:linear-gradient(135deg,#2B4C8C,#162B55);box-shadow:inset 0 0 0 2px #E9C76B;border-radius:2px}
+.rc-q{font-family:var(--fell);font-style:italic;font-size:19px;color:var(--rubric)}
+.rc-tip{font-size:16px;color:#5E4A35;font-style:italic}
+.rl-side{position:sticky;top:16px;display:grid;gap:8px}
+.rl-side h4{font-family:var(--caps);font-size:14.5px;margin:0;color:var(--ink2)}
+.rl-inc{font-size:15px;line-height:1.45;min-height:60px}
+.rl-frag{display:block;margin-bottom:6px;animation:unroll .5s ease}
+.rl-frag b{color:var(--gold-hi);font-family:var(--caps);font-size:12.5px;letter-spacing:.04em}
+.rl-guess{margin:0;padding:10px 14px 10px 30px;background:#FFF8E6;border:1px solid #A68A5B;font-size:16px}
+.rl-guess li{margin:3px 0}
+.rl-guess li.closed{text-decoration:line-through;text-decoration-color:var(--verd);color:#8A7A66}
+.rl-done{font-family:var(--fell);font-style:italic;color:var(--verd);margin:0}
+@media (max-width:900px){.runes-lesson{grid-template-columns:1fr}.rl-side{position:static}}
 </style>
 </head>
 <body>
@@ -1034,6 +1057,50 @@ STEPS[25].read = ["Une lune a passé. La Grande Foire ouvre dans trois jours. Ce
 STEPS[25].lead = s => hasF(s, "biais") ? ["On murmure aussi que chez Ferrandine, un familier choisissait seul qui embaucher, et n'aurait retenu que des hommes de moins de trente ans. Dans votre quartier, quelqu'un pâlit."] : [];
 
 if (typeof module !== "undefined") Object.assign(module.exports, { ART, LAWS, PROLOGUE, OATH, LORE, ARRIVAL, LEADS, CHRON, FAREWELL });
+
+/* ===== LEÇON DES SEPT RUNES (pont entre besoins et méthode) ===== */
+const SILENCES = [
+  { k: "C", q: "Qui êtes-vous, et quelle est la situation ?", sans: "Le familier invente une entreprise moyenne, qui n'existe pas. Il écrit pour « une marque », pas pour la vôtre.", ex: "Vélocis est un fabricant français de vélos électriques. Nous lançons dans six semaines la Zéphyr. Voici sa fiche technique : […]", tip: "Donnez les faits dont il a besoin : il ne connaît ni votre entreprise, ni votre dossier." },
+  { k: "R", q: "Qui doit-il être ?", sans: "Il parle comme tout le monde et comme personne : ni expert, ni du métier, avec un vocabulaire passe-partout.", ex: "Tu es responsable des réseaux sociaux d'une marque industrielle française.", tip: "Un rôle précis appelle le bon vocabulaire et le bon niveau d'expertise." },
+  { k: "E", q: "À quoi ressemble un bon résultat ?", sans: "Il choisit seul le style. Ce n'est presque jamais le vôtre.", ex: "Voici un post que nous avons aimé : « Chaque matin, 12 km sans bouchon… »", tip: "Un seul bon exemple vaut dix adjectifs. C'est la rune la plus oubliée, et l'une des plus puissantes." },
+  { k: "A", q: "Que faut-il faire, exactement ?", sans: "Il fait « quelque chose » : un poème, une liste, un discours… selon son humeur.", ex: "Rédige trois posts LinkedIn pour annoncer le lancement : usage quotidien, fabrication française, économie par rapport à la voiture.", tip: "Un verbe d'action et un livrable précis : rédige, résume, compare, classe, traduis…" },
+  { k: "T", q: "À qui parle-t-on, et sur quel ton ?", sans: "Il écrit pour un public imaginaire, souvent trop formel ou trop enthousiaste.", ex: "Actifs urbains de 25 à 45 ans ; ton direct et chaleureux, sans superlatifs creux.", tip: "Le même message ne s'écrit pas pour un client, un banquier ou un collègue." },
+  { k: "I", q: "Quelle forme, quelle longueur ?", sans: "Trois pages quand vous vouliez trois lignes, ou l'inverse.", ex: "80 à 120 mots par post, une accroche en première ligne, un appel à l'action, trois hashtags maximum.", tip: "Longueur, structure, présentation : tableau, liste, paragraphes, courriel…" },
+  { k: "F", q: "Que ne doit-il surtout pas faire ?", sans: "Il comble les trous… par des Mirages : chiffres, certifications, témoignages inventés.", ex: "N'utilise que les chiffres de la fiche ; n'invente rien ; signale toute information qui te manque.", tip: "C'est la rune qui protège la Maison. Elle applique la troisième loi : toute parole se vérifie." }
+];
+const RUNE_NAME = { C: "Contexte", R: "Rôle", E: "Exemples", A: "Action", T: "Ton et cible", I: "Instructions de format", F: "Frontières" };
+const FRAG = {
+  her: { cas: "Rédaction des fiches produits du site", f: { C: "Vélocis fabrique des vélos électriques en France ; voici les caractéristiques du modèle Alizé : […]", R: "Tu es rédacteur web spécialisé dans la vente en ligne.", E: "Voici une fiche produit que nous trouvons réussie : […]", A: "Rédige la fiche produit de l'Alizé pour notre site.", T: "Pour des particuliers qui comparent plusieurs modèles ; ton clair et rassurant.", I: "Un titre, un paragraphe de 60 mots, cinq points forts en liste, une ligne sur la garantie.", F: "N'utilise que les données de la fiche ; n'ajoute ni avis client, ni comparaison avec des concurrents." } },
+  com: { cas: "Comptes rendus de rendez-vous clients", f: { C: "Voici mes notes brutes, noms retirés, d'un rendez-vous avec un loueur de vélos qui veut équiper sa flotte : […]", R: "Tu es assistant commercial dans une entreprise de vélos électriques.", E: "Voici un compte rendu que mon responsable a apprécié : […]", A: "Rédige le compte rendu de ce rendez-vous.", T: "Il sera lu par mon responsable et l'équipe commerciale ; ton factuel et concis.", I: "Contexte en deux lignes, besoins du client, objections, prochaines étapes datées ; une page maximum.", F: "Ne complète pas les informations manquantes : signale-les ; n'ajoute aucun engagement que je n'ai pas pris." } },
+  gen: { cas: "Réponses aux questions RH courantes", f: { C: "Voici l'extrait de notre accord d'entreprise sur le télétravail : […]. Un salarié demande s'il peut télétravailler trois jours par semaine.", R: "Tu es chargé des ressources humaines, attentif à l'exactitude des règles.", E: "Voici une réponse type que nous utilisons déjà : […]", A: "Rédige la réponse à ce salarié.", T: "Pour un salarié de l'atelier, sans jargon juridique ; ton bienveillant.", I: "Cinq lignes maximum, avec la référence de l'article de l'accord.", F: "Réponds uniquement à partir de l'accord fourni ; si la réponse n'y figure pas, dis-le et oriente vers Nora." } },
+  int: { cas: "Formules et macros du tableur", f: { C: "Dans notre tableur de suivi des ventes, la colonne B contient les montants hors taxes et la colonne C le taux de TVA.", R: "Tu es formateur en tableur pour des équipes de gestion.", E: "Par exemple, pour une ligne : 1 000 € HT et 20 % donnent 1 200 € TTC.", A: "Écris la formule qui calcule le montant TTC en colonne D.", T: "Pour un comptable qui connaît peu les formules ; explications simples.", I: "La formule, puis une explication en trois étapes, puis comment l'étendre à toute la colonne.", F: "N'utilise que des fonctions standards ; s'il te manque une information sur le fichier, demande-la." } },
+  cha: { cas: "Veille réglementaire", f: { C: "Notre entreprise fabrique des vélos électriques en France et les vend en ligne.", R: "Tu es juriste spécialisé en droit de la consommation.", E: "Voici le format de note de veille que nous utilisons : […]", A: "Recense les obligations d'information du vendeur en ligne envers un consommateur.", T: "Pour l'équipe commerciale, non juriste ; langage simple.", I: "Un tableau : obligation, ce que cela implique pour nous, source à vérifier.", F: "Cite tes sources ; signale ce dont tu n'es pas sûr ; marque toute référence d'article comme « à vérifier »." } },
+  for: { cas: "Support informatique de niveau 1", f: { C: "Un collègue de l'atelier signale que son poste ne trouve plus l'imprimante réseau depuis ce matin.", R: "Tu es technicien support informatique de niveau 1.", E: "Voici une réponse type que nous utilisons déjà : […]", A: "Rédige la réponse à ce ticket, avec les vérifications à faire.", T: "Pour un collègue non informaticien ; phrases courtes, sans jargon.", I: "Une phrase d'accueil, trois étapes numérotées, puis quand rappeler le support.", F: "Ne propose aucune manipulation qui demande des droits d'administrateur ; ne demande jamais de mot de passe." } }
+};
+const FRAG_ORDER = ["T", "C", "F", "A", "E", "I", "R"];
+
+STEPS[106] = { type: "runes", act: 3, title: "La leçon des sept runes", next: 19 };
+STEPS[102].next = 106;
+LEADS[106] = s => {
+  const cas = (s.matrix?.rows || []).map((r, i) => r.prio ? Q[s.q].tasks[i][0] : null).filter(Boolean);
+  return [`Au matin, Orsane vous attend dans la grande salle, devant une cage où s'agite un petit familier aux yeux d'ambre. Sur le tableau noir, elle a recopié vos trois cas d'usage de la veille${cas.length ? " : **" + cas.join("**, **") + "**" : ""}.`,
+    "« Hier, vous avez trouvé *où* les familiers serviront votre quartier, dit-elle. Aujourd'hui, vous allez apprendre *comment* leur parler. Regardez bien. »",
+    "Elle ouvre la cage et ordonne au familier : « Écris quelque chose sur notre Zéphyr. » La créature griffonne en un éclair, et Orsane lit à voix haute :",
+    "*« La Zéphyr, monture légendaire forgée par les dieux, file à trois cents lieues à l'heure et rend éternellement jeune quiconque la chevauche. Certifiée par le Grand Conseil des Montures. Offre exceptionnelle, ce jour seulement ! »*",
+    "Toute la salle éclate de rire. Orsane, elle, ne rit pas. « Il n'a pas menti, apprentis. Il a *deviné*. Je ne lui ai rien dit : ni qui nous sommes, ni ce que je voulais, ni à qui il parlait, ni ce qu'il ne devait surtout pas faire. Chacun de mes silences, il l'a rempli. Une incantation a sept runes. Chacune ferme un silence. »"];
+};
+STEPS[19].read = ["« Les sept runes, vous les connaissez maintenant, dit Orsane. Place à l'épreuve. Chaque équipe va affronter une autre équipe sur un besoin réel de son quartier : d'abord avec une incantation naïve, comme on le fait tous spontanément, puis avec les sept runes. Vous verrez la différence de vos propres yeux. »", "« Et retenez ceci : on n'obtient presque jamais le bon résultat du premier coup. On relit, on corrige, on redemande. On itère. »"];
+
+/* Chronique 102 : rattacher les besoins à la méthode */
+CHRON[102].body = s => {
+  const cas = (s.matrix?.rows || []).map((r, i) => r.prio ? Q[s.q].tasks[i][0] : null).filter(Boolean);
+  return ["Cette nuit-là, Orsane vous réunit au sommet de la Tour de la Guilde. Par la fenêtre, on voit briller les forges de Ferrandine, qui ne s'éteignent plus.",
+    `Sur la table, elle a posé trois choses : la liste de vos cas d'usage${cas.length ? " (" + cas.join(", ") + ")" : ""}, votre ménagerie, et votre Code. « Vous savez maintenant *où* vos familiers serviront, *lesquels* vous emploierez et *quelles règles* ils suivront. Il vous manque l'essentiel : savoir leur parler. »`,
+    "« Ferrandine a beaucoup de familiers, poursuit-elle. Mais sait-elle leur parler ? Un familier n'obéit ni à la force, ni au nombre. Il obéit à la précision. Demain, je vous montrerai pourquoi les familiers comprennent de travers, et comment l'éviter. »",
+    hasF(s, "verrou_oracle") ? "Elle regarde le contrat de l'Oracle posé sur la table et soupire : « Trois ans… Nous ferons avec. Mais retenez la leçon : on ne signe pas avec un familier qu'on n'a pas essayé. »" : hasF(s, "sauvages") ? "« Vos familiers sauvages sont rapides, ajoute-t-elle. Mais savez-vous seulement ce qu'ils retiennent de vous ? »" : hasF(s, "sans_code") ? "« Une Maison sans Code, ajoute-t-elle, c'est une Maison où chaque erreur aura un coupable. Vous verrez. »" : hasF(s, "code1page") ? "Elle relit votre Code d'une page et sourit : « Court, clair, écrit avec ceux qui l'appliqueront. C'est ainsi qu'on écrit une loi qu'on respecte. »" : "Elle relit votre Code, le replie et ne dit rien. Ce n'est pas tout à fait un compliment."];
+};
+
+if (typeof module !== "undefined") Object.assign(module.exports, { SILENCES, RUNE_NAME, FRAG, FRAG_ORDER });
 </script>
 <script>/* ===== MOTEUR — logique pure ===== */
 const L = (() => {
@@ -1291,7 +1358,7 @@ function startGame() { $("#boot").classList.add("hidden"); $("#anim").classList.
 
 /* ---------- Barre latérale */
 let prevG = null;
-const ROMAN = n => { const m = [[40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]]; let r = ""; for (const [v, l] of m) while (n >= v) { r += l; n -= v; } return r || "0"; };
+const ROMAN = n => { const m = [[100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]]; let r = ""; for (const [v, l] of m) while (n >= v) { r += l; n -= v; } return r || "0"; };
 function flask(k) {
   return `<svg viewBox="0 0 40 90" class="flask" aria-hidden="true">
     <defs><clipPath id="cp${k}"><path d="M14 8 h12 v40 a18 18 0 1 1 -12 0 z"/></clipPath>
@@ -1339,6 +1406,7 @@ function go(id, restoring = false) {
 }
 function head(st, id) {
   const a = ACTES[st.act];
+  if (st.type === "runes") return `<header class="folio" data-step="${id}"><div class="folio-n chron-n"><span class="lab">Leçon</span><span class="num">✧</span></div><div class="folio-t"><div class="actlab">${fmt(`Acte ${ROMAN(a.n)} — ${a.t}`)}<span class="hour">${fmt(a.h)}</span></div><h1>${fmt(st.title)}</h1></div></header><div class="fleuron" aria-hidden="true"></div>`;
   if (st.type === "chron") return `<header class="folio" data-step="${id}"><div class="folio-n chron-n"><span class="lab">Récit</span><span class="num">✦</span></div><div class="folio-t"><div class="actlab">${fmt("Entre deux actes")}</div><h1>${fmt(st.title)}</h1></div></header><div class="fleuron" aria-hidden="true"></div>`;
   return `<header class="folio" data-step="${id}"><div class="folio-n"><span class="lab">Folio</span><span class="num">${ROMAN(id)}</span></div><div class="folio-t"><div class="actlab">${fmt(`${a.n ? "Acte " + ROMAN(a.n) : "Prologue"} — ${a.t}`)}<span class="hour">${fmt(a.h)}</span></div><h1>${fmt(st.title)}</h1></div></header><div class="fleuron" aria-hidden="true"></div>`;
 }
@@ -1367,7 +1435,7 @@ function render(notes = []) {
   else if (st.type === "aiguillage") {
     const q = S.queue.length ? S.queue : L.buildQueue(S);
     h += `<div class="read">${P(st.read)}</div><div class="box ${q.length > 1 ? "ale" : "inf"}"><h3>Le Haut-Conseil vous convoque</h3><p>${fmt(q.length > 1 ? `Vos choix du matin ont des conséquences : ${q.length - 1 === 1 ? "une crise vous attend" : "deux crises vous attendent"} avant le Mirage qui frappe tous les quartiers.` : "Votre quartier a évité les crises liées aux choix du matin. Reste le Mirage, qui frappe tous les quartiers.")}</p></div>` + nextBtn(q[0]);
-  } else h += ({ atelier1: renderA1, atelier2: renderA2, atelier3: renderA3, atelier4: renderA4, golem: renderGolem, pitch: renderPitch, grandcode: renderGC, final: renderFinal })[st.type](st, id);
+  } else h += ({ atelier1: renderA1, runes: renderRunes, atelier2: renderA2, atelier3: renderA3, atelier4: renderA4, golem: renderGolem, pitch: renderPitch, grandcode: renderGC, final: renderFinal })[st.type](st, id);
   m.innerHTML = h;
   bindMain();
 }
@@ -1584,6 +1652,7 @@ function bindMain() {
     if (t.dataset.copy) return copy(L.assemble(t.dataset.copy === "a2" ? S.a2.r : S.a3.r));
     if (t.dataset.copydata) return copy(DUEL[S.q].data);
     const a = t.dataset.act;
+    if (runesAct(a)) return;
     if (a === "menagerie") openMenagerie();
     if (a === "validDyn") return validDyn();
     if (a === "noCode") return validDyn(true);
@@ -1610,6 +1679,7 @@ function bindMain() {
   m.oninput = e => {
     const t = e.target, d = t.dataset;
     if (dynInput(t)) return;
+    if (d.fr) { S.lesson.ans[d.fr] = t.value; markDirty(); return; }
     if (d.mx !== undefined) { const r = S.matrix.rows[+d.mx]; if (d.k === "prio") { if (t.checked && S.matrix.rows.filter((x, i) => x.prio && i !== +d.mx).length >= 3) { t.checked = false; return toast("Trois cas d'usage au maximum."); } r.prio = t.checked; } else r[d.k] = t.value;
       const sc = (+r.f || 0) + (+r.t || 0) + (+r.v || 0); const b = m.querySelector(`[data-sc="${d.mx}"]`); if (b) b.textContent = sc || "–"; }
     else if (d.mxe) S.matrix[d.mxe] = t.value;
@@ -1873,6 +1943,43 @@ function dynInput(t) {
   if (d.aut) { const dd = S.dyn[33]; dd.lv[+d.aut] = +t.value; const lab = t.parentElement.querySelectorAll(".alabs span"); lab.forEach((s, k) => s.classList.toggle("cur", k === +t.value)); $("#ledger").innerHTML = autoLedger(dd.lv); markDirty(); return true; }
   if (d.djus) { S.dyn[+d.djus].justif = t.value; markDirty(); return true; }
   if (d.droi) { S.dyn[+d.droi].roi = t.value; markDirty(); return true; }
+  return false;
+}
+</script>
+<script>/* ===== LEÇON DES SEPT RUNES — interface ===== */
+function renderRunes(st) {
+  const L0 = S.lesson = S.lesson || { k: 0, ans: {}, checked: false, score: 0 };
+  const k = L0.k, rev = SILENCES.slice(0, k), rest = SILENCES.slice(k);
+  let h = `<h2>Les sept silences</h2><p class="prose">${fmt("Chaque rune répond à une question que le familier se pose sans pouvoir vous la poser. Révélez-les une à une : l'incantation d'Orsane se construit à mesure que les silences se ferment.")}</p>
+  <div class="runes-lesson"><div class="rl-cards">${rev.map(x => `<div class="rcard"><div class="rc-h"><b class="rbadge">${x.k === "E" ? "É" : x.k}</b><span>${fmt(RUNE_NAME[x.k])}</span></div>
+    <p class="rc-q">${fmt("« " + x.q + " »")}</p><p><b>${fmt("Sans cette rune :")}</b> ${fmt(x.sans)}</p><p class="rc-tip">${fmt(x.tip)}</p></div>`).join("")}
+    ${k < 7 ? `<button class="btn gold" data-act="revealRune">${fmt(k === 0 ? "Révéler la première rune" : `Révéler la rune suivante (${k} / 7)`)}</button>` : ""}</div>
+  <div class="rl-side"><h4>${fmt("L'incantation d'Orsane")}</h4><div class="assembled rl-inc">${rev.length ? rev.map(x => `<span class="rl-frag"><b>${esc(RUNE_NAME[x.k])} :</b> ${esc(x.ex).replace(/'/g, "’")}</span>`).join("") : esc("Écris quelque chose sur notre Zéphyr.")}</div>
+    <h4>${fmt("Ce que le familier doit encore deviner")}</h4><ul class="rl-guess">${SILENCES.map((x, i) => `<li class="${i < k ? "closed" : ""}">${fmt(x.q)}</li>`).join("")}</ul>
+    ${k === 7 ? `<p class="rl-done">${fmt("Plus aucun silence : le familier n'a plus rien à deviner.")}</p>` : ""}</div></div>`;
+  if (k === 7) {
+    const fr = FRAG[S.q];
+    h += `<div class="box reg"><h3>La huitième règle, qui n'est pas une rune</h3><p>${fmt("« On n'obtient presque jamais le bon résultat du premier coup, dit Orsane. On relit, on corrige, on redemande : c'est l'itération. Un Dresseur ne lance pas une incantation, il la travaille. »")}</p></div>
+    <h2>À vous : les fragments dispersés</h2>
+    <div class="read">${P([`Orsane a préparé une incantation pour l'un des cas d'usage de votre quartier : **${fr.cas}**. Mais en ouvrant la fenêtre, le vent a mélangé les fragments. Remettez chacun sous sa rune.`])}</div>
+    <div class="tw"><table><thead><tr><th>Fragment</th><th>Rune</th></tr></thead><tbody>${FRAG_ORDER.map(r => { const ok = L0.checked ? L0.ans[r] === r : null;
+      return `<tr><td class="${ok === true ? "okc" : ok === false ? "koc" : ""}">${fmt(fr.f[r])}${ok === false ? `<br><small class="kot">${fmt("Rune attendue : " + RUNE_NAME[r])}</small>` : ""}</td><td style="min-width:190px"><select class="inp" data-fr="${r}" ${L0.checked ? "disabled" : ""}><option value="">–</option>${Object.keys(RUNE_NAME).map(c => `<option value="${c}" ${L0.ans[r] === c ? "selected" : ""}>${fmt(RUNE_NAME[c])}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>`;
+    if (!L0.checked) h += `<div class="nav"><button class="btn gold" data-act="checkFrag">Vérifier notre reconstitution</button></div>`;
+    else h += `<div class="result"><h3 style="font-size:19px">${fmt(`Reconstitution : ${L0.score} / 7`)}</h3><p>${fmt(L0.score === 7 ? "Parfait. Orsane hoche la tête : « Vous savez lire une incantation. Demain, vous l'écrirez. »" : L0.score >= 5 ? "Presque. Regardez les fragments en rouge : quelle question du familier ferment-ils vraiment ?" : "Les runes se confondent encore. Relisez les sept silences ci-dessus : chaque fragment répond à une seule question.")}</p>
+      <p class="meta">${fmt("Cet exercice d'entraînement ne modifie pas les fioles. L'incantation reconstituée rejoint votre Grimoire.")}</p></div>` + nextBtn(st.next, "En route pour le Duel");
+  }
+  return h;
+}
+function runesAct(a) {
+  const L0 = S.lesson;
+  if (a === "revealRune") { L0.k = Math.min(7, L0.k + 1); markDirty(); render(); const c = document.querySelectorAll(".rcard"); if (c.length) c[c.length - 1].scrollIntoView({ behavior: "smooth", block: "center" }); return true; }
+  if (a === "checkFrag") {
+    if (FRAG_ORDER.some(r => !L0.ans[r])) { toast("Placez chaque fragment sous une rune."); return true; }
+    L0.score = FRAG_ORDER.filter(r => L0.ans[r] === r).length; L0.checked = true;
+    const fr = FRAG[S.q];
+    if (!S.grimoire.some(p => p.src === "Leçon des runes")) S.grimoire.push({ titre: fr.cas, besoin: fr.cas, familier: "", incantation: Object.keys(RUNE_NAME).map(r => `${RUNE_NAME[r]} : ${fr.f[r]}`).join("\n"), sortie: "", iterations: "", vigilance: fr.f.F, fiab: 2, src: "Leçon des runes" });
+    markDirty(); renderSide(); render(); return true;
+  }
   return false;
 }
 </script>
