@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 26,
+  "version": 27,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."

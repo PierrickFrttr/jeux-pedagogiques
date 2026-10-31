@@ -562,7 +562,7 @@ M.push({ title:'Le title parfait', format:'Composer un titre', color:'var(--cora
       ];
       let s = rules.filter(r=>r[0]).length*14;
       const m = METAS[meta]; if (m.ok) s += 30;
-      choices.querySelectorAll('.choice').forEach(b=>{ const mm = METAS[b.dataset.i]; b.classList.add(mm.ok?'ok':(+b.dataset.i===meta?'ko':'')); });
+      choices.querySelectorAll('.choice').forEach(b=>{ const mm = METAS[b.dataset.i]; if (mm.ok) b.classList.add('ok'); else if (+b.dataset.i===meta) b.classList.add('ko'); });
       const fb = rules.map(r=>(r[0]?'✔ ':'✘ ')+r[1]+'.');
       fb.push((m.ok?'✔ ':'✘ ') + 'Meta description : ' + (m.ok? 'la bonne, ' : 'pas celle-ci, ') + m.why + '.');
       if (!m.ok) fb.push('La meilleure : « ' + METAS[2].t + ' »');
@@ -715,7 +715,9 @@ function buildBins(el, labels, BINS, cls){
   const bins = {}; let sel = null;
   const chips = labels.map((t,i)=>{ const c = chipBtn(t); c.draggable = true; c.dataset.i = i;
     c.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', i); });
-    c.onclick = e => { e.stopPropagation(); if (c.classList.contains('ok')||c.classList.contains('ko')) return; chips.forEach(x=>x.classList.remove('sel')); sel = (sel===c) ? null : c; if (sel) c.classList.add('sel'); };
+    c.onclick = e => { e.stopPropagation(); if (c.classList.contains('ok')||c.classList.contains('ko')) return;
+      if (sel && sel!==c && c.parentElement !== sel.parentElement) { c.parentElement.appendChild(sel); sel.classList.remove('sel'); sel = null; return; }
+      chips.forEach(x=>x.classList.remove('sel')); sel = (sel===c) ? null : c; if (sel) c.classList.add('sel'); };
     return c; });
   shuffle(chips).forEach(c=>pool.appendChild(c));
   const target = (zone) => {
