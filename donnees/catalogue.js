@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 28,
+  "version": 29,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -216,7 +216,17 @@ window.CATALOGUE = {
       "couleur": "#c8d9e0",
       "auteur": "PierrickFrttr",
       "retourCss": "",
-      "elements": []
+      "elements": [
+        {
+          "type": "mission",
+          "fichier": "jeux/la-fiction-un-mentir-vrai.html",
+          "auteur": "PierrickFrttr",
+          "titre": "La fiction, un « mentir-vrai »",
+          "description": "Retrouvez Hélène, Samuel, Victor et Lina au sein de La Revue pour explorer le thème de la fiction, un « mentir-vrai », à travers une enquête journalistique, des défis et la préparation d'un numéro spécial.",
+          "emoji": "🎭",
+          "couleur": "#80c1db"
+        }
+      ]
     }
   ]
 };
