@@ -1,5 +1,5 @@
 window.CATALOGUE = {
-  "version": 27,
+  "version": 28,
   "site": {
     "titre": "Entreprise en Jeu",
     "intro": "Ici, on apprend en faisant. Chaque jeu vous place dans une situation d'entreprise réelle : vous incarnez un professionnel, vous analysez, vous décidez et vous voyez les conséquences de vos choix. C'est en essayant qu'on comprend."
@@ -204,6 +204,19 @@ window.CATALOGUE = {
           "couleur": "#5b3fd9"
         }
       ]
+    },
+    {
+      "id": "la-revue-le-journal-de-vos-missions-de-culture-generale",
+      "titre": "La Revue – Le journal de vos missions de Culture générale",
+      "titrePage": "La Revue – Le journal de vos missions de Culture générale",
+      "resume": "Bienvenue dans La Revue ! Un espace de jeux et de missions interactives dédié à la Culture générale et expression en BTS. Explorez différents sujets, choisissez votre mission et relevez des défis pour développer votre culture, votre esprit critique, vos capacités d'analyse et votre maîtrise de l'argumentation. Chaque mission vous plonge dans un nouvel univers et vous permet de progresser à votre rythme.",
+      "intro": "Bienvenue dans La Revue, votre espace dédié à la découverte et à l'exploration des grands sujets de Culture générale et expression !\n\nIci, chaque sujet devient une nouvelle aventure. À travers différentes missions interactives, vous allez découvrir des thématiques, analyser des documents, résoudre des énigmes, relever des défis et construire progressivement vos compétences.\n\nChaque mission est indépendante : vous êtes libre de choisir le sujet que vous souhaitez explorer et d'avancer à votre rythme.\n\nObservation, réflexion, culture, argumentation et créativité seront vos meilleurs atouts.\n\nÀ vous de choisir votre prochaine mission et de faire vivre La Revue !",
+      "categorie": "Culture générale",
+      "emoji": "📰",
+      "couleur": "#c8d9e0",
+      "auteur": "PierrickFrttr",
+      "retourCss": "",
+      "elements": []
     }
   ]
 };
